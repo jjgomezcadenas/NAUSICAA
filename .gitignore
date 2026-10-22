@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.DS_Store
+work/
+notes/physics/build/
+notes/physics/*.aux
+notes/physics/*.bbl
+notes/physics/*.blg
+notes/physics/*.log
+notes/physics/*.out
+notes/physics/*.toc
+notes/physics/*.fls
+notes/physics/*.fdb_latexmk
+notes/physics/main.pdf

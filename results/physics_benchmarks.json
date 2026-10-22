@@ -1,0 +1,124 @@
+{
+  "model": "central square pad in a grounded infinite plane; constant mobility; thermal diffusion",
+  "config_sha256": "628be0c9c8b9db1e18db69743b55d3e200610b62b07e3181c54eecb2125e214c",
+  "environment": {
+    "python": "3.13.13",
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.9"
+  },
+  "constants": {
+    "e_C": 1.602176634e-19,
+    "k_B_J_K": 1.380649e-23
+  },
+  "benchmarks": {
+    "open_fraction": 0.04908738521234052,
+    "entrance_threshold_V_m": 407436.6543152521,
+    "flux_capacity_ratio": 1.227184630308513,
+    "mobility_m2_V_s": 5e-06,
+    "thermal_D_m2_s": 1.2630856228989295e-07,
+    "gap_speed_m_s": 3.0000000000000004,
+    "peak_A": 1.7309589179470467e-15,
+    "characteristic_time_s": 8.333333333333332e-05,
+    "half_peak_duration_s": 7.052327526511219e-05,
+    "final_90pct_duration_s": 0.00019351380264975897,
+    "final_99pct_duration_s": 0.000659674768909737,
+    "central_90pct_duration_s": 0.00028096354606128203,
+    "rise_10_to_90_charge_s": 0.0001842098586727244,
+    "phi_at_gap": 0.0015875821252161815,
+    "finite_gap_charge_e": 0.9984124178747839,
+    "disk_peak_A": 1.9226119608000003e-15,
+    "integral_full_model_e": 1.0000000000000002,
+    "quadrature_error_estimate": 1.1102212878483081e-14,
+    "derivative_max_relative_error": 2.536721943613429e-10
+  },
+  "nominal_regions": [
+    {
+      "name": "Bulk reference",
+      "length_m": 1.5,
+      "field_V_m": 20000.0,
+      "speed_m_s": 0.1,
+      "transit_s": 15.0,
+      "free_diffusion_sigma_m": 0.0019466013635813543,
+      "local_time_sigma_s": 0.01946601363581354,
+      "reduced_field_kV_cm_bar": 0.013333333333333334
+    },
+    {
+      "name": "IFG hole",
+      "length_m": 0.01,
+      "field_V_m": 500000.0,
+      "speed_m_s": 2.5,
+      "transit_s": 0.004,
+      "free_diffusion_sigma_m": 3.178786715586851e-05,
+      "local_time_sigma_s": 1.2715146862347403e-05,
+      "reduced_field_kV_cm_bar": 0.3333333333333333
+    },
+    {
+      "name": "Collection gap",
+      "length_m": 0.005,
+      "field_V_m": 600000.0,
+      "speed_m_s": 3.0000000000000004,
+      "transit_s": 0.0016666666666666666,
+      "free_diffusion_sigma_m": 2.051898001768874e-05,
+      "local_time_sigma_s": 6.839660005896246e-06,
+      "reduced_field_kV_cm_bar": 0.4
+    }
+  ],
+  "bulk_diffusion": [
+    {
+      "length_m": 0.1,
+      "transit_s": 1.0,
+      "sigma_m": 0.0005026103108570156,
+      "time_sigma_s": 0.005026103108570156
+    },
+    {
+      "length_m": 0.75,
+      "transit_s": 7.5,
+      "sigma_m": 0.0013764550244553557,
+      "time_sigma_s": 0.013764550244553557
+    },
+    {
+      "length_m": 1.5,
+      "transit_s": 15.0,
+      "sigma_m": 0.0019466013635813543,
+      "time_sigma_s": 0.01946601363581354
+    }
+  ],
+  "distance_table": [
+    {
+      "z_mm": 5,
+      "phi": 0.0015875821252161815,
+      "current_fA": 0.00030446989626067134
+    },
+    {
+      "z_mm": 1,
+      "phi": 0.03746985203815442,
+      "current_fA": 0.03394037094013817
+    },
+    {
+      "z_mm": 0.5,
+      "phi": 0.12818843369794986,
+      "current_fA": 0.19987391944658214
+    },
+    {
+      "z_mm": 0.25,
+      "phi": 0.3333333333333333,
+      "current_fA": 0.70666101911506
+    },
+    {
+      "z_mm": 0.1,
+      "phi": 0.6616631775404929,
+      "current_fA": 1.4358758580932627
+    },
+    {
+      "z_mm": 0.05,
+      "phi": 0.8228625710485706,
+      "current_fA": 1.647985307306568
+    },
+    {
+      "z_mm": 0,
+      "phi": 1.0,
+      "current_fA": 1.7309589179470468
+    }
+  ]
+}
