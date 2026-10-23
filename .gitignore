@@ -13,4 +13,5 @@ notes/physics/*.out
 notes/physics/*.toc
 notes/physics/*.fls
 notes/physics/*.fdb_latexmk
-notes/physics/main.pdf
+notes/physics/nausica.pdf
+notes/physics/*.synctex.gz

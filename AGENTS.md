@@ -20,7 +20,29 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   conditions, charge conservation, scaling and convergence.
 - Run `make test physics` with a Python >=3.11 environment containing the pinned
   scientific dependencies. Run `make note` to compile the PDF with latexmk.
-- Inspect the compiled PDF after material edits. Keep scratch files in work/.
+- Correct clear typos automatically. Keep prose edits small and show wording
+  changes for review; preserve the author's voice and avoid substantial
+  reformulation unless explicitly requested.
+- For LaTeX changes, compile and check the build log, but do not visually
+  inspect the PDF unless the user explicitly requests it.
+- Keep scratch files in work/.
 - Cite primary sources in notes/physics/references.bib. Record user-provided
   revisions as design inputs, not as published measurements.
 - Do not change the existing remote or publish/push without a user request.
+
+## Related ITACA sources
+
+- Keep `/Users/jjgomezcadenas/Papers/itaca/` as the local source directory for
+  future reuse of manuscript material, figures and available data.
+- Main manuscript: `itacaRevisited.tex`; its active sections are in `srcx/`.
+- Shared notation: `pool/NextDefs.tex`; packages: `pool/NextLatexPackagesBase.tex`;
+  bibliography: `pool/NextRefs.bib`. A selected, self-contained notation subset
+  is imported into `notes/physics/itaca_defs.tex` and loaded by `nausica.tex`.
+- Figures: `img/`, `det/`, `gxe/`, `trks/`, and `fig2/`; editable detector and
+  MARS diagrams: `tikz/` and `mars/`. Check the active manuscript's references
+  to identify the intended version of an asset.
+- Consult this directory when figures or data are needed; verify provenance and
+  whether underlying numerical data exist before treating a plot as a dataset.
+  Copy selected assets into this repository when used so builds stay portable.
+- Older ITACA operating values do not supersede the revised NAUSICAA design
+  inputs in `config/detector.toml`.

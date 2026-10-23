@@ -1,0 +1,776 @@
+{
+  "model": "Linear CSA driven by finite-gap square-pad currents",
+  "detector_sha256": "628be0c9c8b9db1e18db69743b55d3e200610b62b07e3181c54eecb2125e214c",
+  "readout_sha256": "1996dd7ff44d2e5a66d067f4c18c777a7f020475bde5e81ea45908b0edaeb8df",
+  "environment": {
+    "python": "3.13.13",
+    "numpy": "2.4.4",
+    "scipy": "1.17.1"
+  },
+  "electronics": {
+    "feedback_capacitance_F": 3e-15,
+    "discharge_times_s": [
+      3e-05,
+      0.001,
+      0.01,
+      0.1,
+      1.0
+    ],
+    "sample_interval_s": 0.01,
+    "sample_phases_s": [
+      0.0,
+      0.005
+    ]
+  },
+  "provenance": {
+    "arrival_status": "Specified one-pad benchmarks; no event-ensemble or focusing simulation",
+    "charge_status": "260 ions is an illustrative packet charge inspired by the ITACA occupancy study, not a reconstructed pad event",
+    "frontend_status": "Ideal amplifier, linear feedback resistance, no transistor or noise prediction"
+  },
+  "cases": [
+    {
+      "id": "single_ion",
+      "label": "Single ion",
+      "metadata": {
+        "kind": "single",
+        "requested_ions": 1.0,
+        "represented_arrivals": 1.0,
+        "arrival_tail_ions_excluded": 0.0,
+        "drift_length_m": 1.5,
+        "thermal_sigma_t_s": 0.01946601363581354,
+        "uniform_duration_s": null,
+        "packet_separation_s": null,
+        "kernel_charge_C": 1.5996330470144222e-19,
+        "finite_gap_charge_fraction": 0.9984124178747836,
+        "step_s": 4.9900199600798854e-06,
+        "input_charge_C": 1.5996330470144225e-19,
+        "assumptions": "Central square pad in grounded infinite plane; constant gap speed; finite collection-gap path; specified one-pad arrivals; thermal bulk diffusion for Gaussian cases; no focusing-map or event simulation"
+      },
+      "peak_current_A": 1.7283787994687711e-15,
+      "spice": {
+        "file": "results/readout/spice/single_ion.pwl",
+        "time_offset_s": -0.0016666666666666666,
+        "exported_charge_C": 1.5996330470144225e-19,
+        "relative_charge_error": 0.0,
+        "points": 1338,
+        "convention": "two columns: time_s current_A; positive current into input; PWL interpolates sampled current, no charge renormalization"
+      },
+      "responses": [
+        {
+          "discharge_time_s": 3e-05,
+          "feedback_resistance_ohm": 10000000000.0,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 1.4455027831058872e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.27109394604039855,
+              "sampled_peak_magnitude_V": 1.4455027831057315e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -5.992461902214195e-78
+            },
+            {
+              "peak_output_magnitude_V": 1.4455027831058872e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.27109394604039855,
+              "sampled_peak_magnitude_V": 5.992461902227201e-78,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -5.992461902214195e-78
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.001,
+          "feedback_resistance_ohm": 333333333333.3334,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 4.9117691116302416e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.921167974267155,
+              "sampled_peak_magnitude_V": 4.91176911162944e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -3.309523994590672e-07
+            },
+            {
+              "peak_output_magnitude_V": 4.9117691116302416e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.921167974267155,
+              "sampled_peak_magnitude_V": 3.3095239945908704e-07,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -3.309523994590672e-07
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.01,
+          "feedback_resistance_ohm": 3333333333333.3335,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 5.2855763343997714e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9912729067953763,
+              "sampled_peak_magnitude_V": 5.285576334398905e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -3.205864101064845e-05
+            },
+            {
+              "peak_output_magnitude_V": 5.2855763343997714e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9912729067953763,
+              "sampled_peak_magnitude_V": 3.205864101064864e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -3.205864101064845e-05
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.1,
+          "feedback_resistance_ohm": 33333333333333.336,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 5.327403508601013e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9991173010355381,
+              "sampled_peak_magnitude_V": 5.32740350860014e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -5.06758297356989e-05
+            },
+            {
+              "peak_output_magnitude_V": 5.327403508601013e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9991173010355381,
+              "sampled_peak_magnitude_V": 5.067582973569893e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -5.06758297356989e-05
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 1.0,
+          "feedback_resistance_ohm": 333333333333333.4,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 5.331638949096677e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9999116283039517,
+              "sampled_peak_magnitude_V": 5.331638949095803e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -5.305047288900822e-05
+            },
+            {
+              "peak_output_magnitude_V": 5.331638949096677e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9999116283039517,
+              "sampled_peak_magnitude_V": 5.305047288900822e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -5.305047288900822e-05
+            }
+          ]
+        },
+        {
+          "discharge_time_s": null,
+          "feedback_resistance_ohm": null,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 5.332110156714741e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9999999999999999,
+              "sampled_peak_magnitude_V": 5.3321101567138665e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -5.332110156714741e-05
+            },
+            {
+              "peak_output_magnitude_V": 5.332110156714741e-05,
+              "peak_time_s": 1.5178830414797062e-17,
+              "ideal_output_magnitude_V": 5.332110156714742e-05,
+              "peak_fraction_of_ideal": 0.9999999999999999,
+              "sampled_peak_magnitude_V": 5.332110156714741e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -5.332110156714741e-05
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "uniform_packet",
+      "label": "Uniform arrivals over 10 ms (diagnostic)",
+      "metadata": {
+        "kind": "uniform",
+        "requested_ions": 260.0,
+        "represented_arrivals": 260.000000000005,
+        "arrival_tail_ions_excluded": -5.002220859751105e-12,
+        "drift_length_m": 1.5,
+        "thermal_sigma_t_s": 0.01946601363581354,
+        "uniform_duration_s": 0.01,
+        "packet_separation_s": null,
+        "kernel_charge_C": 1.5996330470144222e-19,
+        "finite_gap_charge_fraction": 0.9984124178747836,
+        "step_s": 4.9900199600798854e-06,
+        "input_charge_C": 4.159045922237578e-17,
+        "assumptions": "Central square pad in grounded infinite plane; constant gap speed; finite collection-gap path; specified one-pad arrivals; thermal bulk diffusion for Gaussian cases; no focusing-map or event simulation"
+      },
+      "peak_current_A": 4.159045922238598e-15,
+      "spice": {
+        "file": "results/readout/spice/uniform_packet.pwl",
+        "time_offset_s": -0.006666666666666711,
+        "exported_charge_C": 4.1590459222152584e-17,
+        "relative_charge_error": -5.366575328672704e-12,
+        "points": 6181,
+        "convention": "two columns: time_s current_A; positive current into input; PWL interpolates sampled current, no charge renormalization"
+      },
+      "responses": [
+        {
+          "discharge_time_s": 3e-05,
+          "feedback_resistance_ohm": 10000000000.0,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 4.159045922237438e-05,
+              "peak_time_s": -0.004041916167664692,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.002999999999999899,
+              "sampled_peak_magnitude_V": 4.159045922237137e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -1.5e-323
+            },
+            {
+              "peak_output_magnitude_V": 4.159045922237438e-05,
+              "peak_time_s": -0.004041916167664692,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.002999999999999899,
+              "sampled_peak_magnitude_V": 3.0289554222362533e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -1.5e-323
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.001,
+          "feedback_resistance_ohm": 333333333333.3334,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.001386057301231549,
+              "peak_time_s": 0.003433133732534977,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.09997898511920107,
+              "sampled_peak_magnitude_V": 0.0013777438605047257,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -2.4630225060117064e-25
+            },
+            {
+              "peak_output_magnitude_V": 0.001386057301231549,
+              "peak_time_s": 0.003433133732534977,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.09997898511920107,
+              "sampled_peak_magnitude_V": 0.0012770046404008285,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -2.4630225060117064e-25
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.01,
+          "feedback_resistance_ohm": 3333333333333.3335,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.008715421154504735,
+              "peak_time_s": 0.004925149700598862,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.6286601290867075,
+              "sampled_peak_magnitude_V": 0.005528239571730791,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -5.8531979542663825e-05
+            },
+            {
+              "peak_output_magnitude_V": 0.008715421154504735,
+              "peak_time_s": 0.004925149700598862,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.6286601290867075,
+              "sampled_peak_magnitude_V": 0.008686915992457965,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -5.8531979542663825e-05
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.1,
+          "feedback_resistance_ohm": 33333333333333.336,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.013181777507114995,
+              "peak_time_s": 0.004990019960079901,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.9508270228492569,
+              "sampled_peak_magnitude_V": 0.012538351284732631,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.007994805754072031
+            },
+            {
+              "peak_output_magnitude_V": 0.013181777507114995,
+              "peak_time_s": 0.004990019960079901,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.9508270228492569,
+              "sampled_peak_magnitude_V": 0.013181206301847966,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.007994805754072031
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 1.0,
+          "feedback_resistance_ohm": 333333333333333.4,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.013793180422588355,
+              "peak_time_s": 0.005000000000000062,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.9949286937784702,
+              "sampled_peak_magnitude_V": 0.013724386648231267,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.01312047907541008
+            },
+            {
+              "peak_output_magnitude_V": 0.013793180422588355,
+              "peak_time_s": 0.005000000000000062,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.9949286937784702,
+              "sampled_peak_magnitude_V": 0.013793180422588354,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.01312047907541008
+            }
+          ]
+        },
+        {
+          "discharge_time_s": null,
+          "feedback_resistance_ohm": null,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.013863486407458348,
+              "peak_time_s": 0.005000000000000062,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.9999999999999822,
+              "sampled_peak_magnitude_V": 0.013863486407458348,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.013863486407458348
+            },
+            {
+              "peak_output_magnitude_V": 0.013863486407458348,
+              "peak_time_s": 0.005000000000000062,
+              "ideal_output_magnitude_V": 0.013863486407458594,
+              "peak_fraction_of_ideal": 0.9999999999999822,
+              "sampled_peak_magnitude_V": 0.013863486407458348,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.013863486407458348
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "diffused_packet",
+      "label": "Compact packet after 1.5 m of thermal drift",
+      "metadata": {
+        "kind": "gaussian",
+        "requested_ions": 260.0,
+        "represented_arrivals": 259.99999999999443,
+        "arrival_tail_ions_excluded": 5.5706550483591855e-12,
+        "drift_length_m": 1.5,
+        "thermal_sigma_t_s": 0.01946601363581354,
+        "uniform_duration_s": null,
+        "packet_separation_s": null,
+        "kernel_charge_C": 1.5996330470144222e-19,
+        "finite_gap_charge_fraction": 0.9984124178747836,
+        "step_s": 4.9900199600798854e-06,
+        "input_charge_C": 4.15904592223741e-17,
+        "assumptions": "Central square pad in grounded infinite plane; constant gap speed; finite collection-gap path; specified one-pad arrivals; thermal bulk diffusion for Gaussian cases; no focusing-map or event simulation"
+      },
+      "peak_current_A": 8.523505499805684e-16,
+      "spice": {
+        "file": "results/readout/spice/diffused_packet.pwl",
+        "time_offset_s": -0.15739520958083975,
+        "exported_charge_C": 4.159045925465423e-17,
+        "relative_charge_error": 7.761427350986283e-10,
+        "points": 5200,
+        "convention": "two columns: time_s current_A; positive current into input; PWL interpolates sampled current, no charge renormalization"
+      },
+      "responses": [
+        {
+          "discharge_time_s": 3e-05,
+          "feedback_resistance_ohm": 10000000000.0,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 8.523495385647884e-06,
+              "peak_time_s": -5.988023952097077e-05,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.0006148161533928842,
+              "sampled_peak_magnitude_V": 8.52345718466166e-06,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -1.5e-323
+            },
+            {
+              "peak_output_magnitude_V": 8.523495385647884e-06,
+              "peak_time_s": -5.988023952097077e-05,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.0006148161533928842,
+              "sampled_peak_magnitude_V": 8.253230431198615e-06,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -1.5e-323
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.001,
+          "feedback_resistance_ohm": 333333333333.3334,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.000283744167922943,
+              "peak_time_s": 0.0009081836327345383,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.020467013822028153,
+              "sampled_peak_magnitude_V": 0.00028343577732691726,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -9.753187535936789e-40
+            },
+            {
+              "peak_output_magnitude_V": 0.000283744167922943,
+              "peak_time_s": 0.0009081836327345383,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.020467013822028153,
+              "sampled_peak_magnitude_V": 0.0002775631037185388,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -9.753187535936789e-40
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.01,
+          "feedback_resistance_ohm": 3333333333333.3335,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.002582112742724622,
+              "peak_time_s": 0.008423153692614843,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.18625276981809874,
+              "sampled_peak_magnitude_V": 0.0025749377887267335,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -1.0622219706786323e-10
+            },
+            {
+              "peak_output_magnitude_V": 0.002582112742724622,
+              "peak_time_s": 0.008423153692614843,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.18625276981809874,
+              "sampled_peak_magnitude_V": 0.002548151151610432,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -1.0622219706786323e-10
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.1,
+          "feedback_resistance_ohm": 33333333333333.336,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.009539864853988726,
+              "peak_time_s": 0.028672654690619026,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.6881288424574526,
+              "sampled_peak_magnitude_V": 0.009533615501826517,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.0018040538530429983
+            },
+            {
+              "peak_output_magnitude_V": 0.009539864853988726,
+              "peak_time_s": 0.028672654690619026,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.6881288424574526,
+              "sampled_peak_magnitude_V": 0.009488144039079726,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.0018040538530429983
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 1.0,
+          "feedback_resistance_ohm": 333333333333333.4,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.01312095587726717,
+              "peak_time_s": 0.048188622754491456,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.9464398414390618,
+              "sampled_peak_magnitude_V": 0.013118384090618504,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.0112867678291826
+            },
+            {
+              "peak_output_magnitude_V": 0.01312095587726717,
+              "peak_time_s": 0.048188622754491456,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.9464398414390618,
+              "sampled_peak_magnitude_V": 0.01311142746344016,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.0112867678291826
+            }
+          ]
+        },
+        {
+          "discharge_time_s": null,
+          "feedback_resistance_ohm": null,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.013863486407457676,
+              "peak_time_s": 0.14554890219561012,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.9999999999999742,
+              "sampled_peak_magnitude_V": 0.013863486407457676,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.013863486407457676
+            },
+            {
+              "peak_output_magnitude_V": 0.013863486407457676,
+              "peak_time_s": 0.14554890219561012,
+              "ideal_output_magnitude_V": 0.013863486407458034,
+              "peak_fraction_of_ideal": 0.9999999999999742,
+              "sampled_peak_magnitude_V": 0.013863486407457676,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.013863486407457676
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "two_packets",
+      "label": "Two packets, 40 ms apart, after 0.75 m drift",
+      "metadata": {
+        "kind": "double_gaussian",
+        "requested_ions": 520.0,
+        "represented_arrivals": 520.0000000000375,
+        "arrival_tail_ions_excluded": -3.751665644813329e-11,
+        "drift_length_m": 0.75,
+        "thermal_sigma_t_s": 0.013764550244553557,
+        "uniform_duration_s": null,
+        "packet_separation_s": 0.04,
+        "kernel_charge_C": 1.5996330470144222e-19,
+        "finite_gap_charge_fraction": 0.9984124178747836,
+        "step_s": 4.9900199600798854e-06,
+        "input_charge_C": 8.318091844475596e-17,
+        "assumptions": "Central square pad in grounded infinite plane; constant gap speed; finite collection-gap path; specified one-pad arrivals; thermal bulk diffusion for Gaussian cases; no focusing-map or event simulation"
+      },
+      "peak_current_A": 1.2242972150530465e-15,
+      "spice": {
+        "file": "results/readout/spice/two_packets.pwl",
+        "time_offset_s": -0.13178642714570976,
+        "exported_charge_C": 8.318091851952055e-17,
+        "relative_charge_error": 8.988189781147372e-10,
+        "points": 5211,
+        "convention": "two columns: time_s current_A; positive current into input; PWL interpolates sampled current, no charge renormalization"
+      },
+      "responses": [
+        {
+          "discharge_time_s": 3e-05,
+          "feedback_resistance_ohm": 10000000000.0,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 1.2242947070051154e-05,
+              "peak_time_s": -0.019396207584830502,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.00044155368679352425,
+              "sampled_peak_magnitude_V": 1.2232674745810683e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": 1.5e-323
+            },
+            {
+              "peak_output_magnitude_V": 1.2242947070051154e-05,
+              "peak_time_s": -0.019396207584830502,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.00044155368679352425,
+              "sampled_peak_magnitude_V": 1.1772028905027472e-05,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": 1.5e-323
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.001,
+          "feedback_resistance_ohm": 333333333333.3334,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.00040720447925030886,
+              "peak_time_s": 0.020224550898203797,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.01468622203976087,
+              "sampled_peak_magnitude_V": 0.00040715809345012987,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -1.9751317445254375e-39
+            },
+            {
+              "peak_output_magnitude_V": 0.00040720447925030886,
+              "peak_time_s": 0.020224550898203797,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.01468622203976087,
+              "sampled_peak_magnitude_V": 0.0003970566669601142,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -1.9751317445254375e-39
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.01,
+          "feedback_resistance_ohm": 3333333333333.3335,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.0037572019339548253,
+              "peak_time_s": 0.0251347305389224,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.13550710923383752,
+              "sampled_peak_magnitude_V": 0.003632636638287027,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -4.012810123886395e-09
+            },
+            {
+              "peak_output_magnitude_V": 0.0037572019339548253,
+              "peak_time_s": 0.0251347305389224,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.13550710923383752,
+              "sampled_peak_magnitude_V": 0.003757106531477945,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -4.012810123886395e-09
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 0.1,
+          "feedback_resistance_ohm": 33333333333333.336,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.018114528974175183,
+              "peak_time_s": 0.037290419161676996,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.6533179476566788,
+              "sampled_peak_magnitude_V": 0.018056181172450326,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.0047098977930033715
+            },
+            {
+              "peak_output_magnitude_V": 0.018114528974175183,
+              "peak_time_s": 0.037290419161676996,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.6533179476566788,
+              "sampled_peak_magnitude_V": 0.018069558950200966,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.0047098977930033715
+            }
+          ]
+        },
+        {
+          "discharge_time_s": 1.0,
+          "feedback_resistance_ohm": 333333333333333.4,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.02618994785169011,
+              "peak_time_s": 0.05208083832335378,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.9445657131960131,
+              "sampled_peak_magnitude_V": 0.026179358683050064,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.023161519729029356
+            },
+            {
+              "peak_output_magnitude_V": 0.02618994785169011,
+              "peak_time_s": 0.05208083832335378,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.9445657131960131,
+              "sampled_peak_magnitude_V": 0.026173387413257795,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.023161519729029356
+            }
+          ]
+        },
+        {
+          "discharge_time_s": null,
+          "feedback_resistance_ohm": null,
+          "metrics": [
+            {
+              "peak_output_magnitude_V": 0.027726972814918247,
+              "peak_time_s": 0.12221556886227658,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.9999999999999852,
+              "sampled_peak_magnitude_V": 0.027726972814918247,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.0,
+              "residual_output_V": -0.027726972814918247
+            },
+            {
+              "peak_output_magnitude_V": 0.027726972814918247,
+              "peak_time_s": 0.12221556886227658,
+              "ideal_output_magnitude_V": 0.027726972814918656,
+              "peak_fraction_of_ideal": 0.9999999999999852,
+              "sampled_peak_magnitude_V": 0.027726972814918247,
+              "sample_interval_s": 0.01,
+              "sample_phase_s": 0.005,
+              "residual_output_V": -0.027726972814918247
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

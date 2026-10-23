@@ -1,0 +1,13 @@
+Figures copied from the ITACA manuscript on 2026-10-22.
+Source directory: /Users/jjgomezcadenas/Papers/itaca/
+Main source manuscript: itacaRevisited.tex
+These are copies of existing ITACA figures, not newly generated NAUSICAA results.
+The files are local so compiling the note does not require the ITACA directory.
+
+Relative source path | SHA-256
+img/electron_ion_diffusion.png | f2067115b441840f6120bac0099556f9e0515394c0ce9d6c6e2ef35113db8d53
+img/ion_diffusion_vs_length.png | 023b7464df4d41e8a5b5f80eaf13a8e9a75181e162603bceaafe6127ebdbc5e7
+img/occupancy_heatmaps.png | 509d722e7c9e75950bd9f85e4a8e3702be69184f054f586a4d43059fa94c0628
+img/single_track_pixel_signals.png | 92df9085879b86c4748efa263ff58cbb5a3825ae5b8d776eaa99606fcf716672
+img/topmetal_diagram.png | e8c6a8aa519b70f8d4f57cf0fe49a422cc0a6cc23de40a5f9735bc31bbdf1607
+img/z_xy_extent.png | fee77562d52a26cd8a6487065b56240bd5bca02d23fd06b6e28fcd8988984452

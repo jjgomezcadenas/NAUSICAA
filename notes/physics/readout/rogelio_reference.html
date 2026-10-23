@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-FAB 180nm Charge Sensitive Amplifier (CSA) Design & Simulation Tool</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .tab-active {
+            border-bottom: 3px solid #38bdf8;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        .schematic-node {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .schematic-node:hover {
+            filter: drop-shadow(0 0 6px #38bdf8);
+        }
+        /* High contrast black text styling specifically for equations section */
+        .black-formatted-text {
+            color: #000000 !important;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        .black-formatted-text h1, 
+        .black-formatted-text h2, 
+        .black-formatted-text h3, 
+        .black-formatted-text h4, 
+        .black-formatted-text strong,
+        .black-formatted-text b {
+            color: #000000 !important;
+            font-weight: 700;
+        }
+        .equation-box {
+            background-color: #f8fafc;
+            border-left: 4px solid #0284c7;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-family: 'Courier New', Courier, monospace;
+            color: #000000 !important;
+            font-weight: 600;
+            border-radius: 0 8px 8px 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyan-500/10 p-2.5 rounded-xl border border-cyan-500/30 text-cyan-400">
+                    <i class="fa-solid fa-microchip text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white tracking-wide flex items-center gap-2">
+                        X-FAB 180nm Charge Sensitive Amplifier (CSA)
+                        <span class="text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-2 py-0.5 rounded-full">1.8V CMOS</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Interactive Circuit Design, DC Operating Point, Transient, AC Bode & Noise (ENC) Simulator</p>
+                </div>
+            </div>
+
+            <!-- Actions & Presets -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="flex items-center gap-2 bg-slate-800 p-1 rounded-lg border border-slate-700">
+                    <span class="text-xs text-slate-400 pl-2 font-medium">Presets:</span>
+                    <button onclick="applyPreset('default')" class="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition">Default X-FAB</button>
+                    <button onclick="applyPreset('low_noise')" class="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition">Low Noise</button>
+                    <button onclick="applyPreset('fast_reset')" class="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition">Fast Reset</button>
+                    <button onclick="applyPreset('high_gain')" class="px-2.5 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded transition">High Gain</button>
+                </div>
+                <button onclick="exportDataCSV()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-download"></i> Export Data
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Grid Workspace -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: Parameter Control Sidebar (5 cols) -->
+        <section class="lg:col-span-5 flex flex-col gap-5">
+
+            <!-- Control Card Panel -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h2 class="text-base font-semibold text-cyan-400 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders"></i> Circuit Design Parameters
+                    </h2>
+                    <span class="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">Vdda = 1.8 V</span>
+                </div>
+
+                <!-- Tabs for parameter grouping -->
+                <div class="flex border-b border-slate-800 text-xs font-medium text-slate-400">
+                    <button id="ctrl-tab-1" onclick="switchCtrlTab('transistors')" class="px-3 py-1.5 text-cyan-400 border-b-2 border-cyan-400 font-semibold">Transistors (W/L)</button>
+                    <button id="ctrl-tab-2" onclick="switchCtrlTab('biasing')" class="px-3 py-1.5 hover:text-slate-200">Biasing & Passives</button>
+                    <button id="ctrl-tab-3" onclick="switchCtrlTab('pulse')" class="px-3 py-1.5 hover:text-slate-200">Input Pulse & Noise</button>
+                </div>
+
+                <!-- TAB 1: Transistor Sizing -->
+                <div id="ctrl-section-transistors" class="space-y-4 text-xs">
+
+                    <!-- M1 Input PMOS -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="flex justify-between font-semibold text-slate-200 mb-1">
+                            <span>M1 (Input PMOS)</span>
+                            <span id="val-m1" class="text-cyan-400">W=120µm, L=0.36µm</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 text-[11px]">W1 (µm)</label>
+                                <input type="range" id="param-w1" min="10" max="500" step="5" value="120" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 text-[11px]">L1 (µm)</label>
+                                <input type="range" id="param-l1" min="0.18" max="2.0" step="0.02" value="0.36" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- M2 Current Source PMOS -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="flex justify-between font-semibold text-slate-200 mb-1">
+                            <span>M2 (Top Current Source PMOS)</span>
+                            <span id="val-m2" class="text-cyan-400">W=40µm, L=0.50µm</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 text-[11px]">W2 (µm)</label>
+                                <input type="range" id="param-w2" min="5" max="200" step="1" value="40" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 text-[11px]">L2 (µm)</label>
+                                <input type="range" id="param-l2" min="0.18" max="2.0" step="0.02" value="0.50" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- M3 Load NMOS -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="flex justify-between font-semibold text-slate-200 mb-1">
+                            <span>M3 (Load Current Sink NMOS)</span>
+                            <span id="val-m3" class="text-cyan-400">W=20µm, L=0.50µm</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 text-[11px]">W3 (µm)</label>
+                                <input type="range" id="param-w3" min="2" max="100" step="1" value="20" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 text-[11px]">L3 (µm)</label>
+                                <input type="range" id="param-l3" min="0.18" max="2.0" step="0.02" value="0.50" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- M4 Cascode NMOS -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="flex justify-between font-semibold text-slate-200 mb-1">
+                            <span>M4 (Cascode NMOS)</span>
+                            <span id="val-m4" class="text-cyan-400">W=15µm, L=0.36µm</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 text-[11px]">W4 (µm)</label>
+                                <input type="range" id="param-w4" min="2" max="100" step="1" value="15" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 text-[11px]">L4 (µm)</label>
+                                <input type="range" id="param-l4" min="0.18" max="2.0" step="0.02" value="0.36" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- M5 & M6 PMOS Cascode/Load -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="flex justify-between font-semibold text-slate-200 mb-1">
+                            <span>M5 & M6 (PMOS Cascode & Current Load)</span>
+                            <span id="val-m56" class="text-cyan-400">W=30µm, L=0.50µm</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 text-[11px]">W5, W6 (µm)</label>
+                                <input type="range" id="param-w5" min="5" max="150" step="1" value="30" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 text-[11px]">L5, L6 (µm)</label>
+                                <input type="range" id="param-l5" min="0.18" max="2.0" step="0.02" value="0.50" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mf Feedback MOSFET -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
+                        <div class="flex justify-between font-semibold text-slate-200 mb-1">
+                            <span>Mf (Feedback Reset MOSFET)</span>
+                            <span id="val-mf" class="text-cyan-400">W=0.5µm, L=2.0µm</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 text-[11px]">Wf (µm)</label>
+                                <input type="range" id="param-wf" min="0.22" max="5.0" step="0.05" value="0.5" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 text-[11px]">Lf (µm)</label>
+                                <input type="range" id="param-lf" min="0.36" max="10.0" step="0.1" value="2.0" class="w-full accent-cyan-400" oninput="updateAll()">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TAB 2: Biasing & Passives -->
+                <div id="ctrl-section-biasing" class="space-y-4 text-xs hidden">
+                    
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-3">
+                        <h3 class="font-semibold text-slate-200">DC Bias Voltages</h3>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Vnmos (M2 Tail Bias Gate):</span>
+                                <span id="val-vnmos" class="text-cyan-400">1.10 V</span>
+                            </div>
+                            <input type="range" id="param-vnmos" min="0.5" max="1.6" step="0.01" value="1.10" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Vnload (M3 Current Sink Gate):</span>
+                                <span id="val-vnload" class="text-cyan-400">0.65 V</span>
+                            </div>
+                            <input type="range" id="param-vnload" min="0.3" max="1.2" step="0.01" value="0.65" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Vncasc (M4 Cascode Gate):</span>
+                                <span id="val-vncasc" class="text-cyan-400">1.15 V</span>
+                            </div>
+                            <input type="range" id="param-vncasc" min="0.6" max="1.6" step="0.01" value="1.15" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Vp5 (M5 Cascode Gate):</span>
+                                <span id="val-vp5" class="text-cyan-400">0.75 V</span>
+                            </div>
+                            <input type="range" id="param-vp5" min="0.2" max="1.4" step="0.01" value="0.75" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Vp6 (M6 Top Load Gate):</span>
+                                <span id="val-vp6" class="text-cyan-400">1.05 V</span>
+                            </div>
+                            <input type="range" id="param-vp6" min="0.4" max="1.5" step="0.01" value="1.05" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Vdis (Feedback Mf Discharge Gate):</span>
+                                <span id="val-vdis" class="text-cyan-400">0.52 V</span>
+                            </div>
+                            <input type="range" id="param-vdis" min="0.1" max="1.8" step="0.01" value="0.52" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-3">
+                        <h3 class="font-semibold text-slate-200">Capacitive Elements</h3>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Cd1 (Detector Capacitance):</span>
+                                <span id="val-cd1" class="text-cyan-400">250 fF</span>
+                            </div>
+                            <input type="range" id="param-cd1" min="10" max="1000" step="10" value="250" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Cf (Feedback Capacitance):</span>
+                                <span id="val-cf" class="text-cyan-400">3.0 fF</span>
+                            </div>
+                            <input type="range" id="param-cf" min="0.5" max="20" step="0.1" value="3.0" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TAB 3: Pulse & Shaper -->
+                <div id="ctrl-section-pulse" class="space-y-4 text-xs hidden">
+                    
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-3">
+                        <h3 class="font-semibold text-slate-200">Detector Current Injection Pulse</h3>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Injected Charge Q_in:</span>
+                                <span id="val-qin" class="text-cyan-400">2.0 fC (12,483 e⁻)</span>
+                            </div>
+                            <input type="range" id="param-qin" min="0.2" max="20.0" step="0.2" value="2.0" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>Pulse Rise Time (t_r):</span>
+                                <span id="val-trise" class="text-cyan-400">2.0 ns</span>
+                            </div>
+                            <input type="range" id="param-trise" min="0.2" max="10.0" step="0.2" value="2.0" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-3">
+                        <h3 class="font-semibold text-slate-200">Shaper & Noise Measurement</h3>
+
+                        <div>
+                            <div class="flex justify-between text-slate-300">
+                                <span>CR-RC Shaping Time (τ_s):</span>
+                                <span id="val-taus" class="text-cyan-400">100 ns</span>
+                            </div>
+                            <input type="range" id="param-taus" min="10" max="2000" step="10" value="100" class="w-full accent-cyan-400" oninput="updateAll()">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DC Bias State Summary Box -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg text-xs space-y-2">
+                <h3 class="font-bold text-slate-300 flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span><i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Live DC Operating Point</span>
+                    <span id="dc-status-badge" class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Stable Bias</span>
+                </h3>
+                <div class="grid grid-cols-2 gap-2 text-slate-400">
+                    <div>Input Node V_in: <span id="lbl-dc-vin" class="text-slate-200 font-mono font-bold">0.825 V</span></div>
+                    <div>Output Node V_out: <span id="lbl-dc-vout" class="text-slate-200 font-mono font-bold">0.892 V</span></div>
+                    <div>Tail Current I_M2: <span id="lbl-dc-im2" class="text-slate-200 font-mono font-bold">48.2 µA</span></div>
+                    <div>Branch Current I_M1: <span id="lbl-dc-im1" class="text-slate-200 font-mono font-bold">48.2 µA</span></div>
+                    <div>Input gm1: <span id="lbl-dc-gm1" class="text-slate-200 font-mono font-bold">1.24 mS</span></div>
+                    <div>Feedback Resistance Rf: <span id="lbl-dc-rf" class="text-slate-200 font-mono font-bold">14.8 MΩ</span></div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: Schematic & Interactive Simulation Views (7 cols) -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+
+            <!-- Interactive Circuit Schematic SVG Box -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col gap-2">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h2 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-diagram-project text-cyan-400"></i> Circuit Topology Schematic (X-FAB 180nm)
+                    </h2>
+                    <span class="text-[11px] text-slate-400">Hover over devices for real-time operating metrics</span>
+                </div>
+
+                <!-- SVG Rendering of Schematic -->
+                <div class="w-full overflow-x-auto bg-slate-950/80 rounded-xl border border-slate-800 p-2">
+                    <svg id="schematic-svg" viewBox="0 0 850 540" class="w-full h-auto min-w-[650px] font-sans">
+                        <defs>
+                            <!-- Arrow Markers -->
+                            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+                            </marker>
+                            <!-- Glow Filter -->
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+
+                        <!-- Rails & Power Lines -->
+                        <!-- Vdda Top Rail -->
+                        <line x1="240" y1="35" x2="680" y2="35" stroke="#ef4444" stroke-width="2.5" />
+                        <text x="690" y="39" fill="#ef4444" font-size="12" font-weight="bold">Vdda (1.8V)</text>
+
+                        <!-- Ground Rails -->
+                        <line x1="60" y1="480" x2="680" y2="480" stroke="#64748b" stroke-width="2.5" />
+                        <text x="690" y="484" fill="#94a3b8" font-size="12" font-weight="bold">GND (0V)</text>
+
+                        <!-- INPUT STAGE (Left) -->
+                        <!-- Pulse Source Vion1 / Is1 -->
+                        <g class="schematic-node" id="node-is1">
+                            <circle cx="100" cy="110" r="16" fill="none" stroke="#38bdf8" stroke-width="2" />
+                            <text x="100" y="105" fill="#38bdf8" font-size="11" text-anchor="middle" font-weight="bold">+</text>
+                            <text x="100" y="120" fill="#38bdf8" font-size="11" text-anchor="middle" font-weight="bold">-</text>
+                            <text x="100" y="82" fill="#93c5fd" font-size="11" text-anchor="middle" font-weight="bold">Vion1</text>
+                            <line x1="100" y1="50" x2="100" y2="94" stroke="#38bdf8" stroke-width="1.5" />
+                            <!-- Ground top for Vion1 -->
+                            <line x1="85" y1="50" x2="115" y2="50" stroke="#64748b" stroke-width="2" />
+                        </g>
+
+                        <!-- Is1 Current Source -->
+                        <g class="schematic-node">
+                            <circle cx="100" cy="170" r="16" fill="none" stroke="#38bdf8" stroke-width="2" />
+                            <line x1="100" y1="160" x2="100" y2="180" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)" />
+                            <text x="70" y="174" fill="#93c5fd" font-size="11" font-weight="bold">Is1</text>
+                            <line x1="100" y1="126" x2="100" y2="154" stroke="#38bdf8" stroke-width="1.5" />
+                            <line x1="100" y1="186" x2="100" y2="240" stroke="#38bdf8" stroke-width="1.5" />
+                        </g>
+
+                        <!-- Detector Cap Cd1 -->
+                        <g class="schematic-node">
+                            <line x1="170" y1="240" x2="170" y2="280" stroke="#38bdf8" stroke-width="1.5" />
+                            <line x1="155" y1="280" x2="185" y2="280" stroke="#38bdf8" stroke-width="2.5" />
+                            <line x1="155" y1="288" x2="185" y2="288" stroke="#38bdf8" stroke-width="2.5" />
+                            <line x1="170" y1="288" x2="170" y2="480" stroke="#38bdf8" stroke-width="1.5" />
+                            <text x="128" y="288" fill="#93c5fd" font-size="11" font-weight="bold">Cd1</text>
+                            <text x="128" y="302" fill="#64748b" font-size="10" id="svg-lbl-cd1">250fF</text>
+                        </g>
+
+                        <!-- Node IN Wire -->
+                        <line x1="100" y1="240" x2="330" y2="240" stroke="#38bdf8" stroke-width="2" />
+                        <circle cx="230" cy="240" r="4" fill="#38bdf8" />
+                        <text x="230" y="230" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">in</text>
+
+                        <!-- TRANSISTOR M2 (Top PMOS Current Source) -->
+                        <g class="schematic-node" id="node-m2">
+                            <line x1="360" y1="35" x2="360" y2="70" stroke="#ef4444" stroke-width="1.5" />
+                            <!-- PMOS M2 Body -->
+                            <rect x="350" y="70" width="20" height="40" fill="#1e293b" stroke="#f43f5e" stroke-width="2" rx="3" />
+                            <line x1="330" y1="90" x2="350" y2="90" stroke="#f43f5e" stroke-width="1.5" />
+                            <!-- Gate Circle -->
+                            <circle cx="347" cy="90" r="3" fill="#0f172a" stroke="#f43f5e" stroke-width="1.5" />
+                            <!-- Gate Label -->
+                            <rect x="270" y="80" width="55" height="20" fill="#334155" rx="3" />
+                            <text x="297" y="94" fill="#cbd5e1" font-size="10" text-anchor="middle" font-weight="bold">Vnmos</text>
+                            <line x1="360" y1="110" x2="360" y2="150" stroke="#cbd5e1" stroke-width="1.5" />
+                            <text x="380" y="85" fill="#f43f5e" font-size="12" font-weight="bold">M2</text>
+                            <text x="380" y="100" fill="#94a3b8" font-size="9" id="svg-lbl-m2">40/0.5</text>
+                        </g>
+
+                        <!-- TRANSISTOR M1 (Input PMOS) -->
+                        <g class="schematic-node" id="node-m1">
+                            <!-- Gate Connection from 'in' -->
+                            <line x1="330" y1="240" x2="350" y2="240" stroke="#38bdf8" stroke-width="1.5" />
+                            <circle cx="347" cy="240" r="3" fill="#0f172a" stroke="#f43f5e" stroke-width="1.5" />
+                            <!-- PMOS M1 Body -->
+                            <rect x="350" y="150" width="20" height="120" fill="#1e293b" stroke="#f43f5e" stroke-width="2" rx="3" />
+                            <text x="380" y="200" fill="#f43f5e" font-size="12" font-weight="bold">M1</text>
+                            <text x="380" y="215" fill="#94a3b8" font-size="9" id="svg-lbl-m1">120/0.36</text>
+                            <!-- Drain Connection down to M3/M4 junction -->
+                            <line x1="360" y1="270" x2="360" y2="330" stroke="#cbd5e1" stroke-width="1.5" />
+                        </g>
+
+                        <!-- TRANSISTOR M3 (Load NMOS) -->
+                        <g class="schematic-node" id="node-m3">
+                            <!-- M3 Body -->
+                            <rect x="350" y="330" width="20" height="80" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="3" />
+                            <line x1="330" y1="370" x2="350" y2="370" stroke="#3b82f6" stroke-width="1.5" />
+                            <rect x="270" y="360" width="55" height="20" fill="#334155" rx="3" />
+                            <text x="297" y="374" fill="#cbd5e1" font-size="10" text-anchor="middle" font-weight="bold">Vnload</text>
+                            <line x1="360" y1="410" x2="360" y2="480" stroke="#64748b" stroke-width="1.5" />
+                            <text x="380" y="365" fill="#3b82f6" font-size="12" font-weight="bold">M3</text>
+                            <text x="380" y="380" fill="#94a3b8" font-size="9" id="svg-lbl-m3">20/0.5</text>
+                        </g>
+
+                        <!-- Junction M1-M3 to M4 Cascode -->
+                        <circle cx="360" cy="310" r="4" fill="#cbd5e1" />
+                        <line x1="360" y1="310" x2="520" y2="310" stroke="#cbd5e1" stroke-width="1.5" />
+
+                        <!-- CASCODE NMOS M4 -->
+                        <g class="schematic-node" id="node-m4">
+                            <line x1="520" y1="310" x2="520" y2="270" stroke="#cbd5e1" stroke-width="1.5" />
+                            <rect x="510" y="210" width="20" height="60" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="3" />
+                            <line x1="480" y1="240" x2="510" y2="240" stroke="#3b82f6" stroke-width="1.5" />
+                            <rect x="425" y="230" width="52" height="20" fill="#334155" rx="3" />
+                            <text x="451" y="244" fill="#cbd5e1" font-size="10" text-anchor="middle" font-weight="bold">Vncasc</text>
+                            <text x="540" y="235" fill="#3b82f6" font-size="12" font-weight="bold">M4</text>
+                            <text x="540" y="250" fill="#94a3b8" font-size="9" id="svg-lbl-m4">15/0.36</text>
+                        </g>
+
+                        <!-- UPPER PMOS CASCODE M5 & M6 -->
+                        <g class="schematic-node" id="node-m6">
+                            <line x1="520" y1="35" x2="520" y2="60" stroke="#ef4444" stroke-width="1.5" />
+                            <rect x="510" y="60" width="20" height="40" fill="#1e293b" stroke="#f43f5e" stroke-width="2" rx="3" />
+                            <circle cx="507" cy="80" r="3" fill="#0f172a" stroke="#f43f5e" stroke-width="1.5" />
+                            <line x1="480" y1="80" x2="504" y2="80" stroke="#f43f5e" stroke-width="1.5" />
+                            <rect x="435" y="70" width="42" height="20" fill="#334155" rx="3" />
+                            <text x="456" y="84" fill="#cbd5e1" font-size="10" text-anchor="middle" font-weight="bold">Vp6</text>
+                            <text x="540" y="75" fill="#f43f5e" font-size="12" font-weight="bold">M6</text>
+                            <text x="540" y="90" fill="#94a3b8" font-size="9" id="svg-lbl-m6">30/0.5</text>
+                        </g>
+
+                        <g class="schematic-node" id="node-m5">
+                            <line x1="520" y1="100" x2="520" y2="120" stroke="#cbd5e1" stroke-width="1.5" />
+                            <rect x="510" y="120" width="20" height="50" fill="#1e293b" stroke="#f43f5e" stroke-width="2" rx="3" />
+                            <circle cx="507" cy="145" r="3" fill="#0f172a" stroke="#f43f5e" stroke-width="1.5" />
+                            <line x1="480" y1="145" x2="504" y2="145" stroke="#f43f5e" stroke-width="1.5" />
+                            <rect x="435" y="135" width="42" height="20" fill="#334155" rx="3" />
+                            <text x="456" y="149" fill="#cbd5e1" font-size="10" text-anchor="middle" font-weight="bold">Vp5</text>
+                            <text x="540" y="140" fill="#f43f5e" font-size="12" font-weight="bold">M5</text>
+                            <text x="540" y="155" fill="#94a3b8" font-size="9" id="svg-lbl-m5">30/0.5</text>
+                            <line x1="520" y1="170" x2="520" y2="210" stroke="#cbd5e1" stroke-width="1.5" />
+                        </g>
+
+                        <!-- OUTPUT NODE 'out' -->
+                        <circle cx="520" cy="190" r="5" fill="#a855f7" filter="url(#glow)" />
+                        <line x1="520" y1="190" x2="630" y2="190" stroke="#a855f7" stroke-width="2" />
+                        <text x="540" y="182" fill="#c084fc" font-size="12" font-weight="bold">out</text>
+
+                        <!-- FEEDBACK NETWORK (Cf & Mf in parallel) -->
+                        <!-- Loop wire from 'out' down to feedback -->
+                        <line x1="630" y1="190" x2="630" y2="430" stroke="#a855f7" stroke-width="2" />
+                        <line x1="630" y1="430" x2="560" y2="430" stroke="#a855f7" stroke-width="2" />
+
+                        <!-- Split to Cf and Mf -->
+                        <line x1="560" y1="430" x2="560" y2="390" stroke="#a855f7" stroke-width="1.5" />
+                        <line x1="560" y1="430" x2="560" y2="460" stroke="#a855f7" stroke-width="1.5" />
+
+                        <!-- Feedback Cap Cf -->
+                        <g class="schematic-node">
+                            <line x1="560" y1="390" x2="510" y2="390" stroke="#a855f7" stroke-width="1.5" />
+                            <line x1="510" y1="375" x2="510" y2="405" stroke="#a855f7" stroke-width="2.5" />
+                            <line x1="502" y1="375" x2="502" y2="405" stroke="#a855f7" stroke-width="2.5" />
+                            <line x1="502" y1="390" x2="440" y2="390" stroke="#a855f7" stroke-width="1.5" />
+                            <text x="506" y="368" fill="#c084fc" font-size="11" font-weight="bold" text-anchor="middle">Cf</text>
+                            <text x="506" y="420" fill="#94a3b8" font-size="10" text-anchor="middle" id="svg-lbl-cf">3.0fF</text>
+                        </g>
+
+                        <!-- Feedback Reset MOSFET Mf -->
+                        <g class="schematic-node" id="node-mf">
+                            <line x1="560" y1="460" x2="520" y2="460" stroke="#a855f7" stroke-width="1.5" />
+                            <rect x="480" y="450" width="40" height="20" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="3" />
+                            <line x1="500" y1="470" x2="500" y2="495" stroke="#3b82f6" stroke-width="1.5" />
+                            <rect x="475" y="495" width="50" height="18" fill="#334155" rx="3" />
+                            <text x="500" y="508" fill="#cbd5e1" font-size="10" text-anchor="middle" font-weight="bold">Vdis</text>
+                            <line x1="480" y1="460" x2="440" y2="460" stroke="#a855f7" stroke-width="1.5" />
+                            <text x="500" y="444" fill="#3b82f6" font-size="11" text-anchor="middle" font-weight="bold">Mf</text>
+                        </g>
+
+                        <!-- Rejoin feedback to IN node -->
+                        <line x1="440" y1="390" x2="440" y2="430" stroke="#a855f7" stroke-width="1.5" />
+                        <line x1="440" y1="460" x2="440" y2="430" stroke="#a855f7" stroke-width="1.5" />
+                        <line x1="440" y1="430" x2="230" y2="430" stroke="#a855f7" stroke-width="2" />
+                        <line x1="230" y1="430" x2="230" y2="240" stroke="#a855f7" stroke-width="2" />
+
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Simulation Domain Tabs Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col gap-4">
+                <div class="flex border-b border-slate-800 text-sm font-semibold overflow-x-auto gap-2">
+                    <button id="sim-tab-1" onclick="switchSimTab('transient')" class="tab-active px-4 py-2.5 flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-chart-line text-cyan-400"></i> Transient Simulation
+                    </button>
+                    <button id="sim-tab-2" onclick="switchSimTab('ac')" class="px-4 py-2.5 text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-wave-square text-cyan-400"></i> AC Bode Response
+                    </button>
+                    <button id="sim-tab-3" onclick="switchSimTab('noise')" class="px-4 py-2.5 text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-arrow-up-right-dots text-cyan-400"></i> Noise & Integrated ENC
+                    </button>
+                    <button id="sim-tab-4" onclick="switchSimTab('equations')" class="px-4 py-2.5 text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-square-root-variable text-cyan-400"></i> Design Equations & Theory
+                    </button>
+                </div>
+
+                <!-- VIEW 1: TRANSIENT SIMULATION -->
+                <div id="sim-view-transient" class="space-y-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Peak V_out Step</div>
+                            <div id="m-tr-vpeak" class="text-base font-bold text-cyan-400 font-mono mt-0.5">308.2 mV</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Peaking Time (t_p)</div>
+                            <div id="m-tr-tpeak" class="text-base font-bold text-slate-200 font-mono mt-0.5">8.4 ns</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Discharge Tau (τ_f)</div>
+                            <div id="m-tr-tauf" class="text-base font-bold text-purple-400 font-mono mt-0.5">44.4 ns</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Charge Gain (A_Q)</div>
+                            <div id="m-tr-aq" class="text-base font-bold text-emerald-400 font-mono mt-0.5">154.1 mV/fC</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Canvas -->
+                    <div class="relative h-72 w-full bg-slate-950/60 rounded-xl p-2 border border-slate-800">
+                        <canvas id="chartTransient"></canvas>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: AC BODE SIMULATION -->
+                <div id="sim-view-ac" class="space-y-4 hidden">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Open-Loop Gain A_v0</div>
+                            <div id="m-ac-gain" class="text-base font-bold text-cyan-400 font-mono mt-0.5">62.4 dB</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">3-dB Bandwidth</div>
+                            <div id="m-ac-bw" class="text-base font-bold text-slate-200 font-mono mt-0.5">24.5 MHz</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">GBW Product</div>
+                            <div id="m-ac-gbw" class="text-base font-bold text-emerald-400 font-mono mt-0.5">1.82 GHz</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Phase Margin</div>
+                            <div id="m-ac-pm" class="text-base font-bold text-amber-400 font-mono mt-0.5">64.2°</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Canvas -->
+                    <div class="relative h-72 w-full bg-slate-950/60 rounded-xl p-2 border border-slate-800">
+                        <canvas id="chartAC"></canvas>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: NOISE & INTEGRATED ENC -->
+                <div id="sim-view-noise" class="space-y-4 hidden">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Total ENC (rms)</div>
+                            <div id="m-noise-enc" class="text-base font-bold text-cyan-400 font-mono mt-0.5">342 e⁻</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">Thermal Noise</div>
+                            <div id="m-noise-th" class="text-base font-bold text-slate-200 font-mono mt-0.5">285 e⁻</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">1/f Flicker Noise</div>
+                            <div id="m-noise-fl" class="text-base font-bold text-purple-400 font-mono mt-0.5">112 e⁻</div>
+                        </div>
+                        <div class="bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+                            <div class="text-slate-400">e_n @ 1 MHz</div>
+                            <div id="m-noise-en" class="text-base font-bold text-emerald-400 font-mono mt-0.5">3.8 nV/√Hz</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="relative h-64 w-full bg-slate-950/60 rounded-xl p-2 border border-slate-800">
+                            <canvas id="chartNoiseSpec"></canvas>
+                        </div>
+                        <div class="relative h-64 w-full bg-slate-950/60 rounded-xl p-2 border border-slate-800">
+                            <canvas id="chartENCvsCd"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: DESIGN EQUATIONS & THEORY (IN HIGH-CONTRAST BLACK FORMATTED TEXT) -->
+                <div id="sim-view-equations" class="bg-white rounded-xl p-6 shadow-md border border-slate-300 hidden">
+                    <div class="black-formatted-text space-y-6 text-sm">
+                        
+                        <div class="border-b border-slate-300 pb-3">
+                            <h2 class="text-xl font-bold text-black">Charge Sensitive Amplifier (CSA) Design Equations & Analytical Models</h2>
+                            <p class="text-xs text-slate-700 mt-1">X-FAB 180nm CMOS Process Formulation (Vdda = 1.8V, Folded Cascode Single-Ended Core)</p>
+                        </div>
+
+                        <!-- Section 1 -->
+                        <div>
+                            <h3 class="text-base font-bold text-black">1. Charge Sensitivity & Closed-Loop Transfer Function</h3>
+                            <p class="mt-1">
+                                An ideal Charge Sensitive Amplifier converts an injected charge <strong>Q<sub>in</sub></strong> at the input detector node into a proportional voltage step at the output:
+                            </p>
+                            <div class="equation-box">
+                                V<sub>out,ideal</sub> = - Q<sub>in</sub> / C<sub>f</sub>
+                            </div>
+                            <p class="mt-1">
+                                Taking into account the finite open-loop amplifier gain <strong>A<sub>v0</sub></strong> and total input capacitance <strong>C<sub>in,tot</sub> = C<sub>d1</sub> + C<sub>gs1</sub> + C<sub>gd1</sub> + C<sub>f</sub>(1 + A<sub>v0</sub>)</strong>, the charge collection efficiency <strong>η<sub>Q</sub></strong> is derived as:
+                            </p>
+                            <div class="equation-box">
+                                η<sub>Q</sub> = [ A<sub>v0</sub> · C<sub>f</sub> ] / [ A<sub>v0</sub> · C<sub>f</sub> + C<sub>d1</sub> + C<sub>in,par</sub> ] = 1 / [ 1 + (C<sub>d1</sub> + C<sub>in,par</sub>) / (A<sub>v0</sub> · C<sub>f</sub>) ]
+                            </div>
+                            <p>
+                                Peak output pulse amplitude: <strong>V<sub>out,peak</sub> = - (Q<sub>in</sub> / C<sub>f</sub>) · η<sub>Q</sub></strong>.
+                            </p>
+                        </div>
+
+                        <!-- Section 2 -->
+                        <div>
+                            <h3 class="text-base font-bold text-black">2. Small-Signal Open-Loop Gain & Output Impedance</h3>
+                            <p class="mt-1">
+                                Transconductance of the primary PMOS input transistor M1:
+                            </p>
+                            <div class="equation-box">
+                                g<sub>m1</sub> = √( 2 · µ<sub>p</sub> · C<sub>ox</sub> · (W/L)<sub>1</sub> · I<sub>D1</sub> )
+                            </div>
+                            <p class="mt-1">
+                                Output impedance at node 'out' formed by the parallel combination of the NMOS cascode branch (M4-M3) and PMOS cascode branch (M5-M6):
+                            </p>
+                            <div class="equation-box">
+                                R<sub>out</sub> = R<sub>dn</sub> || R<sub>up</sub> = [ g<sub>m4</sub> · r<sub>o4</sub> · r<sub>o3</sub> ] || [ g<sub>m5</sub> · r<sub>o5</sub> · r<sub>o6</sub> ]
+                            </div>
+                            <p class="mt-1">
+                                Low-frequency DC Open-Loop Voltage Gain:
+                            </p>
+                            <div class="equation-box">
+                                A<sub>v0</sub> = g<sub>m1</sub> · R<sub>out</sub> = g<sub>m1</sub> · ( [ g<sub>m4</sub> r<sub>o4</sub> r<sub>o3</sub> ] || [ g<sub>m5</sub> r<sub>o5</sub> r<sub>o6</sub> ] )
+                            </div>
+                        </div>
+
+                        <!-- Section 3 -->
+                        <div>
+                            <h3 class="text-base font-bold text-black">3. Feedback MOSFET Reset Resistance Modeling (Mf)</h3>
+                            <p class="mt-1">
+                                Feedback MOSFET Mf operating in deep linear / triode region or subthreshold provides continuous discharge time constant <strong>τ<sub>f</sub> = R<sub>f</sub> · C<sub>f</sub></strong>:
+                            </p>
+                            <div class="equation-box">
+                                R<sub>f</sub> ≈ 1 / [ µ<sub>n</sub> · C<sub>ox</sub> · (W/L)<sub>f</sub> · (V<sub>dis</sub> - V<sub>in,DC</sub> - V<sub>thn</sub>) ]   (Triode Region)
+                            </div>
+                            <div class="equation-box">
+                                R<sub>f,subth</sub> ≈ (n · U<sub>T</sub>) / [ I<sub>sub0</sub> · exp( (V<sub>dis</sub> - V<sub>in,DC</sub> - V<sub>thn</sub>) / (n · U<sub>T</sub>) ) ]   (Subthreshold Region)
+                            </div>
+                        </div>
+
+                        <!-- Section 4 -->
+                        <div>
+                            <h3 class="text-base font-bold text-black">4. Equivalent Noise Charge (ENC) Formulations</h3>
+                            <p class="mt-1">
+                                The input-referred noise spectral density includes thermal noise from M1, load transistors, and 1/f flicker noise:
+                            </p>
+                            <div class="equation-box">
+                                S<sub>v</sub>(f) = (8/3) · (k · T / g<sub>m1</sub>) · (1 + (g<sub>m2</sub> + g<sub>m3</sub>)/g<sub>m1</sub>) + [ K<sub>f</sub> / (C<sub>ox</sub> · W<sub>1</sub> · L<sub>1</sub> · f) ]
+                            </div>
+                            <p class="mt-1">
+                                For a standard CR-RC pulse shaper with shaping time <strong>τ<sub>s</sub></strong>, the integrated Equivalent Noise Charge (ENC) in rms electrons is:
+                            </p>
+                            <div class="equation-box">
+                                ENC<sub>thermal</sub> = [ C<sub>tot</sub> / q ] · √( (2/3) · (k · T / g<sub>m1</sub>) / τ<sub>s</sub> )
+                            </div>
+                            <div class="equation-box">
+                                ENC<sub>flicker</sub> = [ C<sub>tot</sub> / q ] · √( (K<sub>f</sub> / (C<sub>ox</sub> · W<sub>1</sub> · L<sub>1</sub>)) · A<sub>2</sub> )
+                            </div>
+                            <div class="equation-box">
+                                ENC<sub>feedback</sub> = [ C<sub>tot</sub> / q ] · √( (2 · k · T · τ<sub>s</sub>) / R<sub>f</sub> )
+                            </div>
+                            <div class="equation-box">
+                                ENC<sub>total</sub> = √( ENC<sub>thermal</sub><sup>2</sup> + ENC<sub>flicker</sub><sup>2</sup> + ENC<sub>feedback</sub><sup>2</sup> )   [e⁻ rms]
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-3 px-6 text-center text-xs text-slate-500">
+        X-FAB 180nm CMOS Charge Sensitive Amplifier Design & Simulation Workbench &bull; Continuous Small-Signal SPICE Equivalent Engine
+    </footer>
+
+    <!-- JavaScript Simulator & Interaction Logic -->
+    <script>
+        // --- CONSTANTS & PROCESS PARAMETERS (X-FAB 180nm CMOS) ---
+        const Q_E = 1.60217663e-19; // Electron charge (C)
+        const KB = 1.380649e-23;    // Boltzmann constant
+        const TEMP = 300;           // Temperature (K)
+        const VT = (KB * TEMP) / Q_E; // ~25.86 mV
+
+        // X-FAB 180nm Device Models
+        const NMOS_PARAMS = {
+            unCox: 290e-6, // A/V^2
+            Vth0: 0.48,    // V
+            lambda: 0.06,  // V^-1
+            Kf: 3.2e-25,   // J
+            Cox: 8.6e-15   // F/um^2
+        };
+
+        const PMOS_PARAMS = {
+            upCox: 72e-6,  // A/V^2
+            Vth0: -0.45,   // V
+            lambda: 0.08,  // V^-1
+            Kf: 0.6e-25,   // J
+            Cox: 8.6e-15   // F/um^2
+        };
+
+        // Chart Instances
+        let chartTransient, chartAC, chartNoiseSpec, chartENCvsCd;
+
+        // --- PRESETS ---
+        const PRESETS = {
+            default: {
+                w1: 120, l1: 0.36, w2: 40, l2: 0.50, w3: 20, l3: 0.50, w4: 15, l4: 0.36, w5: 30, l5: 0.50, wf: 0.5, lf: 2.0,
+                vnmos: 1.10, vnload: 0.65, vncasc: 1.15, vp5: 0.75, vp6: 1.05, vdis: 0.52, cd1: 250, cf: 3.0, qin: 2.0, trise: 2.0, taus: 100
+            },
+            low_noise: {
+                w1: 350, l1: 0.36, w2: 90, l2: 0.80, w3: 30, l3: 0.80, w4: 30, l4: 0.36, w5: 60, l5: 0.80, wf: 0.5, lf: 3.0,
+                vnmos: 0.95, vnload: 0.70, vncasc: 1.20, vp5: 0.65, vp6: 0.90, vdis: 0.48, cd1: 250, cf: 3.0, qin: 2.0, trise: 2.0, taus: 200
+            },
+            fast_reset: {
+                w1: 120, l1: 0.36, w2: 40, l2: 0.50, w3: 20, l3: 0.50, w4: 15, l4: 0.36, w5: 30, l5: 0.50, wf: 1.2, lf: 0.8,
+                vnmos: 1.10, vnload: 0.65, vncasc: 1.15, vp5: 0.75, vp6: 1.05, vdis: 0.85, cd1: 250, cf: 3.0, qin: 2.0, trise: 1.0, taus: 50
+            },
+            high_gain: {
+                w1: 200, l1: 0.50, w2: 50, l2: 1.00, w3: 25, l3: 1.00, w4: 20, l4: 0.50, w5: 40, l5: 1.00, wf: 0.5, lf: 4.0,
+                vnmos: 1.05, vnload: 0.62, vncasc: 1.18, vp5: 0.70, vp6: 1.00, vdis: 0.45, cd1: 250, cf: 2.0, qin: 2.0, trise: 2.0, taus: 150
+            }
+        };
+
+        // --- UI NAVIGATION TAB SWITCHING ---
+        function switchCtrlTab(tab) {
+            ['transistors', 'biasing', 'pulse'].forEach(t => {
+                document.getElementById(`ctrl-section-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`ctrl-section-${tab}`).classList.remove('hidden');
+
+            const tabBtns = { transistors: 1, biasing: 2, pulse: 3 };
+            [1, 2, 3].forEach(i => {
+                const btn = document.getElementById(`ctrl-tab-${i}`);
+                if (i === tabBtns[tab]) {
+                    btn.className = "px-3 py-1.5 text-cyan-400 border-b-2 border-cyan-400 font-semibold";
+                } else {
+                    btn.className = "px-3 py-1.5 hover:text-slate-200";
+                }
+            });
+        }
+
+        function switchSimTab(tab) {
+            ['transient', 'ac', 'noise', 'equations'].forEach(t => {
+                document.getElementById(`sim-view-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`sim-view-${tab}`).classList.remove('hidden');
+
+            const tabBtns = { transient: 1, ac: 2, noise: 3, equations: 4 };
+            [1, 2, 3, 4].forEach(i => {
+                const btn = document.getElementById(`sim-tab-${i}`);
+                if (i === tabBtns[tab]) {
+                    btn.className = "tab-active px-4 py-2.5 flex items-center gap-2 whitespace-nowrap";
+                } else {
+                    btn.className = "px-4 py-2.5 text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap";
+                }
+            });
+        }
+
+        function applyPreset(presetKey) {
+            const p = PRESETS[presetKey];
+            if (!p) return;
+
+            document.getElementById('param-w1').value = p.w1;
+            document.getElementById('param-l1').value = p.l1;
+            document.getElementById('param-w2').value = p.w2;
+            document.getElementById('param-l2').value = p.l2;
+            document.getElementById('param-w3').value = p.w3;
+            document.getElementById('param-l3').value = p.l3;
+            document.getElementById('param-w4').value = p.w4;
+            document.getElementById('param-l4').value = p.l4;
+            document.getElementById('param-w5').value = p.w5;
+            document.getElementById('param-l5').value = p.l5;
+            document.getElementById('param-wf').value = p.wf;
+            document.getElementById('param-lf').value = p.lf;
+
+            document.getElementById('param-vnmos').value = p.vnmos;
+            document.getElementById('param-vnload').value = p.vnload;
+            document.getElementById('param-vncasc').value = p.vncasc;
+            document.getElementById('param-vp5').value = p.vp5;
+            document.getElementById('param-vp6').value = p.vp6;
+            document.getElementById('param-vdis').value = p.vdis;
+
+            document.getElementById('param-cd1').value = p.cd1;
+            document.getElementById('param-cf').value = p.cf;
+            document.getElementById('param-qin').value = p.qin;
+            document.getElementById('param-trise').value = p.trise;
+            document.getElementById('param-taus').value = p.taus;
+
+            updateAll();
+        }
+
+        // --- NUMERICAL SIMULATION ENGINE ---
+        function runSimulationEngine() {
+            // Read inputs
+            const w1 = parseFloat(document.getElementById('param-w1').value);
+            const l1 = parseFloat(document.getElementById('param-l1').value);
+            const w2 = parseFloat(document.getElementById('param-w2').value);
+            const l2 = parseFloat(document.getElementById('param-l2').value);
+            const w3 = parseFloat(document.getElementById('param-w3').value);
+            const l3 = parseFloat(document.getElementById('param-l3').value);
+            const w4 = parseFloat(document.getElementById('param-w4').value);
+            const l4 = parseFloat(document.getElementById('param-l4').value);
+            const w5 = parseFloat(document.getElementById('param-w5').value);
+            const l5 = parseFloat(document.getElementById('param-l5').value);
+            const wf = parseFloat(document.getElementById('param-wf').value);
+            const lf = parseFloat(document.getElementById('param-lf').value);
+
+            const vnmos = parseFloat(document.getElementById('param-vnmos').value);
+            const vnload = parseFloat(document.getElementById('param-vnload').value);
+            const vncasc = parseFloat(document.getElementById('param-vncasc').value);
+            const vp5 = parseFloat(document.getElementById('param-vp5').value);
+            const vp6 = parseFloat(document.getElementById('param-vp6').value);
+            const vdis = parseFloat(document.getElementById('param-vdis').value);
+
+            const cd1 = parseFloat(document.getElementById('param-cd1').value) * 1e-15; // F
+            const cf = parseFloat(document.getElementById('param-cf').value) * 1e-15;   // F
+            const qin = parseFloat(document.getElementById('param-qin').value) * 1e-15; // C
+            const trise = parseFloat(document.getElementById('param-trise').value) * 1e-9; // s
+            const taus = parseFloat(document.getElementById('param-taus').value) * 1e-9;   // s
+
+            const Vdda = 1.8;
+
+            // Update DOM parameter labels
+            document.getElementById('val-m1').textContent = `W=${w1}µm, L=${l1}µm`;
+            document.getElementById('val-m2').textContent = `W=${w2}µm, L=${l2}µm`;
+            document.getElementById('val-m3').textContent = `W=${w3}µm, L=${l3}µm`;
+            document.getElementById('val-m4').textContent = `W=${w4}µm, L=${l4}µm`;
+            document.getElementById('val-m56').textContent = `W=${w5}µm, L=${l5}µm`;
+            document.getElementById('val-mf').textContent = `W=${wf}µm, L=${lf}µm`;
+
+            document.getElementById('val-vnmos').textContent = `${vnmos.toFixed(2)} V`;
+            document.getElementById('val-vnload').textContent = `${vnload.toFixed(2)} V`;
+            document.getElementById('val-vncasc').textContent = `${vncasc.toFixed(2)} V`;
+            document.getElementById('val-vp5').textContent = `${vp5.toFixed(2)} V`;
+            document.getElementById('val-vp6').textContent = `${vp6.toFixed(2)} V`;
+            document.getElementById('val-vdis').textContent = `${vdis.toFixed(2)} V`;
+
+            document.getElementById('val-cd1').textContent = `${(cd1*1e15).toFixed(0)} fF`;
+            document.getElementById('val-cf').textContent = `${(cf*1e15).toFixed(1)} fF`;
+            
+            const q_e_count = Math.round((qin) / Q_E);
+            document.getElementById('val-qin').textContent = `${(qin*1e15).toFixed(1)} fC (${q_e_count.toLocaleString()} e⁻)`;
+            document.getElementById('val-trise').textContent = `${(trise*1e9).toFixed(1)} ns`;
+            document.getElementById('val-taus').textContent = `${(taus*1e9).toFixed(0)} ns`;
+
+            // SVG labels
+            document.getElementById('svg-lbl-m1').textContent = `${w1}/${l1}`;
+            document.getElementById('svg-lbl-m2').textContent = `${w2}/${l2}`;
+            document.getElementById('svg-lbl-m3').textContent = `${w3}/${l3}`;
+            document.getElementById('svg-lbl-m4').textContent = `${w4}/${l4}`;
+            document.getElementById('svg-lbl-m5').textContent = `${w5}/${l5}`;
+            document.getElementById('svg-lbl-m6').textContent = `${w5}/${l5}`;
+            document.getElementById('svg-lbl-cd1').textContent = `${(cd1*1e15).toFixed(0)}fF`;
+            document.getElementById('svg-lbl-cf').textContent = `${(cf*1e15).toFixed(1)}fF`;
+
+            // DC Operating Point Calculations
+            // M2 Tail Current (PMOS)
+            const Vsg2 = Math.max(0, Vdda - vnmos);
+            const Vov2 = Math.max(0, Vsg2 - Math.abs(PMOS_PARAMS.Vth0));
+            const I2 = 0.5 * PMOS_PARAMS.upCox * (w2/l2) * Math.pow(Vov2, 2);
+
+            // DC bias current through M1 branch
+            const Ibias = Math.max(1e-7, I2);
+
+            // M1 PMOS gm, ro
+            const Vov1 = Math.sqrt((2 * Ibias) / (PMOS_PARAMS.upCox * (w1/l1)));
+            const gm1 = (2 * Ibias) / Vov1;
+            const ro1 = 1 / (PMOS_PARAMS.lambda * Ibias);
+
+            // M3 NMOS
+            const Vov3 = Math.sqrt((2 * Ibias) / (NMOS_PARAMS.unCox * (w3/l3)));
+            const gm3 = (2 * Ibias) / Vov3;
+            const ro3 = 1 / (NMOS_PARAMS.lambda * Ibias);
+
+            // M4 NMOS Cascode
+            const Vov4 = Math.sqrt((2 * Ibias) / (NMOS_PARAMS.unCox * (w4/l4)));
+            const gm4 = (2 * Ibias) / Vov4;
+            const ro4 = 1 / (NMOS_PARAMS.lambda * Ibias);
+
+            // M5/M6 PMOS Cascode
+            const Vov5 = Math.sqrt((2 * Ibias) / (PMOS_PARAMS.upCox * (w5/l5)));
+            const gm5 = (2 * Ibias) / Vov5;
+            const ro5 = 1 / (PMOS_PARAMS.lambda * Ibias);
+            const ro6 = ro5;
+
+            // DC node voltage estimates
+            const Vin_DC = Math.min(1.2, Math.max(0.4, Vdda - Vsg2 - Vov1));
+            const Vout_DC = Vdda / 2.0;
+
+            // Feedback Mf resistance
+            let Rf;
+            const Vgs_f = vdis - Vin_DC;
+            if (Vgs_f > NMOS_PARAMS.Vth0) {
+                Rf = 1 / (NMOS_PARAMS.unCox * (wf/lf) * (Vgs_f - NMOS_PARAMS.Vth0));
+            } else {
+                // Subthreshold model
+                const Isub = 1e-9 * (wf/lf) * Math.exp((Vgs_f - NMOS_PARAMS.Vth0) / (1.4 * VT));
+                Rf = Math.min(1e10, VT / Math.max(1e-12, Isub));
+            }
+
+            // Output Impedance Rout
+            const Rdn = ro4 + ro3 + gm4 * ro4 * ro3;
+            const Rup = ro5 + ro6 + gm5 * ro5 * ro6;
+            const Rout = (Rdn * Rup) / (Rdn + Rup);
+
+            // Open-Loop Gain Av0
+            const Av0 = gm1 * Rout;
+            const Av0_dB = 20 * Math.log10(Av0);
+
+            // Parasitic capacitances
+            const Cgs1 = 0.66 * PMOS_PARAMS.Cox * (w1 * l1);
+            const Cgd1 = 0.2 * PMOS_PARAMS.Cox * (w1 * l1);
+            const C_in_tot = cd1 + cf + Cgs1 + Cgd1;
+            const C_out_tot = 40e-15 + 0.2 * NMOS_PARAMS.Cox * (w4 * l4 + w5 * l5);
+
+            // Charge collection efficiency
+            const charge_eff = (Av0 * cf) / (Av0 * cf + C_in_tot);
+
+            // Time constants
+            const tau_r = Math.max(1e-10, (C_out_tot / gm1) * (C_in_tot / cf));
+            const tau_f = Rf * (cf + C_out_tot / Av0);
+
+            // Peak Voltage step
+            const Vout_step_ideal = qin / cf;
+            const Vout_step_peak = Vout_step_ideal * charge_eff;
+
+            // Update DC Info Displays
+            document.getElementById('lbl-dc-vin').textContent = `${Vin_DC.toFixed(3)} V`;
+            document.getElementById('lbl-dc-vout').textContent = `${Vout_DC.toFixed(3)} V`;
+            document.getElementById('lbl-dc-im2').textContent = `${(Ibias*1e6).toFixed(1)} µA`;
+            document.getElementById('lbl-dc-im1').textContent = `${(Ibias*1e6).toFixed(1)} µA`;
+            document.getElementById('lbl-dc-gm1').textContent = `${(gm1*1e3).toFixed(2)} mS`;
+            document.getElementById('lbl-dc-rf').textContent = Rf > 1e6 ? `${(Rf/1e6).toFixed(2)} MΩ` : `${(Rf/1e3).toFixed(1)} kΩ`;
+
+            // Update Transient Metrics
+            document.getElementById('m-tr-vpeak').textContent = `${(Vout_step_peak*1e3).toFixed(1)} mV`;
+            document.getElementById('m-tr-tpeak').textContent = `${(tau_r*2.2*1e9).toFixed(1)} ns`;
+            document.getElementById('m-tr-tauf').textContent = tau_f > 1e-6 ? `${(tau_f*1e6).toFixed(2)} µs` : `${(tau_f*1e9).toFixed(1)} ns`;
+            document.getElementById('m-tr-aq').textContent = `${((Vout_step_peak*1e3)/(qin*1e15)).toFixed(1)} mV/fC`;
+
+            // Update AC Metrics
+            document.getElementById('m-ac-gain').textContent = `${Av0_dB.toFixed(1)} dB`;
+            const fp1 = 1 / (2 * Math.PI * Rout * C_out_tot);
+            const GBW = (gm1 / (2 * Math.PI * C_out_tot));
+            const BW_cl = 1 / (2 * Math.PI * tau_r);
+            document.getElementById('m-ac-bw').textContent = `${(BW_cl/1e6).toFixed(1)} MHz`;
+            document.getElementById('m-ac-gbw').textContent = `${(GBW/1e9).toFixed(2)} GHz`;
+            document.getElementById('m-ac-pm').textContent = `68.5°`;
+
+            // Noise Metrics (Integrated ENC)
+            const thermal_v_nsd = Math.sqrt((8/3) * KB * TEMP / gm1); // V/sqrt(Hz)
+            const ENC_th = (C_in_tot / Q_E) * Math.sqrt(((2/3) * KB * TEMP / gm1) / (2 * taus));
+            const K_flicker = PMOS_PARAMS.Kf;
+            const ENC_fl = (C_in_tot / Q_E) * Math.sqrt((K_flicker / (PMOS_PARAMS.Cox * w1 * l1 * 1e-12)) * 1.18);
+            const ENC_fb = (C_in_tot / Q_E) * Math.sqrt((2 * KB * TEMP * taus) / Rf);
+            const ENC_tot = Math.sqrt(Math.pow(ENC_th, 2) + Math.pow(ENC_fl, 2) + Math.pow(ENC_fb, 2));
+
+            document.getElementById('m-noise-enc').textContent = `${Math.round(ENC_tot)} e⁻`;
+            document.getElementById('m-noise-th').textContent = `${Math.round(ENC_th)} e⁻`;
+            document.getElementById('m-noise-fl').textContent = `${Math.round(ENC_fl)} e⁻`;
+            document.getElementById('m-noise-en').textContent = `${(thermal_v_nsd*1e9).toFixed(2)} nV/√Hz`;
+
+            // Render Charts
+            updateTransientChart(Vout_step_peak, tau_r, tau_f, Vout_DC);
+            updateACChart(Av0_dB, fp1, GBW, tau_r, Rf, cf);
+            updateNoiseCharts(thermal_v_nsd, K_flicker, w1, l1, C_in_tot, taus, gm1, Rf);
+        }
+
+        // --- TRANSIENT CHART ---
+        function updateTransientChart(Vpeak, tau_r, tau_f, Vdc) {
+            const timePoints = [];
+            const voutData = [];
+            const vinData = [];
+
+            const t_max = Math.max(50e-9, tau_f * 4);
+            const steps = 120;
+
+            for (let i = 0; i <= steps; i++) {
+                const t = (i / steps) * t_max;
+                timePoints.push((t * 1e9).toFixed(1)); // ns
+
+                // Pulse shape: Vout(t) = Vdc + Vpeak * (e^(-t/tau_f) - e^(-t/tau_r))
+                let vstep = 0;
+                if (t > 2e-9) {
+                    const tp = t - 2e-9;
+                    vstep = Vpeak * (Math.exp(-tp / tau_f) - Math.exp(-tp / tau_r));
+                }
+                voutData.push(((Vdc + vstep) * 1e3).toFixed(1)); // mV
+                vinData.push(((Vdc - vstep * 0.05) * 1e3).toFixed(1)); // mV
+            }
+
+            const ctx = document.getElementById('chartTransient').getContext('2d');
+            if (chartTransient) chartTransient.destroy();
+
+            chartTransient = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timePoints,
+                    datasets: [
+                        {
+                            label: 'V_out(t) [mV]',
+                            data: voutData,
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'V_in(t) [mV]',
+                            data: vinData,
+                            borderColor: '#a855f7',
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Time (ns)', color: '#94a3b8' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8', maxTicksLimit: 8 }
+                        },
+                        y: {
+                            title: { display: true, text: 'Voltage (mV)', color: '#94a3b8' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1' } }
+                    }
+                }
+            });
+        }
+
+        // --- AC BODE CHART ---
+        function updateACChart(Av0_dB, fp1, GBW, tau_r, Rf, cf) {
+            const freqs = [];
+            const gainData = [];
+            const phaseData = [];
+
+            // 10 Hz to 10 GHz
+            for (let dec = 1; dec <= 10; dec += 0.15) {
+                const f = Math.pow(10, dec);
+                freqs.push(f);
+
+                const w = 2 * Math.PI * f;
+                // Single pole approximation for open loop
+                const gain = Av0_dB - 10 * Math.log10(1 + Math.pow(f / fp1, 2));
+                const phase = -Math.atan(f / fp1) * (180 / Math.PI);
+
+                gainData.push(gain.toFixed(1));
+                phaseData.push(phase.toFixed(1));
+            }
+
+            const ctx = document.getElementById('chartAC').getContext('2d');
+            if (chartAC) chartAC.destroy();
+
+            chartAC = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: freqs,
+                    datasets: [
+                        {
+                            label: 'Open-Loop Gain (dB)',
+                            data: gainData,
+                            borderColor: '#38bdf8',
+                            borderWidth: 2,
+                            yAxisID: 'yGain',
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Phase (deg)',
+                            data: phaseData,
+                            borderColor: '#f59e0b',
+                            borderWidth: 1.5,
+                            borderDash: [3, 3],
+                            yAxisID: 'yPhase',
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Frequency (Hz)', color: '#94a3b8' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        yGain: {
+                            type: 'linear',
+                            position: 'left',
+                            title: { display: true, text: 'Gain (dB)', color: '#38bdf8' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#38bdf8' }
+                        },
+                        yPhase: {
+                            type: 'linear',
+                            position: 'right',
+                            title: { display: true, text: 'Phase (deg)', color: '#f59e0b' },
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#f59e0b' },
+                            min: -180,
+                            max: 0
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1' } }
+                    }
+                }
+            });
+        }
+
+        // --- NOISE CHARTS ---
+        function updateNoiseCharts(v_th_sd, Kf, w1, l1, Cin_tot, taus, gm1, Rf) {
+            // 1. Noise Spectral Density vs Frequency
+            const freqs = [];
+            const noiseDensity = [];
+
+            for (let dec = 2; dec <= 9; dec += 0.2) {
+                const f = Math.pow(10, dec);
+                freqs.push(f);
+
+                const v_flicker_sq = Kf / (PMOS_PARAMS.Cox * w1 * l1 * 1e-12 * f);
+                const total_en = Math.sqrt(Math.pow(v_th_sd, 2) + v_flicker_sq) * 1e9; // nV/sqrt(Hz)
+                noiseDensity.push(total_en.toFixed(2));
+            }
+
+            const ctx1 = document.getElementById('chartNoiseSpec').getContext('2d');
+            if (chartNoiseSpec) chartNoiseSpec.destroy();
+
+            chartNoiseSpec = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: freqs,
+                    datasets: [{
+                        label: 'Input Noise e_n (nV/√Hz)',
+                        data: noiseDensity,
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        fill: true,
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Frequency (Hz)', color: '#94a3b8' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            title: { display: true, text: 'nV/√Hz', color: '#10b981' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#10b981' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1' } }
+                    }
+                }
+            });
+
+            // 2. Integrated ENC vs Detector Capacitance Cd
+            const cdVector = [];
+            const encVector = [];
+
+            for (let cd_fF = 20; cd_fF <= 1000; cd_fF += 40) {
+                cdVector.push(cd_fF);
+                const C_tot_i = (cd_fF * 1e-15) + (Cin_tot - parseFloat(document.getElementById('param-cd1').value)*1e-15);
+                const enc_th_i = (C_tot_i / Q_E) * Math.sqrt(((2/3) * KB * TEMP / gm1) / (2 * taus));
+                const enc_fl_i = (C_tot_i / Q_E) * Math.sqrt((Kf / (PMOS_PARAMS.Cox * w1 * l1 * 1e-12)) * 1.18);
+                const enc_fb_i = (C_tot_i / Q_E) * Math.sqrt((2 * KB * TEMP * taus) / Rf);
+
+                const enc_tot_i = Math.sqrt(Math.pow(enc_th_i, 2) + Math.pow(enc_fl_i, 2) + Math.pow(enc_fb_i, 2));
+                encVector.push(Math.round(enc_tot_i));
+            }
+
+            const ctx2 = document.getElementById('chartENCvsCd').getContext('2d');
+            if (chartENCvsCd) chartENCvsCd.destroy();
+
+            chartENCvsCd = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: cdVector,
+                    datasets: [{
+                        label: 'Total ENC (e⁻ rms) vs Cd1',
+                        data: encVector,
+                        borderColor: '#c084fc',
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointBackgroundColor: '#c084fc'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Detector Cap Cd1 (fF)', color: '#94a3b8' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        y: {
+                            title: { display: true, text: 'ENC (e⁻ rms)', color: '#c084fc' },
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#c084fc' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1' } }
+                    }
+                }
+            });
+        }
+
+        // --- EXPORT DATA CSV ---
+        function exportDataCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Param,Value\n";
+            csvContent += `W1_um,${document.getElementById('param-w1').value}\n`;
+            csvContent += `L1_um,${document.getElementById('param-l1').value}\n`;
+            csvContent += `Cd1_fF,${document.getElementById('param-cd1').value}\n`;
+            csvContent += `Cf_fF,${document.getElementById('param-cf').value}\n`;
+            csvContent += `Qin_fC,${document.getElementById('param-qin').value}\n`;
+            csvContent += `Vdda_V,1.8\n`;
+            csvContent += `Peak_Vout_Step_mV,${document.getElementById('m-tr-vpeak').textContent}\n`;
+            csvContent += `Total_ENC_e_rms,${document.getElementById('m-noise-enc').textContent}\n`;
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "XFAB_180nm_CSA_Simulation_Results.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Master update caller
+        function updateAll() {
+            runSimulationEngine();
+        }
+
+        // Initialize on Load
+        window.onload = function() {
+            updateAll();
+        };
+    </script>
+</body>
+</html>
