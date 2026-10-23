@@ -33,6 +33,32 @@ paper presents MARS; the full-cathode alternative is introduced here. Do not
 attribute both alternatives to the ITACA paper or develop the MARS mechanics in
 this paper. A separate study may develop the alternative implementation.
 
+## Approved green text — 23 October 2026
+
+The author identifies the following prose as green and approved. This records
+his assessment, not an independent Pangram test.
+
+| Manuscript passage | Status |
+| --- | --- |
+| Abstract | Green; preserve the current wording |
+| Section 1, Introduction | Green; preserve the current wording |
+| Section 2, The ITACA detector, including Principle of operation | Green; reviewed and approved |
+| Section 3 opening paragraphs, before Charge collection and focusing | Green; author-revised and approved |
+| Section 3, Charge collection and focusing | Green; approved through the end of this subsection |
+| Pixel electronics and readout, and subsequent text | Not covered by this approval; continue review |
+
+The latest approved segment starts at `\subsection{Principle of operation}`
+and ends immediately before `\subsection{Pixel electronics and readout}`.
+Checkpoint commit `3cf0db3` preserves the manuscript and comments before cleanup.
+Comment-only lines in this interval were subsequently removed; the active text
+was preserved exactly. Comments outside the interval remain for later review.
+
+Handle green prose with care. Do not insert longer sentences, reformulate it,
+or change its meaning without the author's approval. Pure grammar and small
+word-level corrections may be treated as minor. A green designation does not
+mean pending calculations, including the Appendix B collection study, have
+already been completed.
+
 ## Agreed working assumptions
 
 - The positive carrier is molecular Xe_2^+, with charge +e.
@@ -114,11 +140,11 @@ reorganised. The existing TopMetal image is only a starting point.
 
 **Drafted on 23 October:** Section 3 now follows the agreed concept, collection,
 electronics and design-parameter sequence. Existing wording has been reused;
-the complete previous section is preserved as LaTeX comments. The draft awaits
-author review. The schematic was subsequently replaced; see the figure update below.
+the original section remains archived as comments after the active draft.
+The opening and focusing text have since been reviewed and approved as green;
+the remaining subsections await review. The schematic was subsequently replaced; see the figure update below.
 
-**Remaining:** Continue author review of the subsection text and the new
-schematic. Keep its distinction between pad width and pitch, nominal geometry
+**Remaining:** Continue author review from Pixel electronics and readout. Keep its distinction between pad width and pitch, nominal geometry
 and calculated fields, and equivalent circuit and transistor implementation.
 
 Move the track extent and occupancy figures out of this section. Do not open
@@ -129,8 +155,8 @@ electronics values as final specifications.
 the inherited image. It shows the IFG geometry and nominal voltages beside
 an equivalent CSA with feedback capacitance, effective MOS resistance,
 sampling and ADC. Editable source, vector PDF and PNG preview are in
-`figures/`; the old figure remains commented in the manuscript. The
-figure and its short caption await author review. The author-revised
+`figures/`; the previous figure block is preserved in checkpoint `3cf0db3`.
+The replacement is included in the approved segment. The author-revised
 opening paragraphs were left byte-for-byte unchanged. Treat paragraphs
 the author identifies as green as protected prose: obtain approval before
 introducing longer sentences or substantial wording changes.
@@ -355,9 +381,9 @@ paper narrative. Retain useful technical material in the repository.
 
 ## Working method and next step
 
-Work through the sections in order. The next task is author review of the
-Section 3 draft, starting with its opening paragraph, followed by the schematic.
-Do not reorganise the entire manuscript in one pass.
+Work through the sections in order. The next task is author review of
+Pixel electronics and readout. The preceding green text is approved and should
+remain stable. Do not reorganise the entire manuscript in one pass.
 
 Preserve the author's voice. The author reports the abstract and reviewed
 Sections 1–2 as acceptable to Pangram; this plan does not independently assess
