@@ -3,7 +3,7 @@ export PYTHONPATH := $(CURDIR)/src
 export MPLCONFIGDIR := $(CURDIR)/work/matplotlib-cache
 export XDG_CACHE_HOME := $(CURDIR)/work/cache
 
-.PHONY: all physics readout realistic-readout gain-figure test note check
+.PHONY: all physics readout realistic-readout gain-figure arrival-cases test note check
 all: test readout note
 
 physics:
@@ -18,10 +18,13 @@ realistic-readout:
 gain-figure:
 	$(PYTHON) scripts/build_gain_figure.py
 
+arrival-cases: realistic-readout
+	$(PYTHON) scripts/build_arrival_cases.py
+
 test:
 	$(PYTHON) -m unittest discover -s tests -v
 
-note: physics readout gain-figure
+note: physics readout gain-figure arrival-cases
 	cd notes/physics && latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=build nausica.tex
 
 check: test readout note

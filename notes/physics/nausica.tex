@@ -21,6 +21,7 @@
 \fancyfoot[C]{\thepage}
 \input{generated/values}
 \input{generated/readout_values}
+\input{generated/arrival_cases_values}
 \newcommand{\ion}{\ensuremath{\mathrm{Xe}_2^+}}
 \newcommand{\dd}{\mathrm{d}}
 \title{NAUSICAA for ITACA}
@@ -427,9 +428,62 @@ Solving for the charge gives
  \label{eq:realistic_estimator}
 \end{equation}
 %
-We can now calculate the voltages $\overline V_n$ using the CSA response $H_I(s)$ obtained previously (Eq.~\eqref{eq:realistic_transimpedance}) and insert them into Eq.~\eqref{eq:realistic_estimator} to obtain $\widehat Q_n$. This allows us to compare this estimate with the input charge $Q_n=\int_{t_{n-1}}^{t_n}i_k(t)\,\dd t$, and from there assess how accurately we recover the charge. We can consider now two illustrative cases: all ions arriving simultaneously, and ions arriving uniformly over a frame of duration $\Delta t$.
+We can now calculate the voltages $\overline V_n$ using the CSA response $H_I(s)$ obtained previously (Eq.~\eqref{eq:realistic_transimpedance}) and insert them into Eq.~\eqref{eq:realistic_estimator} to obtain $\widehat Q_n$. This allows us to compare this estimate with the input charge $Q_n=\int_{t_{n-1}}^{t_n}i_k(t)\,\dd t$, and from there assess how accurately we recover the charge.
 
 
+
+\subsection{Response to simultaneous and uniform arrivals}
+\label{sec:arrival_cases}
+
+We consider now two limit scenarios: a) all ions arriving simultaneously, and b) ions arriving uniformly over a frame of duration $\Delta t$ ---the physical case is somewhere in-between--- . Table~\ref{tab:arrival_parameters} lists the parameters used in both calculations.
+
+\begin{table}[!htbp]
+ \centering
+ \begin{tabular}{llr}
+ \toprule
+ Parameter & Symbol & Value \\
+ \midrule
+ \multicolumn{3}{l}{\textit{Ion arrivals and sampling}} \\
+ Number of ions & $k$ & $\ArrivalIons$ \\
+ Frame duration & $\Delta t$ & \SI{\ArrivalFrameMs}{ms} \\
+ \midrule
+ \multicolumn{3}{l}{\textit{CSA}} \\
+ Feedback capacitance & $C_f$ & \SI{\ArrivalCfFf}{fF} \\
+ Input capacitance & $C_{\rm in}$ & \SI{\ArrivalCinFf}{fF} \\
+ DC amplifier gain & $A_0$ & $\ArrivalGain$ \\
+ Amplifier pole frequency & $f_a$ & \SI{\ArrivalPoleKhz}{kHz} \\
+ Feedback resistance & $R_f$ & \SI{\ArrivalRfOhm}{\ohm} \\
+ \midrule
+ \multicolumn{3}{l}{\textit{Derived quantity}} \\
+ Discharge time & $\tau_f=R_fC_f$ & \SI{\ArrivalTauSeconds}{s} \\
+ \bottomrule
+ \end{tabular}
+ \caption{Parameters used for simultaneous and uniform ion arrivals.}
+ \label{tab:arrival_parameters}
+\end{table}
+
+\begin{figure}[!htbp]
+ \centering
+ \includegraphics[width=\linewidth]{arrival_cases.pdf}
+ \caption{Simultaneous arrivals (left) and uniform arrivals (right) of $\ArrivalIons$ ions. The upper panels show the input current; the lower panels compare the ideal and finite-gain CSA voltages. Vertical dotted lines mark the frame boundaries. Squares and circles mark the voltage readings for the ideal and finite-gain models, respectively.}
+ \label{fig:arrival_cases}
+\end{figure}
+
+\begin{table}[!htbp]
+ \centering
+ \input{generated/arrival_cases_table}
+ \caption{Input charge and charge recovered from voltage readings at the boundaries of the \SI{\ArrivalFrameMs}{ms} frame.}
+ \label{tab:arrival_cases}
+\end{table}
+
+In the first scenario, all ions reach the pad at the middle of the frame, $t=\SI{\ArrivalSimultaneousMs}{ms}$. Their currents add to produce a pulse with the same shape as the single-ion current and an amplitude $\ArrivalIons$ times larger. The CSA voltage rises in magnitude during the pulse and then decays through the feedback resistance.
+
+In the second scenario, the ions reach the pad at equally spaced times between $t=0$ and $t=\SI{\ArrivalFrameMs}{ms}$. Their currents overlap, producing an approximately constant current through most of the frame. The voltage builds up during this interval. 
+
+For each scenario, we calculate the voltage using the ideal and finite-gain CSA models discussed in the previous sections. Figure~\ref{fig:arrival_cases} shows the input currents and the resulting voltages. Table~\ref{tab:arrival_cases} shows the charge recovered with each CSA model.
+
+
+The ideal CSA recovers more than 99.96\% of the input charge, while the finite-gain CSA recovers about 92\% in both cases. Thus, our more realistic model still predicts the recovery of a large fraction of the charge. 
 
 \clearpage
 \appendix

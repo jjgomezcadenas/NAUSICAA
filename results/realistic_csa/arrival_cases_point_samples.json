@@ -1,0 +1,81 @@
+{
+  "source_benchmarks_sha256": "09f0a5f7eb605d6c58bd4f76700600073131a81298a7eecd9d7751a060f448ed",
+  "electronics": {
+    "feedback_capacitance_F": 3e-15,
+    "input_capacitance_F": 2.5e-13,
+    "feedback_resistance_ohm": 100000000000000.0,
+    "open_loop_gain": 1000.0,
+    "amplifier_pole_Hz": 1000.0
+  },
+  "detector": {
+    "hole_diameter_m": 0.0005,
+    "pitch_m": 0.002,
+    "ifg_thickness_m": 0.01,
+    "gap_m": 0.005,
+    "pad_width_m": 0.0005,
+    "bulk_reference_length_m": 1.5,
+    "pad_voltage_V": 0.0,
+    "ic_voltage_V": 3000.0,
+    "gate_voltage_V": 8000.0,
+    "bulk_field_V_m": 20000.0,
+    "pressure_bar": 15.0,
+    "temperature_K": 293.15,
+    "bulk_speed_m_s": 0.1,
+    "charge_e": 1
+  },
+  "sampling_aperture_s": 0.0,
+  "noise_included": false,
+  "sample_interval_s": 0.01,
+  "assumptions": {
+    "source": "Rogelio supplied readout/rogelio_reference.html; kept unchanged",
+    "status": "Cf and illustrative detector capacitance inspired by source; all other electronic/noise parameters are explicit study assumptions, not foundry values",
+    "model": "Finite-gain one-pole linear amplifier, input shunt capacitance and linear feedback; no saturation, nonlinear pseudo-resistor, additional amplifier poles or correlated noise sources",
+    "arrivals": "Specified identical central trajectories at one pad; no event ensemble, no diffusion in final gap, no charge renormalization"
+  },
+  "cases": [
+    {
+      "id": "simultaneous_1000",
+      "ions": 1000,
+      "sample_times_s": [
+        0.0,
+        0.01
+      ],
+      "input_charge_C": 1.5996330470144231e-16,
+      "finite_gain_estimated_charge_C": 1.4767543603086694e-16,
+      "ideal_estimated_charge_C": 1.5990879469201572e-16,
+      "finite_gain_bias_percent": -7.681679678667319,
+      "ideal_bias_percent": -0.03407657120383378,
+      "finite_gain_sample_voltage_V": [
+        0.0,
+        -0.048413766561119065
+      ],
+      "ideal_sample_voltage_V": [
+        0.0,
+        -0.052424338572265916
+      ],
+      "waveform_sha256": "12f5ef12458f521000fc5aa5b05150fc98cfacddea2686793aaa5a53c28f8b10"
+    },
+    {
+      "id": "spread_1000",
+      "ions": 1000,
+      "sample_times_s": [
+        0.0,
+        0.01
+      ],
+      "input_charge_C": 1.585505817676986e-16,
+      "finite_gain_estimated_charge_C": 1.465335899667724e-16,
+      "ideal_estimated_charge_C": 1.5852748339834148e-16,
+      "finite_gain_bias_percent": -7.579279537764783,
+      "ideal_bias_percent": -0.014568454495467176,
+      "finite_gain_sample_voltage_V": [
+        -0.0003811729252465602,
+        -0.04840810148518244
+      ],
+      "ideal_sample_voltage_V": [
+        -0.00047070638124709687,
+        -0.05242676565625885
+      ],
+      "waveform_sha256": "72e81cafb50b67a057597bba45ebeaa193a92b068904529de5c44c3e169c5454"
+    }
+  ]
+}
