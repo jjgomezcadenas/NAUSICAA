@@ -7,12 +7,20 @@ procedure, then obtain circuit-supported response and noise parameters for the
 paper. A behavioral reproduction of the analytical model is a consistency
 check; the transistor circuit is a separate validation step.
 
-**Status:** model specification, recipe, benchmark files and behavioral
-comparators generated. All 41 Python tests pass, including the uniform mean-response and noise checks. PWL serialization preserves the calculated charge to better than
-2e-14 relative error in the five configured cases. No SPICE simulator has been
-run. Transistor netlist, foundry models,
-operating-point information and circuit results have not yet been supplied here.
-Nothing has been sent to Rogelio.
+**Status (LTSpice branch):** Rogelio's transistor schematic, BSIM3 models and
+reports are saved unchanged under `../../../LTSpice/`.
+Native LTspice 17.2.4 has now run the converted circuit, the Python behavioral
+comparator, uniform ion currents with 5 pF external pad capacitance, AC and noise.
+The [study results](../../../results/ltspice/README.md) and
+[analysis](../../../results/ltspice/analysis.json) document the calculations.
+All 46 tests pass. This supersedes the earlier "not run/not supplied" status.
+
+The model gives S/N > 5 at approximately 1,600 ions per 10 ms frame (1578 in the
+adjacent-count numerical check), with the paper's current estimator. The supplied
+model produces zero flicker-noise contribution. M4 and M6 dominate the included
+noise. These results have not been introduced into the manuscript. Foundry/model
+provenance and calibrated flicker parameters still need confirmation from Rogelio;
+nothing has been sent to him.
 
 ## 1. Package and fixed inputs
 
@@ -143,11 +151,11 @@ its behaviour. Record that difference for a subsequent circuit calculation.
 ## Completion criteria
 
 - [x] Numerical handoff generated and its current integrals verified.
-- [ ] Behavioral comparator checked against the Python waveform (state clearly
+- [x] Behavioral comparator checked against the Python waveform (state clearly
       whether a SPICE executable was actually run).
-- [ ] Rogelio's transistor model and operating conditions identified.
-- [ ] Matched transient and sampled-charge comparison completed.
-- [ ] Matched noise/covariance comparison completed.
+- [x] Supplied transistor circuit and operating conditions identified; foundry provenance remains unconfirmed.
+- [x] Matched uniform-arrival transient and sampled-charge comparison completed.
+- [x] Matched noise/covariance comparison completed for the supplied model defaults (zero flicker contribution).
 - [ ] Circuit-supported parameters transferred to the paper and track model.
 
 Sending this package is a separate action and requires the user's instruction.

@@ -34,3 +34,8 @@ note: physics readout gain-figure noise-study
 	cd notes/physics && latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=build nausica.tex
 
 check: test readout note
+
+.PHONY: ltspice-study
+ltspice-study:
+	$(PYTHON) scripts/build_ltspice_study.py --simulator "$(LTSPICE)"
+	$(PYTHON) scripts/analyze_ltspice_study.py

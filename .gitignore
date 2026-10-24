@@ -15,3 +15,8 @@ notes/physics/*.fls
 notes/physics/*.fdb_latexmk
 notes/physics/nausica.pdf
 notes/physics/*.synctex.gz
+
+# LTspice binary scratch; decks, readable logs and reduced results are tracked.
+results/ltspice/decks/*.raw
+results/ltspice/decks/*.log
+results/ltspice/decks/*.db

@@ -6,6 +6,24 @@ Manuscript: [nausica.tex](nausica.tex). This document records the intended paper
 the work already available, and what remains. It does not replace the manuscript
 or authorise wholesale rewriting of the reviewed text.
 
+## Latest circuit study — LTSpice branch
+
+Rogelio's supplied transistor simulation is preserved in `../../LTSpice/`.
+Checkpoint commit: `7766b7d`; work continued on branch `LTSpice`.
+This update supersedes historical statements below that no transistor circuit or
+SPICE results have been supplied. The reviewed manuscript remains unchanged.
+
+The tracked LTspice scripts reproduce the original pulse and compare the circuit
+with our uniform ion currents, 5 pF external pad capacitance and 10 ms frame.
+Native LTspice 17.2.4 was used; the version-26 Wine batch attempt stalled.
+Results and assumptions: [study report](../../results/ltspice/README.md).
+The circuit gives roughly 1,600 ions for S/N > 5 with the current estimator;
+the illustrative paper result of 68 ions is not a prediction of this circuit.
+The supplied model contributes no flicker noise. M4 and M6 dominate its included
+noise. Confirm model provenance/flicker parameters and M5 dimensions with Rogelio,
+then investigate circuit changes before inserting circuit-supported results in
+the paper. No message has been sent and no paper text or green marking changed.
+
 ## Purpose and scope
 
 Present the conceptual design of NAUSICA and demonstrate, with a simplified
