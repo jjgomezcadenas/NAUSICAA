@@ -50,6 +50,7 @@ his assessment, not an independent Pangram test.
 | Section 5 opening paragraph, before Finite gain and response time | Green; author wording with approved typo corrections and removal of repeated gain/bandwidth phrase; retain final SPICE sentence |
 | Section 5, Finite gain and response time | Green; full active subsection in nausica.tex approved, including the gain figure, current-to-voltage response and Laplace-transform derivation of the integration limit; preserve current wording |
 | Section 5, Response to simultaneous and uniform arrivals | Green; full active subsection approved, including the parameter table, current/voltage figure, recovered-charge table and concluding recovery fractions; preserve current wording |
+| Section 5, Noise in the recovered charge | Green; full active subsection approved, including the correction defining $g_n$ as the mean estimated charge per ion; preserve current wording |
 | Remaining Section 5 reference draft and appendices | Draft; continue author review |
 
 The segment approved on 23 October starts at `\subsection{Principle of operation}`
@@ -225,8 +226,9 @@ capacitances and discharge times separate from the eventual design choices.
 in `nausica.tex`. `section_beyond_ideal.tex` is the unchanged reference draft;
 its input is currently commented out. Apply approved corrections to the active
 text in `nausica.tex`, not to the reference draft. The active section now contains the opening paragraph, finite-gain discussion,
-frame-charge derivation and the two arrival-case study. The noise equations
-remain in the reference draft; their appendix cross-references remain pending.
+frame-charge derivation, the two arrival-case study and the approved noise subsection. The noise subsection explains voltage fluctuations, propagation
+through the estimator, sample covariance and ion-count sensitivity. Its equation
+labels now supply the references used by Appendix B.
 
 **Purpose:** Calculate the response and sampled-charge noise for specified ion
 arrivals at one pad, extending the ideal CSA to finite gain, bandwidth and input
@@ -237,8 +239,9 @@ retained unchanged as the reference draft; reviewed text is incorporated directl
 in the active manuscript. [appendix_realistic_csa.tex](appendix_realistic_csa.tex)
 is Appendix B; the pending focusing appendix is now C. The section defines
 controlled k-ion arrivals, a two-sample frame-charge estimator, its bias and its
-noise covariance. The implementation and independent checks are complete. The point-sample two-case results are now included in the active manuscript;
-noise and the other numerical examples remain outside it pending author review.
+noise covariance. The implementation and independent checks are complete. The point-sample two-case results are now included in the active manuscript.
+The noise derivation is now in the paper and approved as green. Numerical noise
+results and the other benchmark cases remain outside it pending author review.
 Existing reviewed manuscript prose is unchanged.
 
 **Gain figure:** `scripts/build_gain_figure.py` generates the normalized
@@ -273,6 +276,15 @@ charge, circuit limits, numerical convergence and independent noise integrals.
 The parent independently checked the configured noise against a direct positive
 spectral integral. LaTeX compiles without warnings; no PDF visual check was made.
 Do not infer a track threshold or foundry performance from these benchmarks.
+
+**Noise subsection — green, 24 October:** Reviewed and approved by the author,
+including the definition of $g_n$ as the mean estimated charge per ion. Added directly to `nausica.tex`, following the
+approved two-case study. It keeps the frame-boundary readings used there and
+starts from the fluctuation in each voltage reading before deriving the charge
+variance. No new noise numbers were inserted: the existing noise benchmarks use
+a 10 microsecond aperture, so the point-sample numerical study must be presented
+with its stated source spectra and frequency band. The reference draft stays
+unchanged. No LaTeX compilation was run.
 
 **Specs to SPICE is a distinct task:** [specs_to_spice.md](readout/specs_to_spice.md)
 defines the numerical package and comparison protocol for Rogelio. It includes

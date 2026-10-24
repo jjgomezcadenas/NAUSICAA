@@ -431,7 +431,6 @@ Solving for the charge gives
 We can now calculate the voltages $\overline V_n$ using the CSA response $H_I(s)$ obtained previously (Eq.~\eqref{eq:realistic_transimpedance}) and insert them into Eq.~\eqref{eq:realistic_estimator} to obtain $\widehat Q_n$. This allows us to compare this estimate with the input charge $Q_n=\int_{t_{n-1}}^{t_n}i_k(t)\,\dd t$, and from there assess how accurately we recover the charge.
 
 
-
 \subsection{Response to simultaneous and uniform arrivals}
 \label{sec:arrival_cases}
 
@@ -484,6 +483,41 @@ For each scenario, we calculate the voltage using the ideal and finite-gain CSA 
 
 
 The ideal CSA recovers more than 99.96\% of the input charge, while the finite-gain CSA recovers about 92\% in both cases. Thus, our more realistic model still predicts the recovery of a large fraction of the charge. 
+
+\subsection{Noise in the recovered charge}
+\label{sec:charge_noise}
+
+We now need to compare the recovered charge with the electronic noise. The amplifier and the feedback discharge path produce voltage fluctuations even when no ions arrive. We describe their effect by a voltage noise source and a current noise source at the amplifier input, which we assume to be independent~\cite{tiNoise2007,spielerNoise1998}. The voltage noise includes a white component ---equal contributions to the variance per unit frequency---, and a flicker component, whose spectrum varies as $1/f$. The current noise includes the contribution from the feedback path. Appendix~\ref{app:realistic_noise} shows how the circuit response converts these sources into output voltage noise.
+
+Let $\delta V_n$ be the noise in the voltage measured at the end of frame $n$. Inserting the two voltage fluctuations into the charge estimator in Eq.~\eqref{eq:realistic_estimator} gives
+\begin{equation}
+ \delta\widehat Q_n=-K\left(\delta V_n-\alpha\delta V_{n-1}\right).
+ \label{eq:realistic_charge_fluctuation}
+\end{equation}
+Thus the uncertainty in the recovered charge depends on the noise in both readings. Positively correlated fluctuations partly cancel when we take the difference between readings. For simplicity, assume that the noise has zero mean and the same variance at each reading. Define the variance of one reading as
+\begin{equation}
+ C_V(0)=\left\langle\delta V_n^2\right\rangle,
+ \label{eq:realistic_sample_variance}
+\end{equation}
+and the covariance between consecutive readings as
+\begin{equation}
+ C_V(\Delta t)=\left\langle\delta V_n\delta V_{n-1}\right\rangle.
+ \label{eq:realistic_sample_covariance}
+\end{equation}
+Squaring Eq.~\eqref{eq:realistic_charge_fluctuation} and taking the average gives
+\begin{equation}
+ \sigma_{\widehat Q}^{2}
+ =K^2\left[(1+\alpha^2)C_V(0)-2\alpha C_V(\Delta t)\right].
+ \label{eq:realistic_noise_charge}
+\end{equation}
+For uncorrelated readings, $C_V(\Delta t)=0$. Notice also that a positive covariance reduces the noise in the charge estimate. The two quantities are calculated from the output noise spectrum as described in Appendix~\ref{app:realistic_noise}.
+
+Let $g_n$ be the mean estimated charge per ion in frame $n$. For $k$ ions, the estimated charge is $kg_n$, while the electronic noise has standard deviation $\sigma_{\widehat Q}$. The signal-to-noise ratio and the number of ions needed to reach a ratio $\rho$ are then
+\begin{equation}
+ {\rm S/N}_n(k)=\frac{k|g_n|}{\sigma_{\widehat Q}},\qquad
+ k_{\min,n}=\frac{\rho\,\sigma_{\widehat Q}}{|g_n|}.
+ \label{eq:realistic_sensitivity}
+\end{equation}
 
 \clearpage
 \appendix
