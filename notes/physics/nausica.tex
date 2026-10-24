@@ -294,6 +294,8 @@ a bucket of \SI{10}{\milli\second} contains on average about $10^3$ ions, which 
  \label{eq:pad_superposition}
 \end{equation}
 
+\input{section_beyond_ideal}
+
 \clearpage
 \appendix
 \section{Analytical single-ion response}
@@ -414,8 +416,10 @@ This is exact for a constant current in each numerical bin and converges to the 
 
 The square-pad potential is checked against independent surface integration of Eq.~\eqref{eq:app_poisson}, and its derivative against Eq.~\eqref{eq:single_weight}. Charge integrals, boundary limits and scaling with pad size and velocity are also checked. The CSA response is compared with Eq.~\eqref{eq:app_csa_quadrature}, the ideal-integrator limit and the closed-form response to a constant current. These checks test the analytical model and its numerical implementation; they do not replace a field calculation for the collection geometry or a transistor-level circuit calculation.
 
-% Appendix B will contain the IFG focusing and collection calculation.
-% That numerical study is not part of this analytical single-ion appendix.
+\input{appendix_realistic_csa}
+
+% Appendix C will contain the IFG focusing and collection calculation.
+% That numerical study remains pending.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}

@@ -1,0 +1,75 @@
+% Draft for author review. New material; preceding reviewed prose is unchanged.
+\section{Beyond the ideal CSA model}
+\label{sec:realistic_csa}
+
+The ideal CSA keeps its input at a fixed potential and responds without delay. A real amplifier has finite gain and bandwidth. Some of the incoming charge can therefore remain on the input capacitance, and the output takes time to develop. Electronic noise also limits the charge that can be resolved. We extend the model to include these effects, using the circuit proposed by Rogelio as a starting point. The calculation describes small signals about a fixed operating point; the transistor circuit must establish the range over which this approximation holds.
+
+\subsection{Finite gain and response time}
+
+Let $C_{\rm in}$ be the capacitance between the input node and ground, including the pad, amplifier input and stray capacitances, but excluding $C_f$. We represent the amplifier by an open-loop gain
+\begin{equation}
+ A(s)=\frac{A_0}{1+s/\omega_a},\qquad V(s)=-A(s)V_{\rm in}(s),
+ \label{eq:realistic_gain}
+\end{equation}
+where $s$ is the Laplace variable, $A_0$ is the DC gain and $\omega_a$ is the angular frequency of the amplifier pole. The feedback elements remain $C_f$ and an effective resistance $R_f$. Balancing the input current gives the current-to-voltage response
+\begin{equation}
+ H_I(s)\equiv\frac{V(s)}{I(s)}
+ =-\frac{A(s)}{sC_{\rm in}+[1+A(s)](R_f^{-1}+sC_f)}.
+ \label{eq:realistic_transimpedance}
+\end{equation}
+Appendix~\ref{app:realistic_csa} gives the derivation and its time-domain form.
+
+The effect of finite gain is particularly simple when the amplifier has settled but feedback discharge is still negligible. For an injected charge $Q$, a frequency-independent gain $A_0$ gives
+\begin{equation}
+ V=-\frac{Q}{C_f+(C_{\rm in}+C_f)/A_0}.
+ \label{eq:realistic_charge_gain}
+\end{equation}
+The ideal value $-Q/C_f$ is approached when $A_0C_f\gg C_{\rm in}+C_f$. Thus reducing $C_f$ increases the ideal gain, but also makes the amplifier gain requirement more demanding. This reduction in voltage is an electrical effect; it does not imply that fewer ions reach the pad. Equation~\eqref{eq:realistic_transimpedance} also accounts for the finite response time. The ideal approximation requires sufficient gain throughout the frequencies that contribute to the signal.
+
+\subsection{Several ions in a readout frame}
+
+For $k$ ions collected at times $t_j$, the input is the sum of the finite-gap currents calculated in Section~\ref{sec:single_ion}:
+\begin{equation}
+ i_k(t)=\sum_{j=1}^{k}i_1(t-t_j),\qquad
+ V_k(t)=\int_{-\infty}^{t}h_I(t-t')i_k(t')\dd t',
+ \label{eq:realistic_packet}
+\end{equation}
+where $h_I$ is the impulse response corresponding to $H_I$. Each ion contributes an integrated input charge $Q_g$. We first consider simultaneous arrivals and arrivals spread uniformly over a frame of duration $\Delta t$. These are controlled examples for comparing circuit responses; the arrival distributions from tracks are considered in the following section.
+
+The current can begin before the frame in which an ion is collected, and the voltage can persist into later frames. We therefore retain the circuit state across frame boundaries and compare the sampled response with the charge actually induced during each frame. An additional packet in the preceding frame tests the effect of this retained signal.
+
+For comparison with the ideal model, we estimate the frame charge from two consecutive samples using
+\begin{equation}
+ \widehat Q_n=-K\left(\overline V_n-\alpha\overline V_{n-1}\right),\qquad
+ \alpha=e^{-\Delta t/\tau_f},\qquad
+ K=C_f\frac{\Delta t/\tau_f}{1-\alpha},
+ \label{eq:realistic_estimator}
+\end{equation}
+with $\tau_f=R_fC_f$. Here $\overline V_n$ denotes the measured sample, including any averaging during its acquisition. For instantaneous samples, Eq.~\eqref{eq:realistic_estimator} is exact for an ideal CSA driven by constant current within the frame, as shown in Appendix~\ref{app:single_ion}. With finite amplifier response or a different arrival history it is an estimator whose bias must be calculated. We compare it with $Q_n=\int_{t_{n-1}}^{t_n}i_k(t)\dd t$ rather than assuming that every collected ion contributes its full signal within the same frame.
+
+\subsection{Noise in the recovered charge}
+
+We describe the amplifier noise by an equivalent input voltage source and an input current source, assumed independent. Their spectra include white and flicker voltage noise, and current noise from the input and feedback path~\cite{tiNoise2007,spielerNoise1998}. The same circuit response used for the signal propagates these sources to the output. The sampling aperture and frequency limits are specified as part of the noise calculation. An effective MOS discharge resistance alone is insufficient to determine the noise of that transistor.
+
+Let $C_V(0)$ be the variance of a voltage sample and $C_V(\Delta t)$ the covariance of consecutive samples. The variance of the estimated charge is
+\begin{equation}
+ \sigma_{\widehat Q}^{2}
+ =K^2\left[(1+\alpha^2)C_V(0)-2\alpha C_V(\Delta t)\right].
+ \label{eq:realistic_noise_charge}
+\end{equation}
+The covariance term matters because consecutive samples contain noise from the same circuit. Appendix~\ref{app:realistic_noise} derives these quantities from the noise spectra.
+
+The ratio $\sigma_{\widehat Q}/e$ expresses the estimator noise in elementary-charge units. To infer sensitivity to ions, we also need the response to the specified arrival distribution. If $g_n$ is the mean estimated charge per ion for that distribution and sampling phase, then
+\begin{equation}
+ {\rm S/N}_n(k)=\frac{k|g_n|}{\sigma_{\widehat Q}},\qquad
+ k_{\min,n}=\frac{\rho\,\sigma_{\widehat Q}}{|g_n|},
+ \label{eq:realistic_sensitivity}
+\end{equation}
+where $\rho$ is the required signal-to-noise ratio. This is a conditional sensitivity for the chosen input and electronics parameters. Fluctuations in ion arrivals and the performance of a threshold applied across many pads require a separate calculation.
+
+\subsection{Comparison with a circuit calculation}
+
+The model defines quantities that can be compared directly with a SPICE calculation: input current, output waveform, charge recovered at the sampling times and noise in that charge estimate. The supplied inputs include the single-ion current, simultaneous and distributed arrivals, and a previous-frame packet. Their timing and integrated charge are fixed before changing the circuit. Rogelio's transistor calculation can then determine the attainable gain, bandwidth, discharge behaviour and noise, and test where the linear approximation fails. These results will replace the illustrative circuit parameters when the device model is available.
+
+% Numerical results will be inserted after implementation and independent review.
+% The operational handoff is tracked separately in readout/specs_to_spice.md.

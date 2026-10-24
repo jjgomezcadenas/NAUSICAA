@@ -59,7 +59,7 @@ or change its meaning without the author's approval. As clarified on 24 October,
 all manuscript edits, including typos and small word-level corrections, require
 explicit instruction. A request to produce a figure does not authorise manuscript
 edits or insertion of that figure. A green designation does not
-mean pending calculations, including the Appendix B collection study, have
+mean pending calculations, including the Appendix C collection study, have
 already been completed.
 
 ## Agreed working assumptions
@@ -203,19 +203,55 @@ kept the earlier gap definition and removed the duplicate, and retained the
 approximate 200 microseconds without the duplicated precise value. Inserted the
 two-panel current figure before the CSA subsection, added its text reference,
 and corrected the separate voltage figure caption and table reference. The
-claim of validation in Appendix B is commented out with a TODO until that study
+claim of validation in Appendix C is commented out with a TODO until that study
 exists. These specific edits were explicitly authorised after review; they do
 not authorise further manuscript edits.
 
 The previous manual-like analytical sections are preserved as comments after
-`\end{document}` for reuse in the later track study and Appendix B. Sections
-1–3 and the abstract were left unchanged by this drafting step. Appendix B's
+`\end{document}` for reuse in the later track study and Appendix C. Sections
+1–3 and the abstract were left unchanged by this drafting step. Appendix C's
 quantitative collection study remains to be done.
 
 **Remaining:** Review Section 4 and Appendix A with the author. Keep example
 capacitances and discharge times separate from the eventual design choices.
 
-### 5. The ion signal from a track
+### 5. Beyond the ideal CSA model
+
+**Purpose:** Calculate the response and sampled-charge noise for specified ion
+arrivals at one pad, extending the ideal CSA to finite gain, bandwidth and input
+capacitance. Keep signal and noise transfer functions consistent.
+
+**Drafted, 24 October:** [section_beyond_ideal.tex](section_beyond_ideal.tex) is
+included after Section 4. [appendix_realistic_csa.tex](appendix_realistic_csa.tex)
+is Appendix B; the pending focusing appendix is now C. The section defines
+controlled k-ion arrivals, a two-sample frame-charge estimator, its bias and its
+noise covariance. The implementation and independent checks are complete. Generated numerical
+results remain outside the manuscript pending author review.
+Existing reviewed manuscript prose is unchanged.
+
+**Implementation:** A delegated agent has rewritten the useful circuit assumptions
+from Rogelio's HTML in Python, preserving the original as provenance. Shared
+specification: [realistic_csa_spec.md](readout/realistic_csa_spec.md). Parameters
+are illustrative until supported by a device model. The rewrite removes the
+arbitrary resistance cap, unsupported fixed stability number and inconsistent
+noise formulas rather than treating the HTML output as validation.
+
+**Available outputs:** Input currents, finite-gain and ideal voltage waveforms,
+true and recovered frame charge, noise RMS and adjacent-sample covariance,
+template-calibrated S/N and conditional ion-count sensitivity. All 37 tests pass, including 15 new circuit/noise tests covering physical
+charge, circuit limits, numerical convergence and independent noise integrals.
+The parent independently checked the configured noise against a direct positive
+spectral integral. LaTeX compiles without warnings; no PDF visual check was made.
+Do not infer a track threshold or foundry performance from these benchmarks.
+
+**Specs to SPICE is a distinct task:** [specs_to_spice.md](readout/specs_to_spice.md)
+defines the numerical package and comparison protocol for Rogelio. It includes
+charge-checked PWL currents, circuit connections/parameters, sampling, transient
+convergence and noise integration. A behavioral netlist tests the analytical
+model; Rogelio's transistor calculation tests its physical adequacy. No message
+or package is sent without an explicit user instruction.
+
+### 6. The ion signal from a track
 
 **Purpose:** Establish the spatial and temporal input the electronics must handle.
 
@@ -240,9 +276,9 @@ The current illustrative 260-ion packet is not a simulated event or proof of a
 charge-per-frame distribution. A straight 10 cm track along drift may be used
 as a diagnostic extreme, not as the event ensemble.
 
-### 6. The NAUSICA design
+### 7. The NAUSICA design
 
-**Purpose:** Select and assemble the conceptual design using Sections 4 and 5.
+**Purpose:** Select and assemble the conceptual design using Sections 4--6.
 
 Relate pitch and sampling to image quality; capacitance to gain and range;
 feedback discharge to charge retention and temporal reconstruction; and noise
@@ -258,7 +294,7 @@ Text moved from Section 4 for use here when choosing feedback time and sampling:
 > distribution on each pad.
 
 The Section 4 superposition paragraph now introduces multiple arrivals at a pad,
-separately from retention between samples. Section 6 is not yet in the active
+separately from retention between samples. Section 7 is not yet in the active
 manuscript, so the moved text is retained here for its draft.
 
 Describe the proposed circuit implementation and compare the analytical model
@@ -280,7 +316,7 @@ not silently fix the architecture to MARS. Full cathode instrumentation would
 use a different number and arrangement of units. The inherited assertion of
 dead-area-free tiling needs an actual layout justification.
 
-### 7. Track reconstruction and performance
+### 8. Track reconstruction and performance
 
 **Purpose:** Demonstrate that the selected design preserves the ion track.
 
@@ -302,7 +338,7 @@ Use a circuit-supported analytical response for event production where possible;
 running SPICE for every pad of every event is not required. A full comparison of
 signal and background selections can be developed later.
 
-### 8. Conclusions
+### 9. Conclusions
 
 **Purpose:** State the resulting conceptual design and demonstrated imaging
 performance, followed by the specific work needed for implementation.
@@ -315,9 +351,10 @@ validation. Avoid repeating the development plan in the published conclusions.
 
 | Stage | Role | Present status |
 | --- | --- | --- |
-| Section 4 | Analytical current-to-voltage response, informed by the supplied CSA calculator | Adapted model implemented; manuscript integration pending |
-| Section 6 | Transistor-level design and SPICE response to realistic pad currents | Circuit calculations/results still need to be supplied or connected and assessed |
-| Section 7 | Achievable response and noise parameters for event reconstruction | Pending circuit comparison and noise model |
+| Section 4 | Ideal current-to-voltage response | Implemented and in the manuscript |
+| Section 5 | Finite gain, bandwidth and sampled-charge noise | Draft and tested Python rewrite complete; numerical examples await author review |
+| Section 7 | Transistor-level design and SPICE response to realistic pad currents | Circuit calculations/results still need to be supplied or connected and assessed |
+| Section 8 | Achievable response and noise parameters for event reconstruction | Pending circuit comparison and noise model |
 
 The exchange is: our track model supplies realistic input currents; Rogelio's
 circuit work establishes the achievable response; the track reconstruction
@@ -337,6 +374,8 @@ Paths below are relative to this plan.
 
 | Item | Location and status |
 | --- | --- |
+| Finite-gain CSA and noise | [realistic_csa.py](../../src/ion_signal/realistic_csa.py), [configuration](../../config/realistic_csa.toml), [benchmark outputs](../../results/realistic_csa/benchmarks.json) |
+| Specs to SPICE | [handoff recipe](readout/specs_to_spice.md), [PWL inputs and behavioral netlists](../../results/realistic_csa/spice/) |
 | Single-ion physics and transport | [physics.py](../../src/ion_signal/physics.py) |
 | Arrival benchmarks and linear CSA | [readout.py](../../src/ion_signal/readout.py) |
 | Numerical inputs | [detector.toml](../../config/detector.toml), [readout.toml](../../config/readout.toml) |
@@ -382,23 +421,23 @@ design section rather than repeated as specifications.
 **Focusing update:** The main text now introduces the uniform-field flux
 estimate, which motivates 0.5 mm holes at 2 mm pitch with the existing
 5 kV drop across the 10 mm IFG. Higher voltages are not the preferred
-design direction. Appendix B is reserved for the quantitative focusing
+design direction. Appendix C is reserved for the quantitative focusing
 and collection study that will test the near-unit-efficiency assumption.
 That calculation remains pending; it is distinct from the flux estimate.
 Keep weighting-potential derivations in Appendix A and place any separate
-numerical-validation appendix after Appendix B.
+numerical-validation appendix after Appendix C.
 
 | Current material | Destination |
 | --- | --- |
-| Scope and definitions | Essential definitions at first use in Sections 3–5 |
+| Scope and definitions | Essential definitions at first use in Sections 3–6 |
 | Detector definition and voltages | Concise geometry in Section 3; detailed inputs where needed |
-| Focusing entrance argument | Brief estimate in Section 3; quantitative collection study in Appendix B |
-| Transport and diffusion | Section 5, referring back to Section 2 instead of rederiving it twice |
+| Focusing entrance argument | Brief estimate in Section 3; quantitative collection study in Appendix C |
+| Transport and diffusion | Section 6, referring back to Section 2 instead of rederiving it twice |
 | Weighting potential and single-ion signal | Essential results in Section 4 |
 | Central-pad derivation and shape comparison | Appendix A, with selected results retained in Section 4 |
 | Pulse-duration definitions and numerical checks | Duration derivations in Appendix A; separate validation appendix if needed |
-| Implications for the next physics stage | Replace with the actual event calculation in Section 5 |
-| Validation, reproduction and remaining work | Scientific validation after Appendix B if needed; commands and implementation instructions in repository documentation |
+| Implications for the next physics stage | Replace with the actual event calculation in Section 6 |
+| Validation, reproduction and remaining work | Scientific validation after Appendix C if needed; commands and implementation instructions in repository documentation |
 
 Keep model assumptions and boundary conditions beside the results they qualify.
 Do not move all limitations to an appendix. Remove repeated warnings, historical
@@ -419,15 +458,19 @@ paper narrative. Retain useful technical material in the repository.
 - Circuit inputs: obtain Rogelio's applicable netlists, device assumptions,
   simulation conditions and output/noise results. Existing PWL files provide
   initial physical input currents for comparison; event-derived examples follow
-  from Section 5.
+  from Section 6.
 - The title currently uses NAUSICAA while the expanded acronym in the body uses
   NAUSICA. Settle the final spelling with the author rather than silently
   changing the reviewed text.
 
 ## Working method and next step
 
-Work through the sections in order. The next task is author review of the
-Section 4 and Appendix A drafts, beginning with the section's opening. The author
+Section 5 and Appendix B are drafted, and the parallel Python implementation
+has passed its tests and independent review. The next task is author review of
+the section and illustrative numerical cases. The specs-to-SPICE handoff is
+generated but has not been executed in SPICE; the transistor comparison remains
+a separate task. Author review of Appendix A also
+remains pending; the event-data study follows as Section 6. The author
 has shortened the electronics discussion and closed Section 3 with its
 parameter summary. The discarded roadmap paragraph has been removed and
 the commented original Section 3 moved to the end of the source. Preserve

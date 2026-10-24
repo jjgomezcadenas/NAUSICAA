@@ -1,0 +1,71 @@
+# Illustrative linear circuit benchmark, not a fitted or validated X-FAB design.
+[electronics]
+feedback_capacitance_F = 3e-15
+input_capacitance_F = 250e-15 # Excludes Cf; total detector + amplifier input shunts.
+feedback_resistance_ohm = 1e14 # Explicit design assumption, no artificial upper cap.
+open_loop_gain = 1000.0
+amplifier_pole_Hz = 1000.0 # A(s)=A0/(1+s/(2*pi*fp)); not closed-loop bandwidth.
+
+[readout]
+sample_interval_s = 0.01
+sampling_aperture_s = 0.00001 # Trailing rectangular average ending at sample time.
+sample_times_s = [-0.01, 0.0, 0.01, 0.02, 0.03, 0.04, 0.05]
+target_interval_end_s = 0.01
+snr_threshold = 5.0 # Benchmark criterion, not a false-positive probability claim.
+
+[noise]
+voltage_white_V_per_sqrtHz = 5e-9
+voltage_flicker_V2 = 2.5e-15 # S_e(f)=e_white^2 + this coefficient/f, f in Hz.
+current_white_A_per_sqrtHz = 0.0
+low_frequency_Hz = 0.1 # Explicit low-frequency regularisation, not automatically 1/T.
+high_frequency_Hz = 1000000.0
+temperature_K = 293.15
+passive_feedback_thermal = true # 4kBT/Rf resistor benchmark; not MOS noise prediction.
+
+[numerics]
+start_s = -0.012
+end_s = 0.05
+max_step_s = 0.000005
+noise_relative_tolerance = 1e-7
+
+[provenance]
+source = "Rogelio supplied readout/rogelio_reference.html; kept unchanged"
+status = "Cf and illustrative detector capacitance inspired by source; all other electronic/noise parameters are explicit study assumptions, not foundry values"
+model = "Finite-gain one-pole linear amplifier, input shunt capacitance and linear feedback; no saturation, nonlinear pseudo-resistor, additional amplifier poles or correlated noise sources"
+arrivals = "Specified identical central trajectories at one pad; no event ensemble, no diffusion in final gap, no charge renormalization"
+
+[[cases]]
+id = "one_ion"
+label = "One ion collected at mid-frame"
+arrival_kind = "simultaneous"
+ions = 1
+collection_time_s = 0.005
+
+[[cases]]
+id = "simultaneous_1000"
+label = "1000 simultaneous arrivals at mid-frame"
+arrival_kind = "simultaneous"
+ions = 1000
+collection_time_s = 0.005
+
+[[cases]]
+id = "spread_1000"
+label = "1000 evenly spaced arrivals over one frame"
+arrival_kind = "evenly_spaced"
+ions = 1000
+arrival_start_s = 0.0
+arrival_duration_s = 0.01
+
+[[cases]]
+id = "late_1000"
+label = "1000 arrivals 50 us before frame end"
+arrival_kind = "simultaneous"
+ions = 1000
+collection_time_s = 0.00995
+
+[[cases]]
+id = "history_2000"
+label = "1000 arrivals in previous frame and 1000 in target frame"
+arrival_kind = "groups"
+ions_per_group = [1000,1000]
+collection_times_s = [-0.005,0.005]
