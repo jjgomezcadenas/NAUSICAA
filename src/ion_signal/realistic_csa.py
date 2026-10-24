@@ -28,13 +28,20 @@ class CSA:
     def nominal_discharge_time_s(self):
         return self.feedback_resistance_ohm*self.feedback_capacitance_F
 
+    def amplifier_gain(self, frequency_Hz):
+        """Complex open-loop gain A(i2pi f); frequency in Hz, gain dimensionless."""
+        f=np.asarray(frequency_Hz,dtype=float)
+        if np.any(~np.isfinite(f)) or np.any(f<0):
+            raise ValueError('Frequency must be finite and nonnegative')
+        return self.open_loop_gain/(1+1j*f/self.amplifier_pole_Hz)
+
     def transfer(self, frequency_Hz):
         """(output V/input A, output V/input voltage-noise V), s=i2pi f."""
         f=np.asarray(frequency_Hz,dtype=float)
         if np.any(~np.isfinite(f)) or np.any(f<0):
             raise ValueError('Frequency must be finite and nonnegative')
         s=2j*np.pi*f
-        a=self.open_loop_gain/(1+s/(2*np.pi*self.amplifier_pole_Hz))
+        a=self.amplifier_gain(f)
         yf=1/self.feedback_resistance_ohm+s*self.feedback_capacitance_F
         denominator=s*self.input_capacitance_F+(1+a)*yf
         return -a/denominator, a*(s*self.input_capacitance_F+yf)/denominator

@@ -46,7 +46,10 @@ his assessment, not an independent Pangram test.
 | Section 3 opening paragraphs, before Charge collection and focusing | Green; author-revised and approved |
 | Section 3, Charge collection and focusing | Green; approved through the end of this subsection |
 | Section 3, Pixel electronics and readout | Green; author-revised and approved on 24 October; preserve current wording |
-| Parameters of the design and subsequent text | Not covered by this green approval; continue review |
+| Parameters of the design and Section 4 | Not covered by this green approval; continue review |
+| Section 5 opening paragraph, before Finite gain and response time | Green; author wording with approved typo corrections and removal of repeated gain/bandwidth phrase; retain final SPICE sentence |
+| Section 5, Finite gain and response time | Green; full active subsection in nausica.tex approved, including the gain figure, current-to-voltage response and Laplace-transform derivation of the integration limit; preserve current wording |
+| Remaining Section 5 reference draft and appendices | Draft; continue author review |
 
 The segment approved on 23 October starts at `\subsection{Principle of operation}`
 and ends immediately before `\subsection{Pixel electronics and readout}`.
@@ -217,17 +220,32 @@ capacitances and discharge times separate from the eventual design choices.
 
 ### 5. Beyond the ideal CSA model
 
+**Editing location:** The author is incorporating the reviewed wording directly
+in `nausica.tex`. `section_beyond_ideal.tex` is the unchanged reference draft;
+its input is currently commented out. Apply approved corrections to the active
+text in `nausica.tex`, not to the reference draft. The active section currently contains the opening paragraph and the finite-gain
+discussion. The approved explanation of frequency-dependent gain and the
+normalized gain figure are now included there. Appendix cross-references to
+frame-estimator and noise equations remain unresolved until those are incorporated.
+
 **Purpose:** Calculate the response and sampled-charge noise for specified ion
 arrivals at one pad, extending the ideal CSA to finite gain, bandwidth and input
 capacitance. Keep signal and noise transfer functions consistent.
 
 **Drafted, 24 October:** [section_beyond_ideal.tex](section_beyond_ideal.tex) is
-included after Section 4. [appendix_realistic_csa.tex](appendix_realistic_csa.tex)
+retained unchanged as the reference draft; reviewed text is incorporated directly
+in the active manuscript. [appendix_realistic_csa.tex](appendix_realistic_csa.tex)
 is Appendix B; the pending focusing appendix is now C. The section defines
 controlled k-ion arrivals, a two-sample frame-charge estimator, its bias and its
 noise covariance. The implementation and independent checks are complete. Generated numerical
 results remain outside the manuscript pending author review.
 Existing reviewed manuscript prose is unchanged.
+
+**Gain figure:** `scripts/build_gain_figure.py` generates the normalized
+open-loop magnitude plot from `CSA.amplifier_gain`, with logarithmic f/fa and
+linear |A|/A0 axes and the 1/sqrt(2) point marked. `make note` regenerates
+`generated/amplifier_gain.pdf`; no particular amplifier performance is implied
+by this normalized curve.
 
 **Implementation:** A delegated agent has rewritten the useful circuit assumptions
 from Rogelio's HTML in Python, preserving the original as provenance. Shared

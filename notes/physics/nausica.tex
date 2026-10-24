@@ -4,6 +4,7 @@
 \usepackage{lmodern,microtype}
 \usepackage[a4paper,margin=24mm,headheight=15pt]{geometry}
 \usepackage{amsmath,amssymb,graphicx,booktabs,array}
+\usepackage{mathtools}
 \usepackage{xcolor,enumitem,fancyhdr}
 \input{itaca_defs}
 \usepackage[numbers,sort&compress]{natbib}
@@ -294,7 +295,79 @@ a bucket of \SI{10}{\milli\second} contains on average about $10^3$ ions, which 
  \label{eq:pad_superposition}
 \end{equation}
 
-\input{section_beyond_ideal}
+%\input{section_beyond_ideal}
+
+\section{Beyond the ideal CSA model}
+\label{sec:realistic_csa}
+
+The next step is to make our model more realistic. The ideal CSA described in the previous section keeps its input at a fixed potential and responds immediately to an input charge.  Instead, a real amplifier has finite gain and a finite bandwidth. This has two implications. With finite gain, the input voltage is no longer fixed, and the output signal is smaller than the ideal value $Q/C_{f}$. Finite bandwidth limits how quickly the output can respond to the arriving current. Electronic noise also sets a limit on the minimum charge that can be measured. In this section, we extend the model to include these effects. The more realistic CSA model also includes the capacitance of the pad and amplifier input. The feedback circuit consists of a capacitor and a MOS discharge path, represented here by an effective resistance. Our improved model, however, still assumes a linear response. The range of validity of this assumption will be established by our last step, using  SPICE simulations.
+
+
+\subsection{Finite gain and response time}
+
+\begin{figure}[!htbp] 
+ \centering
+ \includegraphics[width=0.85\linewidth]{amplifier_gain.pdf}
+ \caption{Normalized open-loop gain of the amplifier, $|A(f)|/A_0=[1+(f/f_a)^2]^{-1/2}$. At low frequencies the gain approaches $A_0$. The marked point is $f=f_a$, where its magnitude is $A_0/\sqrt{2}$.}
+ \label{fig:amplifier_gain}
+\end{figure}
+
+Define $C_{\rm in}$ as the capacitance between the input node and ground, including the pad, amplifier input and stray capacitances, but excluding $C_f$. Let $A_0$ be the amplifier gain for a constant input. When the input varies rapidly compared with the amplifier's response time, the response is weaker. This can be described by replacing the constant gain with a frequency-dependent gain
+%
+\begin{equation}
+ A(s)=\frac{A_0}{1+s/\omega_a},\qquad V(s)=-A(s)V_{\rm in}(s),
+ \label{eq:realistic_gain}
+\end{equation}
+%
+Here $V_{\rm in}(s)$ and $V(s)$ are the Laplace transforms of the input and output voltages. For a sinusoidal component of the input at frequency $f$, we set $s=2\pi\mathrm{i}f$.  Furthermore, $\omega_a=2\pi f_a$, where $f_a$ is the frequency at which the gain magnitude falls to $A_0/\sqrt{2}$.
+
+Notice the limits: at low frequencies, $2\pi f\ll\omega_a$, the denominator is close to one and the gain is approximately $A_0$. As the frequency increases, the denominator reduces the gain. Thus $A_0$ specifies the gain in the limit of slowly varying signals, while $\omega_a$ determines how rapidly the input can change before the response is reduced. This is illustrated in Figure~\ref{fig:amplifier_gain}, which shows that the gain remains close to $A_0$ for frequencies well below $f_a$, falls to $A_0/\sqrt{2}$ at $f=f_a$, and decreases further as the frequency increases. See Appendix~\ref{app:realistic_csa}  for a full derivation. 
+
+
+The gain $A(s)$ describes how the amplifier converts its input voltage into an output voltage. To obtain the response to the current induced on the pad, we must also include the input capacitance $C_{\rm in}$ and the feedback elements $C_f$ and $R_f$. Part of the input current charges $C_{\rm in}$, while the rest flows through the feedback capacitor and discharge path. Balancing these currents gives $H_I(s)$, the current-to-voltage response of the complete CSA (Appendix~\ref{app:realistic_csa}):
+%
+\begin{equation}
+ H_I(s)\equiv\frac{V(s)}{I(s)}
+ =-\frac{A(s)}{sC_{\rm in}+[1+A(s)](R_f^{-1}+sC_f)}.
+ \label{eq:realistic_transimpedance}
+\end{equation}
+%
+
+To isolate the effect of finite gain, we neglect the amplifier response time and feedback discharge. In this approximation, we replace $A(s)$ by $A_0$ and neglect $R_f^{-1}$.  Equation~\eqref{eq:realistic_transimpedance} reduces to
+%
+\begin{equation}
+ H_I(s)=-\frac{1}{s\left[C_f+(C_{\rm in}+C_f)/A_0\right]}.
+ \label{eq:realistic_integrating_limit}
+\end{equation}
+%
+For this calculation, we take the start of the input as $t=0$, with zero initial accumulated charge. Taking the Laplace transform gives
+%
+\begin{equation}
+ Q(t)=\int_0^t i(t')\,\dd t'
+ \qquad\xleftrightarrow{\;\mathcal{L}\;}\qquad
+ Q(s)=\frac{I(s)}{s}.
+ \label{eq:realistic_charge_transform}
+\end{equation}
+%
+Thus $I(s)/s$ represents the accumulated charge, and
+%
+\begin{equation}
+ V(s)=H_I(s)I(s)
+ =-\frac{I(s)/s}{C_f+(C_{\rm in}+C_f)/A_0}
+ =-\frac{Q(s)}{C_f+(C_{\rm in}+C_f)/A_0}.
+ \label{eq:realistic_voltage_transform}
+\end{equation}
+%
+Returning to the time domain, the output voltage is
+\begin{equation}
+ V(t)=-\frac{Q(t)}{C_f+(C_{\rm in}+C_f)/A_0}.
+ \label{eq:realistic_charge_gain}
+\end{equation}
+%
+And we recover the ideal value $-Q(t)/C_f$ when  $A_0C_f\gg C_{\rm in}+C_f$. 
+
+
+
 
 \clearpage
 \appendix
