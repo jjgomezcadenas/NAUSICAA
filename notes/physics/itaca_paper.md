@@ -503,10 +503,22 @@ original and replacement one at a time,
 wait for approval, apply the agreed change, and then proceed. Comment out
 proposed removals for review before deleting material when appropriate.
 
+**Writing rule explicitly requested by the author:** Use plain wording in the
+first draft, rather than waiting for the author to ask for a simpler version.
+Prefer familiar words and one idea per sentence. Explain the physical meaning
+and connections between equations, but do not repeat their mathematics in
+elaborate prose. Technical precision does not justify unnecessarily complicated
+language. For example, prefer "following the same trajectory" to "following the
+same approach", and "The integral adds the voltage signals produced by charge
+delivered at different times" to "Each charge increment contributes a delayed
+copy of this response". Preserve the author's approved wording. This rule does
+not authorise unsolicited manuscript edits.
+
 Keep physical calculations in `src/ion_signal`, use SI internally, and generate
 paper values and figures reproducibly. Run the relevant physical tests when
-changing calculations. Compile LaTeX and inspect the build log after manuscript
-edits; do not visually inspect the PDF unless explicitly requested. Keep scratch
+changing calculations. Compile LaTeX only when the author explicitly requests it; do not compile
+automatically after manuscript edits. When compilation is requested, inspect the
+build log. Do not visually inspect the PDF unless explicitly requested. Keep scratch
 work under `work/`. Do not commit or push without a new user request.
 
 Update this plan as sections and calculations are completed, preserving the

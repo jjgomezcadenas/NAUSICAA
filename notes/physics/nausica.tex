@@ -366,6 +366,68 @@ Returning to the time domain, the output voltage is
 %
 And we recover the ideal value $-Q(t)/C_f$ when  $A_0C_f\gg C_{\rm in}+C_f$. 
 
+\subsection{Several ions in a readout frame}
+
+For k ions following the same trajectory and collected at times $t_j$, the input current is the sum of the single-ion currents calculated in Section~\ref{sec:single_ion}:
+%
+\begin{equation}
+ i_k(t)=\sum_{j=1}^{k}i_1(t-t_j).
+ \label{eq:realistic_packet_current}
+\end{equation}
+%
+The current-to-voltage response derived above then gives
+%
+\begin{equation}
+ V_k(s)=H_I(s)I_k(s).
+ \label{eq:realistic_packet_transform}
+\end{equation}
+%
+Returning to the time domain, this product becomes
+%
+\begin{equation}
+ V_k(t)=\int_{-\infty}^{t}h_I(t-t')i_k(t')\,\dd t',
+ \label{eq:realistic_packet}
+\end{equation}
+%
+where $h_I(t)$ is the voltage response per unit charge injected instantaneously at $t=0$.
+
+If no new charge arrived, the voltage would decay from $\overline V_{n-1}$ to $\alpha\overline V_{n-1}$ during one frame of duration $\Delta t$, where $\alpha=e^{-\Delta t/\tau_f}$ and $\tau_f=R_fC_f$. Subtracting this contribution from $\overline V_n$ gives the voltage due to a new charge arriving during the frame.
+
+\[
+\overline V_n-\alpha\overline V_{n-1}.
+\]
+
+We take the current $I_n=Q_n/\Delta t$ as constant during the frame and measure the voltage at its beginning and end. Applying the ideal CSA solution in Eq.~\eqref{eq:csa_solution} gives
+%
+\begin{equation}
+ \overline V_n-\alpha\overline V_{n-1}
+ =-\frac{I_n}{C_f}\int_{t_{n-1}}^{t_n}
+ e^{-(t_n-t')/\tau_f}\,\dd t'.
+ \label{eq:realistic_frame_integral}
+\end{equation}
+%
+The exponential accounts for discharge between the arrival time $t'$ and the sample time $t_n$. Evaluating the integral gives
+\begin{equation}
+ \overline V_n-\alpha\overline V_{n-1}
+ =-\frac{I_n\tau_f}{C_f}(1-\alpha)
+ =-\frac{Q_n}{C_f}\frac{1-\alpha}{\Delta t/\tau_f}.
+ \label{eq:realistic_frame_increment}
+\end{equation}
+Moving the previous-frame contribution to the right gives
+\begin{equation}
+ \overline V_n=\alpha\overline V_{n-1}
+ -\frac{Q_n}{C_f}\frac{1-\alpha}{\Delta t/\tau_f}.
+ \label{eq:realistic_frame_voltage}
+\end{equation}
+Solving for the charge gives
+%
+\begin{equation}
+ \widehat Q_n=-K\left(\overline V_n-\alpha\overline V_{n-1}\right),\qquad
+ K=C_f\frac{\Delta t/\tau_f}{1-\alpha},
+ \label{eq:realistic_estimator}
+\end{equation}
+%
+We can now calculate the voltages $\overline V_n$ using the CSA response $H_I(s)$ obtained previously (Eq.~\eqref{eq:realistic_transimpedance}) and insert them into Eq.~\eqref{eq:realistic_estimator} to obtain $\widehat Q_n$. This allows us to compare this estimate with the input charge $Q_n=\int_{t_{n-1}}^{t_n}i_k(t)\,\dd t$, and from there assess how accurately we recover the charge. We can consider now two illustrative cases: all ions arriving simultaneously, and ions arriving uniformly over a frame of duration $\Delta t$.
 
 
 
