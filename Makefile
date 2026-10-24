@@ -39,3 +39,11 @@ check: test readout note
 ltspice-study:
 	$(PYTHON) scripts/build_ltspice_study.py --simulator "$(LTSPICE)"
 	$(PYTHON) scripts/analyze_ltspice_study.py
+
+.PHONY: shaping-study
+shaping-study:
+	$(PYTHON) scripts/build_shaping_study.py --simulator "$(LTSPICE)"
+
+.PHONY: ion-shaping-study
+ion-shaping-study:
+	$(PYTHON) scripts/build_shaping_study.py --include-ion-frames --simulator "$(LTSPICE)"

@@ -20,3 +20,7 @@ notes/physics/*.synctex.gz
 results/ltspice/decks/*.raw
 results/ltspice/decks/*.log
 results/ltspice/decks/*.db
+
+results/ltspice/shaping/decks/*.raw
+results/ltspice/shaping/decks/*.log
+results/ltspice/shaping/decks/*.db

@@ -6,6 +6,27 @@ Manuscript: [nausica.tex](nausica.tex). This document records the intended paper
 the work already available, and what remains. It does not replace the manuscript
 or authorise wholesale rewriting of the reviewed text.
 
+## Latest shaping calculation
+
+Short-pulse injection has been followed, on the author's instruction, by the
+10 ms ion-frame study. The current generated report is
+[shaping and ion-frame results](../../results/ltspice/shaping/README.md).
+It includes 180/200 microsecond boundary averaging and direct transistor checks
+around S/N=5. This supersedes the earlier unfiltered sensitivity comparison as
+a description of what the present model can achieve with processing. It remains
+conditional on the supplied zero-flicker model and continuous waveform access.
+No green prose or manuscript values have been changed.
+
+## Topmetal comparison and shaping study
+
+The agreed four-step plan and completed literature audit are recorded in
+[Topmetal ENC benchmark plan](readout/topmetal_enc_plan.md). Step 1 establishes
+the corrected 121 ± 9 electron result, the 200 ms feedback setting and
+trapezoidal processing. Exact filter timing and sampling settings remain
+unreported in the sources checked. The older 180 microsecond shaping result
+belongs to a different, uncalibrated chip generation. Steps 2–4 have not started;
+no manuscript edits are authorized by this literature review.
+
 ## Latest circuit study — LTSpice branch
 
 Rogelio's supplied transistor simulation is preserved in `../../LTSpice/`.

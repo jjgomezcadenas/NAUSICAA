@@ -1,0 +1,532 @@
+{
+  "source_sha256": {
+    "results/ltspice/decks/uniform_N1_r3.cir": "095b8ca8099e37fd21bf25a8f5e4ef1b65d61efb9f069b1771c3bb1421590ace",
+    "LTSpice/180nm_professional.inc": "b69cd6849bc3145b91653a7411be487a9a5d6ed2c30192c0a4dd61c7dda2efa4",
+    "scripts/build_shaping_study.py": "e4e28293b2e4a6f73de48f766b7988597ea6a45a52faa7a7bb2bb9032d190d00",
+    "src/ion_signal/shaping.py": "b236a93fb0f315e5551169030ed30e11e62cc2f45dd94c7261756d6f1a0bdf61",
+    "results/ltspice/noise_400.csv": "c8fe1bd65c98604d9eec17f05523ef7b6f846dc06a0d93600011a498b5a6374d",
+    "results/ltspice/noise_200.csv": "66c9d7a91f38e0e7edbfe26aa2bd001a504cf8ade66bd876752c644ef21b2d2b",
+    "results/ltspice/study.json": "b68e54a7f05dedfa6415425e50f55d9cf295966eb158834cece0a5dc8125b741",
+    "results/ltspice/decks/uniform_r2.pwl": "445df6ee9fa6dc7f1e49d063c6d7f41fbc39eb72372c663100fcddd23869b35f",
+    "results/ltspice/uniform_N1_r1.csv.gz": "de05504b0a7775834a9b815fd1c100465cd8b83c99cccad4f0206dc2438f27ac",
+    "results/ltspice/uniform_N1_r2.csv.gz": "665105da267b0f452aa5bd220751b31fc46d9ca27b9cd618dee5756a759ee1bd"
+  },
+  "simulator": "/Users/jjgomezcadenas/Projects/NAUSICAA/notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app/Contents/MacOS/LTspice",
+  "simulator_version": "LTspice 17.2.4 native Mac",
+  "conditions": {
+    "external_pad_F": 5e-12,
+    "feedback_F": 3e-15,
+    "temperature_K": 293.15,
+    "noise_band_Hz": [
+      0.1,
+      1000000.0
+    ],
+    "frame_s": 0.01,
+    "estimator_nominal_tau_s": 0.3,
+    "pulse_start_s": 0.005,
+    "pulse_plateau_s": 1e-06,
+    "pulse_edge_s": 1e-08,
+    "main_flat_top": "G=T; scan 0,T,2T",
+    "pole_zero_correction": false,
+    "averaging": "continuous analog waveform; ADC sampling/quantization excluded",
+    "rise_scan_s": [
+      0.00017999999999999998,
+      0.00019999999999999998,
+      0.00025,
+      0.0003,
+      0.00035
+    ]
+  },
+  "limitations": [
+    "Original transistor dimensions/biases unchanged, including M5.",
+    "Supplied model has zero flicker noise; stationary bias-point PSD.",
+    "180 us belongs to an older uncalibrated chip result, not the corrected 2024 measurement.",
+    "Fixed noiseless-template amplitude time; no maximization of noisy traces.",
+    "Centered frame-boundary averages require latency T/2 and mix neighbouring frames."
+  ],
+  "injection_transients": [
+    {
+      "ions": 0,
+      "refinement": 1,
+      "charge_C": 0.0,
+      "peak_delta_V": -0.0
+    },
+    {
+      "ions": 1,
+      "refinement": 1,
+      "charge_C": 1.6021766339999443e-19,
+      "peak_delta_V": 7.3181864040927636e-06
+    },
+    {
+      "ions": 1000,
+      "refinement": 1,
+      "charge_C": 1.6021766339999442e-16,
+      "peak_delta_V": 0.007306149102973447
+    },
+    {
+      "ions": 16000,
+      "refinement": 1,
+      "charge_C": 2.563482614399911e-15,
+      "peak_delta_V": 0.11462711813665727
+    },
+    {
+      "ions": 0,
+      "refinement": 2,
+      "charge_C": 0.0,
+      "peak_delta_V": -0.0
+    },
+    {
+      "ions": 1,
+      "refinement": 2,
+      "charge_C": 1.6021766339999749e-19,
+      "peak_delta_V": 7.314772684896553e-06
+    },
+    {
+      "ions": 1000,
+      "refinement": 2,
+      "charge_C": 1.6021766339999442e-16,
+      "peak_delta_V": 0.007306148687707181
+    },
+    {
+      "ions": 16000,
+      "refinement": 2,
+      "charge_C": 2.5634826143999107e-15,
+      "peak_delta_V": 0.11462711075918441
+    }
+  ],
+  "ion_frames_enabled": true,
+  "short_injection": [
+    {
+      "rise_s": 0.00017999999999999998,
+      "flat_s": 0.00017999999999999998,
+      "output_noise_rms_V": 0.0003263047268779227,
+      "signal_V_per_e": 7.31460902554593e-06,
+      "enc_e": 44.61000249477705,
+      "amplitude_time_s": 0.005197250000000197,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988209084776789,
+        "16000": 0.9794147712678065
+      },
+      "gain_refinement_relative": 0.00046648744153388044,
+      "noise_grid_relative": 2.373815179979033e-07,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.00017999999999999998,
+      "flat_s": 0.0,
+      "output_noise_rms_V": 0.0003234317117182307,
+      "signal_V_per_e": 7.265523864725636e-06,
+      "enc_e": 44.515952013935646,
+      "amplitude_time_s": 0.005181750000000182,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988265528881496,
+        "16000": 0.9795615611851788
+      },
+      "gain_refinement_relative": 0.00024747661685942113,
+      "noise_grid_relative": 4.098401218399772e-08,
+      "noise_quadrature_relative": 2.220446049250313e-16
+    },
+    {
+      "rise_s": 0.00017999999999999998,
+      "flat_s": 0.00035999999999999997,
+      "output_noise_rms_V": 0.0003284036597072553,
+      "signal_V_per_e": 7.31460902554593e-06,
+      "enc_e": 44.89695328353448,
+      "amplitude_time_s": 0.005197250000000197,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988209084776789,
+        "16000": 0.9794147712678065
+      },
+      "gain_refinement_relative": 0.00046648744153388044,
+      "noise_grid_relative": 3.7572479838487993e-07,
+      "noise_quadrature_relative": 2.220446049250313e-16
+    },
+    {
+      "rise_s": 0.00019999999999999998,
+      "flat_s": 0.00019999999999999998,
+      "output_noise_rms_V": 0.0003104826312329632,
+      "signal_V_per_e": 7.314589515941857e-06,
+      "enc_e": 42.447034185073356,
+      "amplitude_time_s": 0.005217000000000217,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208889543335,
+        "16000": 0.9794148055124516
+      },
+      "gain_refinement_relative": 0.000466464153486168,
+      "noise_grid_relative": 3.031561259803084e-07,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.00019999999999999998,
+      "flat_s": 0.0,
+      "output_noise_rms_V": 0.0003073656420048358,
+      "signal_V_per_e": 7.270415895760153e-06,
+      "enc_e": 42.27621176170684,
+      "amplitude_time_s": 0.005201750000000202,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988259707004213,
+        "16000": 0.979546814381025
+      },
+      "gain_refinement_relative": 0.00026948596395404145,
+      "noise_grid_relative": 7.763723419706992e-08,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.00019999999999999998,
+      "flat_s": 0.00039999999999999996,
+      "output_noise_rms_V": 0.00031293178870236326,
+      "signal_V_per_e": 7.314589515941857e-06,
+      "enc_e": 42.78186602547427,
+      "amplitude_time_s": 0.005217000000000217,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208889543335,
+        "16000": 0.9794148055124516
+      },
+      "gain_refinement_relative": 0.000466464153486168,
+      "noise_grid_relative": 4.6391572050552554e-07,
+      "noise_quadrature_relative": 2.220446049250313e-16
+    },
+    {
+      "rise_s": 0.00025,
+      "flat_s": 0.00025,
+      "output_noise_rms_V": 0.00027998639520757546,
+      "signal_V_per_e": 7.314540438460196e-06,
+      "enc_e": 38.27805691460723,
+      "amplitude_time_s": 0.005266750000000267,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208609446905,
+        "16000": 0.9794148984502845
+      },
+      "gain_refinement_relative": 0.00046643055364792296,
+      "noise_grid_relative": 4.773990005535467e-07,
+      "noise_quadrature_relative": 2.220446049250313e-16
+    },
+    {
+      "rise_s": 0.00025,
+      "flat_s": 0.0,
+      "output_noise_rms_V": 0.00027609501900638297,
+      "signal_V_per_e": 7.279207604193726e-06,
+      "enc_e": 37.92926840653892,
+      "amplitude_time_s": 0.005251750000000252,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988249168177019,
+        "16000": 0.9795203488996272
+      },
+      "gain_refinement_relative": 0.0003090233547533572,
+      "noise_grid_relative": 1.720998450416289e-07,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.00025,
+      "flat_s": 0.0005,
+      "output_noise_rms_V": 0.0002833739890248435,
+      "signal_V_per_e": 7.314540438460196e-06,
+      "enc_e": 38.7411883779943,
+      "amplitude_time_s": 0.005266750000000267,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208609446905,
+        "16000": 0.9794148984502845
+      },
+      "gain_refinement_relative": 0.00046643055364792296,
+      "noise_grid_relative": 6.922391762032021e-07,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.0003,
+      "flat_s": 0.0003,
+      "output_noise_rms_V": 0.0002580004413811038,
+      "signal_V_per_e": 7.314491188763397e-06,
+      "enc_e": 35.272506962267855,
+      "amplitude_time_s": 0.005316250000000316,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208403229238,
+        "16000": 0.9794150128768084
+      },
+      "gain_refinement_relative": 0.00046639580905982747,
+      "noise_grid_relative": 6.631018609759565e-07,
+      "noise_quadrature_relative": 2.220446049250313e-16
+    },
+    {
+      "rise_s": 0.0003,
+      "flat_s": 0.0,
+      "output_noise_rms_V": 0.0002531731630521736,
+      "signal_V_per_e": 7.285052063611437e-06,
+      "enc_e": 34.752416433200814,
+      "amplitude_time_s": 0.005301750000000302,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988242165907587,
+        "16000": 0.9795027851390083
+      },
+      "gain_refinement_relative": 0.00033532343931885755,
+      "noise_grid_relative": 2.7255329304587406e-07,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.0003,
+      "flat_s": 0.0006,
+      "output_noise_rms_V": 0.0002624008662051765,
+      "signal_V_per_e": 7.314491188763397e-06,
+      "enc_e": 35.87411064330485,
+      "amplitude_time_s": 0.005316250000000316,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208403229238,
+        "16000": 0.9794150128768084
+      },
+      "gain_refinement_relative": 0.00046639580905982747,
+      "noise_grid_relative": 9.245473893138012e-07,
+      "noise_quadrature_relative": 2.220446049250313e-16
+    },
+    {
+      "rise_s": 0.00035,
+      "flat_s": 0.00035,
+      "output_noise_rms_V": 0.00024141229953839296,
+      "signal_V_per_e": 7.314441807489348e-06,
+      "enc_e": 33.004883474663494,
+      "amplitude_time_s": 0.005366000000000366,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208235701135,
+        "16000": 0.9794151229919711
+      },
+      "gain_refinement_relative": 0.00046637645663638594,
+      "noise_grid_relative": 8.548242316219756e-07,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.00035,
+      "flat_s": 0.0,
+      "output_noise_rms_V": 0.00023553710213635262,
+      "signal_V_per_e": 7.289212402120274e-06,
+      "enc_e": 32.313107252553095,
+      "amplitude_time_s": 0.005351750000000352,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988237150202648,
+        "16000": 0.9794902920065818
+      },
+      "gain_refinement_relative": 0.0003540845331768683,
+      "noise_grid_relative": 3.793292420173344e-07,
+      "noise_quadrature_relative": 0.0
+    },
+    {
+      "rise_s": 0.00035,
+      "flat_s": 0.0007,
+      "output_noise_rms_V": 0.0002468833541444736,
+      "signal_V_per_e": 7.314441807489348e-06,
+      "enc_e": 33.752863259050976,
+      "amplitude_time_s": 0.005366000000000366,
+      "gain_ratio_at_injected_counts": {
+        "1000": 0.9988208235701135,
+        "16000": 0.9794151229919711
+      },
+      "gain_refinement_relative": 0.00046637645663638594,
+      "noise_grid_relative": 1.1527410501699364e-06,
+      "noise_quadrature_relative": 0.0
+    }
+  ],
+  "ion_frames": [
+    {
+      "averaging_s": 0.00017999999999999998,
+      "output_noise_rms_V": 0.00042188174313592615,
+      "signal_V_per_ion": 7.22277159328329e-06,
+      "enc_equivalent_ions": 58.409952147489875,
+      "N_for_snr5_linear": 292.0497607374494,
+      "minimum_integer_N_linear": 293,
+      "gain_refinement_relative": 3.553593996952209e-06,
+      "noise_grid_relative": 6.725523558070989e-07,
+      "neighbour_packet_response_relative": {
+        "-0.01": 0.031015573147280175,
+        "0": 1.0,
+        "0.01": 0.009458807350716426
+      },
+      "signal_retained_vs_point_samples": 0.9986462986942312,
+      "noise_quadrature_relative": 2.220446049250313e-16,
+      "finite_count_checks": [
+        {
+          "ions": 292,
+          "snr": 4.997255133897432,
+          "calibrated_recovered_ions": 291.8894332397471,
+          "gain_relative_to_single_ion": 0.9996213467114627,
+          "timestep_refinement_relative": 9.927836053247319e-08
+        },
+        {
+          "ions": 293,
+          "snr": 5.014362663425665,
+          "calibrated_recovered_ions": 292.88868322085295,
+          "gain_relative_to_single_ion": 0.9996200792520578,
+          "timestep_refinement_relative": 5.666070890253394e-08
+        },
+        {
+          "ions": 294,
+          "snr": 5.031469813494251,
+          "calibrated_recovered_ions": 293.887911037739,
+          "gain_relative_to_single_ion": 0.9996187450263232,
+          "timestep_refinement_relative": 4.499804640012428e-09
+        }
+      ],
+      "verified_minimum_integer_N": 293
+    },
+    {
+      "averaging_s": 0.00019999999999999998,
+      "output_noise_rms_V": 0.000409802696881631,
+      "signal_V_per_ion": 7.220792527151748e-06,
+      "enc_equivalent_ions": 56.753146602770244,
+      "N_for_snr5_linear": 283.7657330138512,
+      "minimum_integer_N_linear": 284,
+      "gain_refinement_relative": 3.417482136836014e-06,
+      "noise_grid_relative": 7.151095084978465e-07,
+      "neighbour_packet_response_relative": {
+        "-0.01": 0.03115883343063074,
+        "0": 1.0,
+        "0.01": 0.009600720587373318
+      },
+      "signal_retained_vs_point_samples": 0.9983726659146797,
+      "noise_quadrature_relative": 2.220446049250313e-16,
+      "finite_count_checks": [
+        {
+          "ions": 283,
+          "snr": 4.984677952571908,
+          "calibrated_recovered_ions": 282.8961586099101,
+          "gain_relative_to_single_ion": 0.9996330692929687,
+          "timestep_refinement_relative": 7.280376002061217e-08
+        },
+        {
+          "ions": 284,
+          "snr": 5.002284978817242,
+          "calibrated_recovered_ions": 283.8954127516504,
+          "gain_relative_to_single_ion": 0.9996317350410223,
+          "timestep_refinement_relative": 4.45934010828708e-08
+        },
+        {
+          "ions": 285,
+          "snr": 5.019892128642785,
+          "calibrated_recovered_ions": 284.89467390695637,
+          "gain_relative_to_single_ion": 0.9996304347612505,
+          "timestep_refinement_relative": 2.0089995333982813e-08
+        }
+      ],
+      "verified_minimum_integer_N": 284
+    },
+    {
+      "averaging_s": 0.00025,
+      "output_noise_rms_V": 0.0003870051849158169,
+      "signal_V_per_ion": 7.215338447363413e-06,
+      "enc_equivalent_ions": 53.63645624374475,
+      "N_for_snr5_linear": 268.1822812187238,
+      "minimum_integer_N_linear": 269,
+      "gain_refinement_relative": 3.1131665593209235e-06,
+      "noise_grid_relative": 8.010638652411473e-07,
+      "neighbour_packet_response_relative": {
+        "-0.01": 0.03155404320878848,
+        "0": 1.0,
+        "0.01": 0.00999221826742046
+      },
+      "signal_retained_vs_point_samples": 0.997618565286817,
+      "noise_quadrature_relative": 2.220446049250313e-16,
+      "finite_count_checks": [
+        {
+          "ions": 268,
+          "snr": 4.994865239024487,
+          "calibrated_recovered_ions": 267.90687083633856,
+          "gain_relative_to_single_ion": 0.9996525031206663,
+          "timestep_refinement_relative": 3.494153111294196e-08
+        },
+        {
+          "ions": 269,
+          "snr": 5.013496446369207,
+          "calibrated_recovered_ions": 268.9061827738518,
+          "gain_relative_to_single_ion": 0.999651237077516,
+          "timestep_refinement_relative": 6.917845063458827e-08
+        },
+        {
+          "ions": 270,
+          "snr": 5.032127446595417,
+          "calibrated_recovered_ions": 269.9054836022621,
+          "gain_relative_to_single_ion": 0.9996499392676375,
+          "timestep_refinement_relative": 7.181684424928392e-08
+        }
+      ],
+      "verified_minimum_integer_N": 269
+    },
+    {
+      "averaging_s": 0.0003,
+      "output_noise_rms_V": 0.0003709278790000678,
+      "signal_V_per_ion": 7.209295433955056e-06,
+      "enc_equivalent_ions": 51.451335626091115,
+      "N_for_snr5_linear": 257.25667813045555,
+      "minimum_integer_N_linear": 258,
+      "gain_refinement_relative": 2.860206208765703e-06,
+      "noise_grid_relative": 8.656846193222378e-07,
+      "neighbour_packet_response_relative": {
+        "-0.01": 0.031992625641816194,
+        "0": 1.0,
+        "0.01": 0.010426681242345418
+      },
+      "signal_retained_vs_point_samples": 0.9967830365849504,
+      "noise_quadrature_relative": 0.0,
+      "finite_count_checks": [
+        {
+          "ions": 257,
+          "snr": 4.993346741315815,
+          "calibrated_recovered_ions": 256.91435908488836,
+          "gain_relative_to_single_ion": 0.9996667668672699,
+          "timestep_refinement_relative": 2.327042691874226e-08
+        },
+        {
+          "ions": 258,
+          "snr": 5.0127698317377725,
+          "calibrated_recovered_ions": 257.9137030290844,
+          "gain_relative_to_single_ion": 0.9996655156166062,
+          "timestep_refinement_relative": 8.94982761234786e-08
+        },
+        {
+          "ions": 259,
+          "snr": 5.032192363428226,
+          "calibrated_recovered_ions": 258.91301822579834,
+          "gain_relative_to_single_ion": 0.9996641630339704,
+          "timestep_refinement_relative": 1.4194408204382114e-08
+        }
+      ],
+      "verified_minimum_integer_N": 258
+    },
+    {
+      "averaging_s": 0.00035,
+      "output_noise_rms_V": 0.00035893112621799466,
+      "signal_V_per_ion": 7.202795061837925e-06,
+      "enc_equivalent_ions": 49.8322002967563,
+      "N_for_snr5_linear": 249.1610014837815,
+      "minimum_integer_N_linear": 250,
+      "gain_refinement_relative": 2.6556546692813043e-06,
+      "noise_grid_relative": 9.152788000843515e-07,
+      "neighbour_packet_response_relative": {
+        "-0.01": 0.03246523000049987,
+        "0": 1.0,
+        "0.01": 0.010894834235792381
+      },
+      "signal_retained_vs_point_samples": 0.9958842718280883,
+      "noise_quadrature_relative": 0.0,
+      "finite_count_checks": [
+        {
+          "ions": 249,
+          "snr": 4.99515611617292,
+          "calibrated_recovered_ions": 248.91962009469623,
+          "gain_relative_to_single_ion": 0.9996771891353262,
+          "timestep_refinement_relative": 5.153124638113127e-08
+        },
+        {
+          "ions": 250,
+          "snr": 5.015210267026867,
+          "calibrated_recovered_ions": 249.91896255683145,
+          "gain_relative_to_single_ion": 0.9996758502273259,
+          "timestep_refinement_relative": 8.496889858378154e-09
+        },
+        {
+          "ions": 251,
+          "snr": 5.035264877913765,
+          "calibrated_recovered_ions": 250.9183279434209,
+          "gain_relative_to_single_ion": 0.9996746133204021,
+          "timestep_refinement_relative": 7.637447141384257e-08
+        }
+      ],
+      "verified_minimum_integer_N": 250
+    }
+  ]
+}
