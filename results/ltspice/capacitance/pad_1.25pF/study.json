@@ -1,0 +1,260 @@
+{
+  "external_pad_F": 1.25e-12,
+  "averaging_s": 0.0003,
+  "conditions": {
+    "temperature_K": 293.15,
+    "noise_band_Hz": [
+      0.1,
+      1000000.0
+    ],
+    "feedback_F": 3e-15,
+    "frame_s": 0.01,
+    "estimator_nominal_tau_s": 0.3,
+    "pad_width_m": 0.0005,
+    "weighting_geometry": "square pad in grounded plane; finite 5 mm path, no charge renormalization",
+    "capacitance_estimate": "5 pF times (0.5/1)^2; area-scaling hypothesis only",
+    "intrinsic_transistor_capacitances": "unchanged; additional to external load",
+    "noise": "stationary supplied transistor models, zero flicker; ADC noise excluded"
+  },
+  "simulator": "/Users/jjgomezcadenas/Projects/NAUSICAA/notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app/Contents/MacOS/LTspice",
+  "simulator_version": "LTspice 17.2.4",
+  "source_sha256": {
+    "results/ltspice/decks/uniform_N1_r3.cir": "095b8ca8099e37fd21bf25a8f5e4ef1b65d61efb9f069b1771c3bb1421590ace",
+    "LTSpice/180nm_professional.inc": "b69cd6849bc3145b91653a7411be487a9a5d6ed2c30192c0a4dd61c7dda2efa4",
+    "results/ltspice/decks/uniform_r2.pwl": "445df6ee9fa6dc7f1e49d063c6d7f41fbc39eb72372c663100fcddd23869b35f",
+    "results/ltspice/shaping/study.json": "44c0323e1b60552a6359888acc897d51ba27966226b50bc72660d6f029a81054",
+    "scripts/build_capacitance_study.py": "e85144b314a921103f6e085e3f82798f2413cda254cbe9ad322cc622e32c425f",
+    "src/ion_signal/shaping.py": "b236a93fb0f315e5551169030ed30e11e62cc2f45dd94c7261756d6f1a0bdf61"
+  },
+  "transient_charge_checks": [
+    {
+      "kind": "injection",
+      "ions": 1,
+      "refinement": 1,
+      "relative_error": 1.5543122344752192e-15
+    },
+    {
+      "kind": "injection",
+      "ions": 1,
+      "refinement": 2,
+      "relative_error": 3.497202527569243e-14
+    },
+    {
+      "kind": "ions",
+      "ions": 1,
+      "refinement": 1,
+      "relative_error": 0.0
+    },
+    {
+      "kind": "ions",
+      "ions": 1,
+      "refinement": 2,
+      "relative_error": 0.0
+    },
+    {
+      "kind": "ions",
+      "ions": 201,
+      "refinement": 1,
+      "relative_error": 4.440892098500626e-16
+    },
+    {
+      "kind": "ions",
+      "ions": 201,
+      "refinement": 2,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "kind": "ions",
+      "ions": 202,
+      "refinement": 1,
+      "relative_error": 0.0
+    },
+    {
+      "kind": "ions",
+      "ions": 202,
+      "refinement": 2,
+      "relative_error": 0.0
+    },
+    {
+      "kind": "ions",
+      "ions": 203,
+      "refinement": 1,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "kind": "ions",
+      "ions": 203,
+      "refinement": 2,
+      "relative_error": 4.440892098500626e-16
+    },
+    {
+      "kind": "ions",
+      "ions": 204,
+      "refinement": 1,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "kind": "ions",
+      "ions": 204,
+      "refinement": 2,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "kind": "ions",
+      "ions": 205,
+      "refinement": 1,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "kind": "ions",
+      "ions": 205,
+      "refinement": 2,
+      "relative_error": 2.220446049250313e-16
+    }
+  ],
+  "noise_200_columns": [
+    "frequency",
+    "gain",
+    "V(m1.rd)",
+    "V(m1.rs)",
+    "V(m1.id)",
+    "V(m1.1overf)",
+    "V(m1)",
+    "V(m5.rd)",
+    "V(m5.rs)",
+    "V(m5.id)",
+    "V(m5.1overf)",
+    "V(m5)",
+    "V(m6.rd)",
+    "V(m6.rs)",
+    "V(m6.id)",
+    "V(m6.1overf)",
+    "V(m6)",
+    "V(m2.rd)",
+    "V(m2.rs)",
+    "V(m2.id)",
+    "V(m2.1overf)",
+    "V(m2)",
+    "V(m3.rd)",
+    "V(m3.rs)",
+    "V(m3.id)",
+    "V(m3.1overf)",
+    "V(m3)",
+    "V(m4.rd)",
+    "V(m4.rs)",
+    "V(m4.id)",
+    "V(m4.1overf)",
+    "V(m4)",
+    "V(mf.rd)",
+    "V(mf.rs)",
+    "V(mf.id)",
+    "V(mf.1overf)",
+    "V(mf)",
+    "V(onoise)",
+    "inoise"
+  ],
+  "flicker_max_asd_V_sqrtHz": {
+    "V(m1.1overf)": 0.0,
+    "V(m5.1overf)": 0.0,
+    "V(m6.1overf)": 0.0,
+    "V(m2.1overf)": 0.0,
+    "V(m3.1overf)": 0.0,
+    "V(m4.1overf)": 0.0,
+    "V(mf.1overf)": 0.0
+  },
+  "noise_400_columns": [
+    "frequency",
+    "gain",
+    "V(m1.rd)",
+    "V(m1.rs)",
+    "V(m1.id)",
+    "V(m1.1overf)",
+    "V(m1)",
+    "V(m5.rd)",
+    "V(m5.rs)",
+    "V(m5.id)",
+    "V(m5.1overf)",
+    "V(m5)",
+    "V(m6.rd)",
+    "V(m6.rs)",
+    "V(m6.id)",
+    "V(m6.1overf)",
+    "V(m6)",
+    "V(m2.rd)",
+    "V(m2.rs)",
+    "V(m2.id)",
+    "V(m2.1overf)",
+    "V(m2)",
+    "V(m3.rd)",
+    "V(m3.rs)",
+    "V(m3.id)",
+    "V(m3.1overf)",
+    "V(m3)",
+    "V(m4.rd)",
+    "V(m4.rs)",
+    "V(m4.id)",
+    "V(m4.1overf)",
+    "V(m4)",
+    "V(mf.rd)",
+    "V(mf.rs)",
+    "V(mf.id)",
+    "V(mf.1overf)",
+    "V(mf)",
+    "V(onoise)",
+    "inoise"
+  ],
+  "injection": {
+    "output_noise_rms_V": 0.0002425592594641686,
+    "signal_V_per_ion": 1.573012569796455e-05,
+    "enc_e": 15.420045848429256,
+    "gain_refinement_relative": 0.0008802567610177725,
+    "noise_grid_relative": 2.2681101827792816e-06,
+    "noise_quadrature_relative": 0.0
+  },
+  "ions": {
+    "output_noise_rms_V": 0.0006260230605829344,
+    "signal_V_per_ion": 1.546942928850512e-05,
+    "enc_e": 40.46840054067888,
+    "gain_refinement_relative": 2.988571758955061e-07,
+    "noise_grid_relative": 3.882879513472659e-07,
+    "noise_quadrature_relative": 0.0,
+    "verified_minimum_integer_N": 203,
+    "finite_count_checks": [
+      {
+        "ions": 201,
+        "snr": 4.96472519975416,
+        "gain_relative_to_single_ion": 0.9995745669554893,
+        "timestep_refinement_relative": 1.0476042699991694e-08
+      },
+      {
+        "ions": 202,
+        "snr": 4.9894144885042255,
+        "gain_relative_to_single_ion": 0.9995723959616606,
+        "timestep_refinement_relative": 3.431576578449835e-08
+      },
+      {
+        "ions": 203,
+        "snr": 5.0141036505790195,
+        "gain_relative_to_single_ion": 0.9995702211039996,
+        "timestep_refinement_relative": 2.706628299264935e-08
+      },
+      {
+        "ions": 204,
+        "snr": 5.038792706811342,
+        "gain_relative_to_single_ion": 0.999568046572024,
+        "timestep_refinement_relative": 2.468960980106516e-08
+      },
+      {
+        "ions": 205,
+        "snr": 5.063481926615166,
+        "gain_relative_to_single_ion": 0.9995659255451266,
+        "timestep_refinement_relative": 1.0614336243275346e-07
+      }
+    ],
+    "signal_retained_vs_point_samples": 0.996793329985269,
+    "neighbour_packet_response_relative": {
+      "-0.01": 0.0288077608418973,
+      "0.01": 0.010114521894279558
+    }
+  }
+}

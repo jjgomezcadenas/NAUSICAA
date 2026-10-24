@@ -24,3 +24,7 @@ results/ltspice/decks/*.db
 results/ltspice/shaping/decks/*.raw
 results/ltspice/shaping/decks/*.log
 results/ltspice/shaping/decks/*.db
+
+results/ltspice/capacitance/**/decks/*.raw
+results/ltspice/capacitance/**/decks/*.log
+results/ltspice/capacitance/**/decks/*.db

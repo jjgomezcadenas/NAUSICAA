@@ -205,3 +205,24 @@ noise spectrum at each capacitance; do not scale the existing ENC by capacitance
 Keep a common averaging duration for the first comparison so capacitance and
 shaping changes can be distinguished. The smaller NAUSICA pad capacitance remains
 a design estimate until geometry/parasitics are established.
+
+## First external-capacitance reduction
+
+The author requested a factor-four area estimate for a 0.5 mm pad. The
+comparison is now run at 300 microseconds, changing Cd1 from 5 pF to 1.25 pF.
+This is an explicit design hypothesis: the older 5 pF benchmark is not a
+measured capacitance for a 1 mm square pad with the NAUSICA layer stack.
+Only an area-dominated contribution scales by (0.5/1)^2; fringing and fixed
+wiring/input contributions need separate evaluation. Intrinsic transistor
+capacitances and all device sizes/biases remain unchanged. The physical input
+waveform already describes a 0.5 mm square pad and therefore is not rescaled.
+
+See [capacitance results](../results/ltspice/capacitance/pad_1.25pF/README.md).
+At 300 microseconds, the short-injection ENC changes from 35.27 to 15.42
+electrons RMS. The uniform 10 ms ion-frame ENC changes
+from 51.45 to 40.47 ions RMS, and the verified S/N > 5 threshold from 258 to
+203 ions. These results retain the supplied zero-flicker model. Output noise
+itself increases, but signal gain increases more: the ENC uses their ratio.
+The capacitance script reruns both transistor noise and transients, checks
+charge conservation and numerical convergence, and brackets the new threshold
+with adjacent integer counts. No manuscript text or illustrative tables changed.

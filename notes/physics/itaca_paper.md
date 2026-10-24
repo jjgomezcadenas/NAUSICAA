@@ -673,3 +673,14 @@ work under `work/`. Do not commit or push without a new user request.
 Update this plan as sections and calculations are completed, preserving the
 distinction between inherited ITACA results, new analytical benchmarks, circuit
 results, and demonstrated event-level performance.
+
+### 2026-10-24: shaping checkpoint and capacitance comparison
+
+- Saved the complete 180–350 us shaping study in commit `58f2fad` on LTSpice.
+- Ran the authorized 1.25 pF external-load estimate at 300 us, retaining device
+  capacitances and the existing 0.5 mm pad current. See
+  `results/ltspice/capacitance/pad_1.25pF/README.md` and its reproducing script.
+- Area scaling is a design assumption; a 0.5 mm pad capacitance is not yet
+  established by an electrostatic/layout calculation. The model has zero
+  flicker noise. All 52 numerical tests and the physics checks pass.
+- No paper prose changed or LaTeX compilation performed.

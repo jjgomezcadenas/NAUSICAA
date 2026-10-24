@@ -189,3 +189,14 @@ run at fixed 5 pF external capacitance, including direct integer-threshold check
 Generated CSV/PDF and the calculation record are under `results/ltspice/shaping/`.
 The next study varies external capacitance with transistor capacitances retained,
 and recalculates both signal and noise. No capacitance scan has been run yet.
+
+## External capacitance: first comparison completed
+
+Run `PYTHONPATH=src python scripts/build_capacitance_study.py --simulator PATH`
+from the repository root. Default values are 1.25 pF external load and 300 us
+averaging; the committed 5 pF shaping result supplies the comparator. The
+1.25 pF hypothesis uses area scaling, not a solved pad capacitance. Intrinsic
+transistor capacitances remain in the model. Reproducing decks, readable logs,
+reduced waveforms, spectra, convergence checks, JSON, CSV and plot are saved in
+`results/ltspice/capacitance/pad_1.25pF/`. Actual 0.5 mm pad capacitance still
+requires geometry and stack information, including fixed parasitics.
