@@ -266,3 +266,44 @@ def pwl_current(waveform):
     if not np.isclose(q,waveform.total_charge_C,rtol=1e-10,atol=1e-30):
         raise ArithmeticError('PWL charge check failed')
     return t,current
+
+
+def uniform_ion_waveform(detector, arrival_start_s, duration_s, ions=1.,
+                         start_s=-.002, end_s=.02, max_step_s=5e-6):
+    """Mean current for uniform arrivals, with no chosen discrete ion count.
+
+    The arrival rate is ions/duration_s. If F(t) is the integrated finite-gap
+    single-ion current up to t, i(t)=ions*(F(t-t0)-F(t-t0-duration))/duration.
+    Gauss-Legendre integration gives charge per numerical bin. Panels crossing
+    the four kernel/arrival boundaries are split there. Geometry is the central
+    square pad in a grounded plane; velocity is constant; no extra collection
+    impulse or charge renormalization. With ions=1 this is the mean response
+    per ion, not a single ion physically spread over the whole frame.
+    """
+    from numpy.polynomial.legendre import leggauss
+    if (not np.all(np.isfinite([arrival_start_s,duration_s,ions,start_s,end_s,max_step_s]))
+            or duration_s<=0 or ions<=0 or end_s<=start_s or max_step_s<=0):
+        raise ValueError('Invalid uniform-arrival parameters')
+    v=detector.mobility_m2_V_s*detector.gap_field_V_m
+    gap=detector.gap_m; half=detector.pad_width_m/2
+    phi_gap=square_phi(gap,half)
+    def cumulative(t):
+        return E_CHARGE*(square_phi(np.clip(-v*t,0,gap),half)-phi_gap)
+    def current(t):
+        u=t-arrival_start_s
+        return ions*(cumulative(u)-cumulative(u-duration_s))/duration_s
+    edges=np.linspace(start_s,end_s,int(np.ceil((end_s-start_s)/max_step_s))+1)
+    nodes,weights=leggauss(8)
+    def integrate(lo,hi):
+        mid=(np.asarray(hi)+lo)/2
+        width=(np.asarray(hi)-lo)/2
+        t=np.asarray(mid)[...,None]+np.asarray(width)[...,None]*nodes
+        return width*(current(t)@weights)
+    q=integrate(edges[:-1],edges[1:])
+    boundaries=arrival_start_s+np.array([-gap/v,0.,duration_s-gap/v,duration_s])
+    for index in np.unique(np.searchsorted(edges,boundaries)-1):
+        if 0<=index<len(q):
+            inside=boundaries[(boundaries>edges[index])&(boundaries<edges[index+1])]
+            split=np.unique(np.r_[edges[index],inside,edges[index+1]])
+            q[index]=np.sum(integrate(split[:-1],split[1:]))
+    return CurrentWaveform(edges,q)

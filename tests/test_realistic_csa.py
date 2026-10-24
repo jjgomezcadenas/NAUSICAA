@@ -169,5 +169,37 @@ class RealisticCSATests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ions_waveform(self.d,[],0,.01,1e-6)
 
+
+
+class UniformMeanResponseTests(unittest.TestCase):
+    """Uniform arrival density is independent of an arbitrary discrete count."""
+    def test_uniform_charge_conservation_and_scaling(self):
+        from ion_signal.realistic_csa import uniform_ion_waveform
+        d=Detector.from_toml(ROOT/'config/detector.toml')
+        one=uniform_ion_waveform(d,0.,.01,1.,-.002,.012,7e-6)
+        many=uniform_ion_waveform(d,0.,.01,68.,-.002,.012,7e-6)
+        expected=E_CHARGE*(1-square_phi(d.gap_m,d.pad_width_m/2))
+        self.assertAlmostEqual(one.total_charge_C/expected,1.,places=10)
+        np.testing.assert_allclose(many.charge_per_bin_C,68*one.charge_per_bin_C,rtol=1e-12,atol=1e-34)
+
+    def test_uniform_bins_against_independent_single_ion_average(self):
+        from scipy.integrate import quad
+        from ion_signal.realistic_csa import uniform_ion_waveform
+        d=Detector.from_toml(ROOT/'config/detector.toml')
+        duration=.01
+        w=uniform_ion_waveform(d,0.,duration,1.,-.002,.012,2e-5)
+        v=d.mobility_m2_V_s*d.gap_field_V_m
+        for t in (-.001,0.,.004,.0099):
+            index=np.searchsorted(w.edges_s,t)
+            lo,hi=w.edges_s[index:index+2]
+            # Integrate each ion's exact bin charge over its collection time.
+            def integrand(u):
+                return float(square_phi(np.clip(v*(u-hi),0,d.gap_m),d.pad_width_m/2)
+                             -square_phi(np.clip(v*(u-lo),0,d.gap_m),d.pad_width_m/2))
+            points=sorted(x for x in (lo,hi,lo+d.gap_m/v,hi+d.gap_m/v) if 0<x<duration)
+            expected=E_CHARGE/duration*quad(integrand,0.,duration,points=points,epsabs=1e-15,epsrel=1e-10)[0]
+            self.assertAlmostEqual(w.charge_per_bin_C[index]/expected,1.,places=8)
+
+
 if __name__=='__main__':
     unittest.main()

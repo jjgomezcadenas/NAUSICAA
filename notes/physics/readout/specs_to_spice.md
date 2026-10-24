@@ -8,8 +8,7 @@ paper. A behavioral reproduction of the analytical model is a consistency
 check; the transistor circuit is a separate validation step.
 
 **Status:** model specification, recipe, benchmark files and behavioral
-comparators generated. All 37 Python tests pass, including 15 new circuit/noise
-tests. PWL serialization preserves the calculated charge to better than
+comparators generated. All 41 Python tests pass, including the uniform mean-response and noise checks. PWL serialization preserves the calculated charge to better than
 2e-14 relative error in the five configured cases. No SPICE simulator has been
 run. Transistor netlist, foundry models,
 operating-point information and circuit results have not yet been supplied here.
@@ -20,6 +19,16 @@ Nothing has been sent to Rogelio.
 The model is defined in [realistic_csa_spec.md](realistic_csa_spec.md), with
 reproducible inputs in `../../config/realistic_csa.toml`. Use generated metadata
 as the numerical authority; do not copy numbers from the figure labels.
+
+The active paper now fixes Cin = 5 pF from the Topmetal-S electrode benchmark
+(Mei et al., arXiv:2010.09226, Section 2.3). Its main signal is the uniform
+mean current per ion, scaled by a free N, with point samples at frame boundaries.
+`make noise-study` generates the paper signals and threshold (68 ions for
+S/N > 5 under the illustrative spectra). `make realistic-readout` retains the
+explicit diagnostic pulses and its configured 10 microsecond aperture. Apply
+the paper's zero aperture when comparing its threshold; do not mix these two
+sampling conventions. Use `uniform_per_ion_waveform.csv` for the normalized
+paper waveform and scale its current by the selected N for a transient check.
 
 For each benchmark, supply:
 

@@ -22,6 +22,7 @@
 \input{generated/values}
 \input{generated/readout_values}
 \input{generated/arrival_cases_values}
+\input{generated/noise_values}
 \newcommand{\ion}{\ensuremath{\mathrm{Xe}_2^+}}
 \newcommand{\dd}{\mathrm{d}}
 \title{NAUSICAA for ITACA}
@@ -288,8 +289,7 @@ If discharge is negligible during the pulse, the voltage at collection is $V_1(0
  \label{tab:single_ion_response}
 \end{table}
 
-Since the tracks we want to reconstruct produce typically $10^5$ ions distributed over a time of order \SI{1}{\second}, 
-a bucket of \SI{10}{\milli\second} contains on average about $10^3$ ions, which could land in the same pad in the limit of a track exactly parallel to the drift lines, neglecting transverse diffusion. The induced current when several ions arrive during a readout frame is the sum of the individual ion-induced currents. For ions following the same final trajectory and collected on the same pad at times $t_k$, the linear model gives
+The induced current when several ions arrive during a readout frame is the sum of the individual ion-induced currents. For ions following the same final trajectory and collected on the same pad at times $t_k$, the linear model gives
 \begin{equation}
  i_p(t)=\sum_k i_1(t-t_k),\qquad
  V_p(t)=\sum_k V_1(t-t_k).
@@ -313,7 +313,9 @@ The next step is to make our model more realistic. The ideal CSA described in th
  \label{fig:amplifier_gain}
 \end{figure}
 
-Define $C_{\rm in}$ as the capacitance between the input node and ground, including the pad, amplifier input and stray capacitances, but excluding $C_f$. Let $A_0$ be the amplifier gain for a constant input. When the input varies rapidly compared with the amplifier's response time, the response is weaker. This can be described by replacing the constant gain with a frequency-dependent gain
+Define $C_{\rm in}$ as the capacitance between the input node and ground, including the pad, amplifier input and stray capacitances, but excluding $C_f$. We use Topmetal-S as a reference for the input capacitance. Its hexagonal charge collection electrode, with a diameter of \SI{\TopmetalElectrodeDiameterMm}{mm}, has a capacitance to ground of approximately \SI{\ArrivalCinPf}{pF}~\cite{mei2020topmetalcmosdirectcharge}. We take this value for $C_{\rm in}$ as a conservative estimate for our smaller pads and keep it fixed throughout the calculation.
+
+Let $A_0$ be the amplifier gain for a constant input. When the input varies rapidly compared with the amplifier's response time, the response is weaker. This can be described by replacing the constant gain with a frequency-dependent gain
 %
 \begin{equation}
  A(s)=\frac{A_0}{1+s/\omega_a},\qquad V(s)=-A(s)V_{\rm in}(s),
@@ -369,30 +371,30 @@ And we recover the ideal value $-Q(t)/C_f$ when  $A_0C_f\gg C_{\rm in}+C_f$.
 
 \subsection{Several ions in a readout frame}
 
-For k ions following the same trajectory and collected at times $t_j$, the input current is the sum of the single-ion currents calculated in Section~\ref{sec:single_ion}:
+For $N$ ions following the same trajectory and collected at times $t_j$, the input current is the sum of the single-ion currents calculated in Section~\ref{sec:single_ion}:
 %
 \begin{equation}
- i_k(t)=\sum_{j=1}^{k}i_1(t-t_j).
+ i_N(t)=\sum_{j=1}^{N}i_1(t-t_j).
  \label{eq:realistic_packet_current}
 \end{equation}
 %
 The current-to-voltage response derived above then gives
 %
 \begin{equation}
- V_k(s)=H_I(s)I_k(s).
+ V_N(s)=H_I(s)I_N(s).
  \label{eq:realistic_packet_transform}
 \end{equation}
 %
 Returning to the time domain, this product becomes
 %
 \begin{equation}
- V_k(t)=\int_{-\infty}^{t}h_I(t-t')i_k(t')\,\dd t',
+ V_N(t)=\int_{-\infty}^{t}h_I(t-t')i_N(t')\,\dd t',
  \label{eq:realistic_packet}
 \end{equation}
 %
 where $h_I(t)$ is the voltage response per unit charge injected instantaneously at $t=0$.
 
-If no new charge arrived, the voltage would decay from $\overline V_{n-1}$ to $\alpha\overline V_{n-1}$ during one frame of duration $\Delta t$, where $\alpha=e^{-\Delta t/\tau_f}$ and $\tau_f=R_fC_f$. Subtracting this contribution from $\overline V_n$ gives the voltage due to a new charge arriving during the frame.
+For the ideal CSA, if no new charge arrived, the voltage would decay from $\overline V_{n-1}$ to $\alpha\overline V_{n-1}$ during one frame of duration $\Delta t$, where $\alpha=e^{-\Delta t/\tau_f}$ and $\tau_f=R_fC_f$. Subtracting this contribution from $\overline V_n$ gives the voltage due to a new charge arriving during the frame.
 
 \[
 \overline V_n-\alpha\overline V_{n-1}.
@@ -428,13 +430,13 @@ Solving for the charge gives
  \label{eq:realistic_estimator}
 \end{equation}
 %
-We can now calculate the voltages $\overline V_n$ using the CSA response $H_I(s)$ obtained previously (Eq.~\eqref{eq:realistic_transimpedance}) and insert them into Eq.~\eqref{eq:realistic_estimator} to obtain $\widehat Q_n$. This allows us to compare this estimate with the input charge $Q_n=\int_{t_{n-1}}^{t_n}i_k(t)\,\dd t$, and from there assess how accurately we recover the charge.
+We can now calculate the voltages $\overline V_n$ using the CSA response $H_I(s)$ obtained previously (Eq.~\eqref{eq:realistic_transimpedance}) and insert them into Eq.~\eqref{eq:realistic_estimator} to obtain $\widehat Q_n$. This allows us to compare this estimate with the input charge $Q_n=\int_{t_{n-1}}^{t_n}i_N(t)\,\dd t$, and from there assess how accurately we recover the charge.
 
 
-\subsection{Response to simultaneous and uniform arrivals}
+\subsection{Response to uniform arrivals}
 \label{sec:arrival_cases}
 
-We consider now two limit scenarios: a) all ions arriving simultaneously, and b) ions arriving uniformly over a frame of duration $\Delta t$ ---the physical case is somewhere in-between--- . Table~\ref{tab:arrival_parameters} lists the parameters used in both calculations.
+We consider $N$ ions arriving uniformly over a frame of duration $\Delta t$. The number of ions is left to be determined from the required S/N. Table~\ref{tab:arrival_parameters} lists the circuit parameters and frame duration.
 
 \begin{table}[!htbp]
  \centering
@@ -442,47 +444,43 @@ We consider now two limit scenarios: a) all ions arriving simultaneously, and b)
  \toprule
  Parameter & Symbol & Value \\
  \midrule
- \multicolumn{3}{l}{\textit{Ion arrivals and sampling}} \\
- Number of ions & $k$ & $\ArrivalIons$ \\
  Frame duration & $\Delta t$ & \SI{\ArrivalFrameMs}{ms} \\
  \midrule
- \multicolumn{3}{l}{\textit{CSA}} \\
  Feedback capacitance & $C_f$ & \SI{\ArrivalCfFf}{fF} \\
- Input capacitance & $C_{\rm in}$ & \SI{\ArrivalCinFf}{fF} \\
+ Input capacitance & $C_{\rm in}$ & \SI{\ArrivalCinPf}{pF} \\
  DC amplifier gain & $A_0$ & $\ArrivalGain$ \\
  Amplifier pole frequency & $f_a$ & \SI{\ArrivalPoleKhz}{kHz} \\
  Feedback resistance & $R_f$ & \SI{\ArrivalRfOhm}{\ohm} \\
  \midrule
- \multicolumn{3}{l}{\textit{Derived quantity}} \\
  Discharge time & $\tau_f=R_fC_f$ & \SI{\ArrivalTauSeconds}{s} \\
  \bottomrule
  \end{tabular}
- \caption{Parameters used for simultaneous and uniform ion arrivals.}
+ \caption{Circuit parameters and frame duration used in the calculation.}
  \label{tab:arrival_parameters}
 \end{table}
+
+We take a uniform arrival rate $N/\Delta t$ between $t=0$ and $t=\Delta t$. Averaging the single-ion current over the collection time $u$ gives
+\begin{equation}
+ i_N(t)=\frac{N}{\Delta t}\int_0^{\Delta t}i_1(t-u)\,\dd u.
+ \label{eq:uniform_arrival_current}
+\end{equation}
+The currents overlap, producing an approximately constant current through most of the frame. The voltage builds up during this interval. Since the response is linear, both the mean current and voltage scale with $N$.
 
 \begin{figure}[!htbp]
  \centering
  \includegraphics[width=\linewidth]{arrival_cases.pdf}
- \caption{Simultaneous arrivals (left) and uniform arrivals (right) of $\ArrivalIons$ ions. The upper panels show the input current; the lower panels compare the ideal and finite-gain CSA voltages. Vertical dotted lines mark the frame boundaries. Squares and circles mark the voltage readings for the ideal and finite-gain models, respectively.}
+ \caption{Uniform ion arrivals over one frame. Left: mean input current per ion, $i_N/N$. Right: mean voltage per ion, $V_N/N$, for the ideal and finite-gain CSA models. Vertical dotted lines mark the frame boundaries. Squares and circles mark the voltage readings for the ideal and finite-gain models, respectively.}
  \label{fig:arrival_cases}
 \end{figure}
+
+Figure~\ref{fig:arrival_cases} shows the mean current and voltage per ion. Table~\ref{tab:arrival_cases} shows the input and recovered charges, also divided by $N$. The ideal CSA recovers $\ArrivalUniformIdealPercent\%$ of the input charge, while the finite-gain CSA recovers about $\ArrivalUniformRecoveredPercent\%$.
 
 \begin{table}[!htbp]
  \centering
  \input{generated/arrival_cases_table}
- \caption{Input charge and charge recovered from voltage readings at the boundaries of the \SI{\ArrivalFrameMs}{ms} frame.}
+ \caption{Input and recovered charge per ion, in units of $e$, for uniform arrivals. Voltages are read at the boundaries of the \SI{\ArrivalFrameMs}{ms} frame.}
  \label{tab:arrival_cases}
 \end{table}
-
-In the first scenario, all ions reach the pad at the middle of the frame, $t=\SI{\ArrivalSimultaneousMs}{ms}$. Their currents add to produce a pulse with the same shape as the single-ion current and an amplitude $\ArrivalIons$ times larger. The CSA voltage rises in magnitude during the pulse and then decays through the feedback resistance.
-
-In the second scenario, the ions reach the pad at equally spaced times between $t=0$ and $t=\SI{\ArrivalFrameMs}{ms}$. Their currents overlap, producing an approximately constant current through most of the frame. The voltage builds up during this interval. 
-
-For each scenario, we calculate the voltage using the ideal and finite-gain CSA models discussed in the previous sections. Figure~\ref{fig:arrival_cases} shows the input currents and the resulting voltages. Table~\ref{tab:arrival_cases} shows the charge recovered with each CSA model.
-
-
-The ideal CSA recovers more than 99.96\% of the input charge, while the finite-gain CSA recovers about 92\% in both cases. Thus, our more realistic model still predicts the recovery of a large fraction of the charge. 
 
 \subsection{Noise in the recovered charge}
 \label{sec:charge_noise}
@@ -512,12 +510,37 @@ Squaring Eq.~\eqref{eq:realistic_charge_fluctuation} and taking the average give
 \end{equation}
 For uncorrelated readings, $C_V(\Delta t)=0$. Notice also that a positive covariance reduces the noise in the charge estimate. The two quantities are calculated from the output noise spectrum as described in Appendix~\ref{app:realistic_noise}.
 
-Let $g_n$ be the mean estimated charge per ion in frame $n$. For $k$ ions, the estimated charge is $kg_n$, while the electronic noise has standard deviation $\sigma_{\widehat Q}$. The signal-to-noise ratio and the number of ions needed to reach a ratio $\rho$ are then
+Let $g_n$ be the mean estimated charge per ion in frame $n$. For $N$ ions, the mean estimated charge is $Ng_n$, while the electronic noise has standard deviation $\sigma_{\widehat Q}$. The signal-to-noise ratio and the condition for exceeding a ratio $\rho$ are then
 \begin{equation}
- {\rm S/N}_n(k)=\frac{k|g_n|}{\sigma_{\widehat Q}},\qquad
- k_{\min,n}=\frac{\rho\,\sigma_{\widehat Q}}{|g_n|}.
+ {\rm S/N}_n(N)=\frac{N|g_n|}{\sigma_{\widehat Q}},\qquad
+ N>\frac{\rho\,\sigma_{\widehat Q}}{|g_n|}.
  \label{eq:realistic_sensitivity}
 \end{equation}
+
+\subsection{Numerical noise estimate}
+\label{sec:numerical_noise}
+
+Next, we calculate the noise for the parameters used above.
+ Table~\ref{tab:noise_inputs} shows a set of values used as an illustration (a realistic case will be presented in Section XXX).  We use a flicker spectrum $S_{\mathrm{flicker}}(f)=a_f/f$ and assume the thermal noise of a resistor, $S_{\mathrm{fb}}=4k_BT/R_f$ as the noise source for the feedback path. The spectra are integrated over the frequency range given in the table, with voltage readings at the frame boundaries.
+
+\begin{table}[!htbp]
+ \centering
+ \input{generated/noise_inputs_table}
+ \caption{Assumed noise inputs for the illustrative calculation.}
+ \label{tab:noise_inputs}
+\end{table}
+
+The resulting noise in the recovered charge is $\sigma_{\widehat Q}/e=\NoiseTotalElectrons$. White voltage noise, flicker noise and feedback noise contribute $\NoiseWhiteElectrons$, $\NoiseFlickerElectrons$ and $\NoiseFeedbackElectrons$ elementary charges RMS, respectively. Notice that for this example amplifier voltage noise accounts for about $\NoiseVoltagePercent\%$ of the variance.
+These noise values refer to the charge estimator in Eq.~\eqref{eq:realistic_estimator}, which uses the ideal charge-to-voltage conversion. To refer the quoted noise to the actual input charge, we divide it by the recovered fraction.
+
+For uniform arrivals, the mean estimated charge per ion is $g_n/e=\NoiseMeanChargePerIon$. Thus
+\begin{equation}
+ {\rm S/N}=\NoiseSnrPerIon\,N.
+ \label{eq:numerical_snr}
+\end{equation}
+Requiring S/N $>\NoiseTargetSnr$ gives $N>\NoiseUniformBoundary$, or at least $\NoiseUniformMinimumIons$ ions.
+
+For the chosen circuit parameters, simultaneous arrivals at the middle of the frame give a similar threshold of $\NoiseSimultaneousMinimumIons$ ions. The result therefore depends little on the difference between these two arrival distributions.
 
 \clearpage
 \appendix

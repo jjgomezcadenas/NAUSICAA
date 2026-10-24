@@ -1,0 +1,172 @@
+{
+  "electronics": {
+    "feedback_capacitance_F": 3e-15,
+    "input_capacitance_F": 5e-12,
+    "feedback_resistance_ohm": 100000000000000.0,
+    "open_loop_gain": 1000.0,
+    "amplifier_pole_Hz": 1000.0
+  },
+  "noise": {
+    "voltage_white_V_per_sqrtHz": 5e-09,
+    "voltage_flicker_V2": 2.5e-15,
+    "current_white_A_per_sqrtHz": 0.0,
+    "low_frequency_Hz": 0.1,
+    "high_frequency_Hz": 1000000.0,
+    "temperature_K": 293.15,
+    "passive_feedback_thermal": true
+  },
+  "sample_interval_s": 0.01,
+  "sampling_aperture_s": 0.0,
+  "source_configuration_sampling_aperture_s": 1e-05,
+  "provenance": {
+    "source": "Rogelio supplied readout/rogelio_reference.html; kept unchanged",
+    "status": "Cin fixed to published Topmetal-S 5 pF electrode benchmark; Cf inspired by source; remaining circuit/noise parameters are study assumptions, not foundry values",
+    "model": "Finite-gain one-pole linear amplifier, input shunt capacitance and linear feedback; no saturation, nonlinear pseudo-resistor, additional amplifier poles or correlated noise sources",
+    "arrivals": "Specified identical central trajectories at one pad; no event ensemble, no diffusion in final gap, no charge renormalization"
+  },
+  "signal_assumptions": [
+    "N is free; waveforms are normalized to mean response per ion.",
+    "Uniform collection probability on [0, Delta t]; simultaneous mid-frame case is a cross-check.",
+    "Central square pad in grounded plane; constant gap speed; finite-path charge not renormalized.",
+    "Point voltage samples at frame boundaries; zero initial signal; no random-arrival variance."
+  ],
+  "assumptions": [
+    "Stationary independent equivalent input noise sources; one-sided PSDs per Hz.",
+    "Point voltage readings at frame boundaries; no acquisition averaging.",
+    "Feedback noise is the passive-resistor benchmark, not a MOS noise prediction.",
+    "S/N threshold scales the specified arrival template, including its timing."
+  ],
+  "source_sha256": {
+    "config/realistic_csa.toml": "73fba4a83d1f56e647799e64ae75b58a0958b13f992f937ec75a47f984e47edb",
+    "results/realistic_csa/arrival_cases_point_samples.json": "1724994f567d2a36f4d3dea93f23a8990705b36c7a2c5fc325c27da70303be53"
+  },
+  "environment": {
+    "python": "3.13.13",
+    "numpy": "2.4.4",
+    "scipy": "1.17.1"
+  },
+  "components": {
+    "white_voltage": {
+      "sample_voltage_rms_V": 0.00015660184032672024,
+      "adjacent_sample_covariance_V2": -3.0897964457909734e-12,
+      "sample_variance_V2": 2.4524136393715577e-08,
+      "adjacent_sample_correlation": -0.0001259900204511482,
+      "recovered_charge_rms_C": 6.646009602366402e-19,
+      "induced_charge_ENC_e": 4.1481129242123265,
+      "interval_s": 0.01,
+      "aperture_s": 0.0,
+      "low_frequency_Hz": 0.1,
+      "high_frequency_Hz": 1000000.0,
+      "variance_C2": 4.4169443634746425e-37,
+      "direct_variance_C2": 4.41694436347497e-37,
+      "checks": {
+        "covariance_tolerance_relative_change": 4.414133780442987e-12,
+        "direct_quadrature_relative_change": 1.8909882107882389e-16,
+        "direct_vs_covariance_relative_difference": 7.412673786289897e-14
+      }
+    },
+    "flicker_voltage": {
+      "sample_voltage_rms_V": 9.314971031096734e-05,
+      "adjacent_sample_covariance_V2": 3.6080801818986e-09,
+      "sample_variance_V2": 8.676868531017134e-09,
+      "adjacent_sample_correlation": 0.4158274576825527,
+      "recovered_charge_rms_C": 3.021862198350108e-19,
+      "induced_charge_ENC_e": 1.886098033277215,
+      "interval_s": 0.01,
+      "aperture_s": 0.0,
+      "low_frequency_Hz": 0.1,
+      "high_frequency_Hz": 1000000.0,
+      "variance_C2": 9.131651145817348e-38,
+      "direct_variance_C2": 9.131651145817335e-38,
+      "checks": {
+        "covariance_tolerance_relative_change": 1.2269070051484032e-12,
+        "direct_quadrature_relative_change": 3.4299888318378617e-16,
+        "direct_vs_covariance_relative_difference": 1.4863284937964066e-15
+      }
+    },
+    "feedback": {
+      "sample_voltage_rms_V": 0.0005962347349405243,
+      "adjacent_sample_covariance_V2": 3.492782026525251e-07,
+      "sample_variance_V2": 3.5549585914959723e-07,
+      "adjacent_sample_correlation": 0.9825099045824451,
+      "recovered_charge_rms_C": 3.397976064566225e-19,
+      "induced_charge_ENC_e": 2.1208498441790566,
+      "interval_s": 0.01,
+      "aperture_s": 0.0,
+      "low_frequency_Hz": 0.1,
+      "high_frequency_Hz": 1000000.0,
+      "variance_C2": 1.154624133536497e-37,
+      "direct_variance_C2": 1.154624133536505e-37,
+      "checks": {
+        "covariance_tolerance_relative_change": 2.477597164029941e-13,
+        "direct_quadrature_relative_change": 1.8084650832335336e-16,
+        "direct_vs_covariance_relative_difference": 6.8721673162874276e-15
+      }
+    },
+    "additional_current": {
+      "sample_voltage_rms_V": 0.0,
+      "adjacent_sample_covariance_V2": 0.0,
+      "sample_variance_V2": 0.0,
+      "adjacent_sample_correlation": 0.0,
+      "recovered_charge_rms_C": 0.0,
+      "induced_charge_ENC_e": 0.0,
+      "interval_s": 0.01,
+      "aperture_s": 0.0,
+      "low_frequency_Hz": 0.1,
+      "high_frequency_Hz": 1000000.0,
+      "variance_C2": 0.0,
+      "direct_variance_C2": 0.0,
+      "checks": {
+        "covariance_tolerance_relative_change": 0.0,
+        "direct_quadrature_relative_change": 0.0,
+        "direct_vs_covariance_relative_difference": 0.0
+      }
+    },
+    "total": {
+      "sample_voltage_rms_V": 0.0006234555830805672,
+      "adjacent_sample_covariance_V2": 3.5288319303797546e-07,
+      "sample_variance_V2": 3.8869686407433e-07,
+      "adjacent_sample_correlation": 0.907862207425718,
+      "recovered_charge_rms_C": 8.052784370386015e-19,
+      "induced_charge_ENC_e": 5.026152672244011,
+      "interval_s": 0.01,
+      "aperture_s": 0.0,
+      "low_frequency_Hz": 0.1,
+      "high_frequency_Hz": 1000000.0,
+      "variance_C2": 6.484733611593328e-37,
+      "direct_variance_C2": 6.484733611593208e-37,
+      "checks": {
+        "covariance_tolerance_relative_change": 1.2740976584298648e-11,
+        "direct_quadrature_relative_change": 0.0,
+        "direct_vs_covariance_relative_difference": 1.8547317308319908e-14
+      }
+    }
+  },
+  "variance_addition_relative_error": 6.994405055138486e-14,
+  "cases": [
+    {
+      "id": "uniform_per_ion",
+      "mean_estimated_charge_per_ion_C": 5.999935322235766e-20,
+      "mean_estimated_charge_per_ion_e": 0.374486507599122,
+      "signal_to_noise_per_ion": 0.07450758701922322,
+      "target_signal_to_noise": 5.0,
+      "ion_count_boundary": 67.10725981113819,
+      "criterion": "S/N > target",
+      "minimum_integer_ion_count": 68,
+      "snr_at_minimum": 5.0665159173071785,
+      "snr_at_one_fewer": 4.992008330287955
+    },
+    {
+      "id": "simultaneous_per_ion",
+      "mean_estimated_charge_per_ion_C": 6.059692652826406e-20,
+      "mean_estimated_charge_per_ion_e": 0.3782162668105923,
+      "signal_to_noise_per_ion": 0.07524965743663556,
+      "target_signal_to_noise": 5.0,
+      "ion_count_boundary": 66.44548520649786,
+      "criterion": "S/N > target",
+      "minimum_integer_ion_count": 67,
+      "snr_at_minimum": 5.041727048254582,
+      "snr_at_one_fewer": 4.966477390817947
+    }
+  ]
+}

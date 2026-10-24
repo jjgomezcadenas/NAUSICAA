@@ -68,3 +68,20 @@ specified one-pad arrival distributions and an ideal CSA with linear feedback.
 The original calculator supplied by Rogelio is preserved under
 `notes/physics/readout/`; its transistor and noise estimates are not used.
 See `notes/physics/readout/README.md` for assumptions, controls, and SPICE handoff.
+
+## Uniform-arrival sensitivity calculation
+
+`make noise-study` generates the paper's mean response per ion for uniform
+arrivals, with fixed input capacitance 5 pF adopted from Topmetal-S. The ion count
+N remains free; the noise calculation solves for the minimum N with S/N > 5.
+The simultaneous mid-frame pulse is a numerical cross-check. All numerical
+values, the normalized current/voltage figure, and charge/noise tables are
+produced by `scripts/build_arrival_cases.py` and `scripts/build_noise_study.py`.
+Their inputs are `config/detector.toml` and `config/realistic_csa.toml`; results
+and provenance are in `results/realistic_csa/arrival_cases_point_samples.json`
+and `noise_point_samples.json`. Signal and noise use point voltage readings.
+
+`make realistic-readout` regenerates the separate explicit diagnostic pulses
+and SPICE comparison files, using the same circuit but the acquisition aperture
+specified in the configuration. `make capacitance-check` retains the historical
+0.25-versus-5 pF diagnostic; it is not used by the active manuscript.

@@ -48,9 +48,9 @@ his assessment, not an independent Pangram test.
 | Section 3, Pixel electronics and readout | Green; author-revised and approved on 24 October; preserve current wording |
 | Parameters of the design and Section 4 | Not covered by this green approval; continue review |
 | Section 5 opening paragraph, before Finite gain and response time | Green; author wording with approved typo corrections and removal of repeated gain/bandwidth phrase; retain final SPICE sentence |
-| Section 5, Finite gain and response time | Green; full active subsection in nausica.tex approved, including the gain figure, current-to-voltage response and Laplace-transform derivation of the integration limit; preserve current wording |
-| Section 5, Response to simultaneous and uniform arrivals | Green; full active subsection approved, including the parameter table, current/voltage figure, recovered-charge table and concluding recovery fractions; preserve current wording |
-| Section 5, Noise in the recovered charge | Green; full active subsection approved, including the correction defining $g_n$ as the mean estimated charge per ion; preserve current wording |
+| Section 5, Finite gain and response time | Green apart from the newly authorized Topmetal-S capacitance paragraph; full active subsection in nausica.tex approved, including the gain figure, current-to-voltage response and Laplace-transform derivation of the integration limit; preserve current wording |
+| Section 5, Response to uniform arrivals | Replaces the previously green two-case example at the author's explicit request; fixed 5 pF, free N and normalized figure/table. Revised text awaits renewed green approval |
+| Section 5, Noise in the recovered charge | Green with authorized N notation and strict S/N threshold update; full active subsection approved, including the correction defining $g_n$ as the mean estimated charge per ion; preserve current wording |
 | Remaining Section 5 reference draft and appendices | Draft; continue author review |
 
 The segment approved on 23 October starts at `\subsection{Principle of operation}`
@@ -226,7 +226,7 @@ capacitances and discharge times separate from the eventual design choices.
 in `nausica.tex`. `section_beyond_ideal.tex` is the unchanged reference draft;
 its input is currently commented out. Apply approved corrections to the active
 text in `nausica.tex`, not to the reference draft. The active section now contains the opening paragraph, finite-gain discussion,
-frame-charge derivation, the two arrival-case study and the approved noise subsection. The noise subsection explains voltage fluctuations, propagation
+frame-charge derivation, the uniform-arrival study with free N and the noise subsection. The noise subsection explains voltage fluctuations, propagation
 through the estimator, sample covariance and ion-count sensitivity. Its equation
 labels now supply the references used by Appendix B.
 
@@ -238,11 +238,10 @@ capacitance. Keep signal and noise transfer functions consistent.
 retained unchanged as the reference draft; reviewed text is incorporated directly
 in the active manuscript. [appendix_realistic_csa.tex](appendix_realistic_csa.tex)
 is Appendix B; the pending focusing appendix is now C. The section defines
-controlled k-ion arrivals, a two-sample frame-charge estimator, its bias and its
-noise covariance. The implementation and independent checks are complete. The point-sample two-case results are now included in the active manuscript.
-The noise derivation is now in the paper and approved as green. Numerical noise
-results and the other benchmark cases remain outside it pending author review.
-Existing reviewed manuscript prose is unchanged.
+controlled N-ion arrivals, a two-sample frame-charge estimator, its bias and its
+noise covariance. The implementation and independent checks are complete. The uniform mean response per ion and numerical noise threshold are included
+in the active manuscript. Simultaneous mid-frame arrivals appear only as a
+brief cross-check. Unaffected reviewed prose is preserved.
 
 **Gain figure:** `scripts/build_gain_figure.py` generates the normalized
 open-loop magnitude plot from `CSA.amplifier_gain`, with logarithmic f/fa and
@@ -250,17 +249,18 @@ linear |A|/A0 axes and the 1/sqrt(2) point marked. `make note` regenerates
 `generated/amplifier_gain.pdf`; no particular amplifier performance is implied
 by this normalized curve.
 
-**Two-case study inserted after author approval of the draft:** The active paper
-now presents 1000 simultaneous mid-frame arrivals and 1000 evenly spaced arrivals
-over 10 ms. `scripts/build_arrival_cases.py` generates a four-panel current/voltage
-figure, a charge-recovery table and LaTeX values from the stored physical
-waveforms. This comparison uses point voltage samples at the frame boundaries,
-with no noise; it does not reuse the 10 microsecond aperture averages from the
-noise benchmarks. Point-sample results and provenance are saved separately in
-`results/realistic_csa/arrival_cases_point_samples.json`. The input-charge
-integrals are independently checked against the waveform CSVs. `make arrival-cases`
-regenerates these outputs, and `make note` includes this dependency. No LaTeX
-compilation was run for this insertion, following the author's instruction.
+**Current uniform-arrival study:** The author requested a single main case,
+N ions arriving uniformly over a 10 ms frame, with N left free until the noise
+calculation. Input capacitance is fixed at 5 pF from the start, citing Topmetal-S.
+`uniform_ion_waveform` in `src/ion_signal/realistic_csa.py` calculates the mean
+current per ion from a continuous uniform arrival density and the finite-gap
+single-ion current. `scripts/build_arrival_cases.py` produces a two-panel
+current/voltage figure, a charge table normalized by N, macros and waveform CSVs.
+`arrival_cases_point_samples.json` records the uniform response and the
+simultaneous mid-frame cross-check. `make noise-study` regenerates both the
+signals and noise, without compiling LaTeX. The earlier discrete 1000-ion
+benchmarks remain diagnostic cases in `make realistic-readout`, not the basis
+of the paper's main example. The archived `section_beyond_ideal.tex` is unchanged.
 
 **Implementation:** A delegated agent has rewritten the useful circuit assumptions
 from Rogelio's HTML in Python, preserving the original as provenance. Shared
@@ -271,7 +271,8 @@ noise formulas rather than treating the HTML output as validation.
 
 **Available outputs:** Input currents, finite-gain and ideal voltage waveforms,
 true and recovered frame charge, noise RMS and adjacent-sample covariance,
-template-calibrated S/N and conditional ion-count sensitivity. All 37 tests pass, including 15 new circuit/noise tests covering physical
+template-calibrated S/N and conditional ion-count sensitivity. The initial
+implementation passed 37 tests, including 15 circuit/noise tests covering physical
 charge, circuit limits, numerical convergence and independent noise integrals.
 The parent independently checked the configured noise against a direct positive
 spectral integral. LaTeX compiles without warnings; no PDF visual check was made.
@@ -285,6 +286,89 @@ variance. No new noise numbers were inserted: the existing noise benchmarks use
 a 10 microsecond aperture, so the point-sample numerical study must be presented
 with its stated source spectra and frequency band. The reference draft stays
 unchanged. No LaTeX compilation was run.
+
+**Current point-sample noise calculation:** Reproduce with `make noise-study`.
+The script `scripts/build_noise_study.py` reads the uniform mean signal per ion
+and computes the noise with the same fixed 5 pF circuit and frame-boundary
+readings (no aperture). Noise is 5.02615 e RMS in the nominal charge estimator;
+white voltage, flicker and feedback contributions are 4.14811, 1.88610 and
+2.12085 e RMS. Amplifier voltage noise accounts for 82.19% of the variance.
+The uniform mean estimated charge per ion is 0.374487 e, giving S/N=0.074508 N.
+The strict condition S/N > 5 requires N > 67.107, hence at least 68 ions.
+The simultaneous mid-frame cross-check requires 67 ions. These are mean-signal
+thresholds for the assumed spectra, not detection probabilities for individual
+random arrival histories. Finite-gain recovery is about 38%; point-sample ideal
+recovery is 99.99% after rounding. All quoted numbers and tables are generated.
+The two-case noise sensitivity table is no longer included; the main result is
+an equation and ion-count threshold in the prose. All 41 tests and physics checks
+pass, including independent uniform-arrival integration, conserved finite-path
+charge, scaling, timestep refinement and independent noise integration. Maximum
+noise quadrature comparison discrepancy is 1.3e-11 relative. No LaTeX compilation.
+
+**Historical capacitance comparison (superseded in the active paper):** At the author's request, use the
+published 5 pF value directly before considering any area scaling. The source is
+Mei et al., arXiv:2010.09226, Section 2.3: approximately 5 pF to ground for a
+1 mm diameter electrode. In this benchmark 5 pF replaces total Cin, excluding
+Cf, without an additional unknown transistor capacitance. Other circuit and
+noise assumptions remain fixed. `make capacitance-check` runs the tracked
+`scripts/build_capacitance_check.py`; JSON and Markdown results are saved as
+`results/realistic_csa/capacitance_check.*`. Point samples, 10 ms frames, the
+configured 0.1 Hz–1 MHz noise band, passive-resistor feedback noise and the
+central grounded-plane pad trajectory are retained. Recovered fractions are
+37.88% / 37.84% (simultaneous / uniform); S/N for 1000 ions is 75.25 / 74.51;
+rounded template thresholds at S/N = 5 are 67 / 68 ions. Noise in the nominal
+charge estimator is 5.026 e RMS, with white voltage / flicker / feedback terms
+4.148 / 1.886 / 2.121 e RMS. Amplifier voltage noise now dominates. The similar
+numerical charge noise does not mean unchanged sensitivity: the signal is
+smaller because of finite gain. Signal timestep refinement changes results by
+less than 1.6e-6 relative; independent noise integration agrees within 8e-14.
+The optional `make capacitance-check` remains a historical diagnostic comparing
+0.25 and 5 pF with 1000-ion packets. Its generated values are no longer loaded
+by the paper, and it is not part of `make note`. The active paper instead uses
+5 pF in `config/realistic_csa.toml` throughout. No LaTeX compilation was made.
+
+The notebook containing the source papers is NEXT & NEXEL & ITACA:
+https://notebook.google.com/notebook/8beb347c-cdfd-40c6-a101-fb9a575faa82 .
+Its source PDFs are also local in `/Users/jjgomezcadenas/Dropbox-Personal/2026/ITACA/`.
+Liang et al., JINST 19 (2024) C04004, Section 2.2 reports a corrected guard-ring
+injection capacitance of 255 +/- 10 fF (not total detector capacitance) and ENC
+120–140 e; earlier Topmetal-S noise reports were underestimated by calibration.
+Do not equate that measured ENC to this calculation's estimator noise.
+
+**Active-paper provenance audit, 24 October:** Reviewed source and generators;
+no compilation or visual PDF inspection. The revised uniform-response plot was
+checked separately as a PNG; the manuscript PDF was not inspected. At the time of the audit the active paper had six figures
+(seven image files) and four tables. The numerical noise subsection now adds only the noise-input table, generated
+by `scripts/build_noise_study.py`; the sensitivity comparison table was removed.
+The active paper therefore has six figures and five tables. The text explicitly
+states that these inputs are not derived from the actual NAUSICA circuit. Commented archival material after the
+document is excluded.
+
+| Active item | Tracked source / generator | Status |
+| --- | --- | --- |
+| Figure 1: two ITACA diffusion panels | `img/SOURCES.txt` and tracked PNGs | Copied assets; recorded hashes verified. No Python, Julia or notebook generator found in the local ITACA manuscript directory. Generator/data still needed for local reproduction. |
+| Figure 2: IFG and pixel schematic | `figures/nausica_concept.tex`, `figures/build_nausica_concept.sh` | Reproducible TikZ drawing; numerical labels are literal, not imported from detector config. |
+| Figures 3–4: single-ion current and ideal CSA voltage | `scripts/build_readout.py` | Generated from tracked physical model and config. |
+| Figure 5: amplifier gain | `scripts/build_gain_figure.py` | Generated from tracked amplifier model. |
+| Figure 6: uniform mean response per ion | `scripts/build_arrival_cases.py` | Generated with point samples and recorded signal provenance. |
+| Table 1: ITACA detector parameters | Inline in `nausica.tex` | Inherited design values and derived quantities mixed; no table generator. Needs a sourced config and generated derived quantities. |
+| Table 2: single-ion CSA response | `scripts/build_readout.py` | Generated table. |
+| Table 3: arrival/circuit parameters | `scripts/build_arrival_cases.py` | Table layout inline; all numerical entries use generated macros. |
+| Table 4: input and recovered charge | `scripts/build_arrival_cases.py` | Generated table. |
+| Section 4 / Appendix A numerical results | `scripts/build_physics.py`, `scripts/build_readout.py` | Generated macros, except rounded 200 microseconds typed in prose (computed duration 193.51 microseconds). |
+| Section 5 recovery fractions | `scripts/build_arrival_cases.py` | Revised uniform example uses generated macros for the ideal and finite-gain recovery fractions. |
+| Numerical noise threshold, revised after the audit | `scripts/build_noise_study.py` | JSON/CSV/Markdown and LaTeX values/table generated; build dependency included. |
+
+Other manually entered derived results include the 0.45 mm flux-based minimum
+hole diameter; detector volume, anode voltages and drift times; the mapping of
+1–2 mm to 10–20 ms. The former 1000-ion frame estimate has been removed
+from the main calculation. Some
+underlying drift calculations already exist, but these prose values do not use
+generated macros. Published numbers (NEXT resolution, decay energies, ITACA
+rejection) require citations rather than a new calculation. Design inputs
+require recorded sources. Abstract claims about simulated and reconstructed
+tracks remain goals; the event-level calculation is still outstanding.
+No green prose or figure content was changed during this audit.
 
 **Specs to SPICE is a distinct task:** [specs_to_spice.md](readout/specs_to_spice.md)
 defines the numerical package and comparison protocol for Rogelio. It includes
@@ -539,7 +623,9 @@ copy of this response". Preserve the author's approved wording. This rule does
 not authorise unsolicited manuscript edits.
 
 Keep physical calculations in `src/ion_signal`, use SI internally, and generate
-paper values and figures reproducibly. Run the relevant physical tests when
+paper values and figures reproducibly. All calculations must be documented in
+Python scripts tracked by git, not left in scratchpads (author instruction,
+24 October). Run the relevant physical tests when
 changing calculations. Compile LaTeX only when the author explicitly requests it; do not compile
 automatically after manuscript edits. When compilation is requested, inspect the
 build log. Do not visually inspect the PDF unless explicitly requested. Keep scratch

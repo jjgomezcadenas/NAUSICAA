@@ -3,7 +3,7 @@
 * All node voltages are small-signal deviations; input current flows 0 -> in.
 * Do not add Cin again if a transistor model already includes its components.
 .param A0=1000 wp=6283.18530717959
-.param Cin=2.5e-13 Cf=3e-15 Rf=100000000000000
+.param Cin=5e-12 Cf=3e-15 Rf=100000000000000
 Iion 0 in PWL FILE="spread_1000.pwl"
 Cinput in 0 {Cin}
 Cfeedback in out {Cf}
@@ -15,7 +15,7 @@ Gpole pole 0 pole drive 1
 Cpole pole 0 {1/wp}
 Ebuffer out 0 pole 0 1
 .options reltol=1e-6 abstol=1e-22 vntol=1e-10 numdgt=15
-.tran 0 0.062 0 1.23786396374216e-06
+.tran 0 0.062 0 2.4999999999999e-06
 .save V(in) V(out) I(Iion)
 * Halve maxstep until sampled voltages and recovered charges converge.
 * The PWL input is interpolated: refine its generation step independently.

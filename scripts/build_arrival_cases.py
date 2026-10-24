@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
-"""Paper comparison of two arrival patterns, using point voltage samples."""
+"""Uniform-arrival mean response per ion; simultaneous mid-frame cross-check.
+
+N is left free. The finite-gap current is convolved with a uniform probability
+of collection over a frame. Multiplication by N gives the mean signal for N
+ions; individual stochastic arrival fluctuations are not electronic noise.
+"""
 from pathlib import Path
+from dataclasses import asdict
 import hashlib
 import json
 import os
+import tomllib
 import numpy as np
-from ion_signal.physics import E_CHARGE
-from ion_signal.realistic_csa import CSA, sampled_voltage, recovered_charge
+from ion_signal.physics import Detector, E_CHARGE, square_phi
+from ion_signal.readout import csa_response
+from ion_signal.realistic_csa import (CSA, uniform_ion_waveform, ions_waveform,
+    response, sampled_voltage, recovered_charge, frame_charge)
 
 ROOT = Path(__file__).resolve().parents[1]
 os.environ.setdefault('MPLCONFIGDIR', str(ROOT/'work/matplotlib-cache'))
@@ -17,117 +26,103 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    out = ROOT/'results/realistic_csa'
-    source = out/'benchmarks.json'
-    data = json.loads(source.read_text())
-    model = CSA(**data['electronics'])
-    interval = data['readout']['sample_interval_s']
-    selected = [('simultaneous_1000', 'Simultaneous'), ('spread_1000', 'Uniform')]
-    cases = {case['id']: case for case in data['cases']}
-    generated = ROOT/'notes/physics/generated'
-    work = ROOT/'notes/physics/work'
-    generated.mkdir(parents=True, exist_ok=True)
-    work.mkdir(parents=True, exist_ok=True)
-    rows, records, waveforms = [], [], []
-    for name, label in selected:
-        case = cases[name]
-        path = out/(name+'_waveform.csv')
-        wave = np.genfromtxt(path, delimiter=',', names=True)
-        samples = np.asarray(case['target_interval_s'])
-        assert np.isclose(np.diff(samples)[0], interval)
-        finite_v = sampled_voltage(wave['time_s'], wave['output_V'], samples, aperture_s=0.)
-        ideal_v = sampled_voltage(wave['time_s'], wave['ideal_output_V'], samples, aperture_s=0.)
-        qhat = float(recovered_charge(finite_v, model, interval)[0])
-        ideal_qhat = float(recovered_charge(ideal_v, model, interval)[0])
-        truth = case['true_target_interval_charge_C']
-        # Independently recover frame charge from the exported bin currents.
-        edges = wave['time_s']
-        cumulative = np.r_[0., np.cumsum(wave['current_A_left_bin_average'][:-1]*np.diff(edges))]
-        integrated = float(np.diff(np.interp(samples, edges, cumulative))[0])
-        if not np.isclose(integrated, truth, rtol=1e-10, atol=0):
-            raise RuntimeError('Frame current integral differs from benchmark charge')
-        record = dict(id=name, ions=case['ions'], sample_times_s=samples.tolist(),
-                      input_charge_C=truth, finite_gain_estimated_charge_C=qhat,
-                      ideal_estimated_charge_C=ideal_qhat,
-                      finite_gain_bias_percent=100*(qhat/truth-1),
-                      ideal_bias_percent=100*(ideal_qhat/truth-1),
-                      finite_gain_sample_voltage_V=finite_v.tolist(),
-                      ideal_sample_voltage_V=ideal_v.tolist(),
-                      waveform_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
-        records.append(record)
-        waveforms.append((wave, samples, finite_v, ideal_v))
-        rows.append(f'{label} & {truth/E_CHARGE:.1f} & {ideal_qhat/E_CHARGE:.1f} & {qhat/E_CHARGE:.1f}'+r' \\')
-    sim, uniform = [cases[name] for name, _ in selected]
-    start, stop = sim['target_interval_s']
-    if not (np.isclose(start, 0.) and
-            np.isclose(sim['arrival_configuration']['collection_time_s'], (start+stop)/2) and
-            np.isclose(uniform['arrival_configuration']['arrival_start_s'], start) and
-            np.isclose(uniform['arrival_configuration']['arrival_duration_s'], interval)):
-        raise ValueError('Arrival times must match the mid-frame and full-frame cases described in the paper')
-    if sim['ions'] != uniform['ions']:
-        raise ValueError('The paper comparison requires equal ion counts')
-    values = {
-        'ArrivalIons': f"{sim['ions']}",
-        'ArrivalFrameMs': f'{interval*1e3:g}',
-        'ArrivalCfFf': f'{model.feedback_capacitance_F*1e15:g}',
-        'ArrivalCinFf': f'{model.input_capacitance_F*1e15:g}',
-        'ArrivalGain': f'{model.open_loop_gain:g}',
-        'ArrivalPoleKhz': f'{model.amplifier_pole_Hz/1e3:g}',
-        'ArrivalRfOhm': f'{model.feedback_resistance_ohm:.0e}',
-        'ArrivalTauSeconds': f'{model.nominal_discharge_time_s:g}',
-        'ArrivalSimultaneousMs': f"{sim['arrival_configuration']['collection_time_s']*1e3:g}",
-        'ArrivalIdealErrorBoundPercent': f"{np.ceil(max(abs(x['ideal_bias_percent']) for x in records)*100)/100:.2f}",
-        'ArrivalSimultaneousErrorPercent': f"{abs(records[0]['finite_gain_bias_percent']):.2f}",
-        'ArrivalUniformErrorPercent': f"{abs(records[1]['finite_gain_bias_percent']):.2f}",
-        'ArrivalGainReduction': f'{model.charge_gain_reduction():.4f}',
-    }
-    (generated/'arrival_cases_values.tex').write_text(
-        '% Generated by scripts/build_arrival_cases.py; point samples, no noise.\n'+
-        ''.join(fr'\newcommand{{\{key}}}{{{value}}}'+'\n' for key,value in values.items()))
-    (generated/'arrival_cases_table.tex').write_text('\n'.join([
-        r'\begin{tabular}{lrrr}', r'\toprule',
-        r'Arrivals & Input $Q_n/e$ & Ideal $\widehat Q_n/e$ & Finite gain $\widehat Q_n/e$ \\',
-        r'\midrule', *rows, r'\bottomrule', r'\end{tabular}', '']))
+    config_path=ROOT/'config/realistic_csa.toml'
+    detector_path=ROOT/'config/detector.toml'
+    cfg=tomllib.loads(config_path.read_text())
+    model=CSA(**cfg['electronics']); detector=Detector.from_toml(detector_path)
+    dt=cfg['readout']['sample_interval_s']; samples=np.array([0.,dt])
+    num=cfg['numerics']
+    out=ROOT/'results/realistic_csa'; out.mkdir(parents=True,exist_ok=True)
+    gen=ROOT/'notes/physics/generated'; gen.mkdir(parents=True,exist_ok=True)
+    records=[]; uniform=None
+    qg=E_CHARGE*(1-square_phi(detector.gap_m,detector.pad_width_m/2))
+    for name in ('uniform_per_ion','simultaneous_per_ion'):
+        estimates=[]
+        for divisor in (1,2):
+            step=num['max_step_s']/divisor
+            if name=='uniform_per_ion':
+                wave=uniform_ion_waveform(detector,0.,dt,ions=1.,start_s=num['start_s'],end_s=num['end_s'],max_step_s=step)
+            else:
+                wave=ions_waveform(detector,[dt/2],num['start_s'],num['end_s'],step)
+            finite=response(wave,model)[:,1]
+            ideal=csa_response(wave,model.feedback_capacitance_F,model.nominal_discharge_time_s)
+            fv=sampled_voltage(wave.edges_s,finite,samples,0.)
+            iv=sampled_voltage(wave.edges_s,ideal,samples,0.)
+            qhat=float(recovered_charge(fv,model,dt)[0])
+            estimates.append(qhat)
+        error=abs(estimates[0]/estimates[1]-1)
+        if error>1e-5 or abs(wave.total_charge_C/qg-1)>1e-9:
+            raise ArithmeticError(f'{name}: refinement or charge-conservation failure')
+        truth=float(frame_charge(wave,samples)[0])
+        ideal_qhat=float(recovered_charge(iv,model,dt)[0])
+        path=out/(name+'_waveform.csv')
+        np.savetxt(path,np.column_stack([wave.edges_s,np.r_[wave.current_A,0.],finite,ideal]),
+                   delimiter=',',header='time_s,current_A_per_ion_left_bin_average,output_V_per_ion,ideal_output_V_per_ion',comments='')
+        records.append(dict(id=name,normalization_ions=1.,sample_times_s=samples.tolist(),
+                            input_charge_per_ion_C=truth,finite_gain_estimated_charge_per_ion_C=qhat,
+                            ideal_estimated_charge_per_ion_C=ideal_qhat,
+                            finite_gain_recovered_fraction=qhat/truth,ideal_recovered_fraction=ideal_qhat/truth,
+                            finite_gain_sample_voltage_per_ion_V=fv.tolist(),ideal_sample_voltage_per_ion_V=iv.tolist(),
+                            timestep_refinement_relative_difference=error,
+                            finite_path_charge_relative_error=abs(wave.total_charge_C/qg-1),
+                            waveform_sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+        if name=='uniform_per_ion':
+            uniform=(wave,finite,ideal,fv,iv)
     (out/'arrival_cases_point_samples.json').write_text(json.dumps(dict(
-        source_benchmarks_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
-        electronics=data['electronics'], detector=data['detector'],
-        sampling_aperture_s=0., noise_included=False, sample_interval_s=interval,
-        assumptions=data['provenance'], cases=records), indent=2)+'\n')
-    with plt.rc_context({'font.size': 9, 'axes.spines.top': False,
-                         'axes.spines.right': False, 'pdf.fonttype': 42}):
-        fig, axes = plt.subplots(2, 2, figsize=(6.6, 4.6), sharex=True,
-                                 constrained_layout=True)
-        for col, ((_, label), (wave, samples, fv, iv)) in enumerate(zip(selected, waveforms)):
-            t = wave['time_s']*1e3
-            axes[0, col].stairs(wave['current_A_left_bin_average'][:-1]*1e15, t,
-                                color='#17877E', linewidth=1.3)
-            axes[0, col].set(title=label+' arrivals', ylabel=r'$i_k$ (fA)', ylim=(0,None))
-            axes[1, col].plot(t, -wave['ideal_output_V']*1e3, color='#355F85',
-                              linestyle='--', label='Ideal CSA', linewidth=1.4)
-            axes[1, col].plot(t, -wave['output_V']*1e3, color='#B67B24',
-                              label='Finite-gain CSA', linewidth=1.5)
-            axes[1, col].plot(samples*1e3, -iv*1e3, 's', color='#355F85', markersize=4)
-            axes[1, col].plot(samples*1e3, -fv*1e3, 'o', color='#B67B24', markersize=4)
-            axes[1, col].set(xlabel='Time (ms)', ylabel=r'$-V_k$ (mV)')
-            for ax in axes[:,col]:
-                ax.set_xlim((samples[0]-.2*interval)*1e3,(samples[1]+.5*interval)*1e3)
-                ax.axvspan(samples[0]*1e3, samples[1]*1e3, color='0.5', alpha=.055)
-                for boundary in samples:
-                    ax.axvline(boundary*1e3, color='0.45', linestyle=':', linewidth=.8)
-                ax.grid(axis='y',alpha=.15)
-        maximum = max(-wave['ideal_output_V'].min()*1e3 for wave,_,_,_ in waveforms)
-        for ax in axes[1,:]:
-            ax.set_ylim(-.025*maximum,1.08*maximum)
-        handles, labels = axes[1,0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc='outside lower center', ncols=2, frameon=False)
-        fig.savefig(generated/'arrival_cases.pdf', metadata={'CreationDate':None,'ModDate':None})
-        fig.savefig(work/'arrival_cases.png', dpi=180)
+        electronics=asdict(model),sample_interval_s=dt,sampling_aperture_s=0.,noise_included=False,
+        capacitance_reference=cfg['capacitance_reference'],
+        source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (config_path,detector_path)},
+        assumptions=['N is free; waveforms are normalized to mean response per ion.',
+                     'Uniform collection probability on [0, Delta t]; simultaneous mid-frame case is a cross-check.',
+                     'Central square pad in grounded plane; constant gap speed; finite-path charge not renormalized.',
+                     'Point voltage samples at frame boundaries; zero initial signal; no random-arrival variance.'],
+        cases=records),indent=2)+'\n')
+    values={
+        'ArrivalFrameMs':f'{dt*1e3:g}',
+        'ArrivalCfFf':f'{model.feedback_capacitance_F*1e15:g}',
+        'ArrivalCinPf':f'{model.input_capacitance_F*1e12:g}',
+        'ArrivalGain':f'{model.open_loop_gain:g}',
+        'ArrivalPoleKhz':f'{model.amplifier_pole_Hz/1e3:g}',
+        'ArrivalRfOhm':f'{model.feedback_resistance_ohm:.0e}',
+        'ArrivalTauSeconds':f'{model.nominal_discharge_time_s:g}',
+        'TopmetalElectrodeDiameterMm':f"{cfg['capacitance_reference']['electrode_diameter_m']*1e3:g}",
+        'ArrivalUniformIdealPercent':f"{100*records[0]['ideal_recovered_fraction']:.2f}",
+        'ArrivalUniformRecoveredPercent':f"{100*records[0]['finite_gain_recovered_fraction']:.0f}",
+    }
+    (gen/'arrival_cases_values.tex').write_text('% Generated by scripts/build_arrival_cases.py; mean per-ion response.\n'+
+        ''.join(fr'\newcommand{{\{k}}}{{{v}}}'+'\n' for k,v in values.items()))
+    r=records[0]
+    rows=[f"Uniform & {r['input_charge_per_ion_C']/E_CHARGE:.4f} & {r['ideal_estimated_charge_per_ion_C']/E_CHARGE:.4f} & {r['finite_gain_estimated_charge_per_ion_C']/E_CHARGE:.4f}"+r' \\']
+    (gen/'arrival_cases_table.tex').write_text('\n'.join([r'\begin{tabular}{lrrr}',r'\toprule',
+        r'Arrivals & $Q_n/(Ne)$ & Ideal $\widehat Q_n/(Ne)$ & Finite gain $\widehat Q_n/(Ne)$ \\',
+        r'\midrule',*rows,r'\bottomrule',r'\end{tabular}','']))
+    wave,finite,ideal,fv,iv=uniform
+    with plt.rc_context({'font.size':10,'axes.spines.top':False,'axes.spines.right':False,'pdf.fonttype':42}):
+        fig,axes=plt.subplots(1,2,figsize=(6.6,2.9),constrained_layout=True)
+        axes[0].stairs(wave.current_A*1e18,wave.edges_s*1e3,color='#17877E',linewidth=1.4)
+        axes[0].set(ylabel=r'$i_N/N$ (aA)',title='Uniform arrivals')
+        axes[1].plot(wave.edges_s*1e3,-ideal*1e6,'--',color='#355F85',label='Ideal CSA',linewidth=1.4)
+        axes[1].plot(wave.edges_s*1e3,-finite*1e6,color='#B67B24',label='Finite-gain CSA',linewidth=1.5)
+        axes[1].plot(samples*1e3,-iv*1e6,'s',color='#355F85',markersize=4)
+        axes[1].plot(samples*1e3,-fv*1e6,'o',color='#B67B24',markersize=4)
+        axes[1].set(ylabel=r'$-V_N/N$ ($\mu$V)',title='Mean voltage per ion')
+        for ax in axes:
+            ax.set(xlabel='Time (ms)',xlim=(-.2*dt*1e3,1.5*dt*1e3))
+            ax.axvspan(0,dt*1e3,color='0.5',alpha=.055)
+            for t in samples:
+                ax.axvline(t*1e3,color='0.45',linestyle=':',linewidth=.8)
+            ax.grid(axis='y',alpha=.15)
+        handles,labels=axes[1].get_legend_handles_labels()
+        fig.legend(handles,labels,loc='outside lower center',ncols=2,frameon=False)
+        fig.savefig(gen/'arrival_cases.pdf',metadata={'CreationDate':None,'ModDate':None})
+        work=ROOT/'notes/physics/work';work.mkdir(parents=True,exist_ok=True)
+        fig.savefig(work/'uniform_arrivals.png',dpi=180)
         plt.close(fig)
-    print('Created point-sample table, values and arrival_cases.pdf')
-    for case in records:
-        print(case['id'], 'Q/e=',case['input_charge_C']/E_CHARGE,
-              'Qhat/e=',case['finite_gain_estimated_charge_C']/E_CHARGE)
+    print('Generated uniform mean per-ion signals and simultaneous cross-check')
+    for r in records:
+        print(r['id'], 'g/e=',r['finite_gain_estimated_charge_per_ion_C']/E_CHARGE,
+              'recovery=',r['finite_gain_recovered_fraction'])
 
 
-if __name__ == '__main__':
+if __name__=='__main__':
     main()

@@ -1,7 +1,7 @@
 # Illustrative linear circuit benchmark, not a fitted or validated X-FAB design.
 [electronics]
 feedback_capacitance_F = 3e-15
-input_capacitance_F = 250e-15 # Excludes Cf; total detector + amplifier input shunts.
+input_capacitance_F = 5e-12 # Fixed benchmark: Topmetal-S electrode capacitance; excludes Cf.
 feedback_resistance_ohm = 1e14 # Explicit design assumption, no artificial upper cap.
 open_loop_gain = 1000.0
 amplifier_pole_Hz = 1000.0 # A(s)=A0/(1+s/(2*pi*fp)); not closed-loop bandwidth.
@@ -30,9 +30,14 @@ noise_relative_tolerance = 1e-7
 
 [provenance]
 source = "Rogelio supplied readout/rogelio_reference.html; kept unchanged"
-status = "Cf and illustrative detector capacitance inspired by source; all other electronic/noise parameters are explicit study assumptions, not foundry values"
+status = "Cin fixed to published Topmetal-S 5 pF electrode benchmark; Cf inspired by source; remaining circuit/noise parameters are study assumptions, not foundry values"
 model = "Finite-gain one-pole linear amplifier, input shunt capacitance and linear feedback; no saturation, nonlinear pseudo-resistor, additional amplifier poles or correlated noise sources"
 arrivals = "Specified identical central trajectories at one pad; no event ensemble, no diffusion in final gap, no charge renormalization"
+
+[capacitance_reference]
+source = "https://arxiv.org/pdf/2010.09226, Section 2.3"
+electrode_diameter_m = 0.001
+status = "Reported Topmetal-S electrode capacitance adopted as total Cin benchmark for smaller NAUSICA pads; no layout extraction"
 
 [[cases]]
 id = "one_ion"
