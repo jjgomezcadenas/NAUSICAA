@@ -50,6 +50,18 @@ computed at full resolution. Sampling is every 10 ms at a stated phase.
 The finite plotting window can end before a long discharge has completed;
 the JSON records residual output rather than treating it as lost charge.
 
+## Paper outputs
+
+The same generator produces `notes/physics/generated/readout_values.tex`,
+`single_ion_response_table.tex` and two vector figures: `single_ion_current.pdf`
+(full-gap and near-pad current, with distance and time-to-collection axes) and
+`single_ion_response.pdf` (CSA voltage). The current figure shades the final
+90% of the full-path charge; the finite-gap signal is not renormalized.
+They use the configured single-ion case and the three shortest configured
+feedback times, together with the ideal-integrator limit. Numerical metrics
+are calculated at full resolution. The paper's `make note` target regenerates
+both physics and readout outputs before compiling LaTeX.
+
 ## SPICE handoff
 
 Each `.pwl` file contains two columns: time in seconds and current in amperes.

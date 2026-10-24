@@ -15,7 +15,7 @@ readout:
 test:
 	$(PYTHON) -m unittest discover -s tests -v
 
-note: physics
+note: physics readout
 	cd notes/physics && latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=build nausica.tex
 
 check: test readout note

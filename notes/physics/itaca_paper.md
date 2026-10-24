@@ -1,6 +1,6 @@
 # NAUSICA for ITACA: paper plan and work status
 
-Working plan agreed with J. J. Gómez-Cadenas. Updated 23 October 2026.
+Working plan agreed with J. J. Gómez-Cadenas. Updated 24 October 2026.
 
 Manuscript: [nausica.tex](nausica.tex). This document records the intended paper,
 the work already available, and what remains. It does not replace the manuscript
@@ -33,7 +33,7 @@ paper presents MARS; the full-cathode alternative is introduced here. Do not
 attribute both alternatives to the ITACA paper or develop the MARS mechanics in
 this paper. A separate study may develop the alternative implementation.
 
-## Approved green text — 23 October 2026
+## Approved green text — updated 24 October 2026
 
 The author identifies the following prose as green and approved. This records
 his assessment, not an independent Pangram test.
@@ -45,17 +45,20 @@ his assessment, not an independent Pangram test.
 | Section 2, The ITACA detector, including Principle of operation | Green; reviewed and approved |
 | Section 3 opening paragraphs, before Charge collection and focusing | Green; author-revised and approved |
 | Section 3, Charge collection and focusing | Green; approved through the end of this subsection |
-| Pixel electronics and readout, and subsequent text | Not covered by this approval; continue review |
+| Section 3, Pixel electronics and readout | Green; author-revised and approved on 24 October; preserve current wording |
+| Parameters of the design and subsequent text | Not covered by this green approval; continue review |
 
-The latest approved segment starts at `\subsection{Principle of operation}`
+The segment approved on 23 October starts at `\subsection{Principle of operation}`
 and ends immediately before `\subsection{Pixel electronics and readout}`.
 Checkpoint commit `3cf0db3` preserves the manuscript and comments before cleanup.
 Comment-only lines in this interval were subsequently removed; the active text
 was preserved exactly. Comments outside the interval remain for later review.
 
 Handle green prose with care. Do not insert longer sentences, reformulate it,
-or change its meaning without the author's approval. Pure grammar and small
-word-level corrections may be treated as minor. A green designation does not
+or change its meaning without the author's approval. As clarified on 24 October,
+all manuscript edits, including typos and small word-level corrections, require
+explicit instruction. A request to produce a figure does not authorise manuscript
+edits or insertion of that figure. A green designation does not
 mean pending calculations, including the Appendix B collection study, have
 already been completed.
 
@@ -140,7 +143,8 @@ reorganised. The existing TopMetal image is only a starting point.
 
 **Drafted on 23 October:** Section 3 now follows the agreed concept, collection,
 electronics and design-parameter sequence. Existing wording has been reused;
-the original section remains archived as comments after the active draft.
+the original section remains archived as comments at the end of the source,
+after `\end{document}`.
 The opening and focusing text have since been reviewed and approved as green;
 the remaining subsections await review. The schematic was subsequently replaced; see the figure update below.
 
@@ -176,10 +180,40 @@ implemented, with physical and numerical tests. The existing paper contains
 the weighting-potential derivation and current results. An offline analytical
 readout interface and example current files are available.
 
-**Remaining:** Turn this material into a compact paper section, add the CSA
-equations and relevant output plots to the manuscript, and select a small set
-of instructive examples. Keep example capacitances and discharge times clearly
-separate from the eventual design choices.
+**Drafted on 23 October:** Section 4 and Appendix A are now in the manuscript,
+awaiting author review. The section gives the induced current, finite-gap charge,
+pulse duration and linear CSA response. The current figure has full-gap and near-pad panels, with distance and
+time-to-collection axes and the final 90% of full-path charge shaded. A separate
+figure shows CSA voltage, and a generated table compares illustrative discharge times.
+Appendix A contains the square-pad derivation, charge-duration definitions,
+CSA solution, charge recovery between samples and numerical checks. The model
+is the existing grounded-plane benchmark, not an IFG field calculation.
+
+The readout generator now creates `generated/readout_values.tex`,
+`generated/single_ion_current.pdf`, `generated/single_ion_response.pdf` and
+`generated/single_ion_response_table.tex`. `make note` regenerates these as well
+as the physics outputs. All 22 existing tests passed. The three finite-feedback
+examples were also checked against independent continuous quadrature; their
+largest relative peak-voltage difference was 0.046%. No PDF visual inspection
+was performed.
+
+**Approved corrections and figure integration, 24 October:** Retained the author's
+wording and full-path footnote. Fixed the listed grammar and LaTeX errors,
+kept the earlier gap definition and removed the duplicate, and retained the
+approximate 200 microseconds without the duplicated precise value. Inserted the
+two-panel current figure before the CSA subsection, added its text reference,
+and corrected the separate voltage figure caption and table reference. The
+claim of validation in Appendix B is commented out with a TODO until that study
+exists. These specific edits were explicitly authorised after review; they do
+not authorise further manuscript edits.
+
+The previous manual-like analytical sections are preserved as comments after
+`\end{document}` for reuse in the later track study and Appendix B. Sections
+1–3 and the abstract were left unchanged by this drafting step. Appendix B's
+quantitative collection study remains to be done.
+
+**Remaining:** Review Section 4 and Appendix A with the author. Keep example
+capacitances and discharge times separate from the eventual design choices.
 
 ### 5. The ion signal from a track
 
@@ -215,6 +249,17 @@ feedback discharge to charge retention and temporal reconstruction; and noise
 and digitisation to recoverable track signals. Treat these choices together.
 A sampled CSA voltage includes the history of arriving charge and is not simply
 the charge delivered during the latest frame.
+
+Text moved from Section 4 for use here when choosing feedback time and sampling:
+
+> The single-ion current lasts much less than a readout frame. The feedback must
+> retain its contribution until the voltage is sampled. The discharge time must
+> therefore be considered together with the sampling interval and the arrival
+> distribution on each pad.
+
+The Section 4 superposition paragraph now introduces multiple arrivals at a pad,
+separately from retention between samples. Section 6 is not yet in the active
+manuscript, so the moved text is retained here for its draft.
 
 Describe the proposed circuit implementation and compare the analytical model
 with Rogelio's circuit results when available. Finish with a justified parameter
@@ -381,14 +426,19 @@ paper narrative. Retain useful technical material in the repository.
 
 ## Working method and next step
 
-Work through the sections in order. The next task is author review of
-Pixel electronics and readout. The preceding green text is approved and should
-remain stable. Do not reorganise the entire manuscript in one pass.
+Work through the sections in order. The next task is author review of the
+Section 4 and Appendix A drafts, beginning with the section's opening. The author
+has shortened the electronics discussion and closed Section 3 with its
+parameter summary. The discarded roadmap paragraph has been removed and
+the commented original Section 3 moved to the end of the source. Preserve
+the reviewed wording; do not reorganise the entire manuscript in one pass.
 
 Preserve the author's voice. The author reports the abstract and reviewed
 Sections 1–2 as acceptable to Pangram; this plan does not independently assess
-that score. Pure grammar and small word-level corrections can be treated as
-minor. For substantive edits, show the original and replacement one at a time,
+that score. Do not edit manuscript text without explicit instruction, including
+minor corrections. Review requests are read-only. Producing a figure does not
+authorise inserting it or changing prose. For substantive edits, show the
+original and replacement one at a time,
 wait for approval, apply the agreed change, and then proceed. Comment out
 proposed removals for review before deleting material when appropriate.
 

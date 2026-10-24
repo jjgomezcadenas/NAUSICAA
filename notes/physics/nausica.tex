@@ -19,6 +19,7 @@
 \fancyhead[R]{\small \today}
 \fancyfoot[C]{\thepage}
 \input{generated/values}
+\input{generated/readout_values}
 \newcommand{\ion}{\ensuremath{\mathrm{Xe}_2^+}}
 \newcommand{\dd}{\mathrm{d}}
 \title{NAUSICAA for ITACA}
@@ -136,7 +137,7 @@ Notice that the electron track and the ion track are detected in \emph{delayed c
 
 Reading the arriving ions (without amplification) requires exposed metal electrodes connected to charge-sensitive amplifiers (CSAs). Our proposed  \emph{Non-Amplified Ultra-Slow Ion CMOS ASIC} (NAUSICA) uses TopMetal CMOS technology~\cite{An2016TopmetalII} to implement this concept, following Refs.~\cite{Nygren_2018, mei2020topmetalcmosdirectcharge}. There is an important difference, however, with respect to these works, which attempted to design a system able to provide simultaneously good energy resolution and a good measurement of the track topology using ions. Alas, both requirements impose constraints that interfere with each other. Good energy resolution requires optimizing ion counting and minimizing noise. Good topological reconstruction demands pixels separated by a small pitch (e.g., of the order of diffusion, $\sim 2$ mm), which in turn multiplies the number of pixels and adds to the overall noise. The advantage of ITACA is that energy resolution is measured with excellent precision by electroluminescence, and thus the ion detector can prioritize the reconstruction of the topology. NAUSICA is designed with this goal in mind. 
 
-The principle of operation is as follows. The ions arrive at the metal pad over a time of order 1 second, taking a 10 cm extent along the drift direction as an extreme case. The resolution in $z$ should be of the order of the resolution in the transverse coordinates ($\sigma_z = 1-2$ mm). Since the drift velocity of the ions is $\sim 10$ cm/s, this translates into slicing the charge in buckets of $10-20$ ms, which implies a framed readout (about 50 frames of 20 ms each). The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA. The sampled voltage includes charge accumulated in previous buckets. The charge arriving in each bucket is recovered from the change between successive samples, accounting for feedback discharge. 
+The principle of operation is as follows. The ions arrive at the metal pad over a time of order 1 second, taking a 10 cm extent along the drift direction as an extreme case. The resolution in $z$ should be of the order of the resolution in the transverse coordinates ($\sigma_z = 1-2$ mm). Since the drift velocity of the ions is $\sim 10$ cm/s, this translates into slicing the charge in buckets of $10-20$ ms, which implies a framed readout (about 50 frames of 20 ms each). The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA. 
 
 
 \begin{figure}[!htbp]
@@ -154,23 +155,271 @@ The pad dimensions and pitch need to be chosen balancing the desired spatial res
 E_h\,\frac{\pi d_h^2}{4}\gtrsim E_{\rm bulk}p^2.
 \]
 Here $E_h$ and $E_{\rm bulk}$ are the fields inside the hole and in the drift region, respectively, $d_h$ is the hole diameter, and $p$ is the pixel pitch.
-For a pitch of 2 mm, a bulk field of 200 V/cm and a hole field of 5 kV/cm, this gives a minimum hole diameter of approximately 0.45 mm. Thus, we take 0.5 mm as a preliminary design parameter. Full flux collection in this simple geometry implies a large ion collection efficiency that we take as one for the time being.  The validity of this approach is shown in Appendix B.
-
-
-
+For a pitch of 2 mm, a bulk field of 200 V/cm and a hole field of 5 kV/cm, this gives a minimum hole diameter of approximately 0.45 mm. Thus, we take 0.5 mm as a preliminary design parameter. Full flux collection in this simple geometry implies a large ion collection efficiency that we take as one for the time being.
 
 
 \subsection{Pixel electronics and readout}
 
-Each pad is directly connected to the input of a CSA. The input current is integrated on a feedback capacitor, while a MOS pseudo-resistor operating in the subthreshold regime provides continuous discharge. The feedback capacitance sets the charge-to-voltage gain, and the discharge time determines how long the accumulated signal is retained.
+The right panel of Fig. \ref{fig:nausicaa} shows a schematic of the electronics. Each pad is directly connected to the input of a CSA. The input current is integrated on a feedback capacitor $C_f$. A MOS transistor allows $C_f$ to discharge slowly. The gain is  $1/C_{f}$, and the signal decays with time constant $\tau_{f}$.
 
-Ion charge collection is continuous in time. The detector is read out using a frame-based scan of the pixels. Digitisation is performed at the periphery of the ASIC or on an external carrier, using one or a small number of multiplexed ADCs. The pad positions and the time dependence of their signals provide the three-dimensional ion image, using the known ion drift velocity to reconstruct the longitudinal coordinate.
+
+The sampled voltage includes charge accumulated in previous buckets. The charge arriving in each bucket is recovered from the change between successive samples, accounting for feedback discharge. Digitisation is performed at the periphery of the ASIC or on an external carrier, using one or a small number of multiplexed ADCs.
 
 \subsection{Parameters of the design}
 
-The pad size, pitch and active area must be chosen to sample and contain the ion track. The feedback capacitance and discharge time depend on the charge arriving at each pad and its distribution in time. The sampling interval, electronic noise and ADC range must allow the weaker parts of the track to be recorded while accommodating the largest signals.
+In summary, the pad size, pitch and active area must be chosen to sample and contain the ion track. The feedback capacitance and discharge time depend on the charge arriving at each pad and its distribution in time. The sampling interval, electronic noise and ADC range must allow the weaker parts of the track to be recorded while accommodating the largest signals.
 
-To specify these parameters, we first calculate the current induced by one ion and the resulting CSA voltage. We then calculate the distribution of charge among pads and its arrival times for simulated tracks. These calculations determine the readout parameters, which are finally tested by reconstructing tracks with electronic noise and digitisation included.
+
+\section{Signal formation and response of one pad}
+\label{sec:single_ion}
+
+Consider an ion, with charge $q=e$, arriving at a readout pad. The process of signal formation can be viewed in two steps:
+\begin{enumerate}
+\item As the ion approaches, a current is induced in the pad. 
+\item Then the CSA integrates it and produces the voltage sampled by the readout.
+\end{enumerate}
+
+Next, we describe each step:
+
+\subsection{The induced current}
+
+The weighting potential of a pad, $\phi_{w}(r)$, describes how an ion’s motion contributes to the signal on that pad. We calculate it for the detector geometry with the following boundary conditions: (a) the selected pad is held at unit potential and (b) all other electrodes at zero. Also the calculation is performed in the absence of charge. 
+
+We define positive current as current delivered into the CSA input by an approaching positive ion. With this convention, the meaning of $\phi_w$ follows from the Shockley--Ramo relation~\cite{riegler2016}
+\begin{equation}
+ \Delta Q=e\,\Delta\phi_w.
+ \label{eq:single_charge}
+\end{equation}
+
+The current is the rate at which this signal develops:
+\begin{equation}
+ i_1(t)=e\frac{\dd\phi_w(\mathbf r(t))}{\dd t}.
+ \label{eq:single_ramo}
+\end{equation}
+Near a small pad, $\phi_w$ changes rapidly with position, so most of the signal is induced during the final approach. 
+
+For the analytical calculation we use a square pad of side $2a$, embedded in an infinite grounded plane. The gas occupies a homogeneous half-space above the plane. The ion approaches the centre of the pad along its normal at constant speed $v$. The gap width $g$ is the distance between the lower IFG electrode and the pad plane. This geometry provides a simple pad response. In this simple approximation, the IFG and the dielectric structure of the CMOS surface are not included in its weighting potential. Appendix~\ref{app:single_ion} gives the derivation and boundary conditions.
+
+Place the pad at $z=0$ and take collection to occur at $t=0$, so that $z=-vt$ before collection. The weighting field on the central axis is
+%
+\begin{equation}
+ W(z)=-\frac{\dd\phi_w}{\dd z}
+ =\frac{4a^2}{\pi(z^2+a^2)\sqrt{z^2+2a^2}}.
+ \label{eq:single_weight}
+\end{equation}
+%
+For an ion entering this gap at $z=g$ and $t_g=-g/v$, the current is
+%
+\begin{equation}
+ i_1(t)=
+ \begin{cases}
+ evW(-vt),&t_g\leq t<0,\\
+ 0,&\text{otherwise}.
+ \end{cases}
+ \label{eq:single_current}
+\end{equation}
+%
+Its integral over this finite trajectory is $Q_g=e[1-\phi_w(g)]$.
+
+\subsection{Signal size and duration}
+
+As a numerical example, we take the parameters shown in the left panel of Fig. \ref{fig:nausicaa}: a pad of side \SI{\SignalPadWidth}{mm} and a gap of \SI{\SignalGap}{mm}. We estimate the gap velocity from $v=\mu E_g$, using the mobility inferred from the bulk drift speed and assuming it remains constant in the gap. With $E_g=\SI{\SignalGapField}{kV/cm}$, this gives $v=\SI{\GapSpeed}{m/s}$. 
+
+The current rises as the ion approaches the pad and reaches
+\begin{equation}
+ i_1(0^-)=\frac{2\sqrt{2}}{\pi}\frac{ev}{a}
+ =\SI{\PeakCurrent}{fA}.
+ \label{eq:single_peak}
+\end{equation}
+%
+Most of the signal is induced close to the pad (Figure~\ref{fig:single_ion_current}). The final $\sim$\SI{200}{\micro\second} before collection contain 90\% of the full-path charge $e$ \footnote{Here ``full path'' means extending the same analytical trajectory to infinite distance.}. For the finite gap used in the calculation (Appendix~\ref{app:single_duration}),
+%
+\begin{equation}
+ Q_g=e[1-\phi_w(g)]=\GapChargeFraction\,e.
+ \label{eq:single_gap_charge}
+\end{equation}
+%
+
+\begin{figure}[!htbp]
+ \centering
+ \includegraphics[width=\linewidth]{single_ion_current.pdf}
+ \caption{Single-ion current across the full gap (left) and during the final approach (right), for the square-pad model described above. The upper axes show the time remaining before collection. The shaded region contributes 90\% of the full-path charge.}
+ \label{fig:single_ion_current}
+\end{figure}
+
+\subsection{The CSA voltage}
+
+We describe the CSA by an ideal amplifier with feedback capacitance $C_f$ and an effective resistance $R_f$ representing the MOS discharge path. The output voltage $V_1$ is measured relative to its baseline. The input current is shared between the feedback capacitor and the discharge path:
+\begin{equation}
+ i_1(t)=-C_f\frac{\dd V_1}{\dd t}-\frac{V_1}{R_f}.
+ \label{eq:csa_current_balance}
+\end{equation}
+Where rhe first term describes charge integration and the second feedback discharge. With the discharge time $\tau_f=R_fC_f$, this becomes
+%
+\begin{equation}
+ \frac{\dd V_1}{\dd t}+\frac{V_1}{\tau_f}
+ =-\frac{i_1(t)}{C_f}.
+ \label{eq:csa_ode}
+\end{equation}
+%
+Setting $V_1(t_g)=0$, we find the solution 
+\begin{equation}
+ V_1(t)=-\frac{1}{C_f}\int_{t_g}^{t}
+ i_1(t')\exp\left[-\frac{t-t'}{\tau_f}\right]\dd t'.
+ \label{eq:csa_solution}
+\end{equation}
+With this convention positive input current produces a negative voltage. Once collection is complete, the voltage decays exponentially, $V_1(t)=V_1(0)\exp(-t/\tau_f)$.
+
+If discharge is negligible during the pulse, the voltage at collection is $V_1(0)=-Q_g/C_f$. Taking an  illustrative value of $C_f=\SI{\ReadoutCapacitance}{fF}$, the resulting voltage is \SI{\SingleIonIdealVoltage}{\micro\volt}. Figure~\ref{fig:single_ion_response} and Table~\ref{tab:single_ion_response} shows the idealized response of the CSA ---not including substantial effects such as linear response; transistor noise, finite amplifier bandwidth and saturation---  
+
+\begin{figure}[!htbp]
+ \centering
+ \includegraphics[width=\linewidth]{single_ion_response.pdf}
+ \caption{CSA voltage magnitude for the finite-gap current in Figure~\ref{fig:single_ion_current}, with collection at $t=0$. The CSA has $C_f=\SI{\ReadoutCapacitance}{fF}$ and linear feedback, with the discharge times shown in the legend.}
+ \label{fig:single_ion_response}
+\end{figure}
+
+\begin{table}[!htbp]
+ \centering
+ \input{generated/single_ion_response_table}
+ \caption{Peak response to the finite-gap single-ion current in Figure~\ref{fig:single_ion_current}. The last column compares the peak magnitude with the ideal-integrator value $Q_g/C_f$.}
+ \label{tab:single_ion_response}
+\end{table}
+
+Since the tracks we want to reconstruct produce typically $10^5$ ions distributed over a time of order \SI{1}{\second}, 
+a bucket of \SI{10}{\milli\second} contains on average about $10^3$ ions, which could land in the same pad in the limit of a track exactly parallel to the drift lines, neglecting transverse diffusion. The induced current when several ions arrive during a readout frame is the sum of the individual ion-induced currents. For ions following the same final trajectory and collected on the same pad at times $t_k$, the linear model gives
+\begin{equation}
+ i_p(t)=\sum_k i_1(t-t_k),\qquad
+ V_p(t)=\sum_k V_1(t-t_k).
+ \label{eq:pad_superposition}
+\end{equation}
+
+\clearpage
+\appendix
+\section{Analytical single-ion response}
+\label{app:single_ion}
+
+\subsection{Weighting potential of a square pad}
+
+The pad occupies $-a<x<a$, $-a<y<a$ in the plane $z=0$. Its weighting potential is one, and the remainder of the plane is held at zero. The upper half-space has uniform permittivity and no free charge in the weighting problem. The potential tends to zero at infinity. Thus $\nabla^2\phi_w=0$ for $z>0$, with a prescribed potential on the boundary.
+
+The half-space Poisson kernel gives~\cite{salazar2021}
+\begin{equation}
+ \phi_w(x,y,z)=\frac{1}{2\pi}\int_{-a}^{a}\int_{-a}^{a}
+ \frac{z\,\dd x'\,\dd y'}{[(x-x')^2+(y-y')^2+z^2]^{3/2}}.
+ \label{eq:app_poisson}
+\end{equation}
+The integral is the solid angle subtended by the pad, divided by $2\pi$. On the central axis, integration over the square yields
+\begin{equation}
+ \phi_w(z)=\frac{2}{\pi}\tan^{-1}
+ \left[\frac{a^2}{z\sqrt{z^2+2a^2}}\right],\qquad z>0.
+ \label{eq:app_square_phi}
+\end{equation}
+It approaches one at the pad and zero far from it. Differentiation gives the field in Eq.~\eqref{eq:single_weight}. At large distance,
+\begin{equation}
+ \phi_w(z)\simeq\frac{2a^2}{\pi z^2},\qquad
+ W(z)\simeq\frac{4a^2}{\pi z^3}.
+\end{equation}
+The weighting field has units of inverse length because $\phi_w$ is dimensionless.
+
+This boundary condition represents a metal pad surrounded by grounded metal. An exposed dielectric surface between pads would require a different solution. The actual IFG also modifies the weighting potential. The present expression is used as an analytical reference, with fixed electrode potentials and negligible perturbation of the physical field by the ion charge. Resistive materials can require time-dependent weighting fields~\cite{riegler2016,riegler2019}.
+
+\subsection{Trajectory, charge and duration}
+\label{app:single_duration}
+
+The bulk operating point gives the mobility
+\begin{equation}
+ \mu=\frac{v_d}{E_{\rm bulk}}
+ =\Mobility\times10^{-6}\ \mathrm{m^2/(V\,s)}.
+\end{equation}
+We use the same mobility in the nominal uniform gap field, giving $v=\mu E_g$. Diffusion during the final approach is omitted from the single-ion reference trajectory. The ion moves from $z=g$ to zero at this constant speed. Its induced current is Eq.~\eqref{eq:single_current}, and direct integration gives
+\begin{equation}
+ \int_{-g/v}^{0}i_1(t)\dd t
+ =e\int_0^g W(z)\dd z
+ =e[1-\phi_w(g)].
+\end{equation}
+For the example in Section~\ref{sec:single_ion}, $\phi_w(g)=\GapPotential$. The finite-path signal is not rescaled to $e$. Extending this trajectory to infinite distance gives $\int i_1\dd t=e$, but does not model passage through the IFG.
+
+Inverting Eq.~\eqref{eq:app_square_phi} gives
+\begin{equation}
+ z(\phi)=a\sqrt{\frac{1}{\sin(\pi\phi/2)}-1}.
+ \label{eq:app_inverse_phi}
+\end{equation}
+For the full reference trajectory, the interval immediately preceding collection that contains a fraction $F$ of the charge has duration
+\begin{equation}
+ T_F=\frac{z(1-F)}{v}.
+\end{equation}
+For a finite starting height $g$, the corresponding duration is
+\begin{equation}
+ T_{F,g}=\frac{z\!\left(1-F[1-\phi_w(g)]\right)}{v}.
+\end{equation}
+These definitions refer to integrated charge, not to the time above a fraction of the peak current. The pulse amplitude scales as $ev/a$, and its characteristic duration as $a/v$. Their product preserves the full-path charge.
+
+For comparison, a circular pad of radius $a$ in the same grounded plane has
+\begin{equation}
+ \phi_{w,\circ}(z)=1-\frac{z}{\sqrt{z^2+a^2}},\qquad
+ W_\circ(z)=\frac{a^2}{(z^2+a^2)^{3/2}}.
+\end{equation}
+Its central peak is $ev/a=\SI{\DiskPeakCurrent}{fA}$ for the same lateral diameter as the square side, compared with \SI{\PeakCurrent}{fA} for the square. Both results assume the same constant velocity and grounded surroundings. Their difference illustrates shape dependence; it does not quantify the uncertainty of the real IFG--pad structure.
+
+\subsection{Integration and feedback discharge}
+
+For an ideal CSA, the input node remains at its reference potential. Current balance through the parallel feedback elements gives
+\begin{equation}
+ C_f\frac{\dd V_1}{\dd t}+\frac{V_1}{R_f}=-i_1(t).
+\end{equation}
+Multiplication by $\exp(t/\tau_f)$ and integration from $t_g=-g/v$ gives Eq.~\eqref{eq:csa_solution}. In the absence of discharge,
+\begin{equation}
+ V_1(t)=-\frac{e}{C_f}[\phi_w(-vt)-\phi_w(g)],
+ \qquad t_g\leq t\leq0.
+\end{equation}
+The voltage remains at $-Q_g/C_f$ after collection. With finite $\tau_f$, its value at collection can also be written as
+\begin{equation}
+ V_1(0)=-\frac{e}{C_f}\int_0^g W(z)
+ \exp\left(-\frac{z}{v\tau_f}\right)\dd z.
+ \label{eq:app_csa_quadrature}
+\end{equation}
+This form permits an independent numerical check of the time-domain calculation.
+
+Integrating the CSA equation between two readout times $t_{n-1}$ and $t_n$ gives the exact charge relation
+\begin{equation}
+ Q_n=-C_f\left[V_n-V_{n-1}
+ +\frac{1}{\tau_f}\int_{t_{n-1}}^{t_n}V(t)\dd t\right],
+ \label{eq:app_bucket_charge}
+\end{equation}
+where $Q_n$ is the induced input charge in that interval and $V_n=V(t_n)$. Thus the difference between samples gives the charge when discharge is negligible. With finite discharge, the correction depends on the voltage between samples. Recovering it from discrete samples requires a model or approximation for that interval.
+
+If the current is constant over an interval $\Delta t$, its charge and the sampled voltages satisfy
+\begin{equation}
+ Q_n=-C_f\frac{\Delta t/\tau_f}{1-\exp(-\Delta t/\tau_f)}
+ \left[V_n-\exp(-\Delta t/\tau_f)V_{n-1}\right].
+ \label{eq:app_bucket_constant}
+\end{equation}
+The limit $\tau_f\to\infty$ is $Q_n=-C_f(V_n-V_{n-1})$. Equation~\eqref{eq:app_bucket_constant} assumes constant current within the interval; two endpoint samples do not otherwise determine an arbitrary arrival history.
+
+\subsection{Numerical evaluation and checks}
+
+The current is represented by charge increments rather than point samples. For a time bin $[t_j,t_{j+1}]$ during the approach,
+\begin{equation}
+ q_j=e[\phi_w(-vt_{j+1})-\phi_w(-vt_j)].
+\end{equation}
+These increments sum exactly to the finite-path charge. Taking the bin-average current $q_j/\delta t$ gives the recurrence
+\begin{equation}
+ V_{j+1}=\alpha V_j
+ -\frac{q_j}{C_f}\frac{\tau_f}{\delta t}(1-\alpha),
+ \qquad \alpha=\exp(-\delta t/\tau_f).
+ \label{eq:app_recurrence}
+\end{equation}
+This is exact for a constant current in each numerical bin and converges to the continuous-current solution as $\delta t$ decreases. The numerical step is separate from the readout sampling interval.
+
+The square-pad potential is checked against independent surface integration of Eq.~\eqref{eq:app_poisson}, and its derivative against Eq.~\eqref{eq:single_weight}. Charge integrals, boundary limits and scaling with pad size and velocity are also checked. The CSA response is compared with Eq.~\eqref{eq:app_csa_quadrature}, the ideal-integrator limit and the closed-form response to a constant current. These checks test the analytical model and its numerical implementation; they do not replace a field calculation for the collection geometry or a transistor-level circuit calculation.
+
+% Appendix B will contain the IFG focusing and collection calculation.
+% That numerical study is not part of this analytical single-ion appendix.
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+\end{document}
 
 % BEGIN ORIGINAL SECTION 3 -- retained for author review and redistribution
 % Track distributions belong in planned Section 5; design specifications in Section 6.
@@ -328,390 +577,389 @@ To specify these parameters, we first calculate the current induced by one ion a
 % 
 % END ORIGINAL SECTION 3
 
-\section{Scope and definitions}
-
-
-The carrier is the molecular ion \ion, containing two xenon atoms but carrying
-one positive elementary charge, $q=e=1.602176634\times10^{-19}$ C. 
-A \bbonu\ event produces around $10^5$ ions which carry 16.02 fC, before any collection loss.
-
-The readout pad is at $z=0$ and positive $z$ points upward into the gas. Positive
-ions move toward decreasing $z$. ``Current'' means the equivalent source
-current delivered into the pad's readout input, with positive sign for a positive
-ion approaching the selected pad. 
-
-This stage assumes fixed electrode potentials,
-negligible perturbation of the drift field by the ion charge, a linear dielectric
-response and negligible conducting response of the gas or substrate on the
-timescale of interest. These assumptions permit the static weighting-field
-description. 
-
-
-\section{Detector definition and revised voltages}
-The geometry and bulk operating point are based on the design discussion and
-the ITACA context~\cite{itaca2026}. The revised IFG voltages were supplied in the
-design discussion and supersede the voltage scheme in that preprint. Table~\ref{tab:inputs}
-identifies assumptions that still need experimental or engineering confirmation.
-
-\begin{table}[ht]
-\centering\small
-\input{generated/parameters}
-\caption{Inputs to the first benchmark. The complete numerical definition and
-provenance are in \texttt{config/detector.toml}.}
-\label{tab:inputs}
-\end{table}
-
-\begin{figure}[ht]
-\centering\includegraphics[width=.94\linewidth]{geometry.pdf}
-\caption{Local coordinate and voltage convention. The hole walls and IFG body
-are schematic; their material and electrical treatment remain unresolved.
-The drawing does not represent a solved electric field.}
-\label{fig:geometry}
-\end{figure}
-
-With the pad at zero, the IC is at $+3$ kV and the gate at $+8$ kV. The nominal
-potential gradients are
-\begin{equation}
- E_{\rm h}=\frac{8-3\ \mathrm{kV}}{10\ \mathrm{mm}}
- =5\ \mathrm{kV/cm},\qquad
- E_{\rm g}=\frac{3\ \mathrm{kV}}{5\ \mathrm{mm}}
- =6\ \mathrm{kV/cm}.
-\end{equation}
-These are field magnitudes; the axial physical electric field points downward.
-Within and around real apertures the field is nonuniform. Dividing a voltage
-drop by a distance supplies a nominal scale, not an aperture-field solution.
-
-\clearpage
-\subsection{Focusing must be checked at the entrance}
-For circular holes of diameter $d_h$ on a square pitch $p$, the open fraction is
-\begin{equation}
- f=\frac{\pi(d_h/2)^2}{p^2}=\OpenFraction.
-\end{equation}
-If all electric flux through one drift-region cell is to pass through its hole,
-the simplified flux budget requires
-\begin{equation}
- E_{\rm h} A_h\gtrsim E_{\rm d}p^2,
- \qquad E_{\rm h}\gtrsim\frac{E_{\rm d}}{f}
- =\EntranceThreshold\ \mathrm{kV/cm}.
- \label{eq:focus}
-\end{equation}
-Here the incident field is the \emph{bulk} field, $E_{\rm d}=200$ V/cm. Applying
-this check at a different interface would miss the entrance bottleneck. The
-nominal revised design gives $fE_{\rm h}/E_{\rm d}=\FluxRatio$, above unity.
-
-Equation~\eqref{eq:focus} is a flux-capacity check under a simplified cell model.
-It does not establish unit ion transparency. Field lines can terminate on grid
-metal, diffusion can carry ions into walls, and material boundaries and alignment
-can alter the collection map. The larger downstream nominal field supports
-confinement of the exiting flux; it does not prove that every exiting ion lands
-on the intended metal pad.
-
-\section{Nominal transport and diffusion}
-\subsection{Mobility inferred from the bulk operating point}
-The working drift law is $v=\mu E$. The stated bulk speed implies
-\begin{equation}
- \mu=\frac{0.1\ \mathrm{m/s}}{2.0\times10^4\ \mathrm{V/m}}
- =\Mobility\times10^{-6}\ \mathrm{m^2/(V\,s)}
- =0.05\ \mathrm{cm^2/(V\,s)}.
-\end{equation}
-This is the mobility at the working gas density; it is not the reduced mobility
-normalized to a reference pressure. Extrapolating it unchanged to the IFG and
-gap is an explicit approximation. The assumption must be checked against
-mobility data over the relevant reduced-field range.
-
-\begin{table}[ht]
-\centering\small
-\input{generated/regions}
-\caption{Uniform-field estimates using the same mobility in each region.
-Reduced fields use the design pressure of 15 bar. The bulk reference path is
-1.5 m, whereas the hole and gap paths are 10 and 5 mm respectively.}
-\label{tab:regions}
-\end{table}
-
-The nominal IFG and gap transit times are therefore 4.0 and 1.67 ms. Their sum
-is a common final-transport delay for otherwise identical trajectories. Neither
-this sum nor the 15 s full bulk drift is the duration of a single-pad current
-pulse. The pulse duration also depends on where the pad weighting potential
-changes along the trajectory.
-
-\clearpage
-\subsection{Thermal diffusion as a reference model}
-In the thermal, isotropic limit, the Einstein relation gives
-\begin{equation}
- D=\frac{\mu k_BT}{e}=\DiffusionCoefficient\times10^{-7}\ \mathrm{m^2/s}.
-\end{equation}
-For a uniform drift distance $L$, the one-coordinate RMS spatial spread is
-\begin{equation}
- \sigma=\sqrt{2Dt_d}
-       =\sqrt{\frac{2k_BT}{e}\frac{L}{E}},\qquad t_d=\frac{L}{v}.
- \label{eq:diffusion}
-\end{equation}
-The thermal transverse form is also used in the ITACA design discussion
-\cite{itaca2026}. Here $\sigma$ denotes one Cartesian coordinate, not the
-two-dimensional radial RMS, which would be $\sqrt{2}\sigma$ for an isotropic
-Gaussian. Taking the same coefficient longitudinally is an additional
-thermal-isotropy assumption.
-
-For one-dimensional constant drift and diffusion toward an absorbing plane,
-the first-passage-time distribution has mean $L/v$ and variance $2DL/v^3$.
-Equivalently, its RMS time spread is
-\begin{equation}
- \sigma_t=\frac{\sigma_L}{v}.
- \label{eq:time_spread}
-\end{equation}
-The distribution is well approximated by a Gaussian when its relative width
-is small. These formulas describe bulk transport; they are not a prescription
-for transporting a covariance matrix through a nonuniform focusing field.
-
-\begin{table}[ht]
-\centering
-\input{generated/diffusion}
-\caption{Thermal bulk-diffusion benchmark at 293.15 K and 200 V/cm. The arrival
-time spread uses the bulk speed of 0.1 m/s.}
-\end{table}
-
-\begin{figure}[ht]
-\centering\includegraphics[width=\linewidth]{transport.pdf}
-\caption{Spatial and temporal diffusion scales before the IFG. These are
-calculated reference values, not measurements of ion transport.}
-\end{figure}
-
-A millimetre of longitudinal spread corresponds to 10 ms of arrival-time spread
-at the bulk drift speed. Applying the faster gap velocity to that upstream
-spread would incorrectly compress the arrival interval: ions entering the
-same final trajectory at different times retain that time separation. The
-focusing map and additional diffusion in the final regions require trajectory
-transport to be treated quantitatively.
-
-\clearpage
-\section{Weighting potential and the single-ion signal}
-\subsection{Two distinct electrostatic problems}
-The physical potential $V$ determines ion trajectories through
-$\mathbf E=-\nabla V$ and, in this approximation, $\mathbf v=\mu\mathbf E$.
-It uses the actual electrode voltages. The weighting potential $\phi_w$ for one
-readout pad instead satisfies
-\begin{equation}
- \nabla\!\cdot\!\bigl(\epsilon(\mathbf r)\nabla\phi_w\bigr)=0,
- \qquad
- \phi_w=\begin{cases}1&\text{selected pad},\\0&\text{all other fixed-potential electrodes}.
- \end{cases}
- \label{eq:weighting}
-\end{equation}
-The ion is removed from this auxiliary problem. Dielectric interfaces obey
-continuity of potential and of normal displacement in the absence of an imposed
-free surface charge. Geometry, materials and boundary conditions determine
-$\phi_w$; changing the applied biases alone does not change this weighting
-potential. Floating or resistive electrodes would require a more general
-treatment~\cite{riegler2016,riegler2019}.
-
-With $\mathbf E_w=-\nabla\phi_w$ and our current convention,
-\begin{align}
- i_p(t)&=q\frac{\dd\phi_w(\mathbf r(t))}{\dd t}
-       =-q\,\mathbf v(t)\cdot\mathbf E_w(\mathbf r(t)),\label{eq:ramo}\\
- \int_{t_a}^{t_b}i_p(t)\,\dd t
-       &=q\left[\phi_w(\mathbf r(t_b))-\phi_w(\mathbf r(t_a))\right].
-       \label{eq:charge}
-\end{align}
-In this normalization $\phi_w$ is dimensionless and $\mathbf E_w$ has units
-of inverse length. An ion starting where $\phi_w$ is negligible and reaching
-the selected pad therefore gives an integrated signal of approximately $e$.
-Neighboring pads can have transient induced currents even if they do not
-collect the ion; their net signal is zero when both endpoint weighting
-potentials are zero.
-
-The ion induces current while approaching the electrode. After collection
-its macroscopic drift contribution ceases. A separate extra charge-$e$ impulse
-at impact would double count the charge already included in
-Eq.~\eqref{eq:charge}. Microscopic surface processes are outside this model.
-
-\subsection{What the focusing grid changes}
-The fixed-potential grid screens the pad's weighting potential in the upstream
-volume, with leakage through its apertures. The extent of that screening must
-be calculated for the actual structure. This note does not assume an exact zero
-weighting potential above a perforated grid. The current near a small pad is
-generally not described by $qv/d$ with the full chamber drift length $d$.
-That familiar expression follows from a uniform weighting field between broad
-parallel electrodes, for which $\phi_w$ varies linearly across their separation.
-
-The use of electrostatics is a quasistatic approximation. A light-propagation
-time $d/c$ is not an ion-current rise time in this model; the waveform is set
-by charge motion through the weighting field.
-
-\clearpage
-\section{Analytical central-pad benchmark}
-\subsection{Boundary conditions and derivation}
-Consider a square pad of side $2a$ in the plane $z=0$, set to unit weighting
-potential. The remainder of that infinite plane is a grounded conductor. The
-upper half-space is a homogeneous dielectric, with potential tending to zero
-at infinity. This replaces the real IFG and dielectric stack by a tractable
-reference boundary-value problem.
-
-The half-space Poisson kernel gives~\cite{salazar2021}
-\begin{equation}
- \phi_w(x,y,z)=\frac{1}{2\pi}\int_{-a}^{a}\!\int_{-a}^{a}
- \frac{z\,\dd x'\,\dd y'}{[(x-x')^2+(y-y')^2+z^2]^{3/2}}.
- \label{eq:poisson}
-\end{equation}
-It is the solid angle subtended by the pad divided by $2\pi$. Evaluating the
-integral on the central axis yields
-\begin{equation}
- \boxed{\phi_w(z)=\frac{2}{\pi}\tan^{-1}
- \left[\frac{a^2}{z\sqrt{z^2+2a^2}}\right]},\qquad z>0,
- \label{eq:square_phi}
-\end{equation}
-with the limiting value $\phi_w(0)=1$. Its positive normal weighting field is
-\begin{equation}
- W(z)=-\frac{\dd\phi_w}{\dd z}
- =\frac{4a^2}{\pi(z^2+a^2)\sqrt{z^2+2a^2}}.
- \label{eq:square_field}
-\end{equation}
-The implemented formula is independently compared with numerical evaluation
-of Eq.~\eqref{eq:poisson}. At large $z$, $\phi_w\simeq2a^2/(\pi z^2)$ and
-$W\simeq4a^2/(\pi z^3)$; the pad response is concentrated near the metal.
-
-For a central normal trajectory at constant speed $v$, let collection occur
-at $t=0$. Then $z=-vt$ before collection and
-\begin{equation}
- i_1(t)=\begin{cases} ev\,W(-vt),&t<0,\\0,&t\geq0.\end{cases}
- \label{eq:pulse}
-\end{equation}
-The one-sided value immediately before collection is
-\begin{equation}
- i_1(0^-)=\frac{2\sqrt{2}}{\pi}\frac{ev}{a}.
-\end{equation}
-The step to zero idealizes collection at the metal and infinite readout
-bandwidth. The smooth approach is a drift-averaged current; it does not resolve
-individual gas collisions or atomic-scale image-force dynamics.
-
-The pulse scales as $i_{\rm peak}\propto v/a$ and duration $\propto a/v$, while
-its full integrated charge is $e$. The same constant-speed benchmark extended
-to $t=-\infty$ has a mathematically integrable tail. That extension must not be
-interpreted as the real trajectory through the upstream grid.
-
-\clearpage
-\subsection{Numbers, duration definitions and finite-path charge}
-Using $a=\SquareHalfWidth$ mm and $v=\GapSpeed$ m/s gives the results in
-Table~\ref{tab:pulse}. To define charge-based durations, invert the potential:
-\begin{equation}
- z(\phi)=a\sqrt{\frac{1}{\sin(\pi\phi/2)}-1}.
-\end{equation}
-The cumulative full-path signal fraction before collection is $\phi_w(z)$.
-The final interval containing fraction $F$ of the signal has duration
-$z(1-F)/v$. The central 90\% interval instead runs from cumulative fractions
-0.05 to 0.95. These durations differ from the time above half peak; none is an
-exponential decay constant.
-
-\begin{table}[ht]
-\centering\small
-\input{generated/pulse_metrics}
-\caption{Central square-pad benchmark. Full-path fractional durations refer to
-the ideal half-space model, without electronic shaping.}
-\label{tab:pulse}
-\end{table}
-
-\begin{figure}[ht]
-\centering\includegraphics[width=\linewidth]{single_ion.pdf}
-\caption{Analytical weighting potential and current. The shaded interval
-contains the final 90\% of the square-pad signal. The circular-pad comparison
-uses the same grounded-plane assumption and the same lateral diameter as the
-square side. The physical geometry is not resolved by either model.}
-\end{figure}
-
-For a trajectory beginning at the nominal gap height $g=5$ mm,
-\begin{equation}
- \phi_w(g)=\GapPotential,\qquad
- Q_{g\to0}=e[1-\phi_w(g)]=\GapChargeFraction\,e.
-\end{equation}
-The missing \GapMissingPercent\% belongs to the earlier part of this idealized
-trajectory. It is not discarded or reassigned by normalization. A full IFG
-solution will distribute the entire signal according to its own weighting
-potential and trajectory. Small $\phi_w(g)$ in this model does not bound the
-error from different pad surroundings or dielectric boundaries.
-
-\clearpage
-\subsection{Geometry dependence and an independent shape comparison}
-For a circular pad of radius $a$ in the same infinite grounded plane, direct
-integration of the Poisson kernel gives
-\begin{equation}
- \phi_{w,\circ}(z)=1-\frac{z}{\sqrt{z^2+a^2}},\qquad
- W_\circ(z)=\frac{a^2}{(z^2+a^2)^{3/2}}.
-\end{equation}
-Its central peak is $ev/a=\DiskPeakCurrent$ fA for diameter 0.5 mm, compared
-with \PeakCurrent\ fA for the 0.5 mm square. This difference is a comparison
-of two specified boundary problems, not a systematic uncertainty estimate for
-the actual pad. Off-centre trajectories and ideal sharp edges can change the
-local peak appreciably; finite electrode edges, gaps and dielectrics matter.
-
-\begin{table}[ht]
-\centering
-\input{generated/distance}
-\caption{Square-pad sensitivity and central current at selected heights. The
-row at $z=0$ gives the pre-collection limit, not the current after absorption.}
-\end{table}
-
-An unknown region between pads cannot be assigned a zero weighting potential
-merely because neighboring pads are at zero in the auxiliary problem. A
-grounded metal plane enforces a Dirichlet boundary; an exposed dielectric
-requires a dielectric-interface solution. This distinction is likely more
-important than the square-versus-disk comparison. The present benchmark has
-no quantitative uncertainty envelope for that missing geometry.
-
-\section{Implications for the next physics stage}
-The ion trajectory takes milliseconds through the last structures, while the
-central benchmark induces most of its pad signal in a fraction of a millisecond.
-Bulk diffusion can spread arrivals over tens of milliseconds. These are three
-different timescales. A many-ion input is the sum of the appropriate single-ion
-signals, each placed at its own collection time.
-
-For a curved event, depth orders arrival time. Total electron path length does
-not fix the time span on one pad. The 10 cm straight segment aligned with drift
-is retained only as a diagnostic extreme. Realistic calculations must preserve
-the event's isotropic orientation, scattering, nonuniform deposition, endpoint
-blobs and repeated intersections with a pad's collection region.
-
-\clearpage
-\section{Validation, reproduction and remaining work}
-The automated suite contains independent physical checks:
-\begin{enumerate}
-\item The nominal voltage drops and region lengths reproduce the revised fields.
-\item The thermal spread agrees with both $\sqrt{2Dt}$ and the uniform-drift
-first-passage time variance.
-\item Numerical surface integration reproduces the square-pad potential.
-\item A finite-difference derivative reproduces the analytical weighting field;
-surface and far-field limits and monotonicity are checked.
-\item Independent quadrature gives unit full-path weighting-field integral,
-and the finite-gap integral equals its endpoint potential difference.
-\item Velocity scaling preserves charge and stretches time inversely; sampled
-spatial integration converges as its step is reduced.
-\end{enumerate}
-Passing these checks establishes implementation consistency. It does not
-measure ion transparency, real drift coefficients, or the actual ASIC response.
-
-From the repository root, the reproducible entry points are
-\begin{verbatim}
-make PYTHON=<python-with-dependencies> test physics
-make PYTHON=<python-with-dependencies> note
-\end{verbatim}
-The scripts read \texttt{config/detector.toml}; numerical results and environment
-versions are saved in \texttt{results/physics\_benchmarks.json}. This note
-includes generated figures, tables and value macros. The configuration hash
-prefix for the present build is \texttt{\ConfigHash}. The analytical model is
-deterministic and has no random seed.
-
-Before replacing the benchmarks with a detector prediction, establish the pad
-outline, surrounding metallization and guard electrodes; the IFG wall material
-and metallization; the dielectric stack; and alignment and edge geometry.
-Obtain or justify mobility and longitudinal/transverse diffusion over the
-operating reduced fields. Solve the physical and weighting fields separately,
-checking domain and mesh convergence and integral charge identities.
-
-The next stage will map three-dimensional energy deposits into pad-specific
-arrival distributions, then into current waveforms. Packet charge, central-90\%
-duration, peak current, repeated-packet separation and charge per readout bin
-will form the interface to the electronics study. Feedback-retention
-requirements and the properties of Rogelio's feedback transistor remain outside
-the scope of this note.
-
-\bibliographystyle{unsrtnat}
-\bibliography{references}
-\end{document}
+% BEGIN ORIGINAL ANALYTICAL MATERIAL -- retained for redistribution and review
+% \section{Scope and definitions}
+%
+%
+% The carrier is the molecular ion \ion, containing two xenon atoms but carrying
+% one positive elementary charge, $q=e=1.602176634\times10^{-19}$ C.
+% A \bbonu\ event produces around $10^5$ ions which carry 16.02 fC, before any collection loss.
+%
+% The readout pad is at $z=0$ and positive $z$ points upward into the gas. Positive
+% ions move toward decreasing $z$. ``Current'' means the equivalent source
+% current delivered into the pad's readout input, with positive sign for a positive
+% ion approaching the selected pad.
+%
+% This stage assumes fixed electrode potentials,
+% negligible perturbation of the drift field by the ion charge, a linear dielectric
+% response and negligible conducting response of the gas or substrate on the
+% timescale of interest. These assumptions permit the static weighting-field
+% description.
+%
+%
+% \section{Detector definition and revised voltages}
+% The geometry and bulk operating point are based on the design discussion and
+% the ITACA context~\cite{itaca2026}. The revised IFG voltages were supplied in the
+% design discussion and supersede the voltage scheme in that preprint. Table~\ref{tab:inputs}
+% identifies assumptions that still need experimental or engineering confirmation.
+%
+% \begin{table}[ht]
+% \centering\small
+% \input{generated/parameters}
+% \caption{Inputs to the first benchmark. The complete numerical definition and
+% provenance are in \texttt{config/detector.toml}.}
+% \label{tab:inputs}
+% \end{table}
+%
+% \begin{figure}[ht]
+% \centering\includegraphics[width=.94\linewidth]{geometry.pdf}
+% \caption{Local coordinate and voltage convention. The hole walls and IFG body
+% are schematic; their material and electrical treatment remain unresolved.
+% The drawing does not represent a solved electric field.}
+% \label{fig:geometry}
+% \end{figure}
+%
+% With the pad at zero, the IC is at $+3$ kV and the gate at $+8$ kV. The nominal
+% potential gradients are
+% \begin{equation}
+%  E_{\rm h}=\frac{8-3\ \mathrm{kV}}{10\ \mathrm{mm}}
+%  =5\ \mathrm{kV/cm},\qquad
+%  E_{\rm g}=\frac{3\ \mathrm{kV}}{5\ \mathrm{mm}}
+%  =6\ \mathrm{kV/cm}.
+% \end{equation}
+% These are field magnitudes; the axial physical electric field points downward.
+% Within and around real apertures the field is nonuniform. Dividing a voltage
+% drop by a distance supplies a nominal scale, not an aperture-field solution.
+%
+% \clearpage
+% \subsection{Focusing must be checked at the entrance}
+% For circular holes of diameter $d_h$ on a square pitch $p$, the open fraction is
+% \begin{equation}
+%  f=\frac{\pi(d_h/2)^2}{p^2}=\OpenFraction.
+% \end{equation}
+% If all electric flux through one drift-region cell is to pass through its hole,
+% the simplified flux budget requires
+% \begin{equation}
+%  E_{\rm h} A_h\gtrsim E_{\rm d}p^2,
+%  \qquad E_{\rm h}\gtrsim\frac{E_{\rm d}}{f}
+%  =\EntranceThreshold\ \mathrm{kV/cm}.
+%  \label{eq:focus}
+% \end{equation}
+% Here the incident field is the \emph{bulk} field, $E_{\rm d}=200$ V/cm. Applying
+% this check at a different interface would miss the entrance bottleneck. The
+% nominal revised design gives $fE_{\rm h}/E_{\rm d}=\FluxRatio$, above unity.
+%
+% Equation~\eqref{eq:focus} is a flux-capacity check under a simplified cell model.
+% It does not establish unit ion transparency. Field lines can terminate on grid
+% metal, diffusion can carry ions into walls, and material boundaries and alignment
+% can alter the collection map. The larger downstream nominal field supports
+% confinement of the exiting flux; it does not prove that every exiting ion lands
+% on the intended metal pad.
+%
+% \section{Nominal transport and diffusion}
+% \subsection{Mobility inferred from the bulk operating point}
+% The working drift law is $v=\mu E$. The stated bulk speed implies
+% \begin{equation}
+%  \mu=\frac{0.1\ \mathrm{m/s}}{2.0\times10^4\ \mathrm{V/m}}
+%  =\Mobility\times10^{-6}\ \mathrm{m^2/(V\,s)}
+%  =0.05\ \mathrm{cm^2/(V\,s)}.
+% \end{equation}
+% This is the mobility at the working gas density; it is not the reduced mobility
+% normalized to a reference pressure. Extrapolating it unchanged to the IFG and
+% gap is an explicit approximation. The assumption must be checked against
+% mobility data over the relevant reduced-field range.
+%
+% \begin{table}[ht]
+% \centering\small
+% \input{generated/regions}
+% \caption{Uniform-field estimates using the same mobility in each region.
+% Reduced fields use the design pressure of 15 bar. The bulk reference path is
+% 1.5 m, whereas the hole and gap paths are 10 and 5 mm respectively.}
+% \label{tab:regions}
+% \end{table}
+%
+% The nominal IFG and gap transit times are therefore 4.0 and 1.67 ms. Their sum
+% is a common final-transport delay for otherwise identical trajectories. Neither
+% this sum nor the 15 s full bulk drift is the duration of a single-pad current
+% pulse. The pulse duration also depends on where the pad weighting potential
+% changes along the trajectory.
+%
+% \clearpage
+% \subsection{Thermal diffusion as a reference model}
+% In the thermal, isotropic limit, the Einstein relation gives
+% \begin{equation}
+%  D=\frac{\mu k_BT}{e}=\DiffusionCoefficient\times10^{-7}\ \mathrm{m^2/s}.
+% \end{equation}
+% For a uniform drift distance $L$, the one-coordinate RMS spatial spread is
+% \begin{equation}
+%  \sigma=\sqrt{2Dt_d}
+%        =\sqrt{\frac{2k_BT}{e}\frac{L}{E}},\qquad t_d=\frac{L}{v}.
+%  \label{eq:diffusion}
+% \end{equation}
+% The thermal transverse form is also used in the ITACA design discussion
+% \cite{itaca2026}. Here $\sigma$ denotes one Cartesian coordinate, not the
+% two-dimensional radial RMS, which would be $\sqrt{2}\sigma$ for an isotropic
+% Gaussian. Taking the same coefficient longitudinally is an additional
+% thermal-isotropy assumption.
+%
+% For one-dimensional constant drift and diffusion toward an absorbing plane,
+% the first-passage-time distribution has mean $L/v$ and variance $2DL/v^3$.
+% Equivalently, its RMS time spread is
+% \begin{equation}
+%  \sigma_t=\frac{\sigma_L}{v}.
+%  \label{eq:time_spread}
+% \end{equation}
+% The distribution is well approximated by a Gaussian when its relative width
+% is small. These formulas describe bulk transport; they are not a prescription
+% for transporting a covariance matrix through a nonuniform focusing field.
+%
+% \begin{table}[ht]
+% \centering
+% \input{generated/diffusion}
+% \caption{Thermal bulk-diffusion benchmark at 293.15 K and 200 V/cm. The arrival
+% time spread uses the bulk speed of 0.1 m/s.}
+% \end{table}
+%
+% \begin{figure}[ht]
+% \centering\includegraphics[width=\linewidth]{transport.pdf}
+% \caption{Spatial and temporal diffusion scales before the IFG. These are
+% calculated reference values, not measurements of ion transport.}
+% \end{figure}
+%
+% A millimetre of longitudinal spread corresponds to 10 ms of arrival-time spread
+% at the bulk drift speed. Applying the faster gap velocity to that upstream
+% spread would incorrectly compress the arrival interval: ions entering the
+% same final trajectory at different times retain that time separation. The
+% focusing map and additional diffusion in the final regions require trajectory
+% transport to be treated quantitatively.
+%
+% \clearpage
+% \section{Weighting potential and the single-ion signal}
+% \subsection{Two distinct electrostatic problems}
+% The physical potential $V$ determines ion trajectories through
+% $\mathbf E=-\nabla V$ and, in this approximation, $\mathbf v=\mu\mathbf E$.
+% It uses the actual electrode voltages. The weighting potential $\phi_w$ for one
+% readout pad instead satisfies
+% \begin{equation}
+%  \nabla\!\cdot\!\bigl(\epsilon(\mathbf r)\nabla\phi_w\bigr)=0,
+%  \qquad
+%  \phi_w=\begin{cases}1&\text{selected pad},\\0&\text{all other fixed-potential electrodes}.
+%  \end{cases}
+%  \label{eq:weighting}
+% \end{equation}
+% The ion is removed from this auxiliary problem. Dielectric interfaces obey
+% continuity of potential and of normal displacement in the absence of an imposed
+% free surface charge. Geometry, materials and boundary conditions determine
+% $\phi_w$; changing the applied biases alone does not change this weighting
+% potential. Floating or resistive electrodes would require a more general
+% treatment~\cite{riegler2016,riegler2019}.
+%
+% With $\mathbf E_w=-\nabla\phi_w$ and our current convention,
+% \begin{align}
+%  i_p(t)&=q\frac{\dd\phi_w(\mathbf r(t))}{\dd t}
+%        =-q\,\mathbf v(t)\cdot\mathbf E_w(\mathbf r(t)),\label{eq:ramo}\\
+%  \int_{t_a}^{t_b}i_p(t)\,\dd t
+%        &=q\left[\phi_w(\mathbf r(t_b))-\phi_w(\mathbf r(t_a))\right].
+%        \label{eq:charge}
+% \end{align}
+% In this normalization $\phi_w$ is dimensionless and $\mathbf E_w$ has units
+% of inverse length. An ion starting where $\phi_w$ is negligible and reaching
+% the selected pad therefore gives an integrated signal of approximately $e$.
+% Neighboring pads can have transient induced currents even if they do not
+% collect the ion; their net signal is zero when both endpoint weighting
+% potentials are zero.
+%
+% The ion induces current while approaching the electrode. After collection
+% its macroscopic drift contribution ceases. A separate extra charge-$e$ impulse
+% at impact would double count the charge already included in
+% Eq.~\eqref{eq:charge}. Microscopic surface processes are outside this model.
+%
+% \subsection{What the focusing grid changes}
+% The fixed-potential grid screens the pad's weighting potential in the upstream
+% volume, with leakage through its apertures. The extent of that screening must
+% be calculated for the actual structure. This note does not assume an exact zero
+% weighting potential above a perforated grid. The current near a small pad is
+% generally not described by $qv/d$ with the full chamber drift length $d$.
+% That familiar expression follows from a uniform weighting field between broad
+% parallel electrodes, for which $\phi_w$ varies linearly across their separation.
+%
+% The use of electrostatics is a quasistatic approximation. A light-propagation
+% time $d/c$ is not an ion-current rise time in this model; the waveform is set
+% by charge motion through the weighting field.
+%
+% \clearpage
+% \section{Analytical central-pad benchmark}
+% \subsection{Boundary conditions and derivation}
+% Consider a square pad of side $2a$ in the plane $z=0$, set to unit weighting
+% potential. The remainder of that infinite plane is a grounded conductor. The
+% upper half-space is a homogeneous dielectric, with potential tending to zero
+% at infinity. This replaces the real IFG and dielectric stack by a tractable
+% reference boundary-value problem.
+%
+% The half-space Poisson kernel gives~\cite{salazar2021}
+% \begin{equation}
+%  \phi_w(x,y,z)=\frac{1}{2\pi}\int_{-a}^{a}\!\int_{-a}^{a}
+%  \frac{z\,\dd x'\,\dd y'}{[(x-x')^2+(y-y')^2+z^2]^{3/2}}.
+%  \label{eq:poisson}
+% \end{equation}
+% It is the solid angle subtended by the pad divided by $2\pi$. Evaluating the
+% integral on the central axis yields
+% \begin{equation}
+%  \boxed{\phi_w(z)=\frac{2}{\pi}\tan^{-1}
+%  \left[\frac{a^2}{z\sqrt{z^2+2a^2}}\right]},\qquad z>0,
+%  \label{eq:square_phi}
+% \end{equation}
+% with the limiting value $\phi_w(0)=1$. Its positive normal weighting field is
+% \begin{equation}
+%  W(z)=-\frac{\dd\phi_w}{\dd z}
+%  =\frac{4a^2}{\pi(z^2+a^2)\sqrt{z^2+2a^2}}.
+%  \label{eq:square_field}
+% \end{equation}
+% The implemented formula is independently compared with numerical evaluation
+% of Eq.~\eqref{eq:poisson}. At large $z$, $\phi_w\simeq2a^2/(\pi z^2)$ and
+% $W\simeq4a^2/(\pi z^3)$; the pad response is concentrated near the metal.
+%
+% For a central normal trajectory at constant speed $v$, let collection occur
+% at $t=0$. Then $z=-vt$ before collection and
+% \begin{equation}
+%  i_1(t)=\begin{cases} ev\,W(-vt),&t<0,\\0,&t\geq0.\end{cases}
+%  \label{eq:pulse}
+% \end{equation}
+% The one-sided value immediately before collection is
+% \begin{equation}
+%  i_1(0^-)=\frac{2\sqrt{2}}{\pi}\frac{ev}{a}.
+% \end{equation}
+% The step to zero idealizes collection at the metal and infinite readout
+% bandwidth. The smooth approach is a drift-averaged current; it does not resolve
+% individual gas collisions or atomic-scale image-force dynamics.
+%
+% The pulse scales as $i_{\rm peak}\propto v/a$ and duration $\propto a/v$, while
+% its full integrated charge is $e$. The same constant-speed benchmark extended
+% to $t=-\infty$ has a mathematically integrable tail. That extension must not be
+% interpreted as the real trajectory through the upstream grid.
+%
+% \clearpage
+% \subsection{Numbers, duration definitions and finite-path charge}
+% Using $a=\SquareHalfWidth$ mm and $v=\GapSpeed$ m/s gives the results in
+% Table~\ref{tab:pulse}. To define charge-based durations, invert the potential:
+% \begin{equation}
+%  z(\phi)=a\sqrt{\frac{1}{\sin(\pi\phi/2)}-1}.
+% \end{equation}
+% The cumulative full-path signal fraction before collection is $\phi_w(z)$.
+% The final interval containing fraction $F$ of the signal has duration
+% $z(1-F)/v$. The central 90\% interval instead runs from cumulative fractions
+% 0.05 to 0.95. These durations differ from the time above half peak; none is an
+% exponential decay constant.
+%
+% \begin{table}[ht]
+% \centering\small
+% \input{generated/pulse_metrics}
+% \caption{Central square-pad benchmark. Full-path fractional durations refer to
+% the ideal half-space model, without electronic shaping.}
+% \label{tab:pulse}
+% \end{table}
+%
+% \begin{figure}[ht]
+% \centering\includegraphics[width=\linewidth]{single_ion.pdf}
+% \caption{Analytical weighting potential and current. The shaded interval
+% contains the final 90\% of the square-pad signal. The circular-pad comparison
+% uses the same grounded-plane assumption and the same lateral diameter as the
+% square side. The physical geometry is not resolved by either model.}
+% \end{figure}
+%
+% For a trajectory beginning at the nominal gap height $g=5$ mm,
+% \begin{equation}
+%  \phi_w(g)=\GapPotential,\qquad
+%  Q_{g\to0}=e[1-\phi_w(g)]=\GapChargeFraction\,e.
+% \end{equation}
+% The missing \GapMissingPercent\% belongs to the earlier part of this idealized
+% trajectory. It is not discarded or reassigned by normalization. A full IFG
+% solution will distribute the entire signal according to its own weighting
+% potential and trajectory. Small $\phi_w(g)$ in this model does not bound the
+% error from different pad surroundings or dielectric boundaries.
+%
+% \clearpage
+% \subsection{Geometry dependence and an independent shape comparison}
+% For a circular pad of radius $a$ in the same infinite grounded plane, direct
+% integration of the Poisson kernel gives
+% \begin{equation}
+%  \phi_{w,\circ}(z)=1-\frac{z}{\sqrt{z^2+a^2}},\qquad
+%  W_\circ(z)=\frac{a^2}{(z^2+a^2)^{3/2}}.
+% \end{equation}
+% Its central peak is $ev/a=\DiskPeakCurrent$ fA for diameter 0.5 mm, compared
+% with \PeakCurrent\ fA for the 0.5 mm square. This difference is a comparison
+% of two specified boundary problems, not a systematic uncertainty estimate for
+% the actual pad. Off-centre trajectories and ideal sharp edges can change the
+% local peak appreciably; finite electrode edges, gaps and dielectrics matter.
+%
+% \begin{table}[ht]
+% \centering
+% \input{generated/distance}
+% \caption{Square-pad sensitivity and central current at selected heights. The
+% row at $z=0$ gives the pre-collection limit, not the current after absorption.}
+% \end{table}
+%
+% An unknown region between pads cannot be assigned a zero weighting potential
+% merely because neighboring pads are at zero in the auxiliary problem. A
+% grounded metal plane enforces a Dirichlet boundary; an exposed dielectric
+% requires a dielectric-interface solution. This distinction is likely more
+% important than the square-versus-disk comparison. The present benchmark has
+% no quantitative uncertainty envelope for that missing geometry.
+%
+% \section{Implications for the next physics stage}
+% The ion trajectory takes milliseconds through the last structures, while the
+% central benchmark induces most of its pad signal in a fraction of a millisecond.
+% Bulk diffusion can spread arrivals over tens of milliseconds. These are three
+% different timescales. A many-ion input is the sum of the appropriate single-ion
+% signals, each placed at its own collection time.
+%
+% For a curved event, depth orders arrival time. Total electron path length does
+% not fix the time span on one pad. The 10 cm straight segment aligned with drift
+% is retained only as a diagnostic extreme. Realistic calculations must preserve
+% the event's isotropic orientation, scattering, nonuniform deposition, endpoint
+% blobs and repeated intersections with a pad's collection region.
+%
+% \clearpage
+% \section{Validation, reproduction and remaining work}
+% The automated suite contains independent physical checks:
+% \begin{enumerate}
+% \item The nominal voltage drops and region lengths reproduce the revised fields.
+% \item The thermal spread agrees with both $\sqrt{2Dt}$ and the uniform-drift
+% first-passage time variance.
+% \item Numerical surface integration reproduces the square-pad potential.
+% \item A finite-difference derivative reproduces the analytical weighting field;
+% surface and far-field limits and monotonicity are checked.
+% \item Independent quadrature gives unit full-path weighting-field integral,
+% and the finite-gap integral equals its endpoint potential difference.
+% \item Velocity scaling preserves charge and stretches time inversely; sampled
+% spatial integration converges as its step is reduced.
+% \end{enumerate}
+% Passing these checks establishes implementation consistency. It does not
+% measure ion transparency, real drift coefficients, or the actual ASIC response.
+%
+% From the repository root, the reproducible entry points are
+% \begin{verbatim}
+% make PYTHON=<python-with-dependencies> test physics
+% make PYTHON=<python-with-dependencies> note
+% \end{verbatim}
+% The scripts read \texttt{config/detector.toml}; numerical results and environment
+% versions are saved in \texttt{results/physics\_benchmarks.json}. This note
+% includes generated figures, tables and value macros. The configuration hash
+% prefix for the present build is \texttt{\ConfigHash}. The analytical model is
+% deterministic and has no random seed.
+%
+% Before replacing the benchmarks with a detector prediction, establish the pad
+% outline, surrounding metallization and guard electrodes; the IFG wall material
+% and metallization; the dielectric stack; and alignment and edge geometry.
+% Obtain or justify mobility and longitudinal/transverse diffusion over the
+% operating reduced fields. Solve the physical and weighting fields separately,
+% checking domain and mesh convergence and integral charge identities.
+%
+% The next stage will map three-dimensional energy deposits into pad-specific
+% arrival distributions, then into current waveforms. Packet charge, central-90\%
+% duration, peak current, repeated-packet separation and charge per readout bin
+% will form the interface to the electronics study. Feedback-retention
+% requirements and the properties of Rogelio's feedback transistor remain outside
+% the scope of this note.
+%
+% END ORIGINAL ANALYTICAL MATERIAL
