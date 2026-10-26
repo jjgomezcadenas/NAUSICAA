@@ -1,0 +1,51 @@
+{
+  "source_sha256": {
+    "results/ltspice/capacitance/pad_1.25pF/study.json": "93749d83c4f26475c0d93d59e93597f1279ee3b6a4653c68d18742766ae798c9",
+    "results/ltspice/capacitance/pad_1.25pF/ions_N1_r2.csv.gz": "aa85ac74096d1be7b70e767bf777d824210642226459ce6290c28dd324e9df70",
+    "results/ltspice/capacitance/pad_1.25pF/noise_400.csv": "95abb68cdd62af26168d9dfe53458ad14730a46e69a0e87049ca9bcef900b24a",
+    "results/ltspice/capacitance/pad_1.25pF/decks/ions_N203_r2.cir": "21e06133ced08b751035fd56452d29f4c30fdc896beecf0e05f1d2fe3cca1add",
+    "src/ion_signal/shaping.py": "b236a93fb0f315e5551169030ed30e11e62cc2f45dd94c7261756d6f1a0bdf61",
+    "scripts/build_spice_paper.py": "b05d1d916e7af9d71e9adf7b18cc7c97502c214399937cd06a39fd78f0a87568"
+  },
+  "conditions": {
+    "temperature_K": 293.15,
+    "noise_band_Hz": [
+      0.1,
+      1000000.0
+    ],
+    "feedback_F": 3e-15,
+    "frame_s": 0.01,
+    "estimator_nominal_tau_s": 0.3,
+    "pad_width_m": 0.0005,
+    "weighting_geometry": "square pad in grounded plane; finite 5 mm path, no charge renormalization",
+    "capacitance_estimate": "5 pF times (0.5/1)^2; area-scaling hypothesis only",
+    "intrinsic_transistor_capacitances": "unchanged; additional to external load",
+    "noise": "stationary supplied transistor models, zero flicker; ADC noise excluded"
+  },
+  "external_pad_F": 1.25e-12,
+  "averaging_s": 0.0003,
+  "signal_V_per_ion": 1.546942928850512e-05,
+  "noise_rms_V": 0.0006260230605829344,
+  "enc_ions_rms": 40.46840054067888,
+  "verified_minimum_ions": 203,
+  "macros": {
+    "SpicePadPf": "1.25",
+    "SpiceCfFf": "3",
+    "SpiceFrameMs": "10",
+    "SpiceAverageUs": "300",
+    "SpiceCorrectionSeconds": "0.3",
+    "SpiceTemperatureK": "293.15",
+    "SpiceLowHz": "0.1",
+    "SpiceHighMHz": "1",
+    "SpiceGainUv": "15.47",
+    "SpiceNoiseMv": "0.626",
+    "SpiceEncIons": "40.47",
+    "SpiceMinimumIons": "203",
+    "SpiceBelowIons": "202",
+    "SpiceBelowSnr": "4.989",
+    "SpiceAboveSnr": "5.014",
+    "SpicePreviousPercent": "2.88",
+    "SpiceFollowingPercent": "1.01",
+    "SpiceSupplyV": "1.8"
+  }
+}

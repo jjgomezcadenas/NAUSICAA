@@ -1,0 +1,1 @@
+Original Sections 3–5 and finite-gain appendix, preserved before the authorised SPICE revision on 26 October 2026. The reviewed wording is retained here for comparison and reuse. These files are not included in the active manuscript.

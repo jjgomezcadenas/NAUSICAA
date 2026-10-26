@@ -1,49 +1,79 @@
 # NAUSICA for ITACA: paper plan and work status
 
-Working plan agreed with J. J. Gómez-Cadenas. Updated 24 October 2026.
+Working plan agreed with J. J. Gómez-Cadenas. Updated 26 October 2026.
 
 Manuscript: [nausica.tex](nausica.tex). This document records the intended paper,
 the work already available, and what remains. It does not replace the manuscript
 or authorise wholesale rewriting of the reviewed text.
 
-## Latest shaping calculation
+## Current manuscript — 26 October 2026
 
-Short-pulse injection has been followed, on the author's instruction, by the
-10 ms ion-frame study. The current generated report is
-[shaping and ion-frame results](../../results/ltspice/shaping/README.md).
-It includes 180/200 microsecond boundary averaging and direct transistor checks
-around S/N=5. This supersedes the earlier unfiltered sensitivity comparison as
-a description of what the present model can achieve with processing. It remains
-conditional on the supplied zero-flicker model and continuous waveform access.
-No green prose or manuscript values have been changed.
+The author approved replacing the finite-gain analytical electronics section
+with the transistor SPICE study. This update supersedes the earlier status and
+implementation descriptions below. The event/track section remains the next task.
 
-## Topmetal comparison and shaping study
+- Abstract and Sections 1–2 retain their reviewed wording.
+- Section 3 keeps the concept and focusing text. The frame duration is now
+  explicitly 10 ms, the 300 us averaging window is introduced, and 1/Cf is
+  identified as the ideal gain. Averaging needs repeated reads in the acquisition
+  window or an averaging stage before the ADC; hardware scheduling remains to
+  be selected in the complete design.
+- Section 4 keeps the weighting potential, single-ion current and its figure,
+  plus the ideal CSA explanation. The illustrative voltage plot and discharge-time
+  table are removed from the active text. The sum of ion currents supplies SPICE.
+- Section 5 is now **CSA response and noise**: circuit, uniform arrivals, frame
+  readout, and noise/sensitivity. It uses 1.25 pF external pad capacitance plus
+  intrinsic transistor capacitances, Cf=3 fF, 10 ms frames and 300 us averages.
+  The 0.3 s correction is an estimator parameter, not an imposed circuit decay.
+  Saved SPICE results give ENC=40.47 ions RMS and a verified threshold of
+  203 ions for S/N > 5. Pulse injection stays in the code, outside the paper.
+- Appendix A remains. The active finite-gain appendix has been replaced by
+  `appendix_spice_readout.tex`, covering transistor dimensions, averaged-sample
+  covariance and noise integration. The original `appendix_realistic_csa.tex`
+  and original models remain available as references.
+- New circuit, ion-waveform and noise figures, device table and value macros
+  are produced by `scripts/build_spice_paper.py` / `make spice-paper` directly
+  from the saved 1.25 pF dataset. The script checks the reproduced gain and
+  noise, the adjacent-count threshold bracket and schematic connectivity/biases.
+  Source hashes are in `generated/spice_paper_provenance.json`.
+- The reviewed wording before this reorganisation is preserved in
+  `archive/2026-10-26_pre_spice/`. New/reworked passages await author review and
+  are not marked green. The old green list below records historical approval.
 
-The agreed four-step plan and completed literature audit are recorded in
-[Topmetal ENC benchmark plan](readout/topmetal_enc_plan.md). Step 1 establishes
-the corrected 121 ± 9 electron result, the 200 ms feedback setting and
-trapezoidal processing. Exact filter timing and sampling settings remain
-unreported in the sources checked. The older 180 microsecond shaping result
-belongs to a different, uncalibrated chip generation. Steps 2–4 have not started;
-no manuscript edits are authorized by this literature review.
+The 52 numerical tests and `make physics` pass. The asset generator reproduces
+the saved gain/noise and threshold. Active LaTeX inputs, graphics, custom macros,
+references and environment nesting were checked without compiling the manuscript.
 
-## Latest circuit study — LTSpice branch
+### Remaining before final noise claims
 
-Rogelio's supplied transistor simulation is preserved in `../../LTSpice/`.
-Checkpoint commit: `7766b7d`; work continued on branch `LTSpice`.
-This update supersedes historical statements below that no transistor circuit or
-SPICE results have been supplied. The reviewed manuscript remains unchanged.
+The last manuscript plot has been replaced by ENC versus averaging duration
+at fixed 1.25 pF, using the saved SPICE simulations. The new analysis follows
+the Julia/HDF5/Python workflow (`make spice-averaging`). ENC falls from
+41.80 to 40.18 electrons RMS between 180 and 350 us; at 300 us it reproduces
+40.47 electrons RMS. Both signal calibration and filtered noise are recomputed
+at each width. The raw/filtered noise spectrum remains a repository diagnostic.
+This new paragraph and figure caption await author review.
 
-The tracked LTspice scripts reproduce the original pulse and compare the circuit
-with our uniform ion currents, 5 pF external pad capacitance and 10 ms frame.
-Native LTspice 17.2.4 was used; the version-26 Wine batch attempt stalled.
-Results and assumptions: [study report](../../results/ltspice/README.md).
-The circuit gives roughly 1,600 ions for S/N > 5 with the current estimator;
-the illustrative paper result of 68 ions is not a prediction of this circuit.
-The supplied model contributes no flicker noise. M4 and M6 dominate its included
-noise. Confirm model provenance/flicker parameters and M5 dimensions with Rogelio,
-then investigate circuit changes before inserting circuit-supported results in
-the paper. No message has been sent and no paper text or green marking changed.
+The supplied-model execution reports zero transistor 1/f contributions. The
+original 250 fF noise audit reproduces the scale of Rogelio's PDF; the diagnostic
+nonzero-KF copy verifies that the reader detects flicker terms. Compare the
+simulator/model settings and spectra with Rogelio. No arbitrary extra noise has
+been added. The manuscript states the model condition beside the ENC result.
+
+### Next section
+
+Develop the ion signal from simulated event tracks, then reconstruct noisy
+tracks with the selected response. Use the event reader/analysis conventions in
+AGENTS.md (Julia and HDF5, preserving particle-physics units until the SI
+calculation interface). This turn does not implement or modify the event work.
+The response range, frame-history correction and digitisation scheme must be
+checked with those inputs. The 1.25 pF pad load remains a design estimate.
+
+## Earlier plan and review history
+
+The following material records the original staged plan and earlier approvals.
+For current circuit values, manuscript structure and completed work, use the
+26 October status above.
 
 ## Purpose and scope
 

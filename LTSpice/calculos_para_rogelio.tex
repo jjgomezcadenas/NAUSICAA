@@ -1,0 +1,26 @@
+% Nota independiente. Compilar con latexmk -pdf calculos_para_rogelio.tex
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot,es-noshorthands]{babel}
+\usepackage{lmodern,microtype}
+\usepackage[margin=24mm]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+\setlength{\emergencystretch}{2em}
+\title{CSA para NAUSICA: puntos pendientes}
+\author{J. J. G\'omez-Cadenas\\
+ {\small Donostia International Physics Center (DIPC)}}
+\date{\today}
+\begin{document}
+\maketitle
+Los cálculos se han realizado con apoyo de Codex, versión Astra, high.
+
+El cálculo aplica a tu circuito una corriente de iones distribuidos uniformemente durante 10 ms, con una capacitancia externa de 1.25 pF y una capacitancia de realimentación de 3 fF. LTspice calcula el voltaje y el espectro de ruido. Después se promedian los voltajes durante 300 $\mu$s en los extremos del frame y se calcula su diferencia, corregida por descarga. El mismo filtro se aplica al espectro de ruido. Se obtiene un ENC de unos 40 electrones RMS y un umbral de 203 iones para $S/N>5$.
+
+Para completar el estudio, necesitamos:
+
+Confirmar los modelos de transistores y el espectro de ruido que deben usarse. La ejecución con los archivos que me mandaste da una contribución flicker nula. Necesitaría el espectro numérico de ruido de salida entre 0.1 Hz y 1 MHz para esta configuración, a 20 $^\circ$C, junto con los modelos y la versión de LTspice que has utilizado. Con esos datos, puedo comprobar el ENC con Astra.
+
+El artículo describe el cálculo. Los scripts, los modelos y los resultados están en el repositorio.
+\end{document}

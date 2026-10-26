@@ -21,12 +21,17 @@
 \fancyfoot[C]{\thepage}
 \input{generated/values}
 \input{generated/readout_values}
-\input{generated/arrival_cases_values}
-\input{generated/noise_values}
+\input{generated/spice_values}
+\input{generated/spice_averaging_values}
 \newcommand{\ion}{\ensuremath{\mathrm{Xe}_2^+}}
 \newcommand{\dd}{\mathrm{d}}
 \title{NAUSICAA for ITACA}
-\author{J. J. G\'omez-Cadenas}
+\author{J. J. G\'omez-Cadenas$^{1}$ \quad Rogelio Palomo$^{2}$\\[5pt]
+ {\small $^{1}$Donostia International Physics Center (DIPC)}\\
+ {\small Paseo Manuel de Lardizabal n\textsuperscript{o} 4}\\
+ {\small 20018 Donostia-San Sebasti\'an, Gipuzkoa, Spain}\\[3pt]
+ {\small $^{2}$Dept. of Electronic Engineering, School of Engineering,}\\
+ {\small University of Sevilla}}
 \date{\today}
 
 \begin{document}
@@ -140,7 +145,7 @@ Notice that the electron track and the ion track are detected in \emph{delayed c
 
 Reading the arriving ions (without amplification) requires exposed metal electrodes connected to charge-sensitive amplifiers (CSAs). Our proposed  \emph{Non-Amplified Ultra-Slow Ion CMOS ASIC} (NAUSICA) uses TopMetal CMOS technology~\cite{An2016TopmetalII} to implement this concept, following Refs.~\cite{Nygren_2018, mei2020topmetalcmosdirectcharge}. There is an important difference, however, with respect to these works, which attempted to design a system able to provide simultaneously good energy resolution and a good measurement of the track topology using ions. Alas, both requirements impose constraints that interfere with each other. Good energy resolution requires optimizing ion counting and minimizing noise. Good topological reconstruction demands pixels separated by a small pitch (e.g., of the order of diffusion, $\sim 2$ mm), which in turn multiplies the number of pixels and adds to the overall noise. The advantage of ITACA is that energy resolution is measured with excellent precision by electroluminescence, and thus the ion detector can prioritize the reconstruction of the topology. NAUSICA is designed with this goal in mind. 
 
-The principle of operation is as follows. The ions arrive at the metal pad over a time of order 1 second, taking a 10 cm extent along the drift direction as an extreme case. The resolution in $z$ should be of the order of the resolution in the transverse coordinates ($\sigma_z = 1-2$ mm). Since the drift velocity of the ions is $\sim 10$ cm/s, this translates into slicing the charge in buckets of $10-20$ ms, which implies a framed readout (about 50 frames of 20 ms each). The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA. 
+The principle of operation is as follows. The ions arrive at the metal pad over a time of order 1 second, taking a 10 cm extent along the drift direction as an extreme case. The resolution in $z$ should be of the order of the resolution in the transverse coordinates ($\sigma_z = 1-2$ mm). Since the drift velocity of the ions is $\sim 10$ cm/s, this translates into slicing the charge in buckets of $10-20$ ms, which implies a framed readout. We take \SI{\SpiceFrameMs}{ms} as the nominal frame duration. The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA.
 
 
 \begin{figure}[!htbp]
@@ -163,10 +168,10 @@ For a pitch of 2 mm, a bulk field of 200 V/cm and a hole field of 5 kV/cm, this 
 
 \subsection{Pixel electronics and readout}
 
-The right panel of Fig. \ref{fig:nausicaa} shows a schematic of the electronics. Each pad is directly connected to the input of a CSA. The input current is integrated on a feedback capacitor $C_f$. A MOS transistor allows $C_f$ to discharge slowly. The gain is  $1/C_{f}$, and the signal decays with time constant $\tau_{f}$.
+The right panel of Fig. \ref{fig:nausicaa} shows a schematic of the electronics. Each pad is directly connected to the input of a CSA. The input current is integrated on a feedback capacitor $C_f$. A MOS transistor allows $C_f$ to discharge slowly. For an ideal CSA, the gain is $1/C_f$ and the signal decays with time constant $\tau_f$.
 
 
-The sampled voltage includes charge accumulated in previous buckets. The charge arriving in each bucket is recovered from the change between successive samples, accounting for feedback discharge. Digitisation is performed at the periphery of the ASIC or on an external carrier, using one or a small number of multiplexed ADCs.
+The sampled voltage includes charge accumulated in previous buckets. The charge arriving in each bucket is recovered from the change between successive samples, accounting for feedback discharge. We use frames of \SI{\SpiceFrameMs}{ms}. Each voltage reading is averaged over \SI{\SpiceAverageUs}{\micro\second}, as described in Section~\ref{sec:frame_readout}. This requires repeated digitisation within the acquisition window or an averaging stage before the ADC. Digitisation is performed at the periphery of the ASIC or on an external carrier, using one or a small number of multiplexed ADCs.
 
 \subsection{Parameters of the design}
 
@@ -257,7 +262,7 @@ We describe the CSA by an ideal amplifier with feedback capacitance $C_f$ and an
  i_1(t)=-C_f\frac{\dd V_1}{\dd t}-\frac{V_1}{R_f}.
  \label{eq:csa_current_balance}
 \end{equation}
-Where rhe first term describes charge integration and the second feedback discharge. With the discharge time $\tau_f=R_fC_f$, this becomes
+The first term describes charge integration and the second feedback discharge. With the discharge time $\tau_f=R_fC_f$, this becomes
 %
 \begin{equation}
  \frac{\dd V_1}{\dd t}+\frac{V_1}{\tau_f}
@@ -273,170 +278,54 @@ Setting $V_1(t_g)=0$, we find the solution
 \end{equation}
 With this convention positive input current produces a negative voltage. Once collection is complete, the voltage decays exponentially, $V_1(t)=V_1(0)\exp(-t/\tau_f)$.
 
-If discharge is negligible during the pulse, the voltage at collection is $V_1(0)=-Q_g/C_f$. Taking an  illustrative value of $C_f=\SI{\ReadoutCapacitance}{fF}$, the resulting voltage is \SI{\SingleIonIdealVoltage}{\micro\volt}. Figure~\ref{fig:single_ion_response} and Table~\ref{tab:single_ion_response} shows the idealized response of the CSA ---not including substantial effects such as linear response; transistor noise, finite amplifier bandwidth and saturation---  
+If discharge is negligible during the pulse, the voltage at collection is
+$V_1(0)=-Q_g/C_f$. For $C_f=\SI{\SpiceCfFf}{fF}$, this ideal voltage is
+\SI{\SingleIonIdealVoltage}{\micro\volt}.
 
-\begin{figure}[!htbp]
- \centering
- \includegraphics[width=\linewidth]{single_ion_response.pdf}
- \caption{CSA voltage magnitude for the finite-gap current in Figure~\ref{fig:single_ion_current}, with collection at $t=0$. The CSA has $C_f=\SI{\ReadoutCapacitance}{fF}$ and linear feedback, with the discharge times shown in the legend.}
- \label{fig:single_ion_response}
-\end{figure}
-
-\begin{table}[!htbp]
- \centering
- \input{generated/single_ion_response_table}
- \caption{Peak response to the finite-gap single-ion current in Figure~\ref{fig:single_ion_current}. The last column compares the peak magnitude with the ideal-integrator value $Q_g/C_f$.}
- \label{tab:single_ion_response}
-\end{table}
-
-The induced current when several ions arrive during a readout frame is the sum of the individual ion-induced currents. For ions following the same final trajectory and collected on the same pad at times $t_k$, the linear model gives
+The induced current when several ions arrive during a readout frame is the
+sum of the individual ion-induced currents. For ions following the same final
+trajectory and collected on the same pad at times $t_k$,
 \begin{equation}
- i_p(t)=\sum_k i_1(t-t_k),\qquad
- V_p(t)=\sum_k V_1(t-t_k).
+ i_p(t)=\sum_k i_1(t-t_k).
  \label{eq:pad_superposition}
 \end{equation}
 
-%\input{section_beyond_ideal}
+% Previous ideal-response plots and finite-gain section are preserved in
+% archive/2026-10-26_pre_spice/reviewed_sections.tex.
 
-\section{Beyond the ideal CSA model}
+\section{CSA response and noise}
 \label{sec:realistic_csa}
 
-The next step is to make our model more realistic. The ideal CSA described in the previous section keeps its input at a fixed potential and responds immediately to an input charge.  Instead, a real amplifier has finite gain and a finite bandwidth. This has two implications. With finite gain, the input voltage is no longer fixed, and the output signal is smaller than the ideal value $Q/C_{f}$. Finite bandwidth limits how quickly the output can respond to the arriving current. Electronic noise also sets a limit on the minimum charge that can be measured. In this section, we extend the model to include these effects. The more realistic CSA model also includes the capacitance of the pad and amplifier input. The feedback circuit consists of a capacitor and a MOS discharge path, represented here by an effective resistance. Our improved model, however, still assumes a linear response. The range of validity of this assumption will be established by our last step, using  SPICE simulations.
+A real amplifier has finite gain and bandwidth. The output voltage for a given
+charge is smaller than the ideal value $Q/C_f$, and takes time to develop.
+Electronic noise also sets a limit on the minimum charge that can be measured.
+We calculate these effects using a transistor circuit in SPICE, with the
+ion-induced current from Section~\ref{sec:single_ion} as its input.
 
+\subsection{Circuit and operating parameters}
+\label{sec:spice_circuit}
 
-\subsection{Finite gain and response time}
+Figure~\ref{fig:spice_circuit} shows the CSA used in the calculation. It has a
+PMOS input transistor, a folded-cascode amplifier and a feedback capacitor
+$C_f$. An NMOS transistor, $M_f$, provides the discharge path. The circuit
+uses 180 nm CMOS device models and a supply of \SI{\SpiceSupplyV}{V}.
+The transistor dimensions are given in Appendix~\ref{app:spice_readout}.
 
-\begin{figure}[!htbp] 
+\begin{figure}[!htbp]
  \centering
- \includegraphics[width=0.85\linewidth]{amplifier_gain.pdf}
- \caption{Normalized open-loop gain of the amplifier, $|A(f)|/A_0=[1+(f/f_a)^2]^{-1/2}$. At low frequencies the gain approaches $A_0$. The marked point is $f=f_a$, where its magnitude is $A_0/\sqrt{2}$.}
- \label{fig:amplifier_gain}
+ \includegraphics[width=0.85\linewidth]{spice_circuit.pdf}
+ \caption{CSA circuit used in the SPICE calculation. Gate bias voltages and
+ drain (D) and source (S) connections are shown. The pad current enters the
+ gate of M1; $C_f$ and $M_f$ connect the output to this input node.}
+ \label{fig:spice_circuit}
 \end{figure}
 
-Define $C_{\rm in}$ as the capacitance between the input node and ground, including the pad, amplifier input and stray capacitances, but excluding $C_f$. We use Topmetal-S as a reference for the input capacitance. Its hexagonal charge collection electrode, with a diameter of \SI{\TopmetalElectrodeDiameterMm}{mm}, has a capacitance to ground of approximately \SI{\ArrivalCinPf}{pF}~\cite{mei2020topmetalcmosdirectcharge}. We take this value for $C_{\rm in}$ as a conservative estimate for our smaller pads and keep it fixed throughout the calculation.
-
-Let $A_0$ be the amplifier gain for a constant input. When the input varies rapidly compared with the amplifier's response time, the response is weaker. This can be described by replacing the constant gain with a frequency-dependent gain
-%
-\begin{equation}
- A(s)=\frac{A_0}{1+s/\omega_a},\qquad V(s)=-A(s)V_{\rm in}(s),
- \label{eq:realistic_gain}
-\end{equation}
-%
-Here $V_{\rm in}(s)$ and $V(s)$ are the Laplace transforms of the input and output voltages. For a sinusoidal component of the input at frequency $f$, we set $s=2\pi\mathrm{i}f$.  Furthermore, $\omega_a=2\pi f_a$, where $f_a$ is the frequency at which the gain magnitude falls to $A_0/\sqrt{2}$.
-
-Notice the limits: at low frequencies, $2\pi f\ll\omega_a$, the denominator is close to one and the gain is approximately $A_0$. As the frequency increases, the denominator reduces the gain. Thus $A_0$ specifies the gain in the limit of slowly varying signals, while $\omega_a$ determines how rapidly the input can change before the response is reduced. This is illustrated in Figure~\ref{fig:amplifier_gain}, which shows that the gain remains close to $A_0$ for frequencies well below $f_a$, falls to $A_0/\sqrt{2}$ at $f=f_a$, and decreases further as the frequency increases. See Appendix~\ref{app:realistic_csa}  for a full derivation. 
-
-
-The gain $A(s)$ describes how the amplifier converts its input voltage into an output voltage. To obtain the response to the current induced on the pad, we must also include the input capacitance $C_{\rm in}$ and the feedback elements $C_f$ and $R_f$. Part of the input current charges $C_{\rm in}$, while the rest flows through the feedback capacitor and discharge path. Balancing these currents gives $H_I(s)$, the current-to-voltage response of the complete CSA (Appendix~\ref{app:realistic_csa}):
-%
-\begin{equation}
- H_I(s)\equiv\frac{V(s)}{I(s)}
- =-\frac{A(s)}{sC_{\rm in}+[1+A(s)](R_f^{-1}+sC_f)}.
- \label{eq:realistic_transimpedance}
-\end{equation}
-%
-
-To isolate the effect of finite gain, we neglect the amplifier response time and feedback discharge. In this approximation, we replace $A(s)$ by $A_0$ and neglect $R_f^{-1}$.  Equation~\eqref{eq:realistic_transimpedance} reduces to
-%
-\begin{equation}
- H_I(s)=-\frac{1}{s\left[C_f+(C_{\rm in}+C_f)/A_0\right]}.
- \label{eq:realistic_integrating_limit}
-\end{equation}
-%
-For this calculation, we take the start of the input as $t=0$, with zero initial accumulated charge. Taking the Laplace transform gives
-%
-\begin{equation}
- Q(t)=\int_0^t i(t')\,\dd t'
- \qquad\xleftrightarrow{\;\mathcal{L}\;}\qquad
- Q(s)=\frac{I(s)}{s}.
- \label{eq:realistic_charge_transform}
-\end{equation}
-%
-Thus $I(s)/s$ represents the accumulated charge, and
-%
-\begin{equation}
- V(s)=H_I(s)I(s)
- =-\frac{I(s)/s}{C_f+(C_{\rm in}+C_f)/A_0}
- =-\frac{Q(s)}{C_f+(C_{\rm in}+C_f)/A_0}.
- \label{eq:realistic_voltage_transform}
-\end{equation}
-%
-Returning to the time domain, the output voltage is
-\begin{equation}
- V(t)=-\frac{Q(t)}{C_f+(C_{\rm in}+C_f)/A_0}.
- \label{eq:realistic_charge_gain}
-\end{equation}
-%
-And we recover the ideal value $-Q(t)/C_f$ when  $A_0C_f\gg C_{\rm in}+C_f$. 
-
-\subsection{Several ions in a readout frame}
-
-For $N$ ions following the same trajectory and collected at times $t_j$, the input current is the sum of the single-ion currents calculated in Section~\ref{sec:single_ion}:
-%
-\begin{equation}
- i_N(t)=\sum_{j=1}^{N}i_1(t-t_j).
- \label{eq:realistic_packet_current}
-\end{equation}
-%
-The current-to-voltage response derived above then gives
-%
-\begin{equation}
- V_N(s)=H_I(s)I_N(s).
- \label{eq:realistic_packet_transform}
-\end{equation}
-%
-Returning to the time domain, this product becomes
-%
-\begin{equation}
- V_N(t)=\int_{-\infty}^{t}h_I(t-t')i_N(t')\,\dd t',
- \label{eq:realistic_packet}
-\end{equation}
-%
-where $h_I(t)$ is the voltage response per unit charge injected instantaneously at $t=0$.
-
-For the ideal CSA, if no new charge arrived, the voltage would decay from $\overline V_{n-1}$ to $\alpha\overline V_{n-1}$ during one frame of duration $\Delta t$, where $\alpha=e^{-\Delta t/\tau_f}$ and $\tau_f=R_fC_f$. Subtracting this contribution from $\overline V_n$ gives the voltage due to a new charge arriving during the frame.
-
-\[
-\overline V_n-\alpha\overline V_{n-1}.
-\]
-
-We take the current $I_n=Q_n/\Delta t$ as constant during the frame and measure the voltage at its beginning and end. Applying the ideal CSA solution in Eq.~\eqref{eq:csa_solution} gives
-%
-\begin{equation}
- \overline V_n-\alpha\overline V_{n-1}
- =-\frac{I_n}{C_f}\int_{t_{n-1}}^{t_n}
- e^{-(t_n-t')/\tau_f}\,\dd t'.
- \label{eq:realistic_frame_integral}
-\end{equation}
-%
-The exponential accounts for discharge between the arrival time $t'$ and the sample time $t_n$. Evaluating the integral gives
-\begin{equation}
- \overline V_n-\alpha\overline V_{n-1}
- =-\frac{I_n\tau_f}{C_f}(1-\alpha)
- =-\frac{Q_n}{C_f}\frac{1-\alpha}{\Delta t/\tau_f}.
- \label{eq:realistic_frame_increment}
-\end{equation}
-Moving the previous-frame contribution to the right gives
-\begin{equation}
- \overline V_n=\alpha\overline V_{n-1}
- -\frac{Q_n}{C_f}\frac{1-\alpha}{\Delta t/\tau_f}.
- \label{eq:realistic_frame_voltage}
-\end{equation}
-Solving for the charge gives
-%
-\begin{equation}
- \widehat Q_n=-K\left(\overline V_n-\alpha\overline V_{n-1}\right),\qquad
- K=C_f\frac{\Delta t/\tau_f}{1-\alpha},
- \label{eq:realistic_estimator}
-\end{equation}
-%
-We can now calculate the voltages $\overline V_n$ using the CSA response $H_I(s)$ obtained previously (Eq.~\eqref{eq:realistic_transimpedance}) and insert them into Eq.~\eqref{eq:realistic_estimator} to obtain $\widehat Q_n$. This allows us to compare this estimate with the input charge $Q_n=\int_{t_{n-1}}^{t_n}i_N(t)\,\dd t$, and from there assess how accurately we recover the charge.
-
-
-\subsection{Response to uniform arrivals}
-\label{sec:arrival_cases}
-
-We consider $N$ ions arriving uniformly over a frame of duration $\Delta t$. The number of ions is left to be determined from the required S/N. Table~\ref{tab:arrival_parameters} lists the circuit parameters and frame duration.
+We take an external pad capacitance $C_{\rm pad}=\SI{\SpicePadPf}{pF}$ for
+our \SI{\SignalPadWidth}{mm} pads. This design estimate uses area scaling
+from the Topmetal-S capacitance benchmark~\cite{Gao2019TopmetalS}.
+The device models include the transistor capacitances in addition to
+$C_{\rm pad}$. Table~\ref{tab:spice_parameters} lists the circuit and
+readout parameters used below.
 
 \begin{table}[!htbp]
  \centering
@@ -444,103 +333,151 @@ We consider $N$ ions arriving uniformly over a frame of duration $\Delta t$. The
  \toprule
  Parameter & Symbol & Value \\
  \midrule
- Frame duration & $\Delta t$ & \SI{\ArrivalFrameMs}{ms} \\
+ External pad capacitance & $C_{\rm pad}$ & \SI{\SpicePadPf}{pF} \\
+ Feedback capacitance & $C_f$ & \SI{\SpiceCfFf}{fF} \\
+ Supply voltage & $V_{DD}$ & \SI{\SpiceSupplyV}{V} \\
+ Temperature & $T$ & \SI{\SpiceTemperatureK}{K} \\
  \midrule
- Feedback capacitance & $C_f$ & \SI{\ArrivalCfFf}{fF} \\
- Input capacitance & $C_{\rm in}$ & \SI{\ArrivalCinPf}{pF} \\
- DC amplifier gain & $A_0$ & $\ArrivalGain$ \\
- Amplifier pole frequency & $f_a$ & \SI{\ArrivalPoleKhz}{kHz} \\
- Feedback resistance & $R_f$ & \SI{\ArrivalRfOhm}{\ohm} \\
- \midrule
- Discharge time & $\tau_f=R_fC_f$ & \SI{\ArrivalTauSeconds}{s} \\
+ Frame duration & $\Delta t$ & \SI{\SpiceFrameMs}{ms} \\
+ Averaging time & $T_a$ & \SI{\SpiceAverageUs}{\micro\second} \\
+ Discharge-correction time & $\tau_0$ & \SI{\SpiceCorrectionSeconds}{s} \\
+ Noise integration band & $[f_\ell,f_h]$ &
+ \SI{\SpiceLowHz}{Hz}--\SI{\SpiceHighMHz}{MHz} \\
  \bottomrule
  \end{tabular}
- \caption{Circuit parameters and frame duration used in the calculation.}
- \label{tab:arrival_parameters}
+ \caption{Parameters of the circuit and frame measurement. The time $\tau_0$
+ is used in the correction between readings; the circuit discharge is
+ calculated from the feedback transistor.}
+ \label{tab:spice_parameters}
 \end{table}
 
-We take a uniform arrival rate $N/\Delta t$ between $t=0$ and $t=\Delta t$. Averaging the single-ion current over the collection time $u$ gives
+\subsection{Response to uniform arrivals}
+\label{sec:arrival_cases}
+
+We consider $N$ ions arriving uniformly over a frame of duration $\Delta t$.
+The number of ions is left to be determined from the required S/N.
+Averaging the single-ion current over the collection time $u$ gives
 \begin{equation}
  i_N(t)=\frac{N}{\Delta t}\int_0^{\Delta t}i_1(t-u)\,\dd u.
  \label{eq:uniform_arrival_current}
 \end{equation}
-The currents overlap, producing an approximately constant current through most of the frame. The voltage builds up during this interval. Since the response is linear, both the mean current and voltage scale with $N$.
+The currents overlap, producing an approximately constant current through
+most of the frame. The voltage builds up during this interval.
+The current is supplied to SPICE as a table of times and values, with its
+integral fixed by the finite-gap charge $NQ_g$.
 
 \begin{figure}[!htbp]
  \centering
- \includegraphics[width=\linewidth]{arrival_cases.pdf}
- \caption{Uniform ion arrivals over one frame. Left: mean input current per ion, $i_N/N$. Right: mean voltage per ion, $V_N/N$, for the ideal and finite-gain CSA models. Vertical dotted lines mark the frame boundaries. Squares and circles mark the voltage readings for the ideal and finite-gain models, respectively.}
- \label{fig:arrival_cases}
+ \includegraphics[width=\linewidth]{spice_ion_response.pdf}
+ \caption{Uniform ion arrivals over a \SI{\SpiceFrameMs}{ms} frame.
+ Left: input current per ion. Right: SPICE output voltage relative to the
+ baseline, per ion. The shaded windows have width
+ \SI{\SpiceAverageUs}{\micro\second}; the points show the averaged voltages.}
+ \label{fig:spice_ion_response}
 \end{figure}
 
-Figure~\ref{fig:arrival_cases} shows the mean current and voltage per ion. Table~\ref{tab:arrival_cases} shows the input and recovered charges, also divided by $N$. The ideal CSA recovers $\ArrivalUniformIdealPercent\%$ of the input charge, while the finite-gain CSA recovers about $\ArrivalUniformRecoveredPercent\%$.
+Figure~\ref{fig:spice_ion_response} shows the current and voltage normalized
+to one ion. The voltage remains after the arrival interval, so successive
+frames must be treated as a continuous signal.
 
-\begin{table}[!htbp]
- \centering
- \input{generated/arrival_cases_table}
- \caption{Input and recovered charge per ion, in units of $e$, for uniform arrivals. Voltages are read at the boundaries of the \SI{\ArrivalFrameMs}{ms} frame.}
- \label{tab:arrival_cases}
-\end{table}
+\subsection{Frame readout}
+\label{sec:frame_readout}
 
-\subsection{Noise in the recovered charge}
+The voltage at each frame boundary is averaged over a window of duration $T_a$:
+\begin{equation}
+ \overline V_n=\frac{1}{T_a}
+ \int_{t_n-T_a/2}^{t_n+T_a/2}V(t)\,\dd t,
+ \qquad t_n-t_{n-1}=\Delta t.
+ \label{eq:spice_average}
+\end{equation}
+Averaging reduces the rapid voltage fluctuations that would enter a point
+reading. We use $T_a=\SI{\SpiceAverageUs}{\micro\second}$, much shorter than
+the \SI{\SpiceFrameMs}{ms} frame.
+
+For an ideal CSA, the voltage left from the previous frame decays by
+$\exp(-\Delta t/\tau_f)$. This motivates the corrected voltage difference
+\begin{equation}
+ D_n=-\left(\overline V_n-\alpha\overline V_{n-1}\right),
+ \qquad \alpha=\exp(-\Delta t/\tau_0).
+ \label{eq:spice_frame_difference}
+\end{equation}
+The minus sign makes $D_n$ positive for the chosen output polarity.
+We take $\tau_0=\SI{\SpiceCorrectionSeconds}{s}$ for this correction and
+calibrate the resulting measurement with the SPICE response. Let $g$ be
+$D_n$ for the uniform current normalized to one ion. In the linear regime,
+$N$ ions give $Ng$, and their estimated number is
+\begin{equation}
+ \widehat N_n=\frac{D_n}{g}.
+ \label{eq:spice_calibration}
+\end{equation}
+For the parameters in Table~\ref{tab:spice_parameters},
+$g=\SI{\SpiceGainUv}{\micro\volt}$ per ion.
+
+\subsection{Noise and sensitivity}
 \label{sec:charge_noise}
 
-We now need to compare the recovered charge with the electronic noise. The amplifier and the feedback discharge path produce voltage fluctuations even when no ions arrive. We describe their effect by a voltage noise source and a current noise source at the amplifier input, which we assume to be independent~\cite{tiNoise2007,spielerNoise1998}. The voltage noise includes a white component ---equal contributions to the variance per unit frequency---, and a flicker component, whose spectrum varies as $1/f$. The current noise includes the contribution from the feedback path. Appendix~\ref{app:realistic_noise} shows how the circuit response converts these sources into output voltage noise.
+The amplifier and the feedback discharge path produce voltage fluctuations
+even when no ions arrive. SPICE gives their total output noise spectrum
+at the operating point. We write its one-sided power spectral density as
+$S_V(f)$, in $\mathrm{V^2/Hz}$.
 
-Let $\delta V_n$ be the noise in the voltage measured at the end of frame $n$. Inserting the two voltage fluctuations into the charge estimator in Eq.~\eqref{eq:realistic_estimator} gives
+The noise in the measured difference is
 \begin{equation}
- \delta\widehat Q_n=-K\left(\delta V_n-\alpha\delta V_{n-1}\right).
- \label{eq:realistic_charge_fluctuation}
+ \delta D_n=-\left(\delta\overline V_n-\alpha\delta\overline V_{n-1}\right).
+ \label{eq:spice_noise_difference}
 \end{equation}
-Thus the uncertainty in the recovered charge depends on the noise in both readings. Positively correlated fluctuations partly cancel when we take the difference between readings. For simplicity, assume that the noise has zero mean and the same variance at each reading. Define the variance of one reading as
+Thus the uncertainty depends on the noise in both readings. Positively
+correlated fluctuations partly cancel when we take their difference.
+Applying the averaging and frame difference to the output spectrum gives
 \begin{equation}
- C_V(0)=\left\langle\delta V_n^2\right\rangle,
- \label{eq:realistic_sample_variance}
+ \sigma_D^2=\int_{f_\ell}^{f_h} S_V(f)
+ \left|\frac{\sin(\pi fT_a)}{\pi fT_a}\right|^2
+ \left|1-\alpha e^{-2\pi\mathrm{i}f\Delta t}\right|^2\,\dd f.
+ \label{eq:spice_noise_integral}
 \end{equation}
-and the covariance between consecutive readings as
-\begin{equation}
- C_V(\Delta t)=\left\langle\delta V_n\delta V_{n-1}\right\rangle.
- \label{eq:realistic_sample_covariance}
-\end{equation}
-Squaring Eq.~\eqref{eq:realistic_charge_fluctuation} and taking the average gives
-\begin{equation}
- \sigma_{\widehat Q}^{2}
- =K^2\left[(1+\alpha^2)C_V(0)-2\alpha C_V(\Delta t)\right].
- \label{eq:realistic_noise_charge}
-\end{equation}
-For uncorrelated readings, $C_V(\Delta t)=0$. Notice also that a positive covariance reduces the noise in the charge estimate. The two quantities are calculated from the output noise spectrum as described in Appendix~\ref{app:realistic_noise}.
+The first factor describes the average over $T_a$; the second describes
+the difference between frames. Appendix~\ref{app:spice_noise} derives
+this expression from the covariance between readings.
 
-Let $g_n$ be the mean estimated charge per ion in frame $n$. For $N$ ions, the mean estimated charge is $Ng_n$, while the electronic noise has standard deviation $\sigma_{\widehat Q}$. The signal-to-noise ratio and the condition for exceeding a ratio $\rho$ are then
+Integrating from \SI{\SpiceLowHz}{Hz} to \SI{\SpiceHighMHz}{MHz} gives
+$\sigma_D=\SI{\SpiceNoiseMv}{mV}$. Dividing by the signal per ion gives
+the input-equivalent noise and the signal-to-noise ratio:
 \begin{equation}
- {\rm S/N}_n(N)=\frac{N|g_n|}{\sigma_{\widehat Q}},\qquad
- N>\frac{\rho\,\sigma_{\widehat Q}}{|g_n|}.
- \label{eq:realistic_sensitivity}
+ \mathrm{ENC}=\frac{\sigma_D}{g}=\SpiceEncIons\ \text{ions RMS},
+ \qquad \mathrm{S/N}(N)=\frac{Ng}{\sigma_D}=\frac{N}{\mathrm{ENC}}.
+ \label{eq:spice_sensitivity}
 \end{equation}
+Each ion carries charge $+e$. The SPICE transients give
+$\mathrm{S/N}=\SpiceBelowSnr$ for $N=\SpiceBelowIons$ and
+$\mathrm{S/N}=\SpiceAboveSnr$ for $N=\SpiceMinimumIons$.
+The minimum number for S/N $>5$ is therefore \SpiceMinimumIons\ ions.
+The noise spectrum used here has zero contribution in the transistor
+$1/f$ terms. The quoted ENC is conditional on that model setting.
+% Author review: reconcile the flicker terms with the circuit designer before
+% treating this numerical noise result as a prediction for the implemented CSA.
 
-\subsection{Numerical noise estimate}
-\label{sec:numerical_noise}
+Figure~\ref{fig:spice_averaging} shows how the averaging time affects the ENC.
+Increasing the average from \SI{180}{\micro\second} to
+\SI{350}{\micro\second} reduces the ENC from \SpiceScanFirstEnc\ to
+\SpiceScanLastEnc\ electrons RMS. The signal per ion is recalculated for
+each averaging time.
 
-Next, we calculate the noise for the parameters used above.
- Table~\ref{tab:noise_inputs} shows a set of values used as an illustration (a realistic case will be presented in Section XXX).  We use a flicker spectrum $S_{\mathrm{flicker}}(f)=a_f/f$ and assume the thermal noise of a resistor, $S_{\mathrm{fb}}=4k_BT/R_f$ as the noise source for the feedback path. The spectra are integrated over the frequency range given in the table, with voltage readings at the frame boundaries.
-
-\begin{table}[!htbp]
+\begin{figure}[!htbp]
  \centering
- \input{generated/noise_inputs_table}
- \caption{Assumed noise inputs for the illustrative calculation.}
- \label{tab:noise_inputs}
-\end{table}
+ \includegraphics[width=0.88\linewidth]{spice_averaging.pdf}
+ \caption{ENC versus averaging time for uniform ion arrivals over
+ \SI{\SpiceFrameMs}{ms}, with an external pad capacitance of
+ \SI{\SpicePadPf}{pF}. The highlighted point is the
+ \SI{\SpiceAverageUs}{\micro\second} average used in this study.}
+ \label{fig:spice_averaging}
+\end{figure}
 
-The resulting noise in the recovered charge is $\sigma_{\widehat Q}/e=\NoiseTotalElectrons$. White voltage noise, flicker noise and feedback noise contribute $\NoiseWhiteElectrons$, $\NoiseFlickerElectrons$ and $\NoiseFeedbackElectrons$ elementary charges RMS, respectively. Notice that for this example amplifier voltage noise accounts for about $\NoiseVoltagePercent\%$ of the variance.
-These noise values refer to the charge estimator in Eq.~\eqref{eq:realistic_estimator}, which uses the ideal charge-to-voltage conversion. To refer the quoted noise to the actual input charge, we divide it by the recovered fraction.
-
-For uniform arrivals, the mean estimated charge per ion is $g_n/e=\NoiseMeanChargePerIon$. Thus
-\begin{equation}
- {\rm S/N}=\NoiseSnrPerIon\,N.
- \label{eq:numerical_snr}
-\end{equation}
-Requiring S/N $>\NoiseTargetSnr$ gives $N>\NoiseUniformBoundary$, or at least $\NoiseUniformMinimumIons$ ions.
-
-For the chosen circuit parameters, simultaneous arrivals at the middle of the frame give a similar threshold of $\NoiseSimultaneousMinimumIons$ ions. The result therefore depends little on the difference between these two arrival distributions.
+A packet of the same size in the preceding frame contributes
+\SpicePreviousPercent\% of the signal from the packet in the selected frame.
+A packet in the following frame contributes \SpiceFollowingPercent\%.
+These responses include induction before collection, circuit discharge and
+the averaging windows. They will enter the reconstruction of charge across
+successive frames.
 
 \clearpage
 \appendix
@@ -662,7 +599,7 @@ This is exact for a constant current in each numerical bin and converges to the 
 
 The square-pad potential is checked against independent surface integration of Eq.~\eqref{eq:app_poisson}, and its derivative against Eq.~\eqref{eq:single_weight}. Charge integrals, boundary limits and scaling with pad size and velocity are also checked. The CSA response is compared with Eq.~\eqref{eq:app_csa_quadrature}, the ideal-integrator limit and the closed-form response to a constant current. These checks test the analytical model and its numerical implementation; they do not replace a field calculation for the collection geometry or a transistor-level circuit calculation.
 
-\input{appendix_realistic_csa}
+\input{appendix_spice_readout}
 
 % Appendix C will contain the IFG focusing and collection calculation.
 % That numerical study remains pending.

@@ -28,3 +28,7 @@ results/ltspice/shaping/decks/*.db
 results/ltspice/capacitance/**/decks/*.raw
 results/ltspice/capacitance/**/decks/*.log
 results/ltspice/capacitance/**/decks/*.db
+
+results/ltspice/noise_audit/decks/*.raw
+results/ltspice/noise_audit/decks/*.log
+results/ltspice/noise_audit/decks/*.db

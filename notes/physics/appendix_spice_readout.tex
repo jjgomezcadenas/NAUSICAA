@@ -1,0 +1,59 @@
+\section{Circuit and frame measurement}
+\label{app:spice_readout}
+
+\subsection{Circuit parameters}
+
+The calculation uses BSIM3 transistor models for 180 nm CMOS, evaluated with
+LTspice 17.2.4. Figure~\ref{fig:spice_circuit} gives the connections and gate
+biases. Table~\ref{tab:spice_devices} gives the dimensions, including the
+multiplicity $m$ of parallel devices. The pad capacitance is an external
+load; intrinsic device capacitances are supplied by the transistor models.
+
+\begin{table}[!htbp]
+ \centering
+ \input{generated/spice_devices_table}
+ \caption{Transistor dimensions used in the SPICE calculation.}
+ \label{tab:spice_devices}
+\end{table}
+
+The transient voltage is measured relative to a matched zero-input run.
+The physical current has the square-pad boundary conditions specified in
+Appendix~\ref{app:single_ion}; its integral is preserved in the tabulated
+SPICE source. The gain $g$ is evaluated with the uniform arrival current,
+the averaging windows and the frame difference defined in the main text.
+
+\subsection{Averaging and noise covariance}
+\label{app:spice_noise}
+
+Let $C_{\overline V}(u)$ be the covariance of averaged voltage readings
+separated by $u$. For stationary noise with one-sided output spectrum $S_V$,
+\begin{equation}
+ C_{\overline V}(u)=\int_{f_\ell}^{f_h}S_V(f)
+ \left|\frac{\sin(\pi fT_a)}{\pi fT_a}\right|^2
+ \cos(2\pi fu)\,\dd f.
+ \label{eq:spice_covariance}
+\end{equation}
+The same averaging window is applied to the transient signal. Squaring
+Eq.~\eqref{eq:spice_noise_difference} and taking the average gives
+\begin{equation}
+ \sigma_D^2=(1+\alpha^2)C_{\overline V}(0)
+           -2\alpha C_{\overline V}(\Delta t).
+ \label{eq:spice_covariance_difference}
+\end{equation}
+Substituting Eq.~\eqref{eq:spice_covariance} yields
+Eq.~\eqref{eq:spice_noise_integral}, since
+\begin{equation}
+ |1-\alpha e^{-2\pi\mathrm{i}f\Delta t}|^2
+ =1+\alpha^2-2\alpha\cos(2\pi f\Delta t).
+\end{equation}
+
+The corrected difference retains a response $1-\alpha$ at zero frequency.
+The lower integration limit $f_\ell$ therefore remains part of the noise
+specification. The calculation uses the continuous average of the output
+waveform and the circuit noise at its DC operating point.
+ADC noise and quantisation must be included when a digitisation scheme is chosen.
+
+The noise integral is checked by increasing the spectral sampling density
+and the quadrature order. The signal is checked by reducing the transient
+time step. Direct simulations of the adjacent integer ion counts bracket
+the S/N threshold quoted in the main text.

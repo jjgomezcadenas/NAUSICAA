@@ -1,0 +1,98 @@
+% Draft for author review: finite-gain response and sampled noise.
+\section{Finite-gain CSA response and noise}
+\label{app:realistic_csa}
+
+\subsection{Input-node equations}
+
+All voltages are deviations from the DC operating point. A positive source current enters the input node. The amplifier draws no conductive input current; its loading is represented by $C_{\rm in}$. With $G_f=1/R_f$, current balance gives
+\begin{equation}
+ i=C_{\rm in}\frac{\dd V_{\rm in}}{\dd t}
+   +C_f\frac{\dd(V_{\rm in}-V)}{\dd t}
+   +G_f(V_{\rm in}-V).
+ \label{eq:app_realistic_kcl}
+\end{equation}
+For zero initial signal, substitution of $V(s)=-A(s)V_{\rm in}(s)$ gives Eq.~\eqref{eq:realistic_transimpedance}. Writing $Y_f=G_f+sC_f$, its denominator after multiplication by $1+s/\omega_a$ is
+\begin{equation}
+ D(s)=\frac{C_{\rm in}+C_f}{\omega_a}s^2
+ +\left[C_{\rm in}+(1+A_0)C_f+\frac{G_f}{\omega_a}\right]s
+ +(1+A_0)G_f,
+ \label{eq:app_realistic_denominator}
+\end{equation}
+and $H_I(s)=-A_0/D(s)$. For positive circuit parameters, this second-order model has poles in the left half-plane. It does not determine the stability of a transistor circuit with additional poles and parasitic elements.
+
+The corresponding time-domain equations are
+\begin{align}
+ \frac{\dd V}{\dd t}&=-\omega_a(V+A_0V_{\rm in}),\\
+ (C_{\rm in}+C_f)\frac{\dd V_{\rm in}}{\dd t}
+ &=i+C_f\frac{\dd V}{\dd t}-G_f(V_{\rm in}-V).
+ \label{eq:app_realistic_state}
+\end{align}
+They retain both node voltages between successive time bins. For a constant bin-average current, the linear state equations can be integrated by a matrix exponential. Refining the current bins tests the approximation to the continuous ion waveform; the numerical step need not equal the readout interval.
+
+Several limits provide independent checks. At zero frequency,
+\begin{equation}
+ H_I(0)=-\frac{A_0}{1+A_0}R_f.
+\end{equation}
+With instantaneous amplifier response and negligible discharge, integration of Eq.~\eqref{eq:app_realistic_kcl} gives
+\begin{equation}
+ Q=[C_{\rm in}+(1+A_0)C_f]V_{\rm in},
+\end{equation}
+which yields Eq.~\eqref{eq:realistic_charge_gain}. Taking the amplifier gain large over the signal frequencies instead gives
+\begin{equation}
+ H_I(s)\longrightarrow-\frac{1}{G_f+sC_f},
+\end{equation}
+and recovers the ideal CSA equation. A large value of $A_0$ alone is insufficient if the amplifier pole is moved so that the response remains slow.
+
+\subsection{Noise transfer and sample covariance}
+\label{app:realistic_noise}
+
+Define the equivalent input voltage noise $e_n$ by $V=A(s)(e_n-V_{\rm in})$. In the absence of signal current, Eq.~\eqref{eq:app_realistic_kcl} then gives
+\begin{equation}
+ H_e(s)\equiv\frac{V(s)}{e_n(s)}
+ =\frac{A(s)[sC_{\rm in}+Y_f(s)]}
+ {sC_{\rm in}+[1+A(s)]Y_f(s)}.
+ \label{eq:app_realistic_noise_gain}
+\end{equation}
+An input current-noise source has transfer function $H_I$. For independent sources with one-sided power spectral densities $S_e$ in $\mathrm{V^2/Hz}$ and $S_i$ in $\mathrm{A^2/Hz}$, the output spectrum is
+\begin{equation}
+ S_V(f)=|H_I(2\pi\mathrm{i}f)|^2S_i(f)
+       +|H_e(2\pi\mathrm{i}f)|^2S_e(f).
+ \label{eq:app_realistic_output_noise}
+\end{equation}
+Correlations between the underlying transistor noise sources are omitted in this equivalent-input description.
+
+The input spectra used for a parameter study are
+\begin{equation}
+ S_e(f)=e_w^2+\frac{a_f}{f},\qquad
+ S_i(f)=i_w^2+S_{\rm fb}(f),\qquad f_{\ell}\leq f\leq f_h.
+ \label{eq:app_realistic_input_noise}
+\end{equation}
+Here $e_w$ and $i_w$ are white amplitude spectral densities, and $a_f$ has units of $\mathrm{V^2}$. The low-frequency limit makes the flicker-noise assumption finite; it is not itself a model of baseline subtraction. The upper limit states the bandwidth over which the adopted spectra are used. Both limits must accompany a quoted noise result. A passive resistor at temperature $T$ gives the benchmark $S_{\rm fb}=4k_BT/R_f$~\cite{tiNoise2007}. For a MOS discharge path, its noise spectrum must be supplied independently or obtained from the device calculation.
+
+A sample averaged over an acquisition aperture $T_a$ has a frequency response with magnitude
+\begin{equation}
+ |P(f)|=\left|\frac{\sin(\pi fT_a)}{\pi fT_a}\right|.
+\end{equation}
+The instantaneous-sample limit is $T_a=0$, for which $P=1$. For stationary noise, the covariance between samples separated by $u$ is
+\begin{equation}
+ C_V(u)=\int_{f_{\ell}}^{f_h}S_V(f)|P(f)|^2
+ \cos(2\pi fu)\dd f.
+ \label{eq:app_realistic_covariance}
+\end{equation}
+For the signal calculation, the rectangular aperture ends at the stated sample time. The same aperture must be applied to the signal. A finite signal record may start from a zero baseline while the circuit noise is already stationary; setting the signal's initial state to zero does not reset the noise.
+
+Applying the estimator in Eq.~\eqref{eq:realistic_estimator} gives Eq.~\eqref{eq:realistic_noise_charge}. Equivalently,
+\begin{equation}
+ \sigma_{\widehat Q}^{2}=K^2\int_{f_{\ell}}^{f_h}
+ S_V(f)|P(f)|^2\left|1-\alpha e^{-2\pi\mathrm{i}f\Delta t}\right|^2\dd f.
+ \label{eq:app_realistic_noise_integral}
+\end{equation}
+The integrand is nonnegative. This form provides a check on the covariance subtraction when consecutive samples are strongly correlated. The factor $e^{-2\pi\mathrm{i}f\Delta t}$ follows from the actual frame interval, not an independently chosen shaping time.
+
+\subsection{Charge calibration and comparison}
+
+The input charge in a frame is computed from the current integral before applying the electronics response. The difference between this charge and $\widehat Q_n$ measures the bias of the chosen estimator for that arrival history. A rectangular sampling aperture can introduce an additional difference from instantaneous endpoints, even in the ideal amplifier limit.
+
+For a unit-ion arrival template, let $g_n$ be the mean value of $\widehat Q_n$ after subtraction of any specified previous-frame contribution. Here any subtracted history is a known deterministic template. Subtracting an additional noisy measurement would require its covariance as well. Linearity gives $N g_n$ for the corresponding mean $N$-ion input. Equation~\eqref{eq:realistic_sensitivity} then follows by dividing by the electronic-noise standard deviation. This calibration is specific to the template, sampling phase and prior history. It does not establish a universal threshold in collected ions.
+
+A circuit comparison must use the same input current, capacitances, sampling aperture and charge estimator. Transient calculations test the waveform and its amplitude dependence. Noise calculations supply the output spectrum, which is integrated with Eq.~\eqref{eq:app_realistic_noise_integral}. Agreement with a linear behavioural circuit checks the implementation of these equations; comparison with the transistor circuit tests the physical adequacy of the model.

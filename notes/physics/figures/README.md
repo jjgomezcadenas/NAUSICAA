@@ -28,3 +28,28 @@ shown at the zero reference used for this conceptual model.
 
 The inherited ITACA image remains in `img/topmetal_diagram.png` with its original
 provenance in `img/SOURCES.txt`.
+
+## Transistor CSA manuscript figures (26 October 2026)
+
+`make spice-paper` generates `../generated/spice_circuit.pdf`,
+`spice_ion_response.pdf`, `spice_noise.pdf`, `spice_devices_table.tex` and
+`spice_values.tex` from the saved 1.25 pF / 300 us transistor study. The circuit
+connections, device dimensions and gate biases are checked against the simulated
+netlist. The waveform is the uniform one-ion mean arrival template; the noise
+uses the same frame filter as the signal. No injection example enters the paper.
+Source hashes and calculation conditions are in
+`../generated/spice_paper_provenance.json`; PNG previews are scratch artifacts in
+`../work/spice-paper/`. The generator does not invoke LTspice or compile LaTeX.
+# ENC versus averaging time
+
+The last active manuscript figure is `generated/spice_averaging.pdf`.
+`make spice-averaging` runs `scripts/build_averaging_scan.jl` on the saved
+1.25 pF SPICE waveforms and spectra, writes
+`results/ltspice/averaging_scan.h5`, then renders the figure with
+`scripts/plot_averaging_scan.py`. `make spice-averaging-plot` regenerates
+the presentation alone. The scan uses 180, 200, 250, 300 and 350 us centered
+averages for uniform arrivals over 10 ms, recalibrating the signal at each width.
+Source hashes and numerical convergence checks are stored in HDF5.
+The self-contained report source is `latex_generated/spice_averaging/report.tex`.
+The previous `spice_noise.pdf` remains a diagnostic and is no longer included
+in the paper. The manuscript and report have not been compiled for this change.

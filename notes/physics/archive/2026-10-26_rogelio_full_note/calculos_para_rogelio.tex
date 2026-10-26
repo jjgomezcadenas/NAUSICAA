@@ -1,0 +1,199 @@
+% Nota independiente; texto revisado directamente en este archivo.
+% Compilar desde este directorio con:
+%   latexmk -pdf calculos_para_rogelio.tex
+% No requiere archivos del manuscrito ni una bibliografia externa.
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot,es-noshorthands]{babel}
+\usepackage{lmodern,microtype,textcomp}
+\usepackage[margin=24mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,array,calc}
+\usepackage{fancyvrb,fvextra}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage[colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black]{hyperref}
+\DeclareUnicodeCharacter{00B5}{\textmu}
+\DeclareUnicodeCharacter{00B0}{\textdegree}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{breaklines=true,breakanywhere=true,fontsize=\small}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\LTpre}{8pt}
+\setlength{\LTpost}{8pt}
+\title{Respuesta y ruido del CSA para NAUSICA}
+\author{J. J. G\'omez-Cadenas}
+\date{\today}
+\begin{document}
+\maketitle
+
+{\bf Astra:} Los cálculos se han realizado con apoyo de Codex, versión Astra, high.
+
+{\bf Idea:} El objetivo es determinar cuántos iones deben llegar a un pad durante
+10 ms para medir su carga con una relación señal/ruido mayor que un cierto valor (por ejemplo, $S/N>5$).
+Para ello el cálculo aplica al circuito LTspice una corriente calculada a partir del movimiento
+de los iones. Después se filtra el voltaje de salida y se calcula el ruido
+que queda con ese mismo filtro.
+
+{\bf Spice}: Se usa LTspice 17.2.4 nativo en macOS, a 20 °C.
+
+
+\section{Circuito simulado}
+
+El cálculo parte del esquema \texttt{CSAfolded180nm.asc} y de los modelos de
+\texttt{180nm\_professional.inc}. Se conservan las dimensiones y polarizaciones
+de los transistores y la capacitancia de realimentación de 3 fF. \emph{El cálculo cambia tanto la fuente de corriente como
+la capacitancia externa \texttt{Cd1}.}
+
+Para los pads de 0.5 mm se adopta una capacitancia externa de 1.25 pF,
+estimada por escalado de área a partir de Topmetal-S\footnote{Topmetal-S da 5 pF de capacidad para pads de 1 mm. Me limito a escalar por el área ---la nuestra es 0.5 mm---. }. Las capacitancias de
+los transistores se suman a esta carga externa.
+
+\section{Corriente de entrada}
+
+La corriente se obtiene a partir de los iones que llegan al pad. El cálculo
+está documentado en el artículo sobre NAUSICA. Para un ion de carga
+$+e$, el potencial de ponderación $\phi_w$ da
+\[
+ i_1(t)=e\frac{d\phi_w}{dt},\qquad
+ Q_g=\int i_1(t)\,dt
+ =e\,[\phi_w(\mathrm{final})-\phi_w(\mathrm{inicio})].
+\]
+Para $N$ llegadas uniformes durante $\Delta=10\,\mathrm{ms}$, se usa
+\[
+ i_N(t)=\frac{N}{\Delta}\int_0^\Delta i_1(t-t_a)\,dt_a,
+\]
+donde $t_a$ es el instante de llegada al pad. Esta corriente se exporta
+como una tabla de tiempos y valores para una fuente PWL de LTspice.
+
+\section{Medida de la señal}
+
+La carga llega durante un intervalo de 10 ms (el tiempo típico de un "bucket" correspondiente a 1 mm, se puede extender a 20 mm sin problema).
+
+Se mide el cambio de voltaje mediante promedios de duración $T$ centrados
+en sus extremos:
+\[
+ \overline V(t_n)=\frac{1}{T}
+ \int_{t_n-T/2}^{t_n+T/2}V(t)\,dt.
+\]
+Se forma la diferencia corregida por descarga
+\[
+ D_n=-\left[\overline V(t_n)-\alpha\overline V(t_{n-1})\right],
+ \qquad \alpha=\exp(-\Delta/\tau_0),
+ \qquad \tau_0=0.3\,\mathrm{s}.
+\]
+El factor $\alpha$ descuenta la señal anterior que habría sobrevivido a la
+descarga en el CSA ideal. Los 0.3 s son el valor elegido para esta corrección;
+la descarga del circuito LTspice la determina el transistor de realimentación.
+El signo hace positiva la señal.
+
+Se calibra la medida con el propio circuito: $g$ es el valor de $D_n$ para
+una corriente uniforme normalizada a un ion. En el régimen lineal, $N$ iones
+producen $Ng$, y se estima su número como $\widehat N=D_n/g$.
+
+Se toma $T=300\,\mu\mathrm{s}$ como duración de cada promedio. Implementar la medida
+requiere leer el voltaje durante esas ventanas, que se extienden $T/2$
+a cada lado del extremo del frame.
+
+\section{Del espectro de ruido al ENC}
+
+LTspice proporciona la densidad espectral de amplitud de ruido de salida
+$a_V(f)$, en $\mathrm{V}/\sqrt{\mathrm{Hz}}$. La varianza después del
+filtrado es
+\[
+ \sigma_D^2=\int_{0.1\,\mathrm{Hz}}^{1\,\mathrm{MHz}}
+ a_V^2(f)\,|H(f)|^2\,df.
+\]
+Para la lectura de frames,
+\[
+ |H(f)|=\left|\operatorname{sinc}(fT)
+ \left[1-\alpha e^{-2\pi i f\Delta}\right]\right|,
+ \qquad \operatorname{sinc}(x)=\frac{\sin(\pi x)}{\pi x}.
+\]
+El primer factor corresponde al promedio y el segundo a la diferencia entre
+lecturas. La expresión incluye la correlación del ruido entre ambas ventanas.
+Se usa el ruido total \texttt{V(onoise)} calculado en el punto de trabajo
+sin señal.
+
+Al dividir el ruido de la medida por la señal de un ion se obtiene
+\[
+ \mathrm{ENC}=\frac{\sigma_D}{g},\qquad
+ \frac{S}{N}=\frac{Ng}{\sigma_D}=\frac{N}{\mathrm{ENC}}.
+\]
+El ENC se expresa en iones de carga $+e$ RMS.
+Se calcula el umbral para S/N=5 y se comprueba con transitorios LTspice
+de números enteros de iones a ambos lados de ese umbral.
+
+\section{Resultados}
+
+Con promedios de 300 µs se obtiene un ENC de 40.47 iones RMS.
+El umbral para $S/N>5$ es de 203 iones: la simulación da $S/N=4.989$
+para 202 iones y $S/N=5.014$ para 203.
+
+También se ha comprobado la contribución de una población igual de iones
+desplazada un frame. La población del frame anterior
+contribuye un 2.88\% de la señal del frame de interés; la del siguiente,
+un 1.01\%. Estas contribuciones incluyen la inducción antes de la llegada,
+la memoria del circuito y el promedio temporal.
+
+\section{Comparación del ruido flicker}
+
+Se ha repetido el cálculo del PDF  \texttt{Noise Analysis CSA 180 nm.pdf}
+con el esquema original: \texttt{Cd1=250 fF}, temperatura por defecto de
+27 °C y barrido de 1 Hz a 1 GHz con 1000 puntos por década.
+
+{
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedleft
+Frecuencia
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Ruido de salida reproducido
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Ruido equivalente de corriente de entrada
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 Hz & 2.167 \(\mathrm{mV}/\sqrt{\mathrm{Hz}}\) & 0.09287
+\(\mathrm{fA}/\sqrt{\mathrm{Hz}}\) \\
+10 Hz & 0.2187 \(\mathrm{mV}/\sqrt{\mathrm{Hz}}\) & 0.09288
+\(\mathrm{fA}/\sqrt{\mathrm{Hz}}\) \\
+100 Hz & 0.02207 \(\mathrm{mV}/\sqrt{\mathrm{Hz}}\) & 0.09373
+\(\mathrm{fA}/\sqrt{\mathrm{Hz}}\) \\
+\end{longtable}
+}
+
+A 1 Hz se obtiene $2.167\,\mathrm{mV}/\sqrt{\mathrm{Hz}}$, compatible con
+los aproximadamente $2.2\,\mathrm{mV}/\sqrt{\mathrm{Hz}}$ de la figura que mandas.
+En la ejecución del estudio, las siete contribuciones \texttt{1overf} son cero.
+El fichero de modelos recibido deja sin especificar \texttt{KF},
+\texttt{NOIA}, \texttt{NOIB}, \texttt{NOIC} y \texttt{NOIMOD}.
+
+Se comprueba la lectura de esos términos con una copia de los modelos y un
+valor de prueba \texttt{KF=1e-25}: las siete contribuciones pasan a ser
+no nulas. En ambas ejecuciones, la suma de las varianzas por transistor
+reproduce la varianza total.
+
+Entre 1 y 10 Hz, la corriente de ruido equivalente es casi constante y el
+ruido de salida cae un factor diez por la respuesta del circuito. Para
+identificar la contribución flicker es necesario comparar los términos
+\texttt{1overf} de ambas ejecuciones. Para ello se necesitan la versión de LTspice,
+el netlist, los modelos y los datos exportados de esas contribuciones y
+del espectro total de la ejecución.
+
+%\section{Cálculos adjuntos}
+%
+%El script \path{scripts/build_capacitance_study.py} reproduce el cálculo del ENC;
+%\path{scripts/audit_ltspice_noise.py} reproduce la comparación de ruido.
+%Los resultados, espectros y netlists están en \path{results/ltspice/}.
+%Las comprobaciones de carga integrada, paso temporal e integración espectral
+%están guardadas junto a los resultados en los archivos JSON.
+
+\end{document}

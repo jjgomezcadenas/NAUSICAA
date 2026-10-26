@@ -1,0 +1,114 @@
+{
+  "simulator": "/Users/jjgomezcadenas/Projects/NAUSICAA/notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app/Contents/MacOS/LTspice",
+  "version": "LTspice 17.2.4 native macOS",
+  "source_sha256": {
+    "LTSpice/CSAfolded180nm.asc": "ccf85bcd244dc44dcf175ecc77dc60f053dfc75279b1a6639c9fbf0dd496c690",
+    "LTSpice/180nm_professional.inc": "b69cd6849bc3145b91653a7411be487a9a5d6ed2c30192c0a4dd61c7dda2efa4",
+    "scripts/audit_ltspice_noise.py": "05454161ab1eea58474cbdc875822a93f7da4866b465e105aa1885241134056e",
+    "LTSpice/Noise Analysis CSA 180 nm.pdf": "6d30bc0b4cbb85f14a2aadd2545aba88d5bceebb3b8bbdcf2295db841c96da36"
+  },
+  "conditions": "Original 250 fF external load, original sources and transistor dimensions, default 27 C; PDF noise sweep 1 Hz\u20131 GHz, 1000 points/decade.",
+  "control": "KF=1e-25 added to both models only in positive-control copy; arbitrary diagnostic, not a physical noise calibration.",
+  "cases": {
+    "original": {
+      "flicker_max_ASD_V_sqrtHz": {
+        "V(m1.1overf)": 0.0,
+        "V(m5.1overf)": 0.0,
+        "V(m6.1overf)": 0.0,
+        "V(m2.1overf)": 0.0,
+        "V(m3.1overf)": 0.0,
+        "V(m4.1overf)": 0.0,
+        "V(mf.1overf)": 0.0
+      },
+      "variance_closure_relative": 6.661338147750939e-16,
+      "spectral_points": [
+        {
+          "frequency_Hz": 1.0,
+          "output_ASD_V_sqrtHz": 0.0021672597213472002,
+          "input_ASD_A_sqrtHz": 9.287243201528365e-17,
+          "flicker_output_ASD_V_sqrtHz": 0.0
+        },
+        {
+          "frequency_Hz": 9.999999999999465,
+          "output_ASD_V_sqrtHz": 0.0002186666928905563,
+          "input_ASD_A_sqrtHz": 9.288099293690397e-17,
+          "flicker_output_ASD_V_sqrtHz": 0.0
+        },
+        {
+          "frequency_Hz": 99.99999999998943,
+          "output_ASD_V_sqrtHz": 2.2069245078180228e-05,
+          "input_ASD_A_sqrtHz": 9.373313661733319e-17,
+          "flicker_output_ASD_V_sqrtHz": 0.0
+        },
+        {
+          "frequency_Hz": 999.9999999998386,
+          "output_ASD_V_sqrtHz": 3.6993601995353763e-06,
+          "input_ASD_A_sqrtHz": 1.5712449230945433e-16,
+          "flicker_output_ASD_V_sqrtHz": 0.0
+        },
+        {
+          "frequency_Hz": 999999.9999996813,
+          "output_ASD_V_sqrtHz": 3.969862216846351e-07,
+          "input_ASD_A_sqrtHz": 1.2699857193392205e-13,
+          "flicker_output_ASD_V_sqrtHz": 0.0
+        },
+        {
+          "frequency_Hz": 1000000000.0,
+          "output_ASD_V_sqrtHz": 5.141968963049601e-10,
+          "input_ASD_A_sqrtHz": 7.61158418034184e-11,
+          "flicker_output_ASD_V_sqrtHz": 0.0
+        }
+      ]
+    },
+    "positive_control_kf": {
+      "flicker_max_ASD_V_sqrtHz": {
+        "V(m1.1overf)": 0.007006436681219818,
+        "V(m5.1overf)": 1.0439617428046796e-05,
+        "V(m6.1overf)": 0.002659959535762073,
+        "V(m2.1overf)": 0.0028996216641322173,
+        "V(m3.1overf)": 0.009526624462441471,
+        "V(m4.1overf)": 0.046947958651379997,
+        "V(mf.1overf)": 0.11789906642146669
+      },
+      "variance_closure_relative": 6.661338147750939e-16,
+      "spectral_points": [
+        {
+          "frequency_Hz": 1.0,
+          "output_ASD_V_sqrtHz": 0.1275316734282657,
+          "input_ASD_A_sqrtHz": 5.465047199280504e-15,
+          "flicker_output_ASD_V_sqrtHz": 0.12751325700770896
+        },
+        {
+          "frequency_Hz": 9.999999999999465,
+          "output_ASD_V_sqrtHz": 0.015519228920759156,
+          "input_ASD_A_sqrtHz": 6.591956793788779e-15,
+          "flicker_output_ASD_V_sqrtHz": 0.015517688332105001
+        },
+        {
+          "frequency_Hz": 99.99999999998943,
+          "output_ASD_V_sqrtHz": 0.004761330229037362,
+          "input_ASD_A_sqrtHz": 2.0222459592867852e-14,
+          "flicker_output_ASD_V_sqrtHz": 0.004761279082175992
+        },
+        {
+          "frequency_Hz": 999.9999999998386,
+          "output_ASD_V_sqrtHz": 0.0015051432526612804,
+          "input_ASD_A_sqrtHz": 6.392858674781309e-14,
+          "flicker_output_ASD_V_sqrtHz": 0.0015051387064871772
+        },
+        {
+          "frequency_Hz": 999999.9999996813,
+          "output_ASD_V_sqrtHz": 6.342213175918839e-06,
+          "input_ASD_A_sqrtHz": 2.0289168042765124e-12,
+          "flicker_output_ASD_V_sqrtHz": 6.329776450127688e-06
+        },
+        {
+          "frequency_Hz": 1000000000.0,
+          "output_ASD_V_sqrtHz": 5.715685960963484e-10,
+          "input_ASD_A_sqrtHz": 8.460849365856418e-11,
+          "flicker_output_ASD_V_sqrtHz": 2.4958407776518273e-10
+        }
+      ]
+    }
+  }
+}
