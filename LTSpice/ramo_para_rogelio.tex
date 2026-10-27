@@ -1,0 +1,72 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot,es-noshorthands]{babel}
+\usepackage{lmodern,microtype,amsmath,amssymb,siunitx}
+\usepackage[margin=23mm]{geometry}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\PadSide}{0.5}
+\newcommand{\PadHalf}{0.25}
+\newcommand{\GapSize}{5}
+\newcommand{\GapSpeed}{3}
+\newcommand{\GapField}{6}
+\newcommand{\Mobility}{5}
+\newcommand{\PeakCurrent}{1.731}
+\newcommand{\GapTime}{1.667}
+\newcommand{\GapPhi}{0.0015876}
+\newcommand{\GapFraction}{0.9984124}
+\newcommand{\FinalTime}{193.5}
+\newcommand{\FrameTime}{10}
+\newcommand{\Plateau}{0.016}
+\newcommand{\ExampleCharge}{1.6}
+\newcommand{\ExampleCurrent}{12.82}
+\newcommand{\DerivativeError}{9.75e-11}
+\newcommand{\ChargeError}{1.51e-14}
+
+\title{Corriente inducida en un pad de NAUSICA}
+\author{J. J. G\'omez-Cadenas\\{\small DIPC}}
+\date{\today}
+\begin{document}
+\maketitle
+Rogelio, la derivación de la corriente está en la sección
+\emph{Signal formation and response of one pad} del artículo
+\emph{NAUSICAA for ITACA}. El apéndice \emph{Analytical single-ion response}
+recoge las condiciones de contorno, el dibujo del potencial de ponderación
+(\emph{weighting potential}) y las comprobaciones del cálculo.
+
+En la expresión del pico de corriente, en \emph{Signal size and duration},
+$a$ es la \textbf{mitad del lado del pad}. El pad es cuadrado y su lado mide
+$2a=\SI{\PadSide}{mm}$, por tanto
+\[
+ \boxed{a=\SI{\PadHalf}{mm}=\SI{2.5e-4}{m}.}
+\]
+El pico de \SI{\PeakCurrent}{fA} corresponde a \textbf{un ion de carga $+e$}
+justo antes de llegar al centro del pad, con la velocidad de
+\SI{\GapSpeed}{m/s} adoptada en el artículo.
+
+\section*{Comparación con la cuenta de tu esquema}
+La expresión $I=Qv/d$ corresponde a un campo de ponderación uniforme,
+$W=1/d$, como el de dos placas planas paralelas separadas por $d$.
+En tu cálculo asignas al pad la carga total de unos $10^5$ iones.
+La geometría de condensador utilizada y la asignación de esa carga total
+al pad no representan la señal de entrada de un canal de NAUSICA.
+Por tanto, la respuesta del CSA a esa excitación no permite evaluar su
+sensibilidad a los iones que llegan a un pad del detector.
+
+Para calcular esa señal necesitamos el campo de ponderación del pad y
+los tiempos de llegada de los iones que recoge ese canal. El campo de
+ponderación aumenta cerca del pad, y cada ion produce una corriente que
+varía durante su aproximación. La sección \emph{Response to uniform arrivals}
+del artículo explica cómo construimos la entrada de SPICE sumando estas
+corrientes para el caso de llegadas uniformes durante un frame de
+\SI{\FrameTime}{ms}. El pico de \SI{\PeakCurrent}{fA} de un ion no se
+mantiene durante todo el frame.
+
+Por separado, hay una inconsistencia en la anotación de carga: los
+\SI{16}{fC} utilizados corresponden aproximadamente a $10^5$ iones,
+es decir, $100\,\mathrm{ke}$. La etiqueta «$10\,\mathrm{ke}$» corresponde
+a $10^4$ cargas elementales (\SI{\ExampleCharge}{fC}) y debería corregirse
+a «$100\,\mathrm{ke}$».
+\end{document}

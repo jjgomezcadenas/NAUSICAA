@@ -1,0 +1,43 @@
+# Preliminary area budget. Lengths in metres; areas in m^2.
+# Source devices: exact M3 x4 / M4 x4 SPICE netlist; pitch/pad from detector.toml.
+[inputs]
+netlist = "LTSpice/variants/m4_x4_m3_x4/noise.cir"
+detector = "config/detector.toml"
+readout_architecture = "Shared ADCs outside the pixel; bias, digital interfaces and I/O shared across an array. Local buffer/selection allocations are design reserves."
+
+[budget]
+envelope_side_m = 0.001
+pad_clearance_m = 0.00005
+csa_strip_width_m = 0.0002
+shared_strip_width_m = 0.0002
+passive_reserve_side_m = 0.00005
+array_pixels = 64
+
+[[scenarios]]
+name = "compact"
+device_margin_m = 0.000005
+row_gap_m = 0.000005
+outer_margin_m = 0.00001
+
+[[scenarios]]
+name = "nominal"
+device_margin_m = 0.00001
+row_gap_m = 0.00001
+outer_margin_m = 0.00002
+
+[[scenarios]]
+name = "wide_margins"
+device_margin_m = 0.00002
+row_gap_m = 0.00002
+outer_margin_m = 0.00004
+
+[references]
+yang_chip_width_m = 0.002632
+yang_chip_height_m = 0.001794
+yang_doi = "https://doi.org/10.1088/1748-0221/19/03/C03031"
+liang_chip_width_m = 0.0026
+liang_chip_height_m = 0.0015
+liang_doi = "https://doi.org/10.1088/1748-0221/19/04/C04004"
+gf180_contact_rules = "https://gf180mcu-pdk.readthedocs.io/en/latest/physical_verification/design_manual/drm_07_13.html"
+gf180_well_rules = "https://gf180mcu-pdk.readthedocs.io/en/latest/physical_verification/design_manual/drm_07_05.html"
+rule_status = "Public GF180 rules provide a length-scale comparison only. The 5-20 um device margins and other reserves are explicit planning assumptions, not rules of the supplied transistor process."

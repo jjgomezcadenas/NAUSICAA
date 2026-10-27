@@ -1,0 +1,44 @@
+* M4 geometry scan; all other device dimensions and bias voltages unchanged
+M1 s in med Vdda 180nmP l={Lcs} w={Wcs} m={Mp}
+Vdd Vdda 0 1.8
+M2 Vdda Vnmos s 0 180nmN l={Ln} w={Wn} m={Mn}
+Vnmos Vnmos 0 1.6
+M3 med Vnload 0 0 180nmN l={Lnload} w={Wnload} m={Mload}
+Vnload Vnload 0 0.6
+M4 med Vncasc out 0 180nmN l={Lncasc} w={Wncasc} m={Mncasc}
+M5 vd6 Vp5 out Vdda 180nmP l={Lcs} w={Wcs} m={Mp}
+M6 Vdda Vp6 vd6 Vdda 180nmP l={Lp6} w={Wp6} m={Mp6}
+Vp6 Vp6 0 1.1
+Vp5 Vp5 0 0.8
+Vp1 Vncasc 0 0.62
+Cf out in 3f
+Mf out Vdis in 0 180nmN l={LMf} w={WMf} m=1
+Vf1 Vdis 0 10m
+Cd1 in 0 1.24999999999999992e-12
+.lib corrected.inc
+.param Lcs=0.5u
+.param Wcs=220u
+.param Ln=0.5u
+.param Wn=27u
+.param Lnload=0.5u
+.param Wnload=50u
+.param Mn=3
+.param Mp=1
+.param Mload=1
+.param Lp6=6u
+.param Wp6=1u
+.param Mp6=1
+.param Lp5=40u
+.param Wp5=1.0u
+.param Mp5=1
+.param Lncasc=0.72u
+.param Wncasc=1.44u
+.param Mncasc=1
+.parameter WMf=0.36u
+.parameter LMf=100u
+.temp 20
+.options reltol=1e-6 abstol=1e-19 vntol=1e-10 numdgt=15 plotwinsize=0
+Is1 0 in PULSE(0 1.58631349900990079e-13 .005 10n 10n 1u 1)
+.tran 0 .014 0 4.99999999999999977e-07
+.save V(in) V(out) I(Is1)
+.end

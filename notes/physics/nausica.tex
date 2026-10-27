@@ -6,6 +6,7 @@
 \usepackage{amsmath,amssymb,graphicx,booktabs,array}
 \usepackage{mathtools}
 \usepackage{xcolor,enumitem,fancyhdr}
+\usepackage{tikz}
 \input{itaca_defs}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,urlcolor=blue!45!black]{hyperref}
@@ -206,7 +207,7 @@ The current is the rate at which this signal develops:
 \end{equation}
 Near a small pad, $\phi_w$ changes rapidly with position, so most of the signal is induced during the final approach. 
 
-For the analytical calculation we use a square pad of side $2a$, embedded in an infinite grounded plane. The gas occupies a homogeneous half-space above the plane. The ion approaches the centre of the pad along its normal at constant speed $v$. The gap width $g$ is the distance between the lower IFG electrode and the pad plane. This geometry provides a simple pad response. In this simple approximation, the IFG and the dielectric structure of the CMOS surface are not included in its weighting potential. Appendix~\ref{app:single_ion} gives the derivation and boundary conditions.
+For the analytical calculation we use a square pad of side $2a$, embedded in an infinite grounded plane. The gas occupies a homogeneous half-space above the plane. The ion approaches the centre of the pad along its normal at constant speed $v$. The gap width $g$ is the distance between the lower IFG electrode and the pad plane. This geometry provides a simple pad response. In this simple approximation, the IFG and the dielectric structure of the CMOS surface are not included in its weighting potential. Appendix~\ref{app:single_ion} gives the derivation and boundary conditions, illustrated in Fig.~\ref{fig:weighting_boundary}.
 
 Place the pad at $z=0$ and take collection to occur at $t=0$, so that $z=-vt$ before collection. The weighting field on the central axis is
 %
@@ -255,9 +256,10 @@ Most of the signal is induced close to the pad (Figure~\ref{fig:single_ion_curre
  \label{fig:single_ion_current}
 \end{figure}
 
-\subsection{The CSA voltage}
+\subsection{Ideal CSA response}
+\label{sec:ideal_csa}
 
-We describe the CSA by an ideal amplifier with feedback capacitance $C_f$ and an effective resistance $R_f$ representing the MOS discharge path. The output voltage $V_1$ is measured relative to its baseline. The input current is shared between the feedback capacitor and the discharge path:
+We first describe the CSA by an ideal amplifier with feedback capacitance $C_f$ and an effective linear resistance $R_f$ representing the MOS discharge path. The output voltage $V_1$ is measured relative to its baseline. The input current is shared between the feedback capacitor and the discharge path:
 \begin{equation}
  i_1(t)=-C_f\frac{\dd V_1}{\dd t}-\frac{V_1}{R_f}.
  \label{eq:csa_current_balance}
@@ -279,7 +281,7 @@ Setting $V_1(t_g)=0$, we find the solution
 With this convention positive input current produces a negative voltage. Once collection is complete, the voltage decays exponentially, $V_1(t)=V_1(0)\exp(-t/\tau_f)$.
 
 If discharge is negligible during the pulse, the voltage at collection is
-$V_1(0)=-Q_g/C_f$. For $C_f=\SI{\SpiceCfFf}{fF}$, this ideal voltage is
+$V_1(0)=-Q_g/C_f$. For $C_f=\SI{\SpiceCfFf}{fF}$, this ideal voltage has magnitude
 \SI{\SingleIonIdealVoltage}{\micro\volt}.
 
 The induced current when several ions arrive during a readout frame is the
@@ -289,6 +291,12 @@ trajectory and collected on the same pad at times $t_k$,
  i_p(t)=\sum_k i_1(t-t_k).
  \label{eq:pad_superposition}
 \end{equation}
+
+The ideal response provides a reference for charge integration and feedback
+discharge. In Section~\ref{sec:realistic_csa}, the summed ion-induced current
+drives the transistor circuit in SPICE. The transistor models determine the
+amplifier gain, bandwidth and MOS feedback discharge, while the input current
+retains the geometry and charge normalization established here.
 
 % Previous ideal-response plots and finite-gain section are preserved in
 % archive/2026-10-26_pre_spice/reviewed_sections.tex.
@@ -394,7 +402,7 @@ Averaging reduces the rapid voltage fluctuations that would enter a point
 reading. We use $T_a=\SI{\SpiceAverageUs}{\micro\second}$, much shorter than
 the \SI{\SpiceFrameMs}{ms} frame.
 
-For an ideal CSA, the voltage left from the previous frame decays by
+For the ideal CSA of Section~\ref{sec:ideal_csa}, the voltage left from the previous frame decays by
 $\exp(-\Delta t/\tau_f)$. This motivates the corrected voltage difference
 \begin{equation}
  D_n=-\left(\overline V_n-\alpha\overline V_{n-1}\right),
@@ -403,7 +411,9 @@ $\exp(-\Delta t/\tau_f)$. This motivates the corrected voltage difference
 \end{equation}
 The minus sign makes $D_n$ positive for the chosen output polarity.
 We take $\tau_0=\SI{\SpiceCorrectionSeconds}{s}$ for this correction and
-calibrate the resulting measurement with the SPICE response. Let $g$ be
+calibrate the resulting measurement with the SPICE response. Here $\tau_0$
+is a chosen correction parameter; the circuit's discharge is determined by
+the feedback transistor in SPICE. Let $g$ be
 $D_n$ for the uniform current normalized to one ion. In the linear regime,
 $N$ ions give $Ng$, and their estimated number is
 \begin{equation}
@@ -487,6 +497,32 @@ successive frames.
 \subsection{Weighting potential of a square pad}
 
 The pad occupies $-a<x<a$, $-a<y<a$ in the plane $z=0$. Its weighting potential is one, and the remainder of the plane is held at zero. The upper half-space has uniform permittivity and no free charge in the weighting problem. The potential tends to zero at infinity. Thus $\nabla^2\phi_w=0$ for $z>0$, with a prescribed potential on the boundary.
+
+Figure~\ref{fig:weighting_boundary} illustrates these boundary conditions:
+\begin{equation}
+ \phi_w(x,y,0)=
+ \begin{cases}
+  1, & |x|<a,\ |y|<a \quad \text{(pad)},\\
+  0, & \text{elsewhere on the plane},
+ \end{cases}
+ \qquad
+ \phi_w(\mathbf r)\longrightarrow0
+ \quad\text{as }|\mathbf r|\longrightarrow\infty.
+ \label{eq:weighting_boundary}
+\end{equation}
+The values one and zero define the dimensionless weighting potential for this
+pad. The operating voltages determine the physical field that drives the ions.
+
+\begin{figure}[!htbp]
+ \centering
+ \input{figures/weighting_boundary}
+ \caption{Boundary conditions for the square-pad weighting potential.
+ The drawing shows a portion of the infinite metal plane; the dashed outline
+ indicates its continuation. The pad has $\phi_w=1$ and the surrounding metal
+ $\phi_w=0$. In the gas, the potential satisfies Laplace's equation and tends
+ to zero at infinity. Schematic, not to scale.}
+ \label{fig:weighting_boundary}
+\end{figure}
 
 The half-space Poisson kernel gives~\cite{salazar2021}
 \begin{equation}

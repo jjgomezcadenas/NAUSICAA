@@ -61,3 +61,28 @@ spice-averaging:
 
 spice-averaging-plot:
 	$(PYTHON) scripts/plot_averaging_scan.py
+
+.PHONY: spice2-reproduction spice2-plots
+spice2-reproduction:
+	$(PYTHON) scripts/reproduce_spice2.py --simulator "$(LTSPICE)"
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/analyze_spice2.jl
+	$(PYTHON) scripts/plot_spice2.py
+
+spice2-plots:
+	$(PYTHON) scripts/plot_spice2.py
+
+.PHONY: spice2-enc spice2-enc-plots
+spice2-enc:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(PYTHON) scripts/run_spice2_enc.py --simulator "$(LTSPICE)" --julia "$(JULIA)"
+	$(PYTHON) scripts/plot_spice2_enc.py
+
+spice2-enc-plots:
+	$(PYTHON) scripts/plot_spice2_enc.py
+
+.PHONY: ramo-note ramo-note-render
+ramo-note:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/check_ramo_note.jl
+	$(PYTHON) scripts/write_ramo_note.py
+
+ramo-note-render:
+	$(PYTHON) scripts/write_ramo_note.py
