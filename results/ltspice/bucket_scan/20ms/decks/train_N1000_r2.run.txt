@@ -1,0 +1,117 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Tue Oct 27 14:52:33 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+is1: Removing PWL point (1.25e-06,0)
+is1: Removing PWL point (0.00200375,7.99817e-15)
+is1: Removing PWL point (0.0203538,7.99817e-15)
+is1: Removing PWL point (0.0204212,7.99817e-15)
+is1: Removing PWL point (0.0204413,7.99817e-15)
+is1: Removing PWL point (0.0204888,7.99817e-15)
+is1: Removing PWL point (0.0205437,7.99817e-15)
+is1: Removing PWL point (0.0205513,7.99817e-15)
+is1: Removing PWL point (0.0205663,7.99817e-15)
+is1: Removing PWL point (0.0206113,7.99817e-15)
+is1: Removing PWL point (0.0206287,7.99817e-15)
+is1: Removing PWL point (0.0206437,7.99817e-15)
+is1: Removing PWL point (0.0206962,7.99817e-15)
+is1: Removing PWL point (0.0207288,7.99817e-15)
+is1: Removing PWL point (0.0207437,7.99817e-15)
+is1: Removing PWL point (0.0207763,7.99817e-15)
+is1: Removing PWL point (0.0208013,7.99817e-15)
+is1: Removing PWL point (0.0208188,7.99817e-15)
+is1: Removing PWL point (0.0208288,7.99817e-15)
+is1: Removing PWL point (0.0208638,7.99817e-15)
+is1: Removing PWL point (0.0209112,7.99817e-15)
+is1: Removing PWL point (0.0209363,7.99817e-15)
+is1: Removing PWL point (0.0209562,7.99817e-15)
+is1: Removing PWL point (0.0209662,7.99817e-15)
+is1: Removing PWL point (0.0209888,7.99817e-15)
+is1: Removing PWL point (0.0210012,7.99817e-15)
+is1: Removing PWL point (0.0210112,7.99817e-15)
+is1: Removing PWL point (0.0210212,7.99817e-15)
+is1: Removing PWL point (0.0210338,7.99817e-15)
+is1: Removing PWL point (0.0210712,7.99817e-15)
+is1: Removing PWL point (0.0211163,7.99817e-15)
+is1: Removing PWL point (0.0211238,7.99817e-15)
+is1: Removing PWL point (0.0211313,7.99817e-15)
+is1: Removing PWL point (0.0211737,7.99817e-15)
+is1: Removing PWL point (0.0211987,7.99817e-15)
+is1: Removing PWL point (0.0212113,7.99817e-15)
+is1: Removing PWL point (0.0212362,7.99817e-15)
+is1: Removing PWL point (0.0212488,7.99817e-15)
+is1: Removing PWL point (0.0212712,7.99817e-15)
+is1: Removing PWL point (0.0213013,7.99817e-15)
+is1: Removing PWL point (0.0213738,7.99817e-15)
+is1: Removing PWL point (0.0214037,7.99817e-15)
+is1: Removing PWL point (0.0214212,7.99817e-15)
+is1: Removing PWL point (0.0214337,7.99817e-15)
+is1: Removing PWL point (0.0215088,7.99817e-15)
+is1: Removing PWL point (0.0215362,7.99817e-15)
+is1: Removing PWL point (0.0215587,7.99817e-15)
+is1: Removing PWL point (0.0215837,7.99817e-15)
+is1: Removing PWL point (0.0216088,7.99817e-15)
+is1: Removing PWL point (0.0216313,7.99817e-15)
+is1: Removing PWL point (0.0216462,7.99817e-15)
+is1: Removing PWL point (0.0216737,7.99817e-15)
+is1: Removing PWL point (0.0216938,7.99817e-15)
+is1: Removing PWL point (0.0217063,7.99817e-15)
+is1: Removing PWL point (0.0217187,7.99817e-15)
+is1: Removing PWL point (0.0217838,7.99817e-15)
+is1: Removing PWL point (0.0217938,7.99817e-15)
+is1: Removing PWL point (0.0218113,7.99817e-15)
+is1: Removing PWL point (0.0218412,7.99817e-15)
+is1: Removing PWL point (0.0218588,7.99817e-15)
+is1: Removing PWL point (0.0218812,7.99817e-15)
+is1: Removing PWL point (0.0219037,7.99817e-15)
+is1: Removing PWL point (0.0219213,7.99817e-15)
+is1: Removing PWL point (0.0219412,7.99817e-15)
+is1: Removing PWL point (0.0219587,7.99817e-15)
+is1: Removing PWL point (0.0219962,7.99817e-15)
+is1: Removing PWL point (0.0420038,0)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+Gmin = 4.54274e-14
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Changing Tseed to 2.5e-10
+Changing Tseed to 2.5e-12
+Changing Tseed to 2.5e-09
+Heightened Def Con from 1.125e-08 +to 1.225e-08
+Total elapsed time: 0.126 seconds.

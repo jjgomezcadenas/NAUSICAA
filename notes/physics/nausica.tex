@@ -146,7 +146,8 @@ Notice that the electron track and the ion track are detected in \emph{delayed c
 
 Reading the arriving ions (without amplification) requires exposed metal electrodes connected to charge-sensitive amplifiers (CSAs). Our proposed  \emph{Non-Amplified Ultra-Slow Ion CMOS ASIC} (NAUSICA) uses TopMetal CMOS technology~\cite{An2016TopmetalII} to implement this concept, following Refs.~\cite{Nygren_2018, mei2020topmetalcmosdirectcharge}. There is an important difference, however, with respect to these works, which attempted to design a system able to provide simultaneously good energy resolution and a good measurement of the track topology using ions. Alas, both requirements impose constraints that interfere with each other. Good energy resolution requires optimizing ion counting and minimizing noise. Good topological reconstruction demands pixels separated by a small pitch (e.g., of the order of diffusion, $\sim 2$ mm), which in turn multiplies the number of pixels and adds to the overall noise. The advantage of ITACA is that energy resolution is measured with excellent precision by electroluminescence, and thus the ion detector can prioritize the reconstruction of the topology. NAUSICA is designed with this goal in mind. 
 
-The principle of operation is as follows. The ions arrive at the metal pad over a time of order 1 second, taking a 10 cm extent along the drift direction as an extreme case. The resolution in $z$ should be of the order of the resolution in the transverse coordinates ($\sigma_z = 1-2$ mm). Since the drift velocity of the ions is $\sim 10$ cm/s, this translates into slicing the charge in buckets of $10-20$ ms, which implies a framed readout. We take \SI{\SpiceFrameMs}{ms} as the nominal frame duration. The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA.
+Consider the \bbonu\ event that we described in the previous section. Assume the extreme case in which the track extents along $z$. For a track length of 10 cm and a drift velocity of 10 cm/s it would take one second, since the arrival of the first ions, to collect the full track. In practice, the tracks are oriented in random directions, extending radially over several pads, and collection of ions is faster, since few tracks extend exactly along $z$. Furthermore, the field between the collection grid and the metal pads is stronger than the drift field and the ions move at higher speed. In any case,  the resolution in $z$ is of the order of the transverse diffusion, ($\sigma_z = 1-2$ mm), so reading the charge in frames of 10-20 mm is reasonable. We take \SI{\SpiceFrameMs}{ms} as the nominal frame duration. 
+%The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA.
 
 
 \begin{figure}[!htbp]
@@ -207,7 +208,18 @@ The current is the rate at which this signal develops:
 \end{equation}
 Near a small pad, $\phi_w$ changes rapidly with position, so most of the signal is induced during the final approach. 
 
-For the analytical calculation we use a square pad of side $2a$, embedded in an infinite grounded plane. The gas occupies a homogeneous half-space above the plane. The ion approaches the centre of the pad along its normal at constant speed $v$. The gap width $g$ is the distance between the lower IFG electrode and the pad plane. This geometry provides a simple pad response. In this simple approximation, the IFG and the dielectric structure of the CMOS surface are not included in its weighting potential. Appendix~\ref{app:single_ion} gives the derivation and boundary conditions, illustrated in Fig.~\ref{fig:weighting_boundary}.
+For the analytical calculation we use a square pad of side $2a$, embedded in an infinite grounded plane. The gas occupies a homogeneous half-space above the plane. The ion approaches the centre of the pad along its normal at constant speed $v$. The gap width $g$ is the distance between the lower IFG electrode and the pad plane. This geometry provides a simple pad response. In this simple approximation, the IFG and the dielectric structure of the CMOS surface are not included in its weighting potential. Figure~\ref{fig:weighting_boundary} illustrates the geometry and weighting-potential boundary conditions. Appendix~\ref{app:single_ion} gives the derivation.
+
+\begin{figure}[!htbp]
+ \centering
+ \input{figures/weighting_boundary}
+ \caption{Boundary conditions for the square-pad weighting potential.
+ The drawing shows a portion of the infinite metal plane; the dashed outline
+ indicates its continuation. The pad has $\phi_w=1$ and the surrounding metal
+ $\phi_w=0$. In the gas, the potential satisfies Laplace's equation and tends
+ to zero at infinity. Schematic, not to scale.}
+ \label{fig:weighting_boundary}
+\end{figure}
 
 Place the pad at $z=0$ and take collection to occur at $t=0$, so that $z=-vt$ before collection. The weighting field on the central axis is
 %
@@ -512,17 +524,6 @@ Figure~\ref{fig:weighting_boundary} illustrates these boundary conditions:
 \end{equation}
 The values one and zero define the dimensionless weighting potential for this
 pad. The operating voltages determine the physical field that drives the ions.
-
-\begin{figure}[!htbp]
- \centering
- \input{figures/weighting_boundary}
- \caption{Boundary conditions for the square-pad weighting potential.
- The drawing shows a portion of the infinite metal plane; the dashed outline
- indicates its continuation. The pad has $\phi_w=1$ and the surrounding metal
- $\phi_w=0$. In the gas, the potential satisfies Laplace's equation and tends
- to zero at infinity. Schematic, not to scale.}
- \label{fig:weighting_boundary}
-\end{figure}
 
 The half-space Poisson kernel gives~\cite{salazar2021}
 \begin{equation}
