@@ -1,0 +1,7 @@
+{
+  "source": "results/pixel_area/analysis.h5",
+  "scenario": "wide_margins",
+  "sha256": "86fd608500865ea815223d0d5d6851fd4561cd60423e4810bed5c54d86ea1619",
+  "generator": "notes/physics/figures/build_pixel_area.py",
+  "generator_sha256": "90a9fff64dfd76d3f5e339270076d1f69a5bca3c86560323b924f7d9e8af3eaf"
+}

@@ -1,0 +1,306 @@
+{
+  "status": "passed",
+  "checked_macro_count": 41,
+  "macros": {
+    "OpenFraction": {
+      "displayed": "0.04909",
+      "expected": 0.04908738521234052,
+      "source": "results/physics_benchmarks.json:benchmarks/open_fraction",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "EntranceThreshold": {
+      "displayed": "4.074",
+      "expected": 4.074366543152522,
+      "source": "results/physics_benchmarks.json:benchmarks/entrance_threshold_V_m",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "FluxRatio": {
+      "displayed": "1.227",
+      "expected": 1.227184630308513,
+      "source": "results/physics_benchmarks.json:benchmarks/flux_capacity_ratio",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "Mobility": {
+      "displayed": "5",
+      "expected": 5.0,
+      "source": "results/physics_benchmarks.json:benchmarks/mobility_m2_V_s",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": true
+    },
+    "DiffusionCoefficient": {
+      "displayed": "1.263",
+      "expected": 1.2630856228989296,
+      "source": "results/physics_benchmarks.json:benchmarks/thermal_D_m2_s",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "PeakCurrent": {
+      "displayed": "1.731",
+      "expected": 1.7309589179470468,
+      "source": "results/physics_benchmarks.json:benchmarks/peak_A",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": true
+    },
+    "DiskPeakCurrent": {
+      "displayed": "1.923",
+      "expected": 1.9226119608000003,
+      "source": "results/physics_benchmarks.json:benchmarks/disk_peak_A",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": true
+    },
+    "FinalNinetyTime": {
+      "displayed": "193.51",
+      "expected": 193.51380264975896,
+      "source": "results/physics_benchmarks.json:benchmarks/final_90pct_duration_s",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "GapChargeFraction": {
+      "displayed": "0.9984124",
+      "expected": 0.9984124178747839,
+      "source": "results/physics_benchmarks.json:benchmarks/finite_gap_charge_e",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": true
+    },
+    "GapPotential": {
+      "displayed": "0.0015876",
+      "expected": 0.0015875821252161815,
+      "source": "results/physics_benchmarks.json:benchmarks/phi_at_gap",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": true
+    },
+    "GapMissingPercent": {
+      "displayed": "0.1588",
+      "expected": 0.15875821252161815,
+      "source": "results/physics_benchmarks.json:benchmarks/phi_at_gap",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "GapSpeed": {
+      "displayed": "3",
+      "expected": 3.0000000000000004,
+      "source": "results/physics_benchmarks.json:benchmarks/gap_speed_m_s",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": true
+    },
+    "SquareHalfWidth": {
+      "displayed": "0.25",
+      "expected": 0.25,
+      "source": "config/detector.toml:geometry/pad_width_m divided by two, mm",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "ConfigHash": {
+      "displayed": "628be0c9c8b9",
+      "expected": "628be0c9c8b9",
+      "source": "config/detector.toml:sha256 prefix",
+      "macro_file": "notes/physics/generated/values.tex",
+      "used_in_active_prose": false
+    },
+    "SignalPadWidth": {
+      "displayed": "0.5",
+      "expected": 0.5,
+      "source": "config/detector.toml:geometry/pad_width_m, mm",
+      "macro_file": "notes/physics/generated/readout_values.tex",
+      "used_in_active_prose": true
+    },
+    "SignalGap": {
+      "displayed": "5",
+      "expected": 5.0,
+      "source": "config/detector.toml:geometry/gap_m, mm",
+      "macro_file": "notes/physics/generated/readout_values.tex",
+      "used_in_active_prose": true
+    },
+    "SignalGapField": {
+      "displayed": "6",
+      "expected": 6.0,
+      "source": "results/physics_benchmarks.json:gap field, kV/cm",
+      "macro_file": "notes/physics/generated/readout_values.tex",
+      "used_in_active_prose": true
+    },
+    "ReadoutCapacitance": {
+      "displayed": "3",
+      "expected": 3.0,
+      "source": "config/readout.toml:feedback_capacitance_F, fF",
+      "macro_file": "notes/physics/generated/readout_values.tex",
+      "used_in_active_prose": false
+    },
+    "SingleIonIdealVoltage": {
+      "displayed": "53.32",
+      "expected": 53.32110156714742,
+      "source": "results/readout/benchmarks.json:single_ion ideal_output_magnitude_V, microvolt",
+      "macro_file": "notes/physics/generated/readout_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceFrameMs": {
+      "displayed": "20",
+      "expected": 20.0,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/frame_s",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceAverageUs": {
+      "displayed": "300",
+      "expected": 300.0,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/averaging_s",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceCorrectionSeconds": {
+      "displayed": "2.454",
+      "expected": 2.4541580456882253,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/tau_s",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceLowHz": {
+      "displayed": "0.1",
+      "expected": 0.1,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/frequency_low_Hz",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceHighMHz": {
+      "displayed": "1",
+      "expected": 1.0,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/frequency_high_Hz",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceGainUv": {
+      "displayed": "27.119",
+      "expected": 27.119161242931533,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/gain_V_per_ion",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceNoiseMv": {
+      "displayed": "3.056",
+      "expected": 3.056360327110621,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/noise_rms_V",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceEncIons": {
+      "displayed": "112.7",
+      "expected": 112.70113775761575,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/ENC_e_rms",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceMinimumIons": {
+      "displayed": "564",
+      "expected": 564.0,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/verified_N_snr5",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpicePreviousPercent": {
+      "displayed": "0.082",
+      "expected": 0.08201939241696234,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/previous_frame_residual_fraction",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceFollowingPercent": {
+      "displayed": "0.518",
+      "expected": 0.5175592457002995,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:attributes/following_frame_fraction",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceBelowIons": {
+      "displayed": "563",
+      "expected": 563,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:threshold lower bracket",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": false
+    },
+    "SpiceBelowSnr": {
+      "displayed": "4.9921",
+      "expected": 4.99206764702084,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:snr for N=563",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": false
+    },
+    "SpiceAboveSnr": {
+      "displayed": "5.0009",
+      "expected": 5.000928474105993,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:snr for N=564",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": false
+    },
+    "SpiceScanFirstEnc": {
+      "displayed": "116.4",
+      "expected": 116.40805808342166,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:averaging first point",
+      "macro_file": "notes/physics/generated/spice_averaging_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceScanLastEnc": {
+      "displayed": "111.7",
+      "expected": 111.65980430715406,
+      "source": "results/ltspice/discharge_calibration/20ms/paper_readout.h5:averaging last point",
+      "macro_file": "notes/physics/generated/spice_averaging_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceCfFf": {
+      "displayed": "3",
+      "expected": 3.0000000000000004,
+      "source": "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir:Cf",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpicePadPf": {
+      "displayed": "1.25",
+      "expected": 1.25,
+      "source": "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir:Cd1",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceSupplyV": {
+      "displayed": "1.8",
+      "expected": 1.8,
+      "source": "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir:Vdd",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceTemperatureK": {
+      "displayed": "293.15",
+      "expected": 293.15,
+      "source": "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir:.temp converted to K",
+      "macro_file": "notes/physics/generated/spice_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceBaselineV": {
+      "displayed": "0.879",
+      "expected": 0.8789315433538809,
+      "source": "generated/spice_circuit_provenance.json:operating_point/dc_output_V",
+      "macro_file": "notes/physics/generated/spice_operating_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpicePowerUw": {
+      "displayed": "344",
+      "expected": 343.5236681905351,
+      "source": "generated/spice_circuit_provenance.json:operating_point/quiescent_power_W, microwatt",
+      "macro_file": "notes/physics/generated/spice_operating_values.tex",
+      "used_in_active_prose": true
+    }
+  },
+  "source_sha256": {
+    "notes/physics/generated/values.tex": "9d160bc5248e2d9a47f949cc05fbf2ffc87792efcb2b50b901d3a043c5a9029a",
+    "notes/physics/generated/readout_values.tex": "080eab892e289c02428054f80c5ec4705026c071c7e2d577af9b4cd225b0560c",
+    "notes/physics/generated/spice_values.tex": "5d41412853759315877d4a0f997a1d7beb9ad29cd0fe8695fe50fb85453e3c88",
+    "notes/physics/generated/spice_operating_values.tex": "1ea68da533d3914e0d17adce2491fd66099a0a7ee0d4201ce52b1b2b16765b0d",
+    "notes/physics/generated/spice_averaging_values.tex": "1c2fb1a0108eaf8f8c68e3d38fb554c3d44f39b75aa7283b73a60e07714a311e",
+    "notes/physics/nausica.tex": "85bdaa3df02657de52affb0ec6242fd6e6522392307aed6c1094d7ad2156aae6",
+    "notes/physics/appendix_spice_readout.tex": "e1c57fd0dbf9a8a73a2b6bc197b5357c06183cd5e774523459390c5abeea25a5",
+    "results/ltspice/discharge_calibration/20ms/paper_readout.h5": "aeceb9a248ade438637db0e15e17eb10ae5b013ceed79d6c24c542fba6eb12d4",
+    "results/physics_benchmarks.json": "dc35e3eeea2fe050cbdb7a8c89f1c675a9027586d997bb1075340c5d6d8367e8",
+    "results/readout/benchmarks.json": "578f25235ace3e7049f3d3818940ad03a3cc16812b605b3eda5de3614a701765",
+    "scripts/audit_paper_macros.py": "fcfcf20f8062314be96ed856f50c66b15da6cb389e1e65d02dc33687c950cbd1"
+  }
+}

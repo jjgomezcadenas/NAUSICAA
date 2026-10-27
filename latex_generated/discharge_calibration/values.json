@@ -1,0 +1,12 @@
+{
+  "SpiceCorrectionSeconds": "2.454",
+  "SpiceGainUv": "27.119",
+  "SpiceNoiseMv": "3.056",
+  "SpiceEncIons": "112.7",
+  "SpiceMinimumIons": "564",
+  "SpiceBelowIons": "563",
+  "SpiceBelowSnr": "4.9921",
+  "SpiceAboveSnr": "5.0009",
+  "SpicePreviousPercent": "0.082",
+  "SpiceFollowingPercent": "0.518"
+}

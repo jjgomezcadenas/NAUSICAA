@@ -9,18 +9,21 @@ biases. Table~\ref{tab:spice_devices} gives the dimensions, including the
 multiplicity $m$ of parallel devices. The pad capacitance is an external
 load; intrinsic device capacitances are supplied by the transistor models.
 
-\begin{table}[!htbp]
- \centering
- \input{generated/spice_devices_table}
- \caption{Transistor dimensions used in the SPICE calculation.}
- \label{tab:spice_devices}
-\end{table}
-
 The transient voltage is measured relative to a matched zero-input run.
 The physical current has the square-pad boundary conditions specified in
 Appendix~\ref{app:single_ion}; its integral is preserved in the tabulated
 SPICE source. The gain $g$ is evaluated with the uniform arrival current,
 the averaging windows and the frame difference defined in the main text.
+
+\subsection{Contributions from neighbouring frames}
+
+For equal-sized ion packets, the voltage left by a packet in the preceding
+frame contributes \SpicePreviousPercent\% of the selected-frame signal
+after the discharge correction. A packet collected in the following frame
+contributes \SpiceFollowingPercent\%. Its ions induce current before reaching
+the pad, and the voltage averaging window extends across the frame boundary.
+Both contributions are calculated with the same averaging and discharge
+correction used to recover the charge.
 
 \subsection{Averaging and noise covariance}
 \label{app:spice_noise}
@@ -57,3 +60,19 @@ The noise integral is checked by increasing the spectral sampling density
 and the quadrature order. The signal is checked by reducing the transient
 time step. Direct simulations of the adjacent integer ion counts bracket
 the S/N threshold quoted in the main text.
+
+Figure~\ref{fig:spice_averaging} shows how the averaging time affects the ENC.
+Increasing the average from \SI{180}{\micro\second} to
+\SI{350}{\micro\second} reduces the ENC from \SpiceScanFirstEnc\ to
+\SpiceScanLastEnc\ electrons RMS. The signal per ion is recalculated for
+each averaging time.
+
+\begin{figure}[!htbp]
+ \centering
+ \includegraphics[width=0.88\linewidth]{spice_averaging.pdf}
+ \caption{ENC versus averaging time for uniform ion arrivals over
+ \SI{\SpiceFrameMs}{ms}, with an external pad capacitance of
+ \SI{\SpicePadPf}{pF}. The highlighted point is the
+ \SI{\SpiceAverageUs}{\micro\second} average used in this study.}
+ \label{fig:spice_averaging}
+\end{figure}

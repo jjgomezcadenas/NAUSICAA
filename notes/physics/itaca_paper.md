@@ -1,12 +1,171 @@
 # NAUSICA for ITACA: paper plan and work status
 
-Working plan agreed with J. J. Gómez-Cadenas. Updated 26 October 2026.
+Working plan agreed with J. J. Gómez-Cadenas. Updated 27 October 2026.
 
 Manuscript: [nausica.tex](nausica.tex). This document records the intended paper,
 the work already available, and what remains. It does not replace the manuscript
 or authorise wholesale rewriting of the reviewed text.
 
-## Current manuscript — 26 October 2026
+## Adopted design and manuscript update scope — 27 October 2026
+
+The author selects **20 ms buckets** after the 10/20 ms comparison. Commit
+`2028b00` preserves both studies and the manuscript before propagation.
+The scope below supersedes the numerical design choices in the earlier status
+entries. Manuscript prose has not yet been updated for this decision.
+
+### Discharge calibration completed — 27 October 2026
+
+The author requested that the inherited 0.3 s correction be determined from
+the transistor circuit. The current-free tail of a 100-ion, 20 ms packet gives
+an effective decay time of **2.454158 s**, fitted over 21–120 ms. Independent
+fit windows, a 10-ion calibration, a later 140–199 ms tail and halved numerical
+steps validate the result. The selected correction has alpha=0.9918836822.
+
+With the same 300 µs averaging and noise spectrum, the recalibrated gain is
+27.1192 µV/ion, noise 3.05636 mV RMS, ENC **112.701 e RMS**, and the verified
+S/N > 5 threshold is **564 ions**. The immediately preceding packet leaves
+0.0820% of its own-frame signal after correction; the following packet
+contributes 0.5176% through induction and boundary averaging. An eight-bucket
+sequence reduces its maximum deterministic charge error from 303.92 to
+12.23 ions with the calibrated correction.
+
+Results: `results/ltspice/discharge_calibration/20ms/`; report and proposed
+macros: `latex_generated/discharge_calibration/`. The older 0.3 s studies remain
+unchanged. The manuscript macros now use these calibrated values. They supersede
+the provisional 0.3 s, 112.14 e and 562-ion values recorded below.
+Seventeen calibration tests and the 52 existing Python tests pass; `make physics`
+passes. No LaTeX compilation or visual PDF inspection was performed.
+
+The macro audit checks all 41 loaded numerical definitions against their saved
+sources. The current and voltage figure and the averaging figure now use the
+final circuit, 20 ms buckets and fitted correction. The regenerated 180–350 µs
+scan gives ENC 116.41, 115.61, 113.98, 112.70 and 111.66 e RMS at 180, 200,
+250, 300 and 350 µs. Julia saves the reduction in
+`results/ltspice/discharge_calibration/20ms/paper_readout.h5`; Python generates
+the paper assets and `latex_generated/calibrated_spice_averaging/report.tex`.
+`scripts/audit_paper_macros.py` writes the source-by-source `macro_audit.json`.
+The historical averaging scan remains unchanged. The obsolete zero-flicker
+statement has been replaced by a sentence stating that the model includes
+thermal and flicker noise. The approved gain sentence now explains how the
+averaging and discharge correction give the quoted voltage per ion.
+
+### Pixel area and ADC placement added — 27 October 2026
+
+The manuscript now includes a pixel-area subsection after noise and sensitivity,
+a scaled cell/CSA drawing, a budget table and `appendix_pixel_area.tex`.
+The presentation uses the saved `wide_margins` scenario throughout: 20 µm
+device margins, a 200 × 840 µm CSA block and 0.968 mm² total allocation,
+described in the prose as approximately 1 mm² within the 4 mm² cell.
+Readout, control and shared circuitry are explicit area reserves. ADCs are
+excluded. Section 3 describes shared ADCs on boards behind the collection
+plane, with buffered multiplexed outputs and sampling sufficient for averaging.
+
+Reproduce the new assets with
+`python notes/physics/figures/build_pixel_area.py` from the repository root.
+The script reads `results/pixel_area/analysis.h5`, verifies the stored input
+hashes, and generates the figure, table, numerical macros and provenance under
+`notes/physics/generated/`. The physical calculation and historical figures
+remain unchanged. The new prose awaits the author's review; it is not marked
+green. No LaTeX compilation or visual PDF inspection was performed.
+
+### Earlier propagation checklist (calibration values superseded above)
+
+- Pad side 0.5 mm, square pitch 2 mm: available cell area 4 mm².
+- External input capacitance 1.25 pF, plus intrinsic MOS capacitances;
+  feedback capacitance 3 fF, supply 1.8 V, temperature 20 °C.
+- Final 180 nm NOIMOD=2 circuit: M3 W=200 µm, L=2 µm,
+  gate 0.538477478921 V; M4 W=2.88 µm, L=1.44 µm,
+  gate 0.556803417206 V. Other devices retain the final netlist values.
+- Bucket 20 ms, centred averaging width 300 µs; 2 mm longitudinal bucket
+  length at the assumed 0.1 m/s bulk speed. Distinguish sampling length from
+  diffusion sigma and reconstructed spatial resolution.
+- Current estimator uses nominal correction time 0.3 s, gain
+  27.127 µV/ion, noise 3.042 mV RMS and ENC 112.14 elementary charges RMS.
+  Direct finite-charge simulations bracket S/N > 5 at **562 ions**.
+  Thus the selected 20 ms result is above 100 e RMS; the below-100 result
+  belongs to the 10 ms measurement.
+- At fixed arrival rate 100 ions/ms, 1000 ions in 10 ms give S/N=10.56,
+  while 2000 ions in 20 ms give S/N=17.79. Label populations explicitly
+  whenever comparing buckets. Longer buckets improve S/N when they collect
+  additional signal; they do not improve the noise for a fixed population.
+
+### Manuscript work, in order
+
+1. **Numerical sources and assets.** Replace the historical no-flicker input
+   paths in `scripts/build_spice_paper.py` and the averaging-figure pipeline
+   with the final circuit and Julia/HDF5 reduction. Read the adopted bucket
+   from configuration; generate macros, transistor dimensions, biases,
+   figures and provenance from the saved data. Preserve all historical 10 ms
+   and 20 ms outputs. New parameter studies use new directories.
+2. **Section 3, NAUSICA concept.** Propagate the 20 ms choice and 300 µs
+   acquisition window, explain the 2 mm longitudinal sampling, and correct
+   the current `10–20 mm` time-unit typo to ms. Keep the reviewed concept and
+   focusing prose. State the 2×2 mm pixel cell and shared peripheral ADCs.
+3. **Section 4, signal formation.** Preserve the single-ion derivation and
+   its figures. Check shared parameter macros and the transition to the
+   transistor calculation; the physical single-ion current is unchanged.
+4. **Section 5, circuit and operating point.** Update the circuit drawing,
+   device table and gate labels from the final netlist. Explain briefly why
+   M3 and M4 were enlarged and their biases adjusted. Include gain, quiescent
+   output and power alongside dimensions; the current power is about
+   344 µW/pixel. Put detailed size scans in the appendix.
+5. **Section 5, response and frame readout.** Replace the 10 ms waveform by
+   the saved 20 ms response. Retain N as a variable. Update calibration,
+   threshold and frame-history results. Quantify the preceding and following
+   bucket contributions consistently. The current 0.3 s correction leaves
+   5.75% of an isolated packet's signal in the following empty bucket;
+   two consecutive 1000-ion packets give a 5.50% excess in the second
+   measurement. Calibrate the correction from the circuit response and
+   evaluate how accurately successive bucket charges can be recovered.
+   If the estimator changes, recompute its noise, gain and threshold together.
+6. **Section 5, complete noise study.** Replace the zero-flicker statement
+   and obsolete approximately 40 e RMS results with the revised card's
+   thermal and flicker spectra. Present the total spectrum, dominant device
+   contributions after filtering, the role of averaging and the final ENC
+   and S/N threshold. Preserve the derivation of the filter/covariance.
+   Re-evaluate the 180, 200, 250, 300 and 350 µs averaging scan at 20 ms
+   using the saved final-circuit transient and noise spectra. Compare selected
+   circuit-size alternatives under the same 20 ms measurement, acquiring
+   new transients where required. Recheck the 0.75–3 pF input-load range with
+   the final circuit; the existing capacitance scan used the earlier circuit.
+   Use the calibrated Topmetal-S measurements as context with their stated
+   filtering conditions. Injection remains a repository calibration study.
+7. **New subsection, pixel area and integration.** Show a scaled 2×2 mm
+   cell containing the 0.5 mm pad, clearance, CSA, selection/buffer and
+   routing reserves, and the allocation for shared services. Use the existing
+   `results/pixel_area/analysis.h5`: CSA envelope 0.0752 mm², nominal total
+   0.8752 mm², widened-margin total 0.968 mm². These are a geometric packing
+   and explicit area budget; routing, DRC and extracted parasitics have not
+   been implemented. Frame the result as area feasibility for the conceptual
+   design. Compare pixel allocation with Topmetal-S whole-chip areas using
+   their actual boundaries and shared functions. Add array power and readout
+   implications without assuming an unchosen instrumented detector area.
+8. **Appendices and final consistency.** Expand the circuit appendix with
+   noise-model settings, selected transistor scans, filtering and numerical
+   checks. Put detailed packing assumptions and budgets in an area appendix.
+   Keep the main text focused on the adopted design and its justification.
+   Audit active figures, captions, tables, bibliography, macros and numerical
+   claims. Preserve green prose; substantial new wording is reviewed section
+   by section. Compile only when the author requests it; no visual PDF check
+   unless explicitly requested.
+
+### Work still requiring calculations
+
+The nominal 20 ms signal, ENC, finite-count threshold and area budget are
+available. Remaining numerical work is the final-circuit 20 ms averaging scan,
+selected size and capacitance comparisons, and the calibration/validation of
+successive-bucket charge recovery. Save these through Julia → HDF5 → Python
+presentation. Any changed estimator requires a new, separately saved baseline.
+
+The next track section remains a separate workstream. It will consume the
+adopted response, bucket size, calibrated charge recovery and noise covariance.
+The manuscript update here establishes those inputs.
+
+Sources: `results/ltspice/bucket_scan/`, `results/ltspice/m3_scan/`,
+`results/ltspice/m4_scan/`, `results/pixel_area/`, their scripts and generated
+reports, and `LTSpice/variants/m4_x4_m3_x4/`.
+
+## Manuscript checkpoint — 26 October 2026 (historical)
 
 The author approved replacing the finite-gain analytical electronics section
 with the transistor SPICE study. This update supersedes the earlier status and

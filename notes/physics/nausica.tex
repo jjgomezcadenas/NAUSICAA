@@ -23,7 +23,9 @@
 \input{generated/values}
 \input{generated/readout_values}
 \input{generated/spice_values}
+\input{generated/spice_operating_values}
 \input{generated/spice_averaging_values}
+\input{generated/pixel_area_values}
 \newcommand{\ion}{\ensuremath{\mathrm{Xe}_2^+}}
 \newcommand{\dd}{\mathrm{d}}
 \title{NAUSICAA for ITACA}
@@ -146,7 +148,7 @@ Notice that the electron track and the ion track are detected in \emph{delayed c
 
 Reading the arriving ions (without amplification) requires exposed metal electrodes connected to charge-sensitive amplifiers (CSAs). Our proposed  \emph{Non-Amplified Ultra-Slow Ion CMOS ASIC} (NAUSICA) uses TopMetal CMOS technology~\cite{An2016TopmetalII} to implement this concept, following Refs.~\cite{Nygren_2018, mei2020topmetalcmosdirectcharge}. There is an important difference, however, with respect to these works, which attempted to design a system able to provide simultaneously good energy resolution and a good measurement of the track topology using ions. Alas, both requirements impose constraints that interfere with each other. Good energy resolution requires optimizing ion counting and minimizing noise. Good topological reconstruction demands pixels separated by a small pitch (e.g., of the order of diffusion, $\sim 2$ mm), which in turn multiplies the number of pixels and adds to the overall noise. The advantage of ITACA is that energy resolution is measured with excellent precision by electroluminescence, and thus the ion detector can prioritize the reconstruction of the topology. NAUSICA is designed with this goal in mind. 
 
-Consider the \bbonu\ event that we described in the previous section. Assume the extreme case in which the track extents along $z$. For a track length of 10 cm and a drift velocity of 10 cm/s it would take one second, since the arrival of the first ions, to collect the full track. In practice, the tracks are oriented in random directions, extending radially over several pads, and collection of ions is faster, since few tracks extend exactly along $z$. Furthermore, the field between the collection grid and the metal pads is stronger than the drift field and the ions move at higher speed. In any case,  the resolution in $z$ is of the order of the transverse diffusion, ($\sigma_z = 1-2$ mm), so reading the charge in frames of 10-20 mm is reasonable. We take \SI{\SpiceFrameMs}{ms} as the nominal frame duration. 
+Consider the \bbonu\ event that we described in the previous section. Assume the extreme case in which the track extends along $z$. For a track length of 10 cm and a drift velocity of 10 cm/s it would take one second, since the arrival of the first ions, to collect the full track. In practice, the tracks are oriented in random directions, extending radially over several pads, and collection of ions is faster, since few tracks extend exactly along $z$. In any case,  the resolution in $z$ is of the order of the transverse diffusion, ($\sigma_z = 1-2$ mm), so reading the charge in frames of 10-20 ms is reasonable. We take \SI{\SpiceFrameMs}{ms} as the nominal frame duration, corresponding to \SI{2}{mm} along the drift direction.
 %The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA.
 
 
@@ -165,7 +167,7 @@ The pad dimensions and pitch need to be chosen balancing the desired spatial res
 E_h\,\frac{\pi d_h^2}{4}\gtrsim E_{\rm bulk}p^2.
 \]
 Here $E_h$ and $E_{\rm bulk}$ are the fields inside the hole and in the drift region, respectively, $d_h$ is the hole diameter, and $p$ is the pixel pitch.
-For a pitch of 2 mm, a bulk field of 200 V/cm and a hole field of 5 kV/cm, this gives a minimum hole diameter of approximately 0.45 mm. Thus, we take 0.5 mm as a preliminary design parameter. Full flux collection in this simple geometry implies a large ion collection efficiency that we take as one for the time being.
+For a pitch of 2 mm, a bulk field of 200 V/cm and a hole field of 5 kV/cm, this gives a minimum hole diameter of approximately 0.45 mm. Thus, we take 0.5 mm as a preliminary design parameter. We use square pads of 0.5 mm side on a 2 mm pitch. Full flux collection in this simple geometry implies a large ion collection efficiency that we take as one for the time being.
 
 
 \subsection{Pixel electronics and readout}
@@ -173,7 +175,9 @@ For a pitch of 2 mm, a bulk field of 200 V/cm and a hole field of 5 kV/cm, this 
 The right panel of Fig. \ref{fig:nausicaa} shows a schematic of the electronics. Each pad is directly connected to the input of a CSA. The input current is integrated on a feedback capacitor $C_f$. A MOS transistor allows $C_f$ to discharge slowly. For an ideal CSA, the gain is $1/C_f$ and the signal decays with time constant $\tau_f$.
 
 
-The sampled voltage includes charge accumulated in previous buckets. The charge arriving in each bucket is recovered from the change between successive samples, accounting for feedback discharge. We use frames of \SI{\SpiceFrameMs}{ms}. Each voltage reading is averaged over \SI{\SpiceAverageUs}{\micro\second}, as described in Section~\ref{sec:frame_readout}. This requires repeated digitisation within the acquisition window or an averaging stage before the ADC. Digitisation is performed at the periphery of the ASIC or on an external carrier, using one or a small number of multiplexed ADCs.
+The sampled voltage includes charge accumulated in previous buckets. The charge arriving in each bucket is recovered from the change between successive samples, accounting for feedback discharge. We use frames of \SI{\SpiceFrameMs}{ms}. Each voltage reading is averaged over \SI{\SpiceAverageUs}{\micro\second}, as described in Section~\ref{sec:frame_readout}. This requires repeated digitisation within the acquisition window or an averaging stage before the ADC.
+
+Digitisation could use ADCs shared by groups of pixels and mounted on readout boards behind the collection plane. Buffered pixel outputs would be multiplexed to these ADCs, with sufficient sampling to perform the averaging described above.
 
 \subsection{Parameters of the design}
 
@@ -271,7 +275,9 @@ Most of the signal is induced close to the pad (Figure~\ref{fig:single_ion_curre
 \subsection{Ideal CSA response}
 \label{sec:ideal_csa}
 
-We first describe the CSA by an ideal amplifier with feedback capacitance $C_f$ and an effective linear resistance $R_f$ representing the MOS discharge path. The output voltage $V_1$ is measured relative to its baseline. The input current is shared between the feedback capacitor and the discharge path:
+%Consider an ion approaching the pad and reaching it at $t=0$.
+
+We first describe the CSA by an ideal amplifier with feedback capacitance $C_f$ and an effective linear resistance $R_f$ representing the MOS discharge path. Consider an ion approaching the pad and reaching it at $t=0$.  The ion induces an input current $i_1(t)$, shared between the feedback capacitor and the discharge path. The resulting output voltage $V_1$, measured relative to its baseline, satisfies:
 \begin{equation}
  i_1(t)=-C_f\frac{\dd V_1}{\dd t}-\frac{V_1}{R_f}.
  \label{eq:csa_current_balance}
@@ -284,7 +290,7 @@ The first term describes charge integration and the second feedback discharge. W
  \label{eq:csa_ode}
 \end{equation}
 %
-Setting $V_1(t_g)=0$, we find the solution 
+We assume that no signal is stored in the CSA when the ion enters the gap at $t=t_g$. Since $V_1$ is measured relative to the baseline, $V_1(t_g)=0$, and the solution is
 \begin{equation}
  V_1(t)=-\frac{1}{C_f}\int_{t_g}^{t}
  i_1(t')\exp\left[-\frac{t-t'}{\tau_f}\right]\dd t'.
@@ -292,23 +298,24 @@ Setting $V_1(t_g)=0$, we find the solution
 \end{equation}
 With this convention positive input current produces a negative voltage. Once collection is complete, the voltage decays exponentially, $V_1(t)=V_1(0)\exp(-t/\tau_f)$.
 
-If discharge is negligible during the pulse, the voltage at collection is
-$V_1(0)=-Q_g/C_f$. For $C_f=\SI{\SpiceCfFf}{fF}$, this ideal voltage has magnitude
+Neglecting feedback discharge during the approach of one ion, the integral
+at collection, $t=0$, gives
+\[
+ V_1(0)=-\frac{1}{C_f}\int_{t_g}^{0}i_1(t')\,\dd t'
+ =-\frac{Q_g}{C_f}.
+\]
+For $C_f=\SI{\SpiceCfFf}{fF}$, its magnitude is
 \SI{\SingleIonIdealVoltage}{\micro\volt}.
 
-The induced current when several ions arrive during a readout frame is the
-sum of the individual ion-induced currents. For ions following the same final
-trajectory and collected on the same pad at times $t_k$,
+For several ions following the same final trajectory and collected on the
+same pad at times $t_k$, the currents and voltages add:
 \begin{equation}
- i_p(t)=\sum_k i_1(t-t_k).
+ i_p(t)=\sum_k i_1(t-t_k),\qquad
+ V_p(t)=\sum_k V_1(t-t_k).
  \label{eq:pad_superposition}
 \end{equation}
-
-The ideal response provides a reference for charge integration and feedback
-discharge. In Section~\ref{sec:realistic_csa}, the summed ion-induced current
-drives the transistor circuit in SPICE. The transistor models determine the
-amplifier gain, bandwidth and MOS feedback discharge, while the input current
-retains the geometry and charge normalization established here.
+The voltage therefore includes contributions from earlier arrivals that
+have not yet discharged.
 
 % Previous ideal-response plots and finite-gain section are preserved in
 % archive/2026-10-26_pre_spice/reviewed_sections.tex.
@@ -329,7 +336,10 @@ Figure~\ref{fig:spice_circuit} shows the CSA used in the calculation. It has a
 PMOS input transistor, a folded-cascode amplifier and a feedback capacitor
 $C_f$. An NMOS transistor, $M_f$, provides the discharge path. The circuit
 uses 180 nm CMOS device models and a supply of \SI{\SpiceSupplyV}{V}.
-The transistor dimensions are given in Appendix~\ref{app:spice_readout}.
+The transistor dimensions are given in Table~\ref{tab:spice_devices}.
+The DC operating-point calculation gives an output voltage of
+\SI{\SpiceBaselineV}{V} and a quiescent power consumption of
+\SI{\SpicePowerUw}{\micro\watt} for the CSA.
 
 \begin{figure}[!htbp]
  \centering
@@ -340,11 +350,19 @@ The transistor dimensions are given in Appendix~\ref{app:spice_readout}.
  \label{fig:spice_circuit}
 \end{figure}
 
-We take an external pad capacitance $C_{\rm pad}=\SI{\SpicePadPf}{pF}$ for
-our \SI{\SignalPadWidth}{mm} pads. This design estimate uses area scaling
-from the Topmetal-S capacitance benchmark~\cite{Gao2019TopmetalS}.
-The device models include the transistor capacitances in addition to
-$C_{\rm pad}$. Table~\ref{tab:spice_parameters} lists the circuit and
+\begin{table}[!htbp]
+ \centering
+ \input{generated/spice_devices_table}
+ \caption{Transistor dimensions used in the SPICE calculation.}
+ \label{tab:spice_devices}
+\end{table}
+
+The pad capacitance $C_{\rm pad}=\SI{\SpicePadPf}{pF}$ for
+our \SI{\SignalPadWidth}{mm} pads is estimated from conservative scaling
+of the Topmetal-S capacitance~\cite{Gao2019TopmetalS}.
+%The device models include the transistor capacitances in addition to
+%$C_{\rm pad}$. 
+Table~\ref{tab:spice_parameters} lists the circuit and
 readout parameters used below.
 
 \begin{table}[!htbp]
@@ -366,8 +384,8 @@ readout parameters used below.
  \bottomrule
  \end{tabular}
  \caption{Parameters of the circuit and frame measurement. The time $\tau_0$
- is used in the correction between readings; the circuit discharge is
- calculated from the feedback transistor.}
+ is obtained from the simulated voltage decay and used in the correction
+ between readings.}
  \label{tab:spice_parameters}
 \end{table}
 
@@ -397,50 +415,54 @@ integral fixed by the finite-gap charge $NQ_g$.
 \end{figure}
 
 Figure~\ref{fig:spice_ion_response} shows the current and voltage normalized
-to one ion. The voltage remains after the arrival interval, so successive
+to one ion. Since the voltage remains after the arrival interval, successive
 frames must be treated as a continuous signal.
 
 \subsection{Frame readout}
 \label{sec:frame_readout}
 
-The voltage at each frame boundary is averaged over a window of duration $T_a$:
+The voltage at each frame boundary is averaged over a window of duration $T_a=\SI{\SpiceAverageUs}{\micro\second}$, large enough to average the rapid voltage fluctuations that would enter a point
+reading, but much shorter than
+the \SI{\SpiceFrameMs}{ms} frame.
 \begin{equation}
  \overline V_n=\frac{1}{T_a}
  \int_{t_n-T_a/2}^{t_n+T_a/2}V(t)\,\dd t,
  \qquad t_n-t_{n-1}=\Delta t.
  \label{eq:spice_average}
 \end{equation}
-Averaging reduces the rapid voltage fluctuations that would enter a point
-reading. We use $T_a=\SI{\SpiceAverageUs}{\micro\second}$, much shorter than
-the \SI{\SpiceFrameMs}{ms} frame.
 
-For the ideal CSA of Section~\ref{sec:ideal_csa}, the voltage left from the previous frame decays by
+When discussing the ideal CSA, we saw that the residual voltage decays exponentially, 
 $\exp(-\Delta t/\tau_f)$. This motivates the corrected voltage difference
 \begin{equation}
  D_n=-\left(\overline V_n-\alpha\overline V_{n-1}\right),
  \qquad \alpha=\exp(-\Delta t/\tau_0).
  \label{eq:spice_frame_difference}
 \end{equation}
+which takes into account  the voltage left from the previous frame. 
 The minus sign makes $D_n$ positive for the chosen output polarity.
-We take $\tau_0=\SI{\SpiceCorrectionSeconds}{s}$ for this correction and
-calibrate the resulting measurement with the SPICE response. Here $\tau_0$
-is a chosen correction parameter; the circuit's discharge is determined by
-the feedback transistor in SPICE. Let $g$ be
+We determine the value of $\tau_0$ ($\tau_0=\SI{\SpiceCorrectionSeconds}{s}$) by fitting an exponential to the SPICE output voltage,
+measured relative to its baseline, after the ion current has ended. We then calibrate the resulting
+measurement with the SPICE response. Let $g$ be
 $D_n$ for the uniform current normalized to one ion. In the linear regime,
 $N$ ions give $Ng$, and their estimated number is
 \begin{equation}
  \widehat N_n=\frac{D_n}{g}.
  \label{eq:spice_calibration}
 \end{equation}
-For the parameters in Table~\ref{tab:spice_parameters},
-$g=\SI{\SpiceGainUv}{\micro\volt}$ per ion.
+Applying the averaging and discharge correction to the simulated response
+gives $g=\SI{\SpiceGainUv}{\micro\volt}$ per ion.
+
+For equal-sized ion packets, each neighbouring frame contributes less than
+1\% of the signal in the selected frame.
 
 \subsection{Noise and sensitivity}
 \label{sec:charge_noise}
 
-The amplifier and the feedback discharge path produce voltage fluctuations
-even when no ions arrive. SPICE gives their total output noise spectrum
-at the operating point. We write its one-sided power spectral density as
+The amplifier and the feedback transistor produce voltage fluctuations even
+in the absence of ions. The transistor models include thermal (white) noise and flicker
+noise ---which increases approximately as $1/f$ at low frequencies---. SPICE
+calculates their contributions to the output noise and sums their power
+spectral densities. We denote the resulting one-sided output spectrum by
 $S_V(f)$, in $\mathrm{V^2/Hz}$.
 
 The noise in the measured difference is
@@ -450,15 +472,21 @@ The noise in the measured difference is
 \end{equation}
 Thus the uncertainty depends on the noise in both readings. Positively
 correlated fluctuations partly cancel when we take their difference.
-Applying the averaging and frame difference to the output spectrum gives
+Averaging the voltage over the acquisition window and taking the corrected
+difference between successive readings gives
+%
 \begin{equation}
  \sigma_D^2=\int_{f_\ell}^{f_h} S_V(f)
  \left|\frac{\sin(\pi fT_a)}{\pi fT_a}\right|^2
  \left|1-\alpha e^{-2\pi\mathrm{i}f\Delta t}\right|^2\,\dd f.
  \label{eq:spice_noise_integral}
 \end{equation}
-The first factor describes the average over $T_a$; the second describes
-the difference between frames. Appendix~\ref{app:spice_noise} derives
+%
+The factor $\left|\sin(\pi fT_a)/(\pi fT_a)\right|^2$ accounts for averaging
+over the acquisition window $T_a$. The factor
+$\left|1-\alpha e^{-2\pi\mathrm{i}f\Delta t}\right|^2$ describes the
+corrected difference between readings separated by $\Delta t$.
+Appendix~\ref{app:spice_noise} derives
 this expression from the covariance between readings.
 
 Integrating from \SI{\SpiceLowHz}{Hz} to \SI{\SpiceHighMHz}{MHz} gives
@@ -469,37 +497,56 @@ the input-equivalent noise and the signal-to-noise ratio:
  \qquad \mathrm{S/N}(N)=\frac{Ng}{\sigma_D}=\frac{N}{\mathrm{ENC}}.
  \label{eq:spice_sensitivity}
 \end{equation}
-Each ion carries charge $+e$. The SPICE transients give
-$\mathrm{S/N}=\SpiceBelowSnr$ for $N=\SpiceBelowIons$ and
-$\mathrm{S/N}=\SpiceAboveSnr$ for $N=\SpiceMinimumIons$.
-The minimum number for S/N $>5$ is therefore \SpiceMinimumIons\ ions.
-The noise spectrum used here has zero contribution in the transistor
-$1/f$ terms. The quoted ENC is conditional on that model setting.
-% Author review: reconcile the flicker terms with the circuit designer before
-% treating this numerical noise result as a prediction for the implemented CSA.
+Each ion carries charge $+e$. Combining the simulated voltage response with
+the calculated noise gives $\mathrm{S/N}>5$ for $N\geq\SpiceMinimumIons$ ions.
 
-Figure~\ref{fig:spice_averaging} shows how the averaging time affects the ENC.
-Increasing the average from \SI{180}{\micro\second} to
-\SI{350}{\micro\second} reduces the ENC from \SpiceScanFirstEnc\ to
-\SpiceScanLastEnc\ electrons RMS. The signal per ion is recalculated for
-each averaging time.
+Table~\ref{tab:spice_noise_budget} gives the transistor contributions to the
+noise variance after averaging and taking the corrected frame difference.
+
+\begin{table}[!htbp]
+ \centering
+ \input{generated/spice_noise_budget}
+ \caption{Contributions to the noise variance $\sigma_D^2$ for the selected
+ circuit and readout parameters.}
+ \label{tab:spice_noise_budget}
+\end{table}
+
+The dependence with the averaging windows of the ENC is very soft. It varies from \SpiceScanFirstEnc\ to \SpiceScanLastEnc\ electrons RMS
+for windows between \SI{180}{\micro\second} and
+\SI{350}{\micro\second}.
+
+\subsection{Pixel area and integration}
+\label{sec:pixel_area}
+
+The \SI{2}{mm} pitch provides \SI{\PixelCellArea}{\milli\metre\squared}
+per pixel. We estimate that the pad, CSA and space reserved for readout and
+control occupy approximately \SI{\PixelBudgetArea}{\milli\metre\squared}.
+Figure~\ref{fig:pixel_area} shows their arrangement within the pixel cell,
+and Table~\ref{tab:pixel_area} gives the area budget. The CSA dimensions
+follow from the transistor sizes in Table~\ref{tab:spice_devices}, with
+space around each device for contacts and connections. The remaining
+electronics are represented by area reserves. The shared ADCs on the rear
+readout boards are excluded from this budget. Appendix~\ref{app:pixel_area}
+describes the packing assumptions.
 
 \begin{figure}[!htbp]
  \centering
- \includegraphics[width=0.88\linewidth]{spice_averaging.pdf}
- \caption{ENC versus averaging time for uniform ion arrivals over
- \SI{\SpiceFrameMs}{ms}, with an external pad capacitance of
- \SI{\SpicePadPf}{pF}. The highlighted point is the
- \SI{\SpiceAverageUs}{\micro\second} average used in this study.}
- \label{fig:spice_averaging}
+ \includegraphics[width=\linewidth]{generated/pixel_area.pdf}
+ \caption{Pixel area allocation. Left: the pad, CSA and reserves for readout,
+ control and shared circuitry inside a \SI{\PixelBudgetArea}{\milli\metre\squared}
+ envelope, shown within the full pixel cell. The shared circuitry block
+ represents its area allocation per pixel. Right: packing of the transistor
+ channels and their surrounding space, together with a reserve for the
+ feedback capacitor.}
+ \label{fig:pixel_area}
 \end{figure}
 
-A packet of the same size in the preceding frame contributes
-\SpicePreviousPercent\% of the signal from the packet in the selected frame.
-A packet in the following frame contributes \SpiceFollowingPercent\%.
-These responses include induction before collection, circuit discharge and
-the averaging windows. They will enter the reconstruction of charge across
-successive frames.
+\begin{table}[!htbp]
+ \centering
+ \input{generated/pixel_area_table}
+ \caption{Pixel area budget for the arrangement in Fig.~\ref{fig:pixel_area}.}
+ \label{tab:pixel_area}
+\end{table}
 
 \clearpage
 \appendix
@@ -637,6 +684,7 @@ This is exact for a constant current in each numerical bin and converges to the 
 The square-pad potential is checked against independent surface integration of Eq.~\eqref{eq:app_poisson}, and its derivative against Eq.~\eqref{eq:single_weight}. Charge integrals, boundary limits and scaling with pad size and velocity are also checked. The CSA response is compared with Eq.~\eqref{eq:app_csa_quadrature}, the ideal-integrator limit and the closed-form response to a constant current. These checks test the analytical model and its numerical implementation; they do not replace a field calculation for the collection geometry or a transistor-level circuit calculation.
 
 \input{appendix_spice_readout}
+\input{appendix_pixel_area}
 
 % Appendix C will contain the IFG focusing and collection calculation.
 % That numerical study remains pending.

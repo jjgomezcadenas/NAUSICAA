@@ -1,0 +1,78 @@
+{
+  "source_sha256": {
+    "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir": "9b23882ffaa12fe126ecd92d31ec6231b8677f3078f398efd527f2a6e1c0c350",
+    "LTSpice/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+    "config/bucket_study.toml": "c4b4594c9cd7543ff9ac18171706922ece956e2581f4e38e57bc05a19ef45a4d",
+    "results/ltspice/m3_scan/analysis.h5": "3675039bd4976a51be356c20c15a102cfb99592855f5f91a53df4ee8e8654297",
+    "scripts/build_spice_paper.py": "86cbe7a49a67f72c5dc960fdddf761171164cabc0369949e4c73d3f41c861eb1"
+  },
+  "biases_V": {
+    "Vdd": 1.8,
+    "Vnmos": 1.6,
+    "Vnload": 0.538477478921,
+    "Vp6": 1.1,
+    "Vp5": 0.8,
+    "Vp1": 0.556803417206,
+    "Vf1": 0.01
+  },
+  "devices": [
+    {
+      "name": "M1",
+      "type": "PMOS",
+      "width_um": 219.99999999999997,
+      "length_um": 0.5,
+      "multiplicity": 1.0
+    },
+    {
+      "name": "M2",
+      "type": "NMOS",
+      "width_um": 27.0,
+      "length_um": 0.5,
+      "multiplicity": 3.0
+    },
+    {
+      "name": "M3",
+      "type": "NMOS",
+      "width_um": 199.99999999999997,
+      "length_um": 2.0,
+      "multiplicity": 1.0
+    },
+    {
+      "name": "M4",
+      "type": "NMOS",
+      "width_um": 2.88,
+      "length_um": 1.44,
+      "multiplicity": 1.0
+    },
+    {
+      "name": "M5",
+      "type": "PMOS",
+      "width_um": 219.99999999999997,
+      "length_um": 0.5,
+      "multiplicity": 1.0
+    },
+    {
+      "name": "M6",
+      "type": "PMOS",
+      "width_um": 1.0,
+      "length_um": 6.0,
+      "multiplicity": 1.0
+    },
+    {
+      "name": "Mf",
+      "type": "NMOS",
+      "width_um": 0.36,
+      "length_um": 99.99999999999999,
+      "multiplicity": 1.0
+    }
+  ],
+  "operating_point": {
+    "dc_output_V": 0.8789315433538809,
+    "quiescent_power_W": 0.0003435236681905351
+  },
+  "generated_files": [
+    "spice_circuit.pdf",
+    "spice_devices_table.tex",
+    "spice_operating_values.tex"
+  ]
+}
