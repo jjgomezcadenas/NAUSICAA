@@ -897,3 +897,10 @@ results, and demonstrated event-level performance.
   labels and refers to the manuscript parameter tables. Final drawing pending.
 - New appendix prose awaits author review; existing green prose preserved
   apart from the approved appendix cross-reference. No compilation.
+
+### 2026-10-27: final circuit drawing
+
+- Replaced the provisional circuit image with the author-approved
+  `figures/Nausica_Image.jpg` supplied by Rogelio. Removed the provisional
+  caption and replacement TODO. The original generated figure remains
+  commented out. No compilation.
