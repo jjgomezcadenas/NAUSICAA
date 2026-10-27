@@ -1,0 +1,6 @@
+{
+  "results/ltspice/rogelio_v2/analysis.h5": "00fb9df08563114a5e8762c73c78b7461d6aff9de4ccf22422cc3724c43d7222",
+  "results/ltspice/rogelio_v2/diagnostic_analysis.h5": "78214f02216e08e82d85e4f6f13f0737d36ace38388793358bf178f7b9e891a0",
+  "results/ltspice/rogelio_v2_retuned/analysis.h5": "f19b477f589b64f7f054114a97354be12f91d05dc922e1e66a6ebea4e02d6d75",
+  "scripts/present_rogelio_v2.py": "2f32f9dc5d29f0986b81a5edbc3ed24e0fa6d8482d9630135580f306137db02c"
+}

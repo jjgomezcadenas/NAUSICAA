@@ -1,0 +1,11 @@
+{
+  "source": "results/ltspice/m3_scan/analysis.h5",
+  "case": "scale_4_gate_0.5384774789",
+  "source_sha256": "3675039bd4976a51be356c20c15a102cfb99592855f5f91a53df4ee8e8654297",
+  "generator": "notes/physics/figures/build_injection_values.py",
+  "generator_sha256": "c5858695a9a73bdbbffd5d89adf3a613f12d69d66f74e10daeab410a2ee37547",
+  "values": {
+    "SpiceInjectionEnc": "55.4",
+    "SpiceInjectionCalibration": "100"
+  }
+}

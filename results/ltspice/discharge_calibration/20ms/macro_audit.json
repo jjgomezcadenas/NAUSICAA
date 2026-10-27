@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "checked_macro_count": 41,
+  "checked_macro_count": 53,
   "macros": {
     "OpenFraction": {
       "displayed": "0.04909",
@@ -288,6 +288,90 @@
       "source": "generated/spice_circuit_provenance.json:operating_point/quiescent_power_W, microwatt",
       "macro_file": "notes/physics/generated/spice_operating_values.tex",
       "used_in_active_prose": true
+    },
+    "SpiceMthreeGateV": {
+      "displayed": "0.5385",
+      "expected": 0.5385,
+      "source": "results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/m3_gate_V",
+      "macro_file": "notes/physics/generated/spice_bias_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceMfourGateV": {
+      "displayed": "0.5568",
+      "expected": 0.5568,
+      "source": "results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/m4_gate_V",
+      "macro_file": "notes/physics/generated/spice_bias_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceBiasRoundingEncPercent": {
+      "displayed": "0.06",
+      "expected": 0.06400229086220843,
+      "source": "results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/ENC_relative_to_nominal, percent change",
+      "macro_file": "notes/physics/generated/spice_bias_values.tex",
+      "used_in_active_prose": true
+    },
+    "SpiceBiasRoundingGainPercent": {
+      "displayed": "0.27",
+      "expected": 0.27402352957577314,
+      "source": "results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/gain_relative_to_nominal, percent change",
+      "macro_file": "notes/physics/generated/spice_bias_values.tex",
+      "used_in_active_prose": true
+    },
+    "PixelCellArea": {
+      "displayed": "4",
+      "expected": 4.0,
+      "source": "results/pixel_area/analysis.h5:cell_area_m2",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": true
+    },
+    "PixelBudgetArea": {
+      "displayed": "1",
+      "expected": 1.0,
+      "source": "results/pixel_area/analysis.h5:envelope_area_m2",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": true
+    },
+    "PixelClearanceUm": {
+      "displayed": "50",
+      "expected": 50.0,
+      "source": "results/pixel_area/analysis.h5:pad_clearance_m",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": false
+    },
+    "PixelDeviceMarginUm": {
+      "displayed": "20",
+      "expected": 20.0,
+      "source": "results/pixel_area/analysis.h5:wide_margins/device_margin_m",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": false
+    },
+    "PixelOuterMarginUm": {
+      "displayed": "40",
+      "expected": 40.0,
+      "source": "results/pixel_area/analysis.h5:wide_margins/outer_margin_m",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": false
+    },
+    "PixelRowGapUm": {
+      "displayed": "20",
+      "expected": 20.0,
+      "source": "results/pixel_area/analysis.h5:wide_margins/row_gap_m",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": false
+    },
+    "PixelCsaWidthUm": {
+      "displayed": "200",
+      "expected": 200.0,
+      "source": "results/pixel_area/analysis.h5:wide_margins/csa_width_m",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": false
+    },
+    "PixelCsaHeightUm": {
+      "displayed": "840",
+      "expected": 840.0000000000001,
+      "source": "results/pixel_area/analysis.h5:wide_margins/csa_height_m",
+      "macro_file": "notes/physics/generated/pixel_area_values.tex",
+      "used_in_active_prose": false
     }
   },
   "source_sha256": {
@@ -295,12 +379,14 @@
     "notes/physics/generated/readout_values.tex": "080eab892e289c02428054f80c5ec4705026c071c7e2d577af9b4cd225b0560c",
     "notes/physics/generated/spice_values.tex": "5d41412853759315877d4a0f997a1d7beb9ad29cd0fe8695fe50fb85453e3c88",
     "notes/physics/generated/spice_operating_values.tex": "1ea68da533d3914e0d17adce2491fd66099a0a7ee0d4201ce52b1b2b16765b0d",
+    "notes/physics/generated/spice_bias_values.tex": "ccc2e05b1c2101cc0011fd4bcfa1a4be52e79b9b631dca314b744d42c3ca194f",
     "notes/physics/generated/spice_averaging_values.tex": "1c2fb1a0108eaf8f8c68e3d38fb554c3d44f39b75aa7283b73a60e07714a311e",
-    "notes/physics/nausica.tex": "85bdaa3df02657de52affb0ec6242fd6e6522392307aed6c1094d7ad2156aae6",
-    "notes/physics/appendix_spice_readout.tex": "e1c57fd0dbf9a8a73a2b6bc197b5357c06183cd5e774523459390c5abeea25a5",
+    "notes/physics/generated/pixel_area_values.tex": "22c058c703a56d8c28b6c8a3587b4210743f8246ee389fd68a5a28d162031d44",
+    "notes/physics/nausica.tex": "88007fadaf5a467f1944c12ea03fa85f3d33d456b7b02999c3c055407fcdcf04",
+    "notes/physics/appendix_spice_readout.tex": "aa10f66d56bc6e4ddf730f1b133d19872e8b648e7f3eb671f4ccf4724c0bf062",
     "results/ltspice/discharge_calibration/20ms/paper_readout.h5": "aeceb9a248ade438637db0e15e17eb10ae5b013ceed79d6c24c542fba6eb12d4",
     "results/physics_benchmarks.json": "dc35e3eeea2fe050cbdb7a8c89f1c675a9027586d997bb1075340c5d6d8367e8",
     "results/readout/benchmarks.json": "578f25235ace3e7049f3d3818940ad03a3cc16812b605b3eda5de3614a701765",
-    "scripts/audit_paper_macros.py": "fcfcf20f8062314be96ed856f50c66b15da6cb389e1e65d02dc33687c950cbd1"
+    "scripts/audit_paper_macros.py": "e6c8a11dd332268b64c353d5731fbbfe5de262db2f21a156ab280184c4234049"
   }
 }

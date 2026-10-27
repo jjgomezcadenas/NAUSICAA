@@ -1,0 +1,65 @@
+\section{Comparison with Topmetal-S}
+\label{app:topmetal}
+
+Topmetal-S and NAUSICA use exposed metal electrodes connected to CSAs to
+measure charge without gas amplification. A focusing electrode guides the
+ions onto the collecting pads. Topmetal-S was developed to measure both
+energy and track topology in a high-pressure ion TPC~\cite{mei2020topmetalcmosdirectcharge}.
+In ITACA, electroluminescence provides the energy measurement, allowing
+NAUSICA to choose its pitch and readout for ion-track imaging.
+
+The Topmetal-S collecting electrode is a hexagon of \SI{1}{mm} diameter,
+implemented in a 130 nm CMOS process~\cite{Liang2024TopmetalS}. The
+N$\nu$DEx readout model places these electrodes at \SI{10}{mm}
+pitch~\cite{Liang2026NvDExSimulation}. NAUSICA uses \SI{0.5}{mm} square
+pads at \SI{2}{mm} pitch, close to the diffusion scale in ITACA. This
+finer pitch samples the track with more pixels. The smaller pad reduces
+the capacitive load, while the focusing field provides collection over
+the pixel cell. The charge measured in each pixel must preserve the
+track and its blob structure; the precise total-energy measurement is
+provided by the electron signal.
+
+\subsection{Noise measured with charge injection}
+
+Topmetal-S reports an ENC of approximately $115\,e^-$ after a digital
+trapezoidal filter~\cite{Yang2024TopmetalCSA}. Repeated injections of a
+fixed charge produce a distribution of filtered pulse amplitudes. For
+an injected charge of $N_{\rm inj}$ elementary charges, the ENC is
+\begin{equation}
+ \mathrm{ENC}=N_{\rm inj}\frac{\sigma_A}{\langle A\rangle},
+\end{equation}
+where $\langle A\rangle$ and $\sigma_A$ are the mean and standard deviation
+of that distribution. The quoted noise therefore includes the effect
+of the filter.
+
+We perform a corresponding injection calculation for the circuit in
+Table~\ref{tab:spice_devices}, with an external capacitance of
+\SI{\SpicePadPf}{pF}. A pulse carrying
+$\SpiceInjectionCalibration\,e$ has a \SI{1}{\micro\second} plateau
+and \SI{10}{ns} rise and fall times. We apply a trapezoidal filter with
+\SI{300}{\micro\second} rise time and \SI{300}{\micro\second} flat top.
+The filtered voltage per elementary charge calibrates the signal. Applying
+the same filter to the SPICE noise spectrum, including thermal and flicker
+noise over \SI{\SpiceLowHz}{Hz}--\SI{\SpiceHighMHz}{MHz}, gives an ENC of
+$\SpiceInjectionEnc\,e^-$ RMS. The calculation uses the supply and
+temperature in Table~\ref{tab:spice_parameters} and noise evaluated at
+the DC operating point.
+
+\begin{table}[!htbp]
+ \centering
+ \begin{tabular}{lll}
+ \toprule
+ & Topmetal-S & NAUSICA \\
+ \midrule
+ CMOS process & 130 nm & 180 nm \\
+ Collecting electrode & \SI{1}{mm} diameter, hexagonal & \SI{0.5}{mm} side, square \\
+ Pitch & \SI{10}{mm} (N$\nu$DEx model) & \SI{2}{mm} \\
+ Injection ENC & $\sim115\,e^-$, measured & $\SpiceInjectionEnc\,e^-$, simulated \\
+ \bottomrule
+ \end{tabular}
+ \caption{Geometry and charge-injection noise comparison. Both ENC values
+ include trapezoidal filtering. The NAUSICA filter settings are given above;
+ the Topmetal-S report~\cite{Yang2024TopmetalCSA} does not specify its
+ trapezoid rise and flat-top durations.}
+ \label{tab:topmetal_comparison}
+\end{table}

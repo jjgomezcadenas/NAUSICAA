@@ -24,6 +24,8 @@
 \input{generated/readout_values}
 \input{generated/spice_values}
 \input{generated/spice_operating_values}
+\input{generated/spice_bias_values}
+\input{generated/spice_injection_values}
 \input{generated/spice_averaging_values}
 \input{generated/pixel_area_values}
 \newcommand{\ion}{\ensuremath{\mathrm{Xe}_2^+}}
@@ -146,7 +148,7 @@ Notice that the electron track and the ion track are detected in \emph{delayed c
 \section{The NAUSICA concept}
 \label{sec:nausica}
 
-Reading the arriving ions (without amplification) requires exposed metal electrodes connected to charge-sensitive amplifiers (CSAs). Our proposed  \emph{Non-Amplified Ultra-Slow Ion CMOS ASIC} (NAUSICA) uses TopMetal CMOS technology~\cite{An2016TopmetalII} to implement this concept, following Refs.~\cite{Nygren_2018, mei2020topmetalcmosdirectcharge}. There is an important difference, however, with respect to these works, which attempted to design a system able to provide simultaneously good energy resolution and a good measurement of the track topology using ions. Alas, both requirements impose constraints that interfere with each other. Good energy resolution requires optimizing ion counting and minimizing noise. Good topological reconstruction demands pixels separated by a small pitch (e.g., of the order of diffusion, $\sim 2$ mm), which in turn multiplies the number of pixels and adds to the overall noise. The advantage of ITACA is that energy resolution is measured with excellent precision by electroluminescence, and thus the ion detector can prioritize the reconstruction of the topology. NAUSICA is designed with this goal in mind. 
+Reading the arriving ions (without amplification) requires exposed metal electrodes connected to charge-sensitive amplifiers (CSAs). Our proposed  \emph{Non-Amplified Ultra-Slow Ion CMOS ASIC} (NAUSICA) uses TopMetal CMOS technology~\cite{An2016TopmetalII} to implement this concept, following Refs.~\cite{Nygren_2018, mei2020topmetalcmosdirectcharge}. There is an important difference, however, with respect to these works, which attempted to design a system able to provide simultaneously good energy resolution and a good measurement of the track topology using ions. Alas, both requirements impose constraints that interfere with each other. Good energy resolution requires optimizing ion counting and minimizing noise. Good topological reconstruction demands pixels separated by a small pitch (e.g., of the order of diffusion, $\sim 2$ mm), which in turn multiplies the number of pixels and adds to the overall noise. The advantage of ITACA is that energy resolution is measured with excellent precision by electroluminescence, and thus the ion detector can prioritize the reconstruction of the topology. NAUSICA is designed with this goal in mind. Appendix~\ref{app:topmetal} compares its geometry and charge-injection noise with Topmetal-S.
 
 Consider the \bbonu\ event that we described in the previous section. Assume the extreme case in which the track extends along $z$. For a track length of 10 cm and a drift velocity of 10 cm/s it would take one second, since the arrival of the first ions, to collect the full track. In practice, the tracks are oriented in random directions, extending radially over several pads, and collection of ions is faster, since few tracks extend exactly along $z$. In any case,  the resolution in $z$ is of the order of the transverse diffusion, ($\sigma_z = 1-2$ mm), so reading the charge in frames of 10-20 ms is reasonable. We take \SI{\SpiceFrameMs}{ms} as the nominal frame duration, corresponding to \SI{2}{mm} along the drift direction.
 %The mean number of ions per pad in those buckets helps determine the feedback capacitance of the CSA.
@@ -341,12 +343,24 @@ The DC operating-point calculation gives an output voltage of
 \SI{\SpiceBaselineV}{V} and a quiescent power consumption of
 \SI{\SpicePowerUw}{\micro\watt} for the CSA.
 
+% Previous circuit drawing retained for review.
+% \begin{figure}[!htbp]
+%  \centering
+%  \includegraphics[width=0.85\linewidth]{spice_circuit.pdf}
+%  \caption{CSA circuit used in the SPICE calculation. Gate bias voltages and
+%  drain (D) and source (S) connections are shown. The pad current enters the
+%  gate of M1; $C_f$ and $M_f$ connect the output to this input node.}
+%  \label{fig:spice_circuit}
+% \end{figure}
+
+% TODO: Replace Rogelio's provisional drawing with his final figure.
+% Its bias and Cd1 labels predate the selected operating parameters.
 \begin{figure}[!htbp]
  \centering
- \includegraphics[width=0.85\linewidth]{spice_circuit.pdf}
- \caption{CSA circuit used in the SPICE calculation. Gate bias voltages and
- drain (D) and source (S) connections are shown. The pad current enters the
- gate of M1; $C_f$ and $M_f$ connect the output to this input node.}
+ \includegraphics[width=0.78\linewidth,height=0.65\textheight,keepaspectratio]{figures/rogelio_circuit.jpg}
+ \caption{CSA circuit topology. This provisional drawing contains earlier
+ bias and capacitance values; the values used in the calculation are given
+ in Tables~\ref{tab:spice_devices} and~\ref{tab:spice_parameters}.}
  \label{fig:spice_circuit}
 \end{figure}
 
@@ -374,6 +388,8 @@ readout parameters used below.
  External pad capacitance & $C_{\rm pad}$ & \SI{\SpicePadPf}{pF} \\
  Feedback capacitance & $C_f$ & \SI{\SpiceCfFf}{fF} \\
  Supply voltage & $V_{DD}$ & \SI{\SpiceSupplyV}{V} \\
+ M3 gate voltage & $V_{\rm nload}$ & \SI{\SpiceMthreeGateV}{V} \\
+ M4 gate voltage & $V_{\rm ncasc}$ & \SI{\SpiceMfourGateV}{V} \\
  Temperature & $T$ & \SI{\SpiceTemperatureK}{K} \\
  \midrule
  Frame duration & $\Delta t$ & \SI{\SpiceFrameMs}{ms} \\
@@ -383,7 +399,8 @@ readout parameters used below.
  \SI{\SpiceLowHz}{Hz}--\SI{\SpiceHighMHz}{MHz} \\
  \bottomrule
  \end{tabular}
- \caption{Parameters of the circuit and frame measurement. The time $\tau_0$
+ \caption{Parameters of the circuit and frame measurement. Gate bias voltages
+ are rounded to four decimal places. The time $\tau_0$
  is obtained from the simulated voltage decay and used in the correction
  between readings.}
  \label{tab:spice_parameters}
@@ -685,6 +702,7 @@ The square-pad potential is checked against independent surface integration of E
 
 \input{appendix_spice_readout}
 \input{appendix_pixel_area}
+\input{appendix_topmetal}
 
 % Appendix C will contain the IFG focusing and collection calculation.
 % That numerical study remains pending.

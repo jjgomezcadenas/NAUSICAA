@@ -66,6 +66,17 @@ def main():
     circuit=json.loads((NOTE/'generated/spice_circuit_provenance.json').read_text())
     check('SpiceBaselineV',circuit['operating_point']['dc_output_V'],'generated/spice_circuit_provenance.json:operating_point/dc_output_V')
     check('SpicePowerUw',circuit['operating_point']['quiescent_power_W']*1e6,'generated/spice_circuit_provenance.json:operating_point/quiescent_power_W, microwatt')
+    with h5py.File(ROOT/'results/ltspice/bias_sensitivity/analysis.h5') as h:
+        a=h['paper_rounded_4'].attrs
+        for name,key in [('SpiceMthreeGateV','m3_gate_V'),('SpiceMfourGateV','m4_gate_V')]:
+            check(name,float(a[key]),f'results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/{key}')
+        for name,key in [('SpiceBiasRoundingEncPercent','ENC_relative_to_nominal'),('SpiceBiasRoundingGainPercent','gain_relative_to_nominal')]:
+            check(name,abs(float(a[key])-1)*100,f'results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/{key}, percent change')
+    with h5py.File(ROOT/'results/pixel_area/analysis.h5') as h:
+        fields={'PixelCellArea':('cell_area_m2',1e6),'PixelBudgetArea':('envelope_area_m2',1e6),'PixelClearanceUm':('pad_clearance_m',1e6)}
+        for name,(key,scale) in fields.items():check(name,float(h.attrs[key])*scale,f'results/pixel_area/analysis.h5:{key}')
+        fields={'PixelDeviceMarginUm':'device_margin_m','PixelOuterMarginUm':'outer_margin_m','PixelRowGapUm':'row_gap_m','PixelCsaWidthUm':'csa_width_m','PixelCsaHeightUm':'csa_height_m'}
+        for name,key in fields.items():check(name,float(h['wide_margins'].attrs[key])*1e6,f'results/pixel_area/analysis.h5:wide_margins/{key}')
     assert set(checks)==set(macros),f'Unchecked macros: {set(macros)-set(checks)}'
     body=text[text.index('\\begin{document}'):]+active((NOTE/'appendix_spice_readout.tex').read_text())
     for name in checks:checks[name]['used_in_active_prose']=bool(re.search(r'\\'+name+r'\b',body))

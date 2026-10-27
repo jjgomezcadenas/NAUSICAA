@@ -1,0 +1,13 @@
+{
+  "source": "results/ltspice/bias_sensitivity/analysis.h5",
+  "source_sha256": "fdb9a83ab875452aaf3f0156c0fa4e7a7f7e278f350baaa33536501660bd7543",
+  "case": "paper_rounded_4",
+  "generator": "notes/physics/figures/build_bias_values.py",
+  "generator_sha256": "a2edce802577b98c2358c8a484fbbbc74d112f5678b3a19ce392ebc402485a54",
+  "values": {
+    "SpiceMthreeGateV": "0.5385",
+    "SpiceMfourGateV": "0.5568",
+    "SpiceBiasRoundingEncPercent": "0.06",
+    "SpiceBiasRoundingGainPercent": "0.27"
+  }
+}

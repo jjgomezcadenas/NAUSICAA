@@ -1,0 +1,22 @@
+output = "results/ltspice/bias_sensitivity"
+input = "results/ltspice/discharge_calibration/20ms/input.h5"
+model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+frame_s = 0.02
+averaging_s = 0.0003
+prehistory_s = 0.002
+fit_start_s = 0.021
+fit_stop_s = 0.12
+fit_sample_step_s = 0.0002
+offsets_V = [-0.005, -0.002, -0.001, -0.0005, -0.0001, 0.0, 0.0001, 0.0005, 0.001, 0.002, 0.005]
+rounding_digits = [3, 4, 5]
+counts = [0, 100, 1000]
+
+[paper]
+source = "LTSpice/variants/m4_x4_m3_x4/noise.cir"
+m3_gate_V = 0.538477478921
+m4_gate_V = 0.556803417206
+
+[v2]
+source = "results/ltspice/rogelio_v2_retuned/decks/v2_retuned/op.cir"
+m3_gate_V = 0.6
+m4_gate_V = 0.6513983488082883

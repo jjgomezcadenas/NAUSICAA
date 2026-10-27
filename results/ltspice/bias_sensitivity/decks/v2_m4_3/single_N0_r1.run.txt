@@ -1,0 +1,26 @@
+LTspice 17.2.4 for MacOS
+Circuit: * Derived v2 circuit
+Start Time: Tue Oct 27 18:56:14 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-17
+reltol = 1e-05
+volttol = 1e-08
+is1: Removing PWL point (2.5e-06,0)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration for .op point succeeded.
+Total elapsed time: 0.160 seconds.

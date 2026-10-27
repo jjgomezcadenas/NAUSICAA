@@ -9,6 +9,12 @@ biases. Table~\ref{tab:spice_devices} gives the dimensions, including the
 multiplicity $m$ of parallel devices. The pad capacitance is an external
 load; intrinsic device capacitances are supplied by the transistor models.
 
+The gate voltages of M3 and M4 are quoted as
+\SI{\SpiceMthreeGateV}{V} and \SI{\SpiceMfourGateV}{V}, respectively.
+Repeating the calculation with these rounded values changes the gain by
+\SpiceBiasRoundingGainPercent\% and the ENC by
+\SpiceBiasRoundingEncPercent\%.
+
 The transient voltage is measured relative to a matched zero-input run.
 The physical current has the square-pad boundary conditions specified in
 Appendix~\ref{app:single_ion}; its integral is preserved in the tabulated

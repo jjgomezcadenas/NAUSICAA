@@ -1,0 +1,21 @@
+fit_stop_s = 0.12
+output = "results/ltspice/rogelio_v2_retuned"
+source_model = "LTSpice/Spice2/v2/180nm_professional/180nm_professional.inc"
+retuned = true
+averaging_s = 0.0003
+counts = [0, 1, 10, 100, 564, 1000, 2000]
+fit_start_s = 0.021
+reference = "results/ltspice/discharge_calibration/20ms/analysis.h5"
+input = "results/ltspice/discharge_calibration/20ms/input.h5"
+max_steps_s = [5.0e-6, 2.5e-6]
+corrected_model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+prehistory_s = 0.002
+fit_sample_step_s = 0.0002
+source = "LTSpice/Spice2/v2/180nm_professional/CSAfolded180nm-2.net"
+frame_s = 0.02
+
+[[variants]]
+name = "v2_retuned"
+m4_gate_V = 0.6513983488082883
+capacitance_F = 1.25e-12
+temperature_C = 20.0

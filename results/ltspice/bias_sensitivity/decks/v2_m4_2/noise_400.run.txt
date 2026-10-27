@@ -1,0 +1,25 @@
+LTspice 17.2.4 for MacOS
+Circuit: * Derived v2 circuit
+Start Time: Tue Oct 27 18:56:13 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration for .op point succeeded.
+Total elapsed time: 0.006 seconds.

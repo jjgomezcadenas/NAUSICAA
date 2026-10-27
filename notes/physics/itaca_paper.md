@@ -51,6 +51,16 @@ averaging and discharge correction give the quoted voltage per ion.
 
 ### Pixel area and ADC placement added — 27 October 2026
 
+Bias presentation update: M3 and M4 gate voltages are quoted to four decimal
+places, 0.5385 V and 0.5568 V, in the parameter table and circuit drawing.
+The circuit generator already uses this precision. The appendix records the
+rounding check from `results/ltspice/bias_sensitivity/analysis.h5`; generated
+macros come from `figures/build_bias_values.py`. Historical numerical results
+retain their original full-precision inputs, with the presentation rounding
+explicitly identified. The author excludes a study of bias-source noise and
+stability from this paper. No such study or additional scope disclaimer is
+added to the manuscript.
+
 The manuscript now includes a pixel-area subsection after noise and sensitivity,
 a scaled cell/CSA drawing, a budget table and `appendix_pixel_area.tex`.
 The presentation uses the saved `wide_margins` scenario throughout: 20 µm
@@ -873,3 +883,17 @@ results, and demonstrated event-level performance.
   established by an electrostatic/layout calculation. The model has zero
   flicker noise. All 52 numerical tests and the physics checks pass.
 - No paper prose changed or LaTeX compilation performed.
+
+### 2026-10-27: Topmetal-S appendix and provisional circuit drawing
+
+- Added `appendix_topmetal.tex`, linked from the NAUSICA concept, comparing
+  sensing principle, geometry, calorimetry requirements and injection ENC only.
+- Injection ENC comes from the selected M3 x4 / M4 x4 case in
+  `results/ltspice/m3_scan/analysis.h5`; regenerate manuscript macros with
+  `python figures/build_injection_values.py` from this directory.
+- Cited the published 2026 NνDEx simulation (arXiv v4) for 10 mm pitch.
+- Copied Rogelio's `LTSpice/design_drawing.jpg` unchanged into `figures/`;
+  commented out the previous circuit figure. Caption flags old numerical
+  labels and refers to the manuscript parameter tables. Final drawing pending.
+- New appendix prose awaits author review; existing green prose preserved
+  apart from the approved appendix cross-reference. No compilation.

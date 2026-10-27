@@ -1,0 +1,102 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}
+\usepackage[margin=22mm]{geometry}\usepackage{amsmath,booktabs,hyperref}
+\title{Preliminary ADC range and resolution for NAUSICA}
+\author{NAUSICA calculation record}\date{\today}
+\begin{document}\maketitle
+A nominal 12-bit ADC over a 1--2 V input span gives a small quantization
+contribution relative to the present CSA noise. At 2 V, the estimated ADC
+contribution is 7.34 electrons RMS and increases the total ENC by
+0.212\%. The voltage span must accommodate the CSA baseline and
+charge retained from previous frames.
+
+\section*{Inputs and frame signals}
+The provisional populations supplied for this estimate are 50, 300 and
+2000 ions per pad in a 10 ms frame. Constant-rate scaling to 20 ms gives
+the populations below. They represent illustrative minimum, average and
+maximum cases; they are inputs to this estimate rather than measured
+distribution bounds. Track calculations will establish their distribution
+at the selected frame duration.
+
+The rounded paper circuit uses M4 and M3 gate voltages of 0.5568 and
+0.5385 V, external input capacitance 1.25 pF, feedback capacitance 3 fF,
+and a temperature of $20\,^{\circ}$C. The saved calculation gives
+$g=27.041\,\mu$V/ion and $\sigma_{D,\rm CSA}=3.050$ mV RMS for
+20 ms frames and 300 $\mu$s averaging. Its ENC is 112.79 electrons RMS.
+The linear estimate of the corrected frame signal is $D=Ng$.
+The gain source uses a central square pad of 0.5 mm side in an infinite
+grounded plane, homogeneous gas and weighting potential zero at infinity.
+Ions approach through the final 5 mm at 3 m/s, with finite-path charge retained.
+
+\begin{center}\begin{tabular}{lrrr}\toprule
+Case & Ions per 20 ms & $D$ (mV) & Analogue $S/N$\\\midrule
+Minimum & 100 & 2.70 & 0.89 \\
+Average & 600 & 16.22 & 5.32 \\
+Maximum & 4000 & 108.17 & 35.46 \\
+\bottomrule\end{tabular}\end{center}
+The 4000-ion value is a linear extrapolation of the saved response;
+linearity at this population has not been simulated in this estimate.
+The low-population example remains below unit analogue $S/N$.
+ADC resolution preserves the available analogue information; additional
+voltage gain does not increase the CSA's signal-to-noise ratio.
+
+\section*{Quantization budget}
+For full-scale span $V_{\rm FS}$ and resolution $b$, the quantization step is
+$q=V_{\rm FS}/2^b$. Independent uniform quantization errors on the two
+readings give
+\begin{equation}
+ \sigma_{D,\rm ADC}=\frac{q}{\sqrt{12}}\sqrt{1+\alpha^2},
+ \qquad \alpha=\exp(-\Delta t/\tau),\qquad \tau=2.445558\,\mathrm{s}.
+\end{equation}
+This estimate assigns no additional noise reduction to averaging the ADC
+samples. Uniform independent quantization is a statistical model; correlated
+errors and inadequate dither can change the result. The combined noise is
+\begin{equation}
+ \mathrm{ENC}_{\rm total}=
+ \frac{\sqrt{\sigma_{D,\rm CSA}^2+\sigma_{D,\rm ADC}^2}}{g}.
+\end{equation}
+
+\begin{center}\begin{tabular}{rrrrrr}\toprule
+Span (V) & Bits & LSB (mV) & ADC ENC ($e$) & Total ENC ($e$) & Increase (\%)\\\midrule
+1 & 8 & 3.9062 & 58.73 & 127.16 & 12.746 \\
+1 & 10 & 0.9766 & 14.68 & 113.74 & 0.844 \\
+1 & 11 & 0.4883 & 7.34 & 113.03 & 0.212 \\
+1 & 12 & 0.2441 & 3.67 & 112.85 & 0.053 \\
+1 & 14 & 0.0610 & 0.92 & 112.79 & 0.003 \\
+1 & 16 & 0.0153 & 0.23 & 112.79 & 0.000 \\
+2 & 8 & 7.8125 & 117.47 & 162.85 & 44.385 \\
+2 & 10 & 1.9531 & 29.37 & 116.55 & 3.334 \\
+2 & 11 & 0.9766 & 14.68 & 113.74 & 0.844 \\
+2 & 12 & 0.4883 & 7.34 & 113.03 & 0.212 \\
+2 & 14 & 0.1221 & 1.84 & 112.80 & 0.013 \\
+2 & 16 & 0.0305 & 0.46 & 112.79 & 0.001 \\
+\bottomrule\end{tabular}\end{center}
+
+Requiring the ADC noise RMS to be below 10\% of the CSA noise RMS
+limits its variance to 1\% of the CSA variance and increases total ENC
+by less than approximately 0.5\%. This budget requires
+10.38 effective quantization bits at 1 V or 11.38 at 2 V, corresponding
+to 11 and 12 integer bits. A nominal 12-bit choice therefore leaves
+room for a 2 V span. Actual ADC effective resolution and driver noise
+should be specified at the intended sampling rate and included in the
+same noise budget.
+
+\section*{Voltage range}
+The ADC samples the absolute CSA output, whose baseline is 0.8505 V.
+That voltage includes charge retained from earlier frames. The 108.2 mV
+maximum illustrative frame signal does not determine the required full
+input span. Range selection needs the total charge accumulated on each pad
+over the event, the discharge history, and the usable linear output swing.
+A 1 V input span can cover the present nominal baseline; a 2 V span can
+cover the 1.8 V supply range. Buffer common-mode limits and the ADC input
+range must be matched. The full dynamic-range requirement remains tied to
+the cumulative track signal.
+
+\section*{Reproduction}
+The user-supplied populations and ADC choices are recorded in
+\texttt{config/adc\_estimate.toml}. Julia reads the saved rounded-circuit
+result and writes \texttt{results/ltspice/adc\_estimate/analysis.h5}.
+Python generates this report from those values. Commands are in the
+result directory's README. No new SPICE transient or manuscript edit is
+part of this estimate.
+\end{document}
