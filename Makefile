@@ -137,8 +137,9 @@ report-event-step4:
 	$(PYTHON) scripts/report_event_step4.py
 	cd latex_generated/event_analysis_step4 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
 
+RAW_EVENTS_DIR ?= $(HOME)/NAUSICAA
 extract-hits:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/extract_hits.jl events/0nubb.next.h5 events/electron_0nubb_energy.next.h5
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/extract_hits.jl "$(RAW_EVENTS_DIR)/0nubb.next.h5" "$(RAW_EVENTS_DIR)/electron_0nubb_energy.next.h5"
 
 .PHONY: spice-averaging spice-averaging-plot
 spice-averaging:
@@ -188,3 +189,39 @@ ramo-note:
 
 ramo-note-render:
 	$(PYTHON) scripts/write_ramo_note.py
+
+.PHONY: mc-selection present-mc-selection
+mc-selection:
+	mkdir -p work/mc_selection
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl
+	$(MAKE) present-mc-selection
+
+present-mc-selection:
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_mc_selection.py
+
+.PHONY: pixel-charge present-pixel-charge
+pixel-charge:
+	mkdir -p work/pixel_charge
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge
+	$(MAKE) present-pixel-charge
+
+present-pixel-charge:
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py
+
+.PHONY: pixel-charge-1mm
+pixel-charge-1mm:
+	mkdir -p work/pixel_charge_1mm
+	PIXEL_CHARGE_CARD="$(CURDIR)/config/pixel_charge_1mm.toml" JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm --latex-dir latex_generated/pixel_charge_1mm
+
+.PHONY: pixel-charge-1mm-3mm
+pixel-charge-1mm-3mm:
+	mkdir -p work/pixel_charge_1mm_3mm
+	PIXEL_CHARGE_CARD="$(CURDIR)/config/pixel_charge_1mm_3mm.toml" JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_3mm --latex-dir latex_generated/pixel_charge_1mm_3mm
+
+.PHONY: pixel-charge-1mm-4mm
+pixel-charge-1mm-4mm:
+	mkdir -p work/pixel_charge_1mm_4mm
+	PIXEL_CHARGE_CARD="$(CURDIR)/config/pixel_charge_1mm_4mm.toml" JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge --repixelize-only
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_4mm --latex-dir latex_generated/pixel_charge_1mm_4mm

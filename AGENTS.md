@@ -19,11 +19,27 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   references before finalising accumulators; the energy-resolution scale is
   0.5% at 2.5 MeV (12.5 keV).
 - Store MC time, actual primary IDs and the common primary generation vertex in
-  reduced HDF5 files. Keep hits in source coordinates through ion diffusion and
-  reconstructed single-track selection. Use the selected track's energy-weighted
-  x/y centre and minimum z as pad-grid references, with one random transverse
-  phase per event. Extend the grid to cover the full retained diffusion table;
-  accepted pad histories include ions below the reconstruction threshold.
+  reduced HDF5 files. Keep hits in source coordinates through ion diffusion.
+  Distinguish reconstruction A on pure MC, B after diffusion before pad
+  discretisation, and C after diffusion and pad discretisation. Preserve and
+  compare their components, backbones and decisions; A/B selections do not gate
+  propagation to later stages. Interactive pad collection uses the full transported
+  cloud's ion-weighted x/y centre and minimum z as its grid reference, with one
+  random transverse phase per event realisation. Extend the grid to cover all
+  retained diffusion charge, including ions below reconstruction thresholds.
+  Existing selected-event batch studies retain their recorded reference convention.
+- Electronics track observables are ions per pixel per frame;
+  time-integrated pixel charge belongs to energy analysis. Say "pixels with
+  charge". Inclusive, event-mean and event-maximum pulse distributions use all
+  positive pixel-frame cells. The n_min cut applies only to the minimum histogram:
+  compute the true event minimum over all positive cells, then include the event
+  only if that minimum > n_min. This display selection causes no charge loss.
+  Current pixel-charge cards set n_min = 0, so all four distributions have no
+  charge cut and the minimum histogram includes every event with pulses.
+- Persist intermediate diffused ion clouds in HDF5 independently of pad pitch
+  and frame width. Re-pixelisation reuses the same cloud, drift and random seed.
+  Cache identity includes source contents and physical transport parameters;
+  changing diffusion resolution or transport inputs requires a different cache.
 - General analysis workflow: Julia performs physical calculations, data analysis
   and reduction, and saves numerical results and provenance to HDF5. Python
   reads these results to produce final figures, tables and LaTeX macros without

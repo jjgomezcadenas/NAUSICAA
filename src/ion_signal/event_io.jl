@@ -55,11 +55,20 @@ function read_nexus_hits(path::AbstractString; event_id=nothing,
     end
 end
 
-"""Output beside the input: name.next.h5 (or name.h5) -> name_hitdf.h5."""
+"""
+    default_output(path) -> String
+
+Map name.next.h5 (or name.h5) to name_hitdf.h5. Sources in the raw archive
+`~/NAUSICAA` produce reduced tables in the project's events/ directory.
+NAUSICAA_RAW_DIRECTORY overrides the archive location. Other inputs produce
+their reduced table beside the source.
+"""
 function default_output(path::AbstractString)
     endswith(path, ".h5") || throw(ArgumentError("Input must end in .h5"))
     stem = replace(basename(path), r"(?:\.next)?\.h5$" => "")
-    return joinpath(dirname(path), stem * "_hitdf.h5")
+    archive=abspath(expanduser(get(ENV,"NAUSICAA_RAW_DIRECTORY",joinpath(homedir(),"NAUSICAA"))))
+    directory=dirname(abspath(path))==archive ? joinpath(ROOT,"events") : dirname(path)
+    return joinpath(directory, stem * "_hitdf.h5")
 end
 
 function hit_columns(f)

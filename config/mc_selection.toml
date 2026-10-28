@@ -1,0 +1,15 @@
+[samples]
+bb0nu = "events/0nubb_100um_hitdf.h5"
+electrons = "events/electron_100um_hitdf.h5"
+[run]
+n_events = 5000
+workers = 2
+output_directory = "results/mc_selection"
+[mc_graph]
+voxel_width_mm = 0.5
+method = "KDT"
+distance_mode = "voxel_multiple"
+distance_voxel_multiple = 2.5
+max_distance_mm = 1.25
+energy_threshold_keV = 1.0
+k = 10

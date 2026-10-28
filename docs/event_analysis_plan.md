@@ -34,7 +34,10 @@ the local browser displays energy maps and occupied 3D voxels, with navigation,
 camera controls and session restore. Launch with `make view-events`; chapter 7
 contains usage and validation details. Browser review is accepted, including
 event 2 with independent axis scales and independent projection zoom.
-Next: MC graph inspection, followed by interactive graph parameter controls.
+Step 3 is implemented: MC graph inspection uses the existing Petit adaptation,
+with a component table, switchable layers, backbones and endpoints. The graph
+and applied TOML settings are saved in HDF5 and reused across display rebins.
+Next: review MC tracks, then interactive graph parameter controls (step 4).
 
 The central flow is: read hits → produce ions → diffuse → retain the full
 diffusion histogram → reconstruct and select exactly one connected track →

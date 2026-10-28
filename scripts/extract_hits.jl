@@ -8,7 +8,8 @@ function main(args)
         println("""
         Usage: julia --project=. scripts/extract_hits.jl [--overwrite] INPUT.h5 [INPUT.h5 ...]
 
-        Convert NEXUS /MC/hits to NAME_hitdf.h5 beside each input.
+        Convert NEXUS /MC/hits to NAME_hitdf.h5.
+        Raw archive ~/NAUSICAA inputs write to project events/; other inputs write beside the source.
         Keep event_id, particle_id, hit_id, x_mm, y_mm, z_mm, energy_MeV, time_ns.
         Preserve Float32, mm, MeV, ns, all particles and source row order.
         Store primary IDs, the common vertex, an event index and provenance; verify before publishing each output.

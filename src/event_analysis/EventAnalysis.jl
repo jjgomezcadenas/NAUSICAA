@@ -17,7 +17,9 @@ export CoordinateFrame, source_frame, vertex_frame, EventInfo, EventHits, center
        ion_counts, sigma_t_ion_mm, sample_drift_cm, sample_grid_offset_mm, diffuse_xyz_image_mc,
        select_diffused_event, pad_axes, compute_occupancy_analysis, pad_projections,
        align_pad_history, ensemble_pad_maps, write_ensemble, read_ensemble,
-       MCEnergyMaps, bin_mc_energy
+       MCEnergyMaps, bin_mc_energy, MCGraphSettings, MCComponent,
+       resolved_mc_distance, build_mc_components, analyze_mc_event,
+       collect_ion_cloud, pixel_frame_statistics
 
 include("types.jl")
 include("coordinates.jl")
@@ -32,7 +34,10 @@ include("paths.jl")
 include("production.jl")
 include("diffusion.jl")
 include("collection.jl")
+include("pixel_charge.jl")
 include("ensemble.jl")
 include("display.jl")
+include("mc_inspection.jl")
+include("mc_selection.jl")
 
 end

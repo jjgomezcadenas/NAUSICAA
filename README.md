@@ -115,11 +115,16 @@ under `work/` is compared against every original hit and the per-event energy
 sums before being renamed to the destination. Original files are not modified.
 Existing outputs require an explicit `--overwrite` flag.
 
+Original NEXUS files are stored in `~/NAUSICAA/`; reduced `_hitdf.h5` files
+remain in this project's `events/` directory. Conversion of archive inputs
+writes to `events/`, and the viewer reuses those reduced tables. Set
+`NAUSICAA_RAW_DIRECTORY` to use a different archive location.
+
 For a different input or interactive Julia use:
 
 ```sh
 export JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia"
-julia --project=. scripts/extract_hits.jl events/example.next.h5
+julia --project=. scripts/extract_hits.jl ~/NAUSICAA/example.next.h5
 julia --project=.
 ```
 
@@ -129,7 +134,7 @@ using .EventIO
 
 df = read_hitdf("events/0nubb_hitdf.h5"; event_id=0)
 all_hits = read_hitdf("events/0nubb_hitdf.h5")
-original_event = read_nexus_hits("events/0nubb.next.h5"; event_id=0)
+original_event = read_nexus_hits(expanduser("~/NAUSICAA/0nubb.next.h5"); event_id=0)
 ```
 
 The reduced reader selects an event using its row index; the original reader

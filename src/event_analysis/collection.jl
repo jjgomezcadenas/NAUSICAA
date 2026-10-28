@@ -134,6 +134,27 @@ function pad_axes(diffused::DataFrame,track::Tracks;pitch_mm::Float32,z_bin_widt
     total = sum(e)
     isfinite(total) && total > 0f0 || throw(ArgumentError("Selected track must have positive finite energy"))
     reference_mm = (sum(track.voxels.x.*e)/total,sum(track.voxels.y.*e)/total,minimum(track.voxels.z))
+    return pad_axes(diffused;reference_mm,pitch_mm,z_bin_width_mm,grid_offset_mm,minimum_xy_span_mm)
+end
+
+"""
+    pad_axes(diffused; reference_mm::NTuple{3,Float32}, pitch_mm::Float32,
+        z_bin_width_mm::Float32, grid_offset_mm::NTuple{2,Float32},
+        minimum_xy_span_mm::Float32=160f0)
+
+Construct the same covering pad lattice from an explicit source-frame reference
+in mm. This supports collection before reconstruction. The caller supplies the
+x/y reference and minimum-z reference; all retained diffusion charge is covered.
+Return owned axes, reference, phase and first-edge indices as in the track method.
+Validate positive widths, finite references/offsets, nonnegative minimum span and
+nonempty diffusion data. Preserve input arrays and exact integer charge counts.
+"""
+function pad_axes(diffused::DataFrame;reference_mm::NTuple{3,Float32},pitch_mm::Float32,
+        z_bin_width_mm::Float32,grid_offset_mm::NTuple{2,Float32},minimum_xy_span_mm::Float32=160f0)
+    _diffused_total(diffused)
+    nrow(diffused)>0 || throw(ArgumentError("Pad axes require nonempty diffusion"))
+    all(v->isfinite(v)&&v>0f0,(pitch_mm,z_bin_width_mm)) || throw(ArgumentError("Cell widths must be finite and positive"))
+    all(isfinite,grid_offset_mm) && isfinite(minimum_xy_span_mm) && minimum_xy_span_mm>=0f0 || throw(ArgumentError("Invalid grid phase or span"))
     all(isfinite,reference_mm) || throw(ArgumentError("Track reference overflows Float32"))
     half = ceil(Int,(minimum_xy_span_mm/2f0)/pitch_mm)
     x,ix = _covering_axis(diffused.x,reference_mm[1]+grid_offset_mm[1],pitch_mm,half)

@@ -80,6 +80,11 @@ mktempdir(joinpath(@__DIR__, "../work"); prefix="event-tests-") do dir
         original_hash = open(sha256, input)
         @test basename(output) == "sample_hitdf.h5"
         @test basename(default_output("sample.h5")) == "sample_hitdf.h5"
+        withenv("NAUSICAA_RAW_DIRECTORY"=>joinpath(dir,"archive")) do
+            @test default_output(joinpath(dir,"archive","sample.next.h5")) ==
+                joinpath(EventIO.ROOT,"events","sample_hitdf.h5")
+            @test default_output(input) == output
+        end
         r = convert_hits(input; block_rows=2, chunk_rows=2)
         @test (r.n_hits, r.n_events) == (5, 2)
         @test open(sha256, input) == original_hash
