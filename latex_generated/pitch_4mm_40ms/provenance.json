@@ -1,0 +1,5 @@
+{
+  "source": "results/ltspice/pitch_4mm_40ms/analysis.h5",
+  "sha256": "6024cb4b0ee9a91d7bc5ab8c65d49fcb5095988c68cf91ae779f3da5fac8cee6",
+  "generator": "scripts/present_pitch_exercise.py"
+}

@@ -1,0 +1,19 @@
+# Calibrate the final circuit's decay from zero-input tails, then apply it to readout.
+frame_s = 0.02
+averaging_s = 0.0003
+prehistory_s = 0.002
+stop_s = 0.2
+max_steps_s = [0.000005, 0.0000025]
+calibration_ions = 100
+counts = [0, 1, 10, 100, 1000, 2000]
+fit_start_s = 0.021
+fit_stop_s = 0.12
+fit_sample_step_s = 0.0002
+fit_checks_s = [[0.021, 0.04], [0.04, 0.08], [0.08, 0.12]]
+train_counts = [1000, 1000, 0, 500, 0, 2000, 1000, 0]
+old_tau_s = 0.3
+historical = "results/ltspice/bucket_scan/20ms"
+detector = "config/detector.toml"
+circuit = "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir"
+model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+output = "results/ltspice/discharge_calibration/20ms"

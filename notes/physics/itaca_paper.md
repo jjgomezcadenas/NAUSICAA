@@ -904,3 +904,44 @@ results, and demonstrated event-level performance.
   `figures/Nausica_Image.jpg` supplied by Rogelio. Removed the provisional
   caption and replacement TODO. The original generated figure remains
   commented out. No compilation.
+
+### 2026-10-28: Vicente Herrero and LTspice manuscript snapshot
+
+- Added Vicente Herrero (Universidad Politécnica de Valencia) as second author;
+  Rogelio Palomo is third author.
+- Created `LTSpice/paper_2026-10-28/` with the exact archived circuit, model
+  cards, 20 ms current waveforms, transient and noise decks, injection tests,
+  readable run logs, reference parameters, final circuit drawing and SHA-256
+  manifest. The README explains both the SPICE runs and offline readout filters.
+- Reproduce the directory with `python notes/physics/tools/package_paper_ltspice.py`
+  from the repository root. All copied hashes and local deck dependencies checked.
+- No new circuit simulation or manuscript compilation performed.
+
+- Compiled the paper on explicit request and included `nausica.pdf` in
+  `LTSpice/paper_2026-10-28/`. Build completed (20 pages) with no LaTeX
+  warnings or overfull boxes; packaged PDF checksum verified. No visual
+  inspection performed.
+
+- Updated Vicente's package and its Dropbox copy with four editable .asc
+  schematics (20 ms ion input, zero baseline, noise and injection), synchronized
+  from Rogelio's v3 layout to the paper's archived electrical netlists. Included
+  local model card and actual PWL currents. Parsed circuit elements and analysis
+  directives match the archived runs; copied files verified by SHA-256.
+
+### 2026-10-28: 4 mm pitch and 40 ms exercise
+
+- User design inputs: 400 ions per 40 ms bucket at 4 mm pitch, compared with
+  the updated mean of 120 ions for the 2 mm / 20 ms paper configuration.
+- Kept 0.5 mm pads, 1.25 pF external capacitance, the selected CSA and local
+  finite-gap current benchmark. Pitch is represented by the supplied mean
+  population; focusing and the event charge distribution are not recalculated.
+- New configuration, Julia reduction, LTspice acquisition and Python report:
+  `config/pitch_4mm_40ms.toml`, `src/ion_signal/pitch_exercise.jl`,
+  `scripts/run_pitch_exercise.py`, `scripts/pitch_exercise.jl`,
+  `scripts/present_pitch_exercise.py`. Results in `results/ltspice/pitch_4mm_40ms/`;
+  report source in `latex_generated/pitch_4mm_40ms/report.tex`. The snapshot of
+  the initial generator matches the input HDF5 provenance hash.
+- 400-ion SPICE signal: 10.831 mV; filtered noise: 3.772 mV RMS; ENC: 139.25 e;
+  S/N: 2.871. Twenty new Julia checks and 52 existing Python tests pass.
+- Main manuscript and the 20 ms numerical results are preserved. No report
+  compilation or commit requested.
