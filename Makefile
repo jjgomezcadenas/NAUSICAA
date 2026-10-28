@@ -54,6 +54,92 @@ ion-shaping-study:
 spice-paper: spice-averaging-plot
 	$(PYTHON) scripts/build_spice_paper.py
 
+.PHONY: julia-env test-events extract-hits
+julia-env:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. -e 'using Pkg; Pkg.instantiate()'
+
+test-events:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. tests/test_event_io.jl
+
+.PHONY: test-event-core event-review
+test-event-core:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl
+
+event-review:
+	$(PYTHON) scripts/build_event_review.py
+
+.PHONY: validate-event-step1 report-event-step1
+# Reader/reconstruction checkpoint; input reduced files must already be v3.
+validate-event-step1:
+	mkdir -p work/event_analysis
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_event_io.jl > work/event_analysis/step1_io.log 2>&1 || { cat work/event_analysis/step1_io.log; exit 1; }
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl > work/event_analysis/step1_core.log 2>&1 || { cat work/event_analysis/step1_core.log; exit 1; }
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_event_analysis.jl > work/event_analysis/step1_legacy.log 2>&1 || { cat work/event_analysis/step1_legacy.log; exit 1; }
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validate_event_step1.jl
+	$(MAKE) report-event-step1
+	$(MAKE) event-review
+
+report-event-step1:
+	$(PYTHON) scripts/report_event_step1.py
+	cd latex_generated/event_analysis_step1 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
+
+.PHONY: test-event-diffusion validate-event-step2 report-event-step2
+test-event-diffusion:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step2
+
+validate-event-step2:
+	mkdir -p work/event_analysis
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step2 > work/event_analysis/step2_tests.log 2>&1 || { cat work/event_analysis/step2_tests.log; exit 1; }
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validate_event_step2.jl
+	$(MAKE) report-event-step2
+	$(MAKE) event-review
+
+report-event-step2:
+	$(PYTHON) scripts/report_event_step2.py
+	cd latex_generated/event_analysis_step2 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
+
+.PHONY: test-event-collection validate-event-step3 report-event-step3
+test-event-collection:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step3
+
+validate-event-step3:
+	mkdir -p work/event_analysis
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step3 > work/event_analysis/step3_tests.log 2>&1 || { cat work/event_analysis/step3_tests.log; exit 1; }
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validate_event_step3.jl
+	$(MAKE) report-event-step3
+	$(MAKE) event-review
+
+report-event-step3:
+	$(PYTHON) scripts/report_event_step3.py
+	cd latex_generated/event_analysis_step3 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
+
+.PHONY: test-event-ensemble validate-event-step4 report-event-step4
+
+VIEWER_PYTHON ?= $(if $(wildcard work/event-viewer-venv/bin/python),work/event-viewer-venv/bin/python,$(PYTHON))
+.PHONY: view-events check-event-viewer
+view-events:
+	$(VIEWER_PYTHON) scripts/view_events.py
+
+check-event-viewer:
+	$(VIEWER_PYTHON) tests/event_viewer/check_session.py
+
+test-event-ensemble:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step4
+
+validate-event-step4:
+	mkdir -p work/event_analysis
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step4 > work/event_analysis/step4_tests.log 2>&1 || { cat work/event_analysis/step4_tests.log; exit 1; }
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/scan_event_analysis.jl
+	$(MAKE) report-event-step4
+	$(MAKE) event-review
+
+report-event-step4:
+	$(PYTHON) scripts/report_event_step4.py
+	cd latex_generated/event_analysis_step4 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
+
+extract-hits:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/extract_hits.jl events/0nubb.next.h5 events/electron_0nubb_energy.next.h5
+
 .PHONY: spice-averaging spice-averaging-plot
 spice-averaging:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/build_averaging_scan.jl
@@ -61,6 +147,22 @@ spice-averaging:
 
 spice-averaging-plot:
 	$(PYTHON) scripts/plot_averaging_scan.py
+
+.PHONY: test-ion-analysis ion-analysis ion-report ion-tracks
+test-ion-analysis:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. tests/test_event_analysis.jl
+
+ion-analysis:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/analyze_hits.jl
+
+ion-report:
+	$(PYTHON) scripts/plot_hit_analysis.py
+	mkdir -p work/ion_tracks_latex
+	cd latex_generated/ion_tracks && latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=../../work/ion_tracks_latex report.tex
+	cp work/ion_tracks_latex/report.pdf latex_generated/ion_tracks/report.pdf
+
+ion-tracks: ion-analysis
+	$(MAKE) ion-report
 
 .PHONY: spice2-reproduction spice2-plots
 spice2-reproduction:

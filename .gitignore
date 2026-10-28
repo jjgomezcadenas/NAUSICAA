@@ -4,6 +4,8 @@ __pycache__/
 *.egg-info/
 .DS_Store
 work/
+# Local NEXUS samples and reproducible reduced hit tables.
+/events/*.h5
 notes/physics/build/
 notes/physics/*.aux
 notes/physics/*.bbl

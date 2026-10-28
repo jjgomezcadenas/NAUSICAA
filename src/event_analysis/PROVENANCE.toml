@@ -1,0 +1,52 @@
+schema = "nausicaa.petit.adaptation.v1"
+project = "Petit"
+license = "MIT"
+source_commit = "305b32e2f886fe76666732bfdb9b2f4e28df0ef3"
+reference_environment = "Root Manifest.toml; reference tests run original source with the same dependencies as the adaptation."
+changes = [
+  "Step 3: exact summed-ion graph threshold, exactly-one-component acceptance, full retained diffusion charge assigned to pad/slice cells.",
+  "Retain Petit selected-track x/y energy centre and minimum-z reference; independent pitch, random grid phase and whole-cell extension cover all retained charge.",
+  "Store sparse Int64 pad histories, explicit Float32 axes and selectable relative-time direction; final upper edges included.",
+  "Step 2: retain Petit per-hit rounding, thermal width formula, three Gaussian draws per ion and dense histogram; explicit Float32 RNG, common W, Int64 charge ledger and saved edges.",
+  "Assign bins from saved Float32 edges, include the final upper edge; one adjacent-float cell represents a coincident zero-diffusion axis.",
+  "Copied graph and backbone algorithm bodies; Float32 fields, literals, arrays and reductions.",
+  "Require explicit finite positive graph cutoff; default kNN; validate single-event Float32 table.",
+  "Keep component indices and local induced-graph indexing; copy endpoint values as NamedTuples.",
+  "Copy MST graph on trivial return and return typed empty raw paths.",
+  "Adapt MC truth path to actual sorted primary IDs; preserve consecutive-cell grouping and time ordering.",
+  "Adapt voxelization to energy-only Float32 output; ion conversion is a separate explicit-W function.",
+  "Use configurable 3 sigma bin width and 6 sigma edge cutoff at every drift distance.",
+  "Rename diffusion metadata fields with units; drift_length_cm stores cm.",
+]
+
+[[sources]]
+path = "src/track_building.jl"
+sha256 = "1510e17ddce2f75b85820ff1c80828355d7981447e4e596f04ff5873f818a577"
+
+[[sources]]
+path = "src/track_extreme_finding.jl"
+sha256 = "b35c21e21cb9504f789e33b9985a860b06a57600b21ef9b35111e8cb89820a12"
+
+[[sources]]
+path = "src/track_path_reconstruction.jl"
+sha256 = "9be8b1a1dccf555c4711665724f631543f5b41e08770fe1dfd27ee536983caa3"
+
+[[sources]]
+path = "src/mctrack.jl"
+sha256 = "9e2e481adfe159011af571839d24014287cabe0f86a0716e87d7938cfa4dec81"
+
+[[sources]]
+path = "src/voxels.jl"
+sha256 = "9d706784d56c056f00d4170153bdb9b1ff171f3b08ea27a4d001eece552d85a8"
+
+[[sources]]
+path = "LICENSE"
+sha256 = "5cf73e35d2ec70c9dcace508829bf661359b526a50c81daaaccbd93677bdaeea"
+
+[[sources]]
+path = "src/itaca_functions.jl"
+sha256 = "5b7a002713826ab9572521212fc92a756934661736c75b621347beaecced7818"
+
+[[sources]]
+path = "itacaScripts/itaca_simple_reco.jl"
+sha256 = "2c716bf5544fcc7abcff6a4924339471315c068cd21b416594363b973fd2598b"

@@ -4,7 +4,42 @@ This repository develops a reproducible physical input-current model for a
 positive-ion CMOS detector. Establish the physics before implementing electronics.
 
 - Xe2+ means the molecular ion Xe_2^+, with charge +e, not atomic Xe^{2+}.
-- Use SI internally; show units in configuration keys, outputs and figure axes.
+- Use SI internally for transport, fields and electronics. Preserve particle-
+  physics units in NEXUS event tables and hit DataFrames: positions in mm and
+  deposited energy in MeV, with the original Float32 precision. Do not convert
+  these tables to m or J. Convert explicitly at the interface to a calculation
+  that requires SI. Show units in configuration keys, columns and figure axes.
+- Implement the event reader and analysis in Julia. Keep HDF5 as the event-data
+  storage format, including reduced hit tables; retain particle_id and hit_id.
+- Event-analysis hit types use separate x_mm, y_mm and z_mm vectors. Coordinates,
+  energy_MeV and time_ns use Float32; the same concrete EventHits type represents
+  source and vertex-centred coordinates, labelled by CoordinateFrame. Identify
+  hits by (event_id, particle_id, hit_id) within a sample. Use Float32 as the
+  proposed numerical baseline and validate reduction errors against Float64
+  references before finalising accumulators; the energy-resolution scale is
+  0.5% at 2.5 MeV (12.5 keV).
+- Store MC time, actual primary IDs and the common primary generation vertex in
+  reduced HDF5 files. Keep hits in source coordinates through ion diffusion and
+  reconstructed single-track selection. Use the selected track's energy-weighted
+  x/y centre and minimum z as pad-grid references, with one random transverse
+  phase per event. Extend the grid to cover the full retained diffusion table;
+  accepted pad histories include ions below the reconstruction threshold.
+- General analysis workflow: Julia performs physical calculations, data analysis
+  and reduction, and saves numerical results and provenance to HDF5. Python
+  reads these results to produce final figures, tables and LaTeX macros without
+  repeating the physical calculations. Presentation can be regenerated without
+  rerunning the analysis; provide a command to run the complete pipeline too.
+- Always present analysis results in a generated, self-contained LaTeX report
+  that compiles to PDF and gathers the relevant figures, tables, parameters,
+  assumptions and validation results. Generate values from the saved results;
+  do not transcribe numbers by hand. Keep numerical outputs in results/ and
+  generated analysis reports in latex_generated/.
+- When requirements, physical assumptions or analysis choices are unclear,
+  consult the user before proceeding with the uncertain part of the work.
+- For event-analysis development, trace the loaded Petit implementation and
+  its callers before proposing types or algorithms. Present existing behaviour,
+  types/interfaces and the justified adaptation in the HTML review guide first.
+  Review those prerequisites together before implementing the next interfaces.
 - The revised design has 5 kV across the 10 mm IFG and 3 kV across the 5 mm
   pad gap, with 200 V/cm in the bulk. Older paper voltage schemes are superseded.
 - Physical electric fields and weighting fields are different boundary-value
@@ -14,8 +49,11 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
 - Preserve total signal charge: integral I dt = q Delta(phi_w). Do not append a
   second collection impulse. Do not silently renormalize finite-path integrals.
 - A 10 cm straight track along drift is an extreme test, not the event ensemble.
-- Keep physical calculations in src/ion_signal; scripts reproduce figures,
-  tables and JSON outputs. LaTeX includes generated values rather than copies.
+- Keep event-analysis calculations in src/event_analysis and signal formation
+  and electronics in src/ion_signal; scripts reproduce HDF5 analysis results
+  and the Python presentation step. Existing Python/JSON benchmarks
+  remain available; the Julia-to-HDF5-to-Python workflow applies to new analyses.
+  LaTeX includes generated values rather than copies.
 - Use meaningful numerical/physical tests: independent quadrature, boundary
   conditions, charge conservation, scaling and convergence.
 - Run `make test physics` with a Python >=3.11 environment containing the pinned
@@ -23,6 +61,12 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
 - Correct clear typos automatically. Keep prose edits small and show wording
   changes for review; preserve the author's voice and avoid substantial
   reformulation unless explicitly requested.
+- In documentation, review pages and explanations, state what each type or
+  function represents and does. Remove defensive exclusions and unsolicited
+  contrasts (for example, "It does not contain the hit cloud"). Keep wording
+  focused on purpose, data, units, behaviour and relevant interface contracts.
+  Express input preservation and array ownership directly; document concrete
+  validation errors where they are part of the contract.
 - For LaTeX changes, compile and check the build log, but do not visually
   inspect the PDF unless the user explicitly requests it.
 - Keep scratch files in work/.

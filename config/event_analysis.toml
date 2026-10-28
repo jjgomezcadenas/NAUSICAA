@@ -1,0 +1,59 @@
+# Event-analysis checkpoints. Detector constants come from the SI card.
+[inputs]
+detector_card = "config/detector.toml"
+samples = ["events/0nubb_hitdf.h5", "events/electron_0nubb_energy_hitdf.h5"]
+
+[ionization]
+ionisation_energy_eV = 21.9
+# Same adopted nominal W as the initial ion_tracks analysis.
+
+[drift]
+min_cm = 10.0
+max_cm = 150.0
+
+[diffusion]
+longitudinal = "thermal" # "zero" is the longitudinal comparison
+nbins = 100
+nsigma = 3.0
+
+[graph]
+method = "kNN"
+k = 10
+min_ions_per_bin = 10
+bin_sigma_scale = 3.0
+edge_sigma_scale = 6.0
+
+[pads]
+z_bin_width_mm = 2.0
+minimum_xy_span_mm = 160.0
+random_grid_offset = true
+# Relative-time convention for this checkpoint: increasing z is later.
+# Change to -1 for decreasing-z arrival order. t=0 is the first arrival edge.
+drift_direction = 1
+# Transverse pitch and ion speed are read from the detector card.
+
+[random]
+seed = 2026
+# Validation uses explicit per-case seeds, stored in its HDF5.
+
+[validation]
+events_per_sample = 5
+selection_events_per_sample = 50
+synthetic_ions = 200000
+drift_cm = [10.0, 80.0, 150.0]
+bin_counts = [50, 100, 200]
+padding_sigma = [2.0, 3.0, 4.0, 5.0]
+
+[ensemble]
+alignment = "central_pad"
+minimum_half_cells = 40
+# Save both accepted-event means and selected charge per processed event.
+
+[scans]
+events_per_sample = 50
+histogram_bins = [50, 100, 200, 400]
+histogram_padding_sigma = [3.0, 4.0, 5.0]
+knn_k = [5, 10, 20]
+min_ions_per_bin = [5, 10, 20]
+# Multiply both 3sigma bin width and 6sigma edge cutoff by this factor.
+graph_scale = [0.75, 1.0, 1.25]

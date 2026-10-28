@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NAUSICAA · MC event viewer</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/viewer.css">
+  <script src="/plotly.js" defer></script><script src="/viewer.js?v=4" defer></script>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark">N</span><div><span class="eyebrow">NAUSICAA / EVENT INSPECTION</span><h1>Monte Carlo energy</h1></div></div>
+    <div class="event-meta" aria-live="polite"><strong id="energy">— MeV</strong><span id="hit-count">Loading reader…</span></div>
+  </header>
+  <main>
+    <nav class="toolbar" aria-label="Event navigation">
+      <label>Sample<select id="sample" disabled><option value="bb0nu">Double beta · 0νββ</option><option value="electrons">Single electrons</option></select></label>
+      <div class="navigation"><button id="previous" disabled title="Previous event">← Previous</button><button id="next" class="primary" disabled title="Next event (Return)">Next → <kbd>↵</kbd></button></div>
+      <form id="event-form"><label>Event ID<input id="event-id" type="text" inputmode="numeric" value="" disabled autocomplete="off"></label><button id="go" disabled>Go</button></form>
+      <span id="position" class="position">Opening sample</span>
+      <form id="bins-form"><label>Display bin target<input id="nbins" type="number" min="1" max="500" step="1" value="100" disabled></label><button id="apply-bins" disabled>Apply</button></form>
+      <button id="reset" disabled>Reset views</button>
+    </nav>
+    <div class="subbar">
+      <div class="tabs" aria-label="Analysis stage"><span class="tab active">MC energy</span><span class="tab future" title="MC graph inspection is the next implementation step">MC tracks <small>next step</small></span></div>
+      <span id="grid-info">Source coordinates · mm · summed energy</span>
+    </div>
+    <div id="status" role="status" aria-live="polite">Starting the persistent Julia reader…</div>
+    <section class="plots" aria-label="Energy maps">
+      <article class="panel"><div class="panel-head"><h2>XY</h2><span>Energy integrated over z</span></div><div id="xy" class="plot" aria-label="XY energy heatmap"></div></article>
+      <article class="panel"><div class="panel-head"><h2>XZ</h2><span>Energy integrated over y</span></div><div id="xz" class="plot" aria-label="XZ energy heatmap"></div></article>
+      <article class="panel"><div class="panel-head"><h2>YZ</h2><span>Energy integrated over x</span></div><div id="yz" class="plot" aria-label="YZ energy heatmap"></div></article>
+      <article class="panel"><div class="panel-head scene-head"><h2>3D</h2><div class="scene-controls">
+        <button data-camera="xy" disabled>XY</button><button data-camera="xz" disabled>XZ</button><button data-camera="yz" disabled>YZ</button>
+        <button id="rotate" disabled>Rotate</button><label>Opacity <input id="opacity" type="range" min="0.1" max="1" step="0.1" value="1" disabled></label>
+      </div></div><div id="xyz" class="plot" aria-label="Rotatable 3D energy voxels"></div></article>
+    </section>
+    <footer><span id="footnote">All MC hits · linear energy colours · independently scaled axes · independent panel zoom</span><span>Drag to zoom · drag 3D to rotate · Return for next event</span></footer>
+  </main>
+</body>
+</html>

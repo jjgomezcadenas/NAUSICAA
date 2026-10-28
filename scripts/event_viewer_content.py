@@ -1,0 +1,338 @@
+"""Viewer implementation status and reviewed interfaces for the HTML guide."""
+
+
+VIEWER_CARD = '''# Proposed config/event_viewer.toml — review draft
+[samples]
+bb0nu = "events/0nubb_hitdf.h5"
+electrons = "events/electron_0nubb_energy_hitdf.h5"
+
+[display]
+nbins = 100                     # Petit histogram edge-selection target
+extent_scale = 1.3              # Petit axis padding
+colormap = "viridis"            # Petit palette
+colour_scale = "linear"
+voxel_opacity = 1.0             # Viewer setting, adjustable
+auto_rotate = false
+
+[mc_graph]
+voxel_width_mm = 0.5
+method = "KDT"
+distance_mode = "voxel_multiple" # or "fixed_mm"
+distance_voxel_multiple = 2.5
+max_distance_mm = 1.25          # Used in fixed_mm mode
+energy_threshold_keV = 1.0
+k = 10                         # Used by kNN / kNN_mutual
+
+[session]
+initial_sample = "bb0nu"
+restore = true
+work_dir = "work/event_viewer"
+
+[server]
+host = "127.0.0.1"
+port = 0                       # Select an available local port
+open_browser = true
+'''
+
+
+def viewer_page(section, table, code):
+    body = section('Step 2 · MC energy viewer', '''
+<p><strong>The MC energy viewer is implemented and accepted after browser review.</strong>
+Select double beta or single electrons; use Return, Next, Previous or an event
+ID. The four views show XY/XZ/YZ summed-energy heatmaps and occupied 3D energy
+voxels. The graph tab and editable graph parameters remain the next increments.</p>
+<p>The user confirmed event 2 after switching to independent axis scales in
+all four views. Projection zoom and pan are independent.</p>
+<p>The user approved the step-one interfaces as implementation guidance and
+requested application-level validation on real events. Existing reconstruction
+library tests remain the numerical reference.</p>
+<p>Launch from the repository root: <code>make view-events</code>. It selects
+the installed local environment in <code>work/event-viewer-venv</code>, opens
+the browser and prints its local URL. Stop with Ctrl-C. For an explicit port:
+<code>work/event-viewer-venv/bin/python scripts/view_events.py --port 8766</code>.
+Use <code>--no-browser</code> to open the printed URL yourself, or
+<code>--work-dir work/another-viewer</code> for an independent session.</p>
+<p>The first event warms Julia’s reader and map calculations; subsequent events
+reuse the process. Session state and the current numerical HDF5 snapshot are in
+<code>work/event_viewer/</code>. Reloading the page restores the current view;
+restarting the process restores the sample, event, bin target, camera and opacity.</p>
+<p><a href="../../src/event_analysis/display.jl">Energy reduction and docstrings</a> ·
+<a href="../../src/event_viewer/server.py">Viewer server</a> ·
+<a href="../../config/event_viewer.toml">Executable viewer card</a></p>''', 'viewer-review')
+
+    body += section('Location and responsibility', code('''src/event_analysis/
+  display.jl                   # Implemented pure energy-map reduction
+  mc_inspection.jl             # Proposed component/backbone extraction adapter
+src/event_viewer/
+  worker.jl                    # Persistent Julia reader, cache and HDF5 writer
+  server.py                    # Local server and navigation/session state
+  presentation.py              # HDF5-to-Plotly figures
+  web/index.html
+  web/viewer.js
+  web/viewer.css
+scripts/view_events.py         # Launch command
+config/event_viewer.toml       # Resolved viewer defaults
+tests/event_viewer/            # Worker/presentation/navigation integration
+tests/event_analysis/          # Numerical helper tests
+work/event_viewer/             # Request files, snapshots and session.toml''') + '''
+<p>Entry point: <code>python scripts/view_events.py</code>, with optional
+<code>--config</code>. The server starts one Julia process and opens one browser
+page. Julia owns reading, binning, summaries, graphs and paths. Python handles
+navigation and plotting. Browser code controls layers, camera and pending edits.
+All project paths resolve against the repository root.</p>
+<p>Dependencies: StatsBase 0.34.13 is resolved in Manifest.toml; Plotly 6.9.0 is
+pinned in requirements.txt and installed in the local viewer environment. The
+Plotly JavaScript bundle is served locally. A fresh Python environment can be
+prepared with <code>python -m pip install -r requirements.txt</code>; Julia uses
+the root Project/Manifest. Existing graph and HDF5 dependencies are reused.</p>''', 'viewer-location')
+
+    body += section('Defaults and their origin', table(['Setting', 'Default', 'Origin'], [
+        ('Display bin target', '100 per axis', 'Petit src/plots.jl: plot_event → plot_hits → StatsBase fit(Histogram, …; nbins). Actual edges/counts are saved.'),
+        ('Palette / axis extent', 'Viridis / 1.3 × coordinate span', 'Petit src/plots.jl.'),
+        ('MC voxel width', '0.5 mm', 'Petit src/itaca_functions.jl: get_voxel_size_and_distance.'),
+        ('MC graph / distance', 'KDT / 2.5 × voxel width = 1.25 mm', 'Petit scripts/itaca_single_track_analysis.jl: make_tracks call and its default method.'),
+        ('MC voxel-energy threshold', '1 keV, inclusive', 'Same active MC graph call.'),
+        ('kNN neighbour count', '10 when a kNN method is selected', 'Petit make_tracks default.'),
+        ('Initial component focus', 'Highest deposited energy', 'Petit MC branch selects the first energy-sorted component.'),
+    ]) + '''
+<p>Approved presentation changes: sum deposited energy in the projection pixels;
+represent occupied 3D display voxels by their energy. Petit’s original 2D
+histograms count entries, and its 3D panel is an energy-coloured hit scatter.
+The new display uses mm, MeV, independently scaled axes and common data bounds
+for each coordinate across views. The existing diffused-event kNN card retains
+its own settings.</p>''' + code(VIEWER_CARD) + '''
+<p>Parse physical settings to Float32 at the Julia boundary. Voxel width and
+resolved distance must be finite and positive; threshold is finite and
+nonnegative; nbins and k are positive integers. Methods are KDT, kNN and
+kNN_mutual. In multiplier mode, resolve distance = width × multiplier; in fixed
+mode, use max_distance_mm. Save the mode, entered values and resolved distance.
+Reset to Petit defaults restores the numeric MC defaults shown above.</p>''', 'viewer-config')
+
+    body += section('Data types · event and energy maps', '''
+<p>The reader returns the existing <code>EventHits</code> and
+<code>EventInfo</code>: source-frame Float32 x/y/z, MeV energy and ns time vectors;
+Int32 particle/hit IDs; Int64 event ID, generation vertex and primary IDs.
+The enclosing sample key identifies the file. Event ID and sample position are
+separate: position is one-based in the file’s stored event index.</p>
+<p>Implemented pure reduction output:</p>''' + code('''struct MCEnergyMaps
+    x_edges_mm::Vector{Float32}
+    y_edges_mm::Vector{Float32}
+    z_edges_mm::Vector{Float32}
+    xy_energy_MeV::Matrix{Float32}  # nx × ny; sum over z
+    xz_energy_MeV::Matrix{Float32}  # nx × nz; sum over y
+    yz_energy_MeV::Matrix{Float32}  # ny × nz; sum over x
+    xy_hit_count::Matrix{Int64}    # nx × ny; contributing hits
+    xz_hit_count::Matrix{Int64}    # nx × nz
+    yz_hit_count::Matrix{Int64}    # ny × nz
+    occupied::DataFrame
+    total_energy_MeV::Float32
+    hit_count::Int64
+end
+
+# occupied columns, one row per cell containing at least one hit:
+# ix, iy, iz::Int64              one-based indices into the saved axes
+# energy_MeV::Float32           summed energy in that cell
+# hit_count::Int64              contributing hits''') + '''
+<p>Each axis is selected once using Petit’s StatsBase bin-target convention.
+The resulting axes define both projections and sparse occupied 3D cells.
+Final edges cover every hit; the Float32 conversion must preserve increasing
+edges and coverage. A coincident-coordinate axis uses one finite cell of
+width 0.5 mm, recorded explicitly. Display padding changes plot limits.</p>
+<p>Sum occupied voxel energies to obtain the three projections. Internal bins
+are half open; the last bin includes its upper edge. Empty cells display as
+background, while occupied zero-energy cells remain in the saved table. Hover
+reports bin bounds, summed energy and contributing hit count. Original hit
+identifiers remain in the snapshot’s hit columns.</p>
+<p>Output arrays are newly owned and inputs retain their values. Float32
+reductions are checked against independent Float64 references. The sum of each
+projection and of occupied energies agrees with the event energy to the tested
+rounding tolerance. 3D data remain sparse to keep event-sized storage.</p>''', 'viewer-energy-types')
+
+    body += section('Data types · MC graph settings and components · next increment', code('''struct MCGraphSettings
+    voxel_width_mm::Float32
+    method::String
+    distance_mode::String
+    distance_voxel_multiple::Float32
+    max_distance_mm::Float32       # fixed-distance entry
+    energy_threshold_keV::Float32
+    k::Int
+end
+
+struct MCComponent
+    component_id::Int64            # rank by decreasing component energy
+    nodes::DataFrame               # x_mm/y_mm/z_mm/energy_MeV::Float32
+    edge_src::Vector{Int64}        # local node indices, one-based
+    edge_dst::Vector{Int64}        # one undirected edge per pair; src < dst
+    path_indices::Vector{Int64}    # ordered local node indices
+    endpoint_indices::Union{Nothing,NTuple{2,Int64}}
+    path_s_mm::Vector{Float32}     # same length as path_indices
+    energy_MeV::Float32
+    length_mm::Float32
+    confidence::Float32           # existing backbone algorithm score
+end''') + '''
+<p>MC graph input is the existing voxelize_event DataFrame, with Float32
+x/y/z/energy and Int64 event_id. The settings describe its voxel width. Graph
+construction applies the inclusive bin-energy threshold and returns every
+connected component in Petit’s order. The viewer initially focuses component 1.</p>
+<p>Adapt existing Tracks and backbone results into owned MCComponent arrays.
+Local node i is row i of nodes; edges, path and endpoint indices all use this
+same numbering. Path distance comes from get_raw_path. An empty backbone has
+empty path arrays and endpoint_indices = nothing; a single-node path has both
+endpoints at that node and length zero. An event with no surviving components
+returns an empty vector and its energy maps remain available.</p>
+<p>MCComponent is a presentation/persistence record derived from the existing
+graph objects. The graph algorithm and endpoint/path extraction are the local
+Petit adaptation. Properties include energy, node/edge counts, endpoints,
+backbone length and the named algorithm score.</p>''', 'viewer-graph-types')
+
+    body += section('Function contracts and tests', table(['Interface', 'Behaviour and output', 'Required evidence'], [
+        ('<code>bin_mc_energy(hits::EventHits; nbins::Int=100)::MCEnergyMaps</code>',
+         'Select shared display axes; sum energy and hit counts into occupied cells and projections; calculate the event summary. Preserve the input frame and arrays.',
+         'Petit edge parity on representative ranges; negative/coincident coordinates and final edges; independently calculated cell assignments, energy sums and Float32 errors; input ownership.'),
+        ('<code>resolved_mc_distance(settings::MCGraphSettings)::Float32</code>',
+         'Validate settings and resolve multiplier or fixed-mm distance. Default result: 1.25f0.',
+         'Changing width updates the multiplier distance; fixed distance remains constant; reject invalid modes and values.'),
+        ('<code>voxelize_event(to_petit_dataframe(hits), settings.voxel_width_mm)::DataFrame</code>',
+         'Reuse the existing pure voxelisation. The worker caches this table with the event identity and voxel width.',
+         'Existing voxelisation tests plus cache invalidation when event or width changes.'),
+        ('<code>build_mc_components(voxels::DataFrame; method::String, max_distance_mm::Float32, energy_threshold_keV::Float32, k::Int)::Vector{MCComponent}</code>',
+         'Call make_tracks with explicit settings, then walk_track_from_extremes and get_raw_path per component. Rename columns at the presentation boundary and preserve local node numbering. Preserve the voxel table.',
+         'Match existing graph edges, components, paths and statistics; empty/multiple/single-node components; threshold equality and valid indices.'),
+        ('<code>write_viewer_snapshot(path::AbstractString, hits::EventHits, info::EventInfo, maps::MCEnergyMaps; context, graph=nothing)::Nothing</code>',
+         'Worker-side I/O writes a completed snapshot atomically. Context and optional graph records have the explicit fields listed below. Close owned handles before announcing completion.',
+         'Julia-write/Python-read field, type, shape and index parity; successful request identity; failed writes preserve the previous snapshot.'),
+    ]) + '''
+<p>Docstrings will specify complete inputs and returned fields, units, shapes,
+ownership, errors, Petit provenance and worked examples. Pure helpers live in
+event_analysis; filesystem and session orchestration live in event_viewer.</p>
+<p>Snapshot <code>context</code> fields: request_id::String, sample::String,
+source_path::String, source_schema::String, source_size_bytes::Int64,
+source_mtime_ns::Int64, event_position::Int64, event_count::Int64,
+display_nbins::Int, resolved_card_toml::String and code_sha256::String.
+The source fingerprint and any available upstream hash are recorded once on
+opening the sample. The optional <code>graph</code> record contains
+settings::MCGraphSettings, resolved_distance_mm::Float32, voxels::DataFrame,
+components::Vector{MCComponent}, retained_energy_MeV::Float32 and
+below_threshold_energy_MeV::Float32, calculated in Julia.</p>''', 'viewer-functions')
+
+    body += section('Worker requests and completion', table(['Request', 'Inputs', 'Completed result'], [
+        ('Open sample', 'request_id; configured sample key.', 'Sample metadata and ordered Int64 event-ID vector in an HDF5 catalogue. Python uses this index for navigation.'),
+        ('Load event', 'request_id; sample; event_id; display nbins.', 'Fresh EventHits/EventInfo, energy maps and summary in the snapshot; graph status pending. Commit the selected event when complete.'),
+        ('Reconstruct', 'request_id; sample; event_id; complete MCGraphSettings.', 'Graph bins, all component records, properties, applied settings and resolved distance in a completed snapshot.'),
+        ('Update display binning', 'request_id; sample; event_id; display nbins.', 'New energy maps from the loaded hits; existing graph result remains valid.'),
+        ('Close', 'request_id.', 'Close input handles and end the Julia worker.'),
+    ]) + '''
+<p>Use TOML request/response files in the session work directory, with a
+line-based stdin/stdout notification carrying the request identifier. Julia’s
+existing TOML library parses the files; diagnostic logs go to stderr. Each
+response contains request_id, status, snapshot/catalogue path or an error code
+and message. Python sends one request at a time and only publishes a completed
+result matching the requested sample/event. The browser shows loading/error
+state and the most recent successful result.</p>
+<p>The browser talks to the local Python server. JSON carries browser commands
+and plotted arrays; numerical persistence is HDF5. Encode Int64 event IDs as
+decimal strings in browser messages to preserve their full range. The browser
+uses the saved local graph indices when resolving line endpoints.</p>''', 'viewer-protocol')
+
+    body += section('HDF5 snapshot · energy implemented; graph extension planned', code('''attributes: schema = "nausicaa.event.viewer.v1", status = "complete"
+/context/                  request, source and sample metadata
+/configuration/            resolved card; applied display/graph settings
+/event/                    event_id, position, count, frame
+/event/info/               vertex_mm, primary_particle_ids
+/event/hits/               x_mm, y_mm, z_mm, energy_MeV, time_ns,
+                           particle_id, hit_id
+/event/summary/            hit_count, total_energy_MeV
+/display/axes/             x_edges_mm, y_edges_mm, z_edges_mm
+/display/projections/      xy_energy_MeV, xz_energy_MeV, yz_energy_MeV,
+                           xy_hit_count, xz_hit_count, yz_hit_count
+/display/occupied/         ix, iy, iz, energy_MeV, hit_count
+/reconstruction/           status = pending | complete
+/reconstruction/voxels/    event_id, x_mm, y_mm, z_mm, energy_MeV
+/reconstruction/summary/   component_count, retained_energy_MeV,
+                           below_threshold_energy_MeV
+/reconstruction/components/1/, /2/, ...
+    nodes/                x_mm, y_mm, z_mm, energy_MeV
+    edges/                src, dst
+    backbone/             path_indices, s_mm, endpoint_indices
+    summary/              energy_MeV, node_count, edge_count,
+                           length_mm, confidence''') + '''
+<p>The implemented snapshot contains context, configuration, event, display,
+source-code provenance hashes and reconstruction/status = pending. Its worker
+writer is <code>write_snapshot</code> in worker.jl; the graph groups above define
+the next extension. Sample position/count are in /event; the card and applied
+bin target are in /configuration. Core library and worker source hashes are
+recorded along with the source file size, modification time and schema.</p>
+<p>Floats are Float32; counts, event IDs and persisted indices are Int64;
+particle/hit IDs are Int32. Frame is the CoordinateFrame name. Every index
+dataset declares one-based indexing. Endpoint storage is a length-two Int64
+vector, or an empty vector for an absent path. Completed reconstruction with
+zero components has component_count = 0 and empty component groups.</p>
+<p>In Julia the projection shapes are (nx,ny), (nx,nz), (ny,nz). HDF5 as read by
+h5py exposes (ny,nx), (nz,nx), (nz,ny); save axis-order attributes. Python verifies
+these shapes and supplies them directly to the corresponding heatmaps. Cell
+bounds derive from the saved edge vectors. Every panel labels energy units.</p>
+<p>The writer finishes a temporary HDF5 file, closes it, then replaces the
+current snapshot. Pending edits live in session state; the snapshot records
+the settings that produced its arrays. Original hits, maps and graph records
+share the snapshot’s event identity. Read-back tests verify that relationship.</p>''', 'viewer-hdf5')
+
+    body += section('Session state and parameter updates', '''
+<p>Save <code>work/event_viewer/session.toml</code> after successful navigation
+or settings application. Fields: sample key, event ID, active tab, selected
+component, display settings, last applied graph settings, pending graph edits,
+and the current camera/zoom. Restore the event and settings on restart and
+regenerate its numerical snapshot; identify the restored source by its saved
+fingerprint. Runtime request IDs and loading flags describe the live process.</p>
+<p>The graph panel displays both applied settings and a pending-edits badge.
+Apply validates all edits together and reconstructs once. On success the new
+result and applied settings become current; on failure the previous result
+and pending edits remain visible. Reset stages Petit’s defaults; Apply executes
+them. The distance control shows the resolved value alongside its mode.</p>''' + table(['Change', 'Work triggered', 'View behaviour'], [
+        ('Voxel width + Apply', 'Rebin original hits, rebuild components and backbones.', 'Preserve event, camera and zoom; focus highest-energy component in the new result.'),
+        ('Graph method/distance/threshold/k + Apply', 'Reuse current graph voxels; rebuild components and backbones.', 'Preserve event, camera and zoom; refresh the component table.'),
+        ('Display nbins + Apply', 'Recompute display maps using original hits.', 'Update pixels/voxels; keep graph geometry and camera.'),
+        ('Palette, opacity, visible layers, component focus, camera', 'Redraw browser figures.', 'Numerical arrays and graph settings retain their values.'),
+        ('Next/Previous/event ID/sample', 'Load energy maps; reconstruct on entering the MC tracks tab using last applied graph settings.', 'Fit the new event extent; retain chosen layers and graph settings. Pending edits remain marked until Apply.'),
+        ('Tab switch within an event', 'Build the graph on first entry if needed; reuse completed data thereafter.', 'Retain the event and available view state.'),
+    ]) + '''
+<p>Return advances outside text/number inputs; in the event-ID input it submits
+that ID. At the sample boundaries disable the corresponding navigation button.
+Controls show the sample position and actual event ID. The 3D camera supports
+rotation, zoom, pan, standard axis views, reset and an optional Start/Stop orbit.
+The component table highlights the same component across all four panels.</p>''', 'viewer-state')
+
+    body += section('Using and checking the energy viewer', '''
+<p>All hits are included. The bin target defaults to Petit’s 100; the header
+shows realised cell counts and widths. Edit the target and click Apply to
+change display binning. This is independent of the forthcoming MC graph width.
+XY/XZ/YZ use a shared linear energy scale; 3D uses MeV per occupied voxel.</p>
+<p>Each projection has independent zoom and pan controls. Its ranges are saved
+separately. Reset views fits the whole event. Drag the 3D scene to rotate,
+use the wheel to zoom, select a standard axis view, or use Rotate/Stop for a
+camera orbit. The opacity slider exposes overlapping voxels. Navigation fits
+the new event; display rebinning preserves the current view.</p>
+<p>Full-event framing includes distant clusters. Each 2D axis uses its own
+padded coordinate bounds and fills its panel. The 3D scene maps the three
+coordinate ranges to a cube. Axis labels and hover bounds remain in mm;
+the footer identifies the independent axis scales. Each projection can be
+zoomed separately to inspect the main track or a distant cluster.</p>
+<p>Validation: the Julia core suite includes independent cell-assignment and
+Float64 energy-sum checks. <code>make check-event-viewer</code> reads real events
+from both files, verifies the HDF5 hit columns against their source rows,
+compares projections with independent NumPy histograms, validates Plotly
+figures and checks navigation, missing-ID handling and session restart.
+Application acceptance is the hands-on browser review.</p>''', 'viewer-usage')
+    body += section('Implementation checkpoints and review', table(['Step', 'Deliverable', 'Review/checks'], [
+        ('1 · complete', 'Types, signatures, schema, defaults, state and repository layout in this chapter.', 'User accepted the interfaces as implementation guidance.'),
+        ('2 · implemented', 'MC energy viewer: navigation, energy maps, 3D controls and session restore.', 'Numerical/handoff checks plus hands-on review on both samples.'),
+        ('3', 'MC graph tab, overlays, component properties and backbone.', 'Parity with existing Julia outputs; inspect track construction together.'),
+        ('4', 'Parameter editing, Apply, distance modes and reset.', 'Cache invalidation, stable event/view state, reproducibility on returning to settings.'),
+        ('5', 'Session integration checks, responsiveness, usage documentation and selected-event report export.', 'Saved HDF5/settings, Python figures, generated LaTeX/PDF and build-log checks.'),
+    ]) + '''
+<p>Review now: browse real events and assess the energy maps, 3D interaction
+and navigation. The next implementation step adds MC graph overlays and
+component properties using Petit’s defaults.</p>''', 'viewer-next')
+
+    return dict(id='viewer', title='7. Interactive event viewer',
+                summary='MC energy inspection, usage and the next graph-viewer increment.',
+                status='MC energy viewer implemented · hands-on review', body=body)

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="NAUSICAA event analysis: implemented event interfaces and proposed voxelisation interfaces for joint review.">
+<title>Event analysis · NAUSICAA API review</title>
+<style>
+:root{--paper:#f6f5f0;--ink:#1b2b35;--muted:#596975;--line:#dce2e1;--nav:#152b36;--accent:#146b67;--tint:#eaf3ef;--amber:#92551c;--white:#fff;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--accent);text-underline-offset:3px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #eab45b;outline-offset:4px}.skip{position:fixed;top:-100px;left:16px;z-index:20;background:white;padding:12px}.skip:focus{top:12px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:272px;padding:34px 24px;background:var(--nav);color:#ecf3f4;overflow-y:auto}.brand{font-size:13px;font-weight:750;letter-spacing:.19em;color:#99c8c2}.sidebar h2{font-size:23px;line-height:1.25;margin:12px 0 8px;font-weight:600}.sidebar .subtitle{font-size:13px;color:#b1c3ca;margin:0 0 30px}.section-label{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#b1c3ca;margin:26px 0 9px}.sidebar label{display:block;font-size:12px;color:#c1d1d4;margin-bottom:6px}.sidebar input{width:100%;background:#203b47;border:1px solid #48616c;color:white;padding:9px 11px;border-radius:6px;font-size:13px}.sidebar input::placeholder{color:#b2c3ca}.review-links{list-style:none;padding:0;margin:14px 0}.review-links a{display:flex;gap:11px;color:#c5d7dc;text-decoration:none;padding:12px 10px;border-radius:6px;font-size:14px}.review-links a span{font-size:11px;opacity:.7;padding-top:3px}.review-links a:hover{background:#233f4a}.review-links a[aria-current="page"]{background:#e8f1ed;color:#154b4a;font-weight:650}.later{padding-left:10px;font-size:13px;color:#9bb3bd;line-height:2}.sidebar-footer{border-top:1px solid #3d535d;margin-top:30px;padding-top:20px;font-size:12px;color:#afc1c7}.sidebar-footer a{color:#d4e5df}.sidebar-footer button{display:block;background:transparent;border:1px solid #5e7883;border-radius:5px;color:#e1eded;margin:16px 0;padding:7px 11px;font-size:12px}#empty-search{font-size:13px;color:#c6d5d9}main{margin-left:272px;max-width:1320px;padding:0 56px 60px}.topbar{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding:25px 0 18px;font-size:12px;color:var(--muted)}.topbar strong{color:var(--accent);font-weight:600}.page-header{padding:43px 0 28px}.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:650;color:var(--accent)}h1{font:600 clamp(28px,3.6vw,42px)/1.25 var(--mono);letter-spacing:-.04em;margin:13px 0}.lead{font-size:19px;color:var(--muted);margin:0 0 18px;max-width:720px}.badge{display:inline-block;font-size:11px;font-weight:650;letter-spacing:.02em;color:var(--amber);background:#f3e9d7;border:1px solid #e5d2ae;padding:4px 9px;border-radius:4px}.card{background:var(--white);border:1px solid var(--line);border-radius:9px;padding:24px 28px;margin:0 0 18px}.card h2{font-size:17px;margin:0 0 14px;line-height:1.3}.card p{margin:0 0 12px}.card p:last-child{margin-bottom:0}.card ul{padding-left:22px;margin:0}.card li+li{margin-top:8px}code{font:13px/1.65 var(--mono)}td code,p code,li code{background:#edf2f1;padding:2px 4px;border-radius:3px;overflow-wrap:anywhere}pre{margin:0;padding:20px 22px;background:#122a35;color:#d9e9ec;border-radius:6px;overflow-x:auto;tab-size:4}pre code{white-space:pre;font-size:13px;line-height:1.8}.code-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-bottom:9px}.copy{font-size:11px;background:white;border:1px solid #bfcfce;border-radius:4px;color:var(--accent);padding:4px 9px}.table-scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:650;border-bottom:2px solid var(--line);padding:8px 14px 11px 0}td{padding:13px 14px 13px 0;border-bottom:1px solid #e9edeb;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{min-width:130px}td:nth-child(2){min-width:150px}.caption{font-size:12px;color:var(--muted);margin:12px 0!important}.matrix{border:1px solid #ceded8;background:var(--tint);padding:16px 20px;border-radius:6px;margin-bottom:18px}.matrix-label{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}.matrix-columns{display:flex;gap:40px;margin-top:10px}.matrix-columns div{display:flex;flex-direction:column}.matrix-columns b{font-size:12px}.matrix-columns span{font:14px/1.9 var(--mono)}.matrix-columns small{font-size:11px;color:var(--muted)}.flow{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px;flex-wrap:wrap}.flow div{background:#f0f3f1;padding:12px 16px;border-radius:6px}.flow small{display:block;font-size:10px;color:var(--muted);margin-bottom:8px}.flow .result{background:#e1f0e9}.flow>span{color:var(--accent);font-size:23px}.decisions{border-left:4px solid #c1934d}.choice{padding:0 0 16px;margin:0 0 16px;border-bottom:1px solid var(--line)}.choice:last-child{padding:0;margin:0;border:0}.choice h3{font-size:14px;margin:0 0 7px}.choice p{font-size:14px;color:var(--muted)}details summary{cursor:pointer;font-size:14px;color:var(--accent)}details[open] summary{margin-bottom:15px}.page-nav{display:flex;justify-content:space-between;gap:18px;margin-top:28px;font-size:14px}.page-nav a{text-decoration:none;font-weight:600}.page-nav .next{margin-left:auto}.footer{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--muted)}.js .review-page:not(.active){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(min-width:1500px){main{margin-left:calc(272px + (100vw - 1500px)/3)}}
+@media(max-width:900px){.sidebar{width:225px;padding:25px 17px}main{margin-left:225px;padding:0 25px 40px}.card{padding:22px}pre{padding:16px}}
+@media(max-width:650px){.sidebar{position:relative;width:100%;padding:20px}.sidebar h2{font-size:21px}.sidebar .subtitle{margin-bottom:14px}.sidebar input,.sidebar label,.sidebar .section-label,.later,.sidebar-footer{display:none}.review-links{display:flex;flex-wrap:wrap;margin:12px 0 0;gap:5px}.review-links a{padding:8px;font-size:12px}.review-links a span{display:none}main{margin:0;padding:0 15px 35px}.topbar{font-size:10px}.page-header{padding-top:25px}.lead{font-size:17px}.card{padding:19px 16px}h1{font-size:29px}.matrix-columns{gap:15px;flex-wrap:wrap}.flow{justify-content:flex-start}.card h2{font-size:16px}}
+@media print{body{background:white;font-size:11pt}.sidebar,.topbar,.page-nav,.copy,.skip{display:none}main{margin:0;max-width:none;padding:0}.js .review-page:not(.active){display:block}.review-page{break-before:page}.review-page:first-of-type{break-before:auto}.page-header{padding:10px 0}.card{break-inside:avoid;padding:15px;margin-bottom:12px}pre{white-space:pre-wrap;background:#f3f5f4;color:#172a35}pre code{white-space:pre-wrap;font-size:9pt}.badge{border:1px solid #aaa;background:white}.table-scroll{overflow:visible}td,th{font-size:9pt}h1{font-size:25pt}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to review</a>
+<aside class="sidebar" aria-label="Documentation navigation">
+  <div class="brand">NAUSICAA</div><h2>Event analysis</h2><p class="subtitle">Julia API · design review</p>
+  <label for="search">Find a review item</label><input id="search" type="search" placeholder="Type or function…" autocomplete="off">
+  <div class="section-label">Review 01 · Event representation</div>
+  <ul class="review-links">
+    <li><a href="#info" data-search="eventinfo event vertex primary origin"><span>01</span>EventInfo</a></li>
+    <li><a href="#hits" data-search="eventhits hits vectors coordinates frame energy time"><span>02</span>EventHits</a></li>
+    <li><a href="#centering" data-search="center_hits center coordinates function vertex"><span>03</span>center_hits</a></li>
+  </ul>
+  <div class="section-label">Review 02 · Voxelisation · proposed</div>
+  <ul class="review-links">
+    <li><a href="#voxel-grid" data-search="voxelgrid voxel grid size origin pitch"><span>04</span>VoxelGrid</a></li>
+    <li><a href="#voxel-cloud" data-search="voxelcloud voxel centres centers energy frame"><span>05</span>VoxelCloud</a></li>
+    <li><a href="#voxelize" data-search="voxelize_hits voxelise voxelize aggregation function energy binning"><span>06</span>voxelize_hits</a></li>
+  </ul><p id="empty-search" hidden>No matching item.</p>
+  <div class="section-label">Later reviews</div><div class="later">Graphs & backbones<br>Distances & selection<br>Transport & pad arrivals</div>
+  <div class="sidebar-footer">Group one implemented and tested. Group two proposed for joint review.<button id="print" type="button">Print all six items</button><a href="../event_analysis_plan.md">Full analysis plan ↗</a></div>
+</aside>
+<main id="main"><section class="card"><h1>Superseded pending review</h1><p>This records the earlier NAUSICAA interface review. Read the <a href="index.html">Petit assessment</a> before revising these interfaces. Group-one code remains implemented; its integration is under review.</p></section>
+  <div class="topbar"><span>Software contracts / Groups one &amp; two</span><strong>Event representation · voxelisation</strong></div>
+  <article id="info" class="review-page" aria-labelledby="info-title"><header class="page-header"><div class="eyebrow">Group one · event representation · 01 / 06 · Data type</div><h1 id="info-title" tabindex="-1">EventInfo</h1><p class="lead">Event-level information: ID, generation vertex and primaries.</p><span class="badge">Implemented · integration pending review</span></header><section class="card "><h2>Purpose</h2><p>One record per event. Electron-background events have one primary electron; double-beta events have two. The generation vertex defines the origin for local coordinates, and the primary IDs support truth-history studies.</p></section><section class="card declaration"><h2>Declaration</h2><div class="code-head"><span>Implemented Julia interface</span><button class="copy" type="button">Copy code</button></div><pre><code>struct EventInfo
+    event_id::Int64
+    vertex_mm::NTuple{3,Float32}
+    primary_particle_ids::Vector{Int32}
+end</code></pre></section><section class="card "><h2>Fields & contract</h2><div class="table-scroll"><table><thead><tr><th scope="col">Field</th><th scope="col">Julia type / units</th><th scope="col">Meaning and constraint</th></tr></thead><tbody><tr><td><code>event_id</code></td><td><code>Int64</code> · identifier</td><td>The source event ID; zero and gaps are valid. Unique within its source sample.</td></tr><tr><td><code>vertex_mm</code></td><td><code>NTuple{3,Float32}</code> · mm</td><td>Finite (x, y, z) in the source frame; shared by the generated primaries.</td></tr><tr><td><code>primary_particle_ids</code></td><td><code>Vector{Int32}</code> · identifiers</td><td>IDs read from the MC particle table: one entry for an electron background, two for double beta. Unique and sorted.</td></tr></tbody></table></div></section><section class="card "><h2>Worked example</h2><pre><code># Electron background: one primary
+electron_info = EventInfo(
+    Int64(43),
+    (10.0f0, 20.0f0, 100.0f0),
+    Int32[1],
+)
+
+# Double beta: two primaries
+info = EventInfo(
+    Int64(42),
+    (10.0f0, 20.0f0, 100.0f0),  # source-frame vertex, mm
+    Int32[1, 2],                 # illustrative IDs, read from MC particles
+)</code></pre><p class="caption">Illustrative particle IDs. The reader supplies the actual IDs for each event. The following hit and centring examples use the double-beta record, event 42.</p></section><section class="card "><h2>Validation & ownership</h2><ul><li>The vertex is finite and common to the generated primaries.</li><li>The primary-ID vector is nonempty and contains unique IDs from the MC particle table.</li><li>Construction copies the supplied ID vector.</li><li>Sample identity is stored with the enclosing dataset.</li></ul></section><section class="card "><h2>Test coverage</h2><div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Expected evidence</th></tr></thead><tbody><tr><td>One-primary electron and two-primary double-beta events</td><td>Preserve the vertex and the primary-ID vector for each sample.</td></tr><tr><td>Nonfinite vertex coordinates</td><td>Raise ArgumentError for NaN and Inf in each axis.</td></tr><tr><td>Empty or duplicate primary IDs</td><td>Throw ArgumentError; test sorting policy explicitly.</td></tr><tr><td>Caller changes its input ID vector</td><td>The constructed record remains unchanged when the caller changes its array.</td></tr></tbody></table></div></section><section class="card "><h2>Validation results · group one</h2><div class="table-scroll"><table><thead><tr><th scope="col">Test group</th><th scope="col">Passed</th><th scope="col">Failed / errors</th></tr></thead><tbody><tr><td>CoordinateFrame</td><td>4</td><td>0 / 0</td></tr><tr><td>EventInfo</td><td>21</td><td>0 / 0</td></tr><tr><td>EventHits</td><td>51</td><td>0 / 0</td></tr><tr><td>center_hits</td><td>73</td><td>0 / 0</td></tr><tr><td>Docstring examples</td><td>12</td><td>0 / 0</td></tr></tbody></table></div><p class="caption">Julia 1.12.6 · 2026-10-27T01:36:17.692 UTC · Source and test hashes verified when building this page. Regenerate with <code>make event-review</code>.</p></section><section class="card decisions"><h2>Design notes</h2><article class="choice"><h3>Primary ID ordering</h3><p>Construction stores a sorted copy of the primary IDs. Their count is the vector length.</p></article></section><section class="card "><h2>Julia documentation</h2><details><summary>Read the source docstring</summary><pre><code>EventInfo(event_id::Int64, vertex_mm::NTuple{3,Float32},
+              primary_particle_ids::Vector{Int32})
+
+Event-level information: source event ID, common primary generation vertex and
+primary particle IDs. Electron-background events have one primary electron;
+double-beta events have two.
+
+# Fields and arguments
+- `event_id::Int64`: event identifier within its source sample. Zero and gaps
+  are valid; sample identity is supplied by the enclosing dataset.
+- `vertex_mm::NTuple{3,Float32}`: finite source-frame coordinates `(x, y, z)` of
+  the common generation vertex, in mm. The reader obtains the common vertex
+  from the MC particle table.
+- `primary_particle_ids::Vector{Int32}`: nonempty, distinct particle IDs read
+  from the MC particle table. Construction stores a sorted copy. Its length
+  gives the number of primaries.
+
+# Ownership and validation
+The constructor preserves its arguments and owns its primary-ID vector.
+The tuple is immutable; array contents remain mutable. Computational functions
+validate those contents when called.
+
+Throw `ArgumentError` for a nonfinite vertex or an empty/duplicate primary-ID
+vector. Arguments use the declared field types; conversion from file or table
+representations belongs to the reader.
+
+# Examples
+```julia
+electron = EventInfo(Int64(43), (10f0, 20f0, 100f0), Int32[7])
+double_beta = EventInfo(Int64(42), (10f0, 20f0, 100f0), Int32[8, 3])
+@assert electron.primary_particle_ids == Int32[7]
+@assert double_beta.primary_particle_ids == Int32[3, 8]
+```</code></pre></details></section><nav class="page-nav" aria-label="Review sequence"><a class="next" href="#hits">Next: EventHits →</a></nav></article>
+<article id="hits" class="review-page" aria-labelledby="hits-title"><header class="page-header"><div class="eyebrow">Group one · event representation · 02 / 06 · Data type</div><h1 id="hits-title" tabindex="-1">EventHits</h1><p class="lead">One event’s hits, stored as parallel vectors.</p><span class="badge">Implemented · integration pending review</span></header><section class="card "><h2>Purpose</h2><p>The event ID is stored once. Coordinates, energy, MC time and particle/hit IDs share a common ordering: entry j in each vector describes hit j. The numerical hit fields use Float32.</p></section><section class="card "><h2>CoordinateFrame · enum</h2><p><code>CoordinateFrame</code> identifies the coordinate system used by <code>EventHits.x_mm</code>, <code>y_mm</code> and <code>z_mm</code>. Julia’s <code>@enum</code> declaration creates the type and its named values:</p><pre><code>@enum CoordinateFrame source_frame vertex_frame</code></pre><div class="table-scroll"><table><thead><tr><th scope="col">Value</th><th scope="col">Coordinate convention</th></tr></thead><tbody><tr><td><code>source_frame</code></td><td>Positions in the original simulation coordinate system, as read from the NEXUS hit table.</td></tr><tr><td><code>vertex_frame</code></td><td>Positions relative to the event’s true generation vertex: source position minus vertex position. The vertex is at (0, 0, 0).</td></tr></tbody></table></div><p class="caption">The enum is declared with the shared types in <code>src/event_analysis/types.jl</code>.</p><p>The field <code>hits.frame</code> holds one enum value. <code>center_hits</code> takes an event in <code>source_frame</code> and returns one in <code>vertex_frame</code>. The coordinate, energy, time and identifier vectors are fields of <code>EventHits</code>.</p><details><summary>Read the enum docstring</summary><pre><code>CoordinateFrame
+
+Coordinate system used by the `x_mm`, `y_mm` and `z_mm` vectors in [`EventHits`](@ref).
+The `@enum` declaration defines this type and its two values:
+
+- `source_frame`: positions in the original simulation coordinate system.
+- `vertex_frame`: positions relative to the event&#x27;s true generation vertex,
+  obtained by subtracting that vertex from each source position. The vertex is
+  at `(0, 0, 0)` in this frame, with the source axis directions preserved.
+
+The field `hits.frame` records the coordinate system. [`center_hits`](@ref)
+maps a source-frame event into the vertex frame. Distances are expressed in mm
+in both frames.
+
+# Example
+```julia
+frame = source_frame
+@assert frame isa CoordinateFrame
+@assert frame != vertex_frame
+```</code></pre></details></section><section class="card declaration"><h2>Declaration</h2><div class="code-head"><span>Implemented Julia interface</span><button class="copy" type="button">Copy code</button></div><pre><code>struct EventHits
+    event_id::Int64
+    frame::CoordinateFrame
+    x_mm::Vector{Float32}
+    y_mm::Vector{Float32}
+    z_mm::Vector{Float32}
+    energy_MeV::Vector{Float32}
+    time_ns::Vector{Float32}
+    particle_id::Vector{Int32}
+    hit_id::Vector{Int32}
+end</code></pre></section><section class="card "><h2>Fields & contract</h2><div class="table-scroll"><table><thead><tr><th scope="col">Field</th><th scope="col">Julia type / units</th><th scope="col">Meaning and constraint</th></tr></thead><tbody><tr><td><code>event_id</code></td><td><code>Int64</code></td><td>Matches the corresponding EventInfo record.</td></tr><tr><td><code>frame</code></td><td><code>CoordinateFrame</code></td><td>Coordinate system used by x_mm, y_mm and z_mm.</td></tr><tr><td><code>x_mm</code></td><td><code>Vector{Float32}</code> · mm</td><td>N finite x coordinates.</td></tr><tr><td><code>y_mm</code></td><td><code>Vector{Float32}</code> · mm</td><td>N finite y coordinates.</td></tr><tr><td><code>z_mm</code></td><td><code>Vector{Float32}</code> · mm</td><td>N finite z coordinates.</td></tr><tr><td><code>energy_MeV</code></td><td><code>Vector{Float32}</code> · MeV</td><td>N original finite, nonnegative energy deposits.</td></tr><tr><td><code>time_ns</code></td><td><code>Vector{Float32}</code> · ns</td><td>N original finite MC deposition times.</td></tr><tr><td><code>particle_id</code>, <code>hit_id</code></td><td><code>Vector{Int32}</code></td><td>N entries each. The pair identifies a hit within the event; the complete key within a sample is (event_id, particle_id, hit_id).</td></tr></tbody></table></div></section><section class="card "><h2>Worked example</h2><div class="table-scroll"><table><thead><tr><th scope="col">Vector</th><th scope="col">Hit 1</th><th scope="col">Hit 2</th></tr></thead><tbody><tr><td><code>x_mm</code></td><td>10</td><td>13</td></tr><tr><td><code>y_mm</code></td><td>20</td><td>24</td></tr><tr><td><code>z_mm</code></td><td>100</td><td>102</td></tr><tr><td><code>particle_id</code></td><td>1</td><td>2</td></tr><tr><td><code>hit_id</code></td><td>0</td><td>0</td></tr></tbody></table></div><pre><code>hits = EventHits(
+    Int64(42), source_frame,
+    Float32[10, 13],            # x, mm
+    Float32[20, 24],            # y, mm
+    Float32[100, 102],          # z, mm
+    Float32[0.001, 0.002],       # deposited energy, MeV
+    Float32[0.0, 0.5],           # MC time, ns
+    Int32[1, 2],                # particle IDs
+    Int32[0, 0],                # hit IDs may repeat across particles
+)</code></pre></section><section class="card "><h2>Validation & ownership</h2><ul><li>Every vector has the same positive length N.</li><li>Coordinates, energy and MC time use Float32 in both coordinate frames.</li><li>Within an event, each (particle_id, hit_id) pair is unique. Sample identity is stored with the enclosing dataset.</li><li>Hit ordering is preserved. Ordered primary histories are derived separately.</li><li>Constructors copy arrays; computational functions preserve their inputs.</li><li>Array fields are mutable, so their contents are validated at computational boundaries.</li></ul></section><section class="card "><h2>Test coverage</h2><div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Expected evidence</th></tr></thead><tbody><tr><td>Repeated hit_id across different particles</td><td>Accept the two-hit example and preserve every vector entry.</td></tr><tr><td>Repeated (particle_id, hit_id) within an event</td><td>Raise ArgumentError.</td></tr><tr><td>Unequal vector lengths</td><td>Raise DimensionMismatch.</td></tr><tr><td>NaN/Inf, negative energy or empty event</td><td>Raise ArgumentError; zero energy remains permitted.</td></tr><tr><td>Input ordering and numerical types</td><td>Preserve ordering and Float32 values in all five numerical vectors.</td></tr><tr><td>Copy and mutation contract</td><td>The event retains its values when caller arrays change.</td></tr></tbody></table></div></section><section class="card "><h2>Validation results · group one</h2><div class="table-scroll"><table><thead><tr><th scope="col">Test group</th><th scope="col">Passed</th><th scope="col">Failed / errors</th></tr></thead><tbody><tr><td>CoordinateFrame</td><td>4</td><td>0 / 0</td></tr><tr><td>EventInfo</td><td>21</td><td>0 / 0</td></tr><tr><td>EventHits</td><td>51</td><td>0 / 0</td></tr><tr><td>center_hits</td><td>73</td><td>0 / 0</td></tr><tr><td>Docstring examples</td><td>12</td><td>0 / 0</td></tr></tbody></table></div><p class="caption">Julia 1.12.6 · 2026-10-27T01:36:17.692 UTC · Source and test hashes verified when building this page. Regenerate with <code>make event-review</code>.</p></section><section class="card decisions"><h2>Design notes</h2><article class="choice"><h3>Array ownership</h3><p>Construction copies each array separately; functions return independently owned outputs.</p></article><article class="choice"><h3>Accumulation precision</h3><p>Float32 is the proposed baseline for reductions. Compare event-energy sums with Float64 references and report the error relative to 12.5 keV, corresponding to 0.5% at 2.5 MeV, before finalising reduction routines.</p></article></section><section class="card "><h2>Julia documentation</h2><details><summary>Read the source docstring</summary><pre><code>EventHits(event_id::Int64, frame::CoordinateFrame,
+              x_mm::Vector{Float32}, y_mm::Vector{Float32}, z_mm::Vector{Float32},
+              energy_MeV::Vector{Float32}, time_ns::Vector{Float32},
+              particle_id::Vector{Int32}, hit_id::Vector{Int32})
+
+One event&#x27;s hits stored as parallel, independently owned vectors. Entry `j` in
+each vector describes the same hit. The same concrete type represents source
+and vertex-centred coordinates.
+
+# Fields and arguments
+- `event_id::Int64`: event identifier within the enclosing source sample.
+- `frame::CoordinateFrame`: coordinate system of the three position vectors;
+  see [`CoordinateFrame`](@ref).
+- `x_mm`, `y_mm`, `z_mm`: Float32 coordinates in mm, each with length `N`.
+- `energy_MeV`: length-`N` Float32 vector of deposited energies in MeV.
+- `time_ns`: length-`N` Float32 vector of MC deposition times in ns.
+- `particle_id`, `hit_id`: length-`N` Int32 identifier vectors. The pair is
+  unique within the event; `(event_id, particle_id, hit_id)` identifies a hit
+  within its sample. Hit IDs may repeat across particles.
+
+# Ownership and validation
+Construction preserves hit ordering and copies every vector separately, even
+when several arguments refer to the same array. All vectors have the same
+positive length. Physical values are finite; energy deposits are nonnegative.
+The constructor accepts the declared field types.
+
+Throw `DimensionMismatch` for unequal vector lengths. Throw `ArgumentError`
+for an empty event, nonfinite physical values, negative energy or duplicate hit
+identities. Array contents remain mutable and are validated at computational
+boundaries.
+
+# Example
+```julia
+hits = EventHits(Int64(42), source_frame,
+    Float32[10, 13], Float32[20, 24], Float32[100, 102],
+    Float32[0.001, 0.002], Float32[0, 0.5], Int32[1, 2], Int32[0, 0])
+@assert hits.x_mm == Float32[10, 13]
+@assert hits.hit_id == Int32[0, 0]
+@assert length(hits.energy_MeV) == 2
+```</code></pre></details></section><nav class="page-nav" aria-label="Review sequence"><a href="#info">← EventInfo</a><a class="next" href="#centering">Next: center_hits →</a></nav></article>
+<article id="centering" class="review-page" aria-labelledby="centering-title"><header class="page-header"><div class="eyebrow">Group one · event representation · 03 / 06 · Pure function</div><h1 id="centering-title" tabindex="-1">center_hits</h1><p class="lead">Subtract the true vertex from x, y and z.</p><span class="badge">Implemented · integration pending review</span></header><section class="card "><h2>Purpose</h2><p>Translate each coordinate vector into the vertex frame. The result uses the same EventHits type and Float32 fields, preserving hit order, energy, MC time and identity.</p></section><section class="card declaration"><h2>Signature</h2><div class="code-head"><span>Implemented Julia interface</span><button class="copy" type="button">Copy code</button></div><pre><code>center_hits(hits::EventHits, info::EventInfo)::EventHits</code></pre></section><section class="card "><h2>Inputs & output</h2><div class="table-scroll"><table><thead><tr><th scope="col">Contract</th><th scope="col">Type / state</th><th scope="col">Behaviour</th></tr></thead><tbody><tr><td><code>hits</code></td><td><code>EventHits</code></td><td>source_frame; equal-length vectors with Float32 numerical fields.</td></tr><tr><td><code>info</code></td><td><code>EventInfo</code></td><td>Same event ID; finite Float32 vertex coordinates.</td></tr><tr><td>Return</td><td><code>EventHits</code></td><td>vertex_frame; Float32 x_mm, y_mm and z_mm; independent copies of every array.</td></tr><tr><td>Computation</td><td>Pure</td><td>The result depends on the supplied arguments. Inputs retain their values and ordering.</td></tr><tr><td>Invalid input</td><td>Explicit exception</td><td>ArgumentError for incompatible frame/IDs, invalid values or duplicate hit identities; DimensionMismatch for unequal vector lengths.</td></tr></tbody></table></div></section><section class="card "><h2>Worked example</h2><div class="table-scroll"><table><thead><tr><th scope="col">Coordinate</th><th scope="col">Source vector · mm</th><th scope="col">Vertex · mm</th><th scope="col">Local vector · mm</th></tr></thead><tbody><tr><td><code>x_mm</code></td><td>[10, 13]</td><td>10</td><td>[0, 3]</td></tr><tr><td><code>y_mm</code></td><td>[20, 24]</td><td>20</td><td>[0, 4]</td></tr><tr><td><code>z_mm</code></td><td>[100, 102]</td><td>100</td><td>[0, 2]</td></tr></tbody></table></div><pre><code>local_hits = center_hits(hits, info)
+
+local_hits.x_mm == Float32[0, 3]
+local_hits.y_mm == Float32[0, 4]
+local_hits.z_mm == Float32[0, 2]
+local_hits.frame == vertex_frame</code></pre><p class="caption">The inter-hit displacement remains (3, 4, 2) mm. Energy, MC time and identifiers retain their original values and ordering.</p></section><section class="card "><h2>Validation & ownership</h2><p>Calculate <code>hits.x_mm .- info.vertex_mm[1]</code>, and similarly for y and z, using Float32 arithmetic.</p><ul><li>Input frame: source_frame. Output frame: vertex_frame.</li><li>Every vector keeps its length and hit ordering.</li><li>MC times, energies and identifiers retain their values.</li><li>Every returned array is independently owned.</li></ul></section><section class="card "><h2>Test coverage</h2><div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Expected evidence</th></tr></thead><tbody><tr><td>Worked two-hit example</td><td>Return x=[0, 3], y=[0, 4], z=[0, 2] in vertex_frame.</td></tr><tr><td>Common spatial translation</td><td>Exactly representable translations preserve the result exactly; general cases use tolerances appropriate to Float32 coordinates.</td></tr><tr><td>Numerical representation</td><td>All five numerical fields remain Vector{Float32}.</td></tr><tr><td>Energy, time and hit identity</td><td>Preserve all values and their ordering exactly.</td></tr><tr><td>Input preservation and independent outputs</td><td>Snapshot inputs; check them after the call and after modifying returned arrays.</td></tr><tr><td>Wrong frame, event ID or invalid array contents</td><td>Raise the documented error.</td></tr></tbody></table></div></section><section class="card "><h2>Validation results · group one</h2><div class="table-scroll"><table><thead><tr><th scope="col">Test group</th><th scope="col">Passed</th><th scope="col">Failed / errors</th></tr></thead><tbody><tr><td>CoordinateFrame</td><td>4</td><td>0 / 0</td></tr><tr><td>EventInfo</td><td>21</td><td>0 / 0</td></tr><tr><td>EventHits</td><td>51</td><td>0 / 0</td></tr><tr><td>center_hits</td><td>73</td><td>0 / 0</td></tr><tr><td>Docstring examples</td><td>12</td><td>0 / 0</td></tr></tbody></table></div><p class="caption">Julia 1.12.6 · 2026-10-27T01:36:17.692 UTC · Source and test hashes verified when building this page. Regenerate with <code>make event-review</code>.</p></section><section class="card decisions"><h2>Design notes</h2><article class="choice"><h3>Validation at the function boundary</h3><p>The function validates current array contents because array fields are mutable.</p></article></section><section class="card "><h2>Julia documentation</h2><details><summary>Read the source docstring</summary><pre><code>center_hits(hits::EventHits, info::EventInfo) -&gt; EventHits
+
+Express each hit relative to the event&#x27;s true generation vertex, preserving the
+source axis directions and hit ordering.
+
+# Arguments
+- `hits::EventHits`: one event in `source_frame`. Its `x_mm`, `y_mm`, `z_mm`,
+  `energy_MeV` and `time_ns` fields contain Float32 vectors in mm, MeV and ns;
+  `particle_id` and `hit_id` contain Int32 vectors with the same length.
+- `info::EventInfo`: matching event ID, finite Float32 generation vertex in
+  source coordinates, and distinct primary particle IDs.
+
+# Returns and arithmetic
+A new `EventHits` in `vertex_frame`. Each axis is translated in Float32:
+`x_mm = hits.x_mm .- info.vertex_mm[1]`, and likewise for y and z. Coordinates
+retain Float32 precision, so comparisons under arbitrary translations use a
+tolerance consistent with the source coordinate spacing.
+
+Energy, MC time and identifiers retain their exact values and ordering. Hit
+identity remains `(event_id, particle_id, hit_id)` within its source sample.
+
+# Ownership and determinism
+The result depends on the supplied arguments. Inputs retain their values and
+every returned array is independently owned, including the preserved fields.
+
+# Errors
+Throw `ArgumentError` for mismatched event IDs, an input frame other than
+`source_frame`, an empty event, invalid physical values, duplicate hit identities
+or empty/duplicate primary IDs. Translated coordinates must remain finite.
+Throw `DimensionMismatch` for unequal hit-vector lengths. Current array contents
+are validated on entry because array fields are mutable.
+
+# Example
+```julia
+info = EventInfo(Int64(42), (10f0, 20f0, 100f0), Int32[1, 2])
+hits = EventHits(Int64(42), source_frame,
+    Float32[10, 13], Float32[20, 24], Float32[100, 102],
+    Float32[0.001, 0.002], Float32[0, 0.5], Int32[1, 2], Int32[0, 0])
+local_hits = center_hits(hits, info)
+@assert local_hits.x_mm == Float32[0, 3]
+@assert local_hits.y_mm == Float32[0, 4]
+@assert local_hits.z_mm == Float32[0, 2]
+@assert local_hits.frame == vertex_frame
+```</code></pre></details></section><nav class="page-nav" aria-label="Review sequence"><a href="#hits">← EventHits</a><a class="next" href="#voxel-grid">Next: VoxelGrid →</a></nav></article>
+<article id="voxel-grid" class="review-page" aria-labelledby="voxel-grid-title"><header class="page-header"><div class="eyebrow">Group two · voxelisation · 04 / 06 · Data type</div><h1 id="voxel-grid-title" tabindex="-1">VoxelGrid</h1><p class="lead">Cubic cell size and grid origin.</p><span class="badge">Superseded · pending review</span></header><section class="card "><h2>Purpose</h2><p>Define the spatial grid used to aggregate hits before building the track graph. The size sets the analysis resolution; the origin sets the grid alignment relative to the trace.</p></section><section class="card declaration"><h2>Declaration</h2><div class="code-head"><span>Proposed Julia interface</span><button class="copy" type="button">Copy code</button></div><pre><code>struct VoxelGrid
+    size_mm::Float32
+    origin_mm::NTuple{3,Float32}
+end</code></pre></section><section class="card "><h2>Fields & contract</h2><div class="table-scroll"><table><thead><tr><th scope="col">Field</th><th scope="col">Julia type / units</th><th scope="col">Proposed meaning</th></tr></thead><tbody><tr><td><code>size_mm</code></td><td><code>Float32</code> · mm</td><td>Finite, positive side length of each cubic cell.</td></tr><tr><td><code>origin_mm</code></td><td><code>NTuple{3,Float32}</code> · mm</td><td>Finite (x, y, z) corner of cell (0, 0, 0), expressed in the input hit frame.</td></tr></tbody></table></div></section><section class="card "><h2>Worked example</h2><pre><code>grid = VoxelGrid(1f0, (0f0, 0f0, 0f0))</code></pre><div class="table-scroll"><table><thead><tr><th scope="col">x · mm</th><th scope="col">x cell index</th><th scope="col">Cell interval · mm</th></tr></thead><tbody><tr><td>−0.25</td><td>−1</td><td>[−1, 0)</td></tr><tr><td>0</td><td>0</td><td>[0, 1)</td></tr><tr><td>0.75</td><td>0</td><td>[0, 1)</td></tr><tr><td>1</td><td>1</td><td>[1, 2)</td></tr></tbody></table></div><p class="caption">The same assignment rule applies independently to y and z. The 1 mm size is an example for reviewing the interface.</p></section><section class="card "><h2>Validation & ownership</h2><ul><li>Immutable scalar and tuple fields.</li><li>Cell index on x: <code>floor(Int, (x_mm - origin_mm[1]) / size_mm)</code>.</li><li>Cells include their lower boundary and exclude their upper boundary.</li><li>Invalid size or origin raises <code>ArgumentError</code>.</li></ul></section><section class="card "><h2>Proposed tests</h2><div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Expected evidence</th></tr></thead><tbody><tr><td>Size and origin validation</td><td>Accept finite positive sizes and finite origins; reject zero/negative size, NaN and Inf.</td></tr><tr><td>Known cell assignments</td><td>Check positive and negative positions, exact boundaries and adjacent Float32 values in voxelize_hits.</td></tr><tr><td>Grid translation</td><td>Translate hits and grid together; preserve cell assignments within the agreed precision convention.</td></tr></tbody></table></div></section><section class="card decisions"><h2>Choices for joint review</h2><article class="choice"><h3>Resolution setting</h3><p>Choose voxel size through the backbone stability study. Sensor pitch remains a separate detector setting.</p></article><article class="choice"><h3>Origin convention</h3><p>Use a cell corner as the origin. An origin of (0, 0, 0) places the true vertex on a grid corner for vertex-centred hits; origin shifts support the planned grid-phase study.</p></article></section><section class="card "><h2>Proposed Julia documentation</h2><details><summary>Read the proposed docstring</summary><pre><code>VoxelGrid(size_mm::Float32, origin_mm::NTuple{3,Float32})
+
+Specify an axis-aligned cubic grid for hit aggregation.
+
+# Arguments
+- `size_mm`: finite positive side length in mm.
+- `origin_mm`: finite (x, y, z) corner of cell (0, 0, 0), in mm and in
+  the same coordinate frame as the input EventHits.
+
+# Cell convention
+The integer key on each axis is floor((coordinate - origin) / size).
+Each interval includes its lower boundary and excludes its upper boundary.
+Keys can be negative. The geometric centre is origin + (key + 0.5) * size.
+
+# Validation and ownership
+The constructor stores immutable Float32 values. Throw ArgumentError for
+nonfinite values or a nonpositive size.
+
+# Example
+```julia
+grid = VoxelGrid(1f0, (0f0, 0f0, 0f0))
+@assert grid.size_mm == 1f0
+@assert grid.origin_mm == (0f0, 0f0, 0f0)
+```</code></pre></details></section><nav class="page-nav" aria-label="Review sequence"><a href="#centering">← center_hits</a><a class="next" href="#voxel-cloud">Next: VoxelCloud →</a></nav></article>
+<article id="voxel-cloud" class="review-page" aria-labelledby="voxel-cloud-title"><header class="page-header"><div class="eyebrow">Group two · voxelisation · 05 / 06 · Data type</div><h1 id="voxel-cloud-title" tabindex="-1">VoxelCloud</h1><p class="lead">Occupied grid cells and their summed energies.</p><span class="badge">Superseded · pending review</span></header><section class="card "><h2>Purpose</h2><p>Represent one event as occupied grid cells. Each voxel has a geometric centre and the sum of its deposited energies.</p></section><section class="card declaration"><h2>Declaration</h2><div class="code-head"><span>Proposed Julia interface</span><button class="copy" type="button">Copy code</button></div><pre><code>struct VoxelCloud
+    event_id::Int64
+    frame::CoordinateFrame
+    grid::VoxelGrid
+    x_mm::Vector{Float32}            # V; geometric cell-center coordinates
+    y_mm::Vector{Float32}
+    z_mm::Vector{Float32}
+    energy_MeV::Vector{Float32}       # V; sums, before graph threshold
+end</code></pre></section><section class="card "><h2>Fields & contract</h2><div class="table-scroll"><table><thead><tr><th scope="col">Field</th><th scope="col">Julia type / units</th><th scope="col">Proposed meaning</th></tr></thead><tbody><tr><td><code>event_id</code></td><td><code>Int64</code></td><td>Source event ID, preserved from EventHits.</td></tr><tr><td><code>frame</code></td><td><code>CoordinateFrame</code></td><td>Coordinate system shared by the centres and grid origin; preserved from EventHits.</td></tr><tr><td><code>grid</code></td><td><code>VoxelGrid</code></td><td>Grid size and origin used to form these voxels.</td></tr><tr><td><code>x_mm</code>, <code>y_mm</code>, <code>z_mm</code></td><td><code>Vector{Float32}</code> · mm</td><td>V geometric cell centres, in ascending lexicographic (ix, iy, iz) cell-key order.</td></tr><tr><td><code>energy_MeV</code></td><td><code>Vector{Float32}</code> · MeV</td><td>V finite, nonnegative energy sums, one per occupied cell.</td></tr></tbody></table></div></section><section class="card "><h2>Worked example</h2><div class="table-scroll"><table><thead><tr><th scope="col">Input hit j</th><th scope="col">x, y, z · mm</th><th scope="col">Energy · MeV</th><th scope="col">Cell key</th></tr></thead><tbody><tr><td>1</td><td>(0.25, 0.25, 0.25)</td><td>0.001</td><td>(0, 0, 0)</td></tr><tr><td>2</td><td>(-0.25, 0.25, 0.25)</td><td>0.002</td><td>(-1, 0, 0)</td></tr><tr><td>3</td><td>(0.75, 0.25, 0.25)</td><td>0.003</td><td>(0, 0, 0)</td></tr><tr><td>4</td><td>(1.0, 0.25, 0.25)</td><td>0.004</td><td>(1, 0, 0)</td></tr></tbody></table></div><div class="table-scroll"><table><thead><tr><th scope="col">Cloud index v</th><th scope="col">Cell key</th><th scope="col">Centre · mm</th><th scope="col">Energy · MeV</th></tr></thead><tbody><tr><td>1</td><td>(-1, 0, 0)</td><td>(-0.5, 0.5, 0.5)</td><td>0.002</td></tr><tr><td>2</td><td>(0, 0, 0)</td><td>(0.5, 0.5, 0.5)</td><td>0.004</td></tr><tr><td>3</td><td>(1, 0, 0)</td><td>(1.5, 0.5, 0.5)</td><td>0.004</td></tr></tbody></table></div><p class="caption">Illustrative 1 mm cells with origin (0, 0, 0). Energies are displayed as decimal values; stored sums use Float32.</p></section><section class="card "><h2>Validation & ownership</h2><ul><li>Centre and energy vectors have the same positive length V.</li><li>Each occupied cell is represented once, in canonical cell-key order.</li><li>Each occupied cell contains at least one hit. Zero-energy occupied cells remain represented.</li><li>Construction copies the arrays; the stored grid specification is immutable.</li><li>Shape mismatches raise <code>DimensionMismatch</code>; invalid values, grid centres or ordering raise <code>ArgumentError</code>.</li></ul></section><section class="card "><h2>Proposed tests</h2><div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Expected evidence</th></tr></thead><tbody><tr><td>Four-hit worked example</td><td>Three cells with the stated centres and energy sums.</td></tr><tr><td>Centre geometry and ordering</td><td>Validate finite grid centres, unique cells and lexicographic cell-key order, with Float32 centre rounding accounted for.</td></tr><tr><td>Field and shape contracts</td><td>Check lengths, finite values, energy sign and concrete field types.</td></tr><tr><td>Array ownership</td><td>Changing constructor inputs preserves the constructed cloud.</td></tr></tbody></table></div></section><section class="card decisions"><h2>Choices for joint review</h2><article class="choice"><h3>Coordinate representation</h3><p>Use separate x_mm, y_mm and z_mm vectors, following EventHits. Carry frame and grid so the centre coordinates have an explicit interpretation.</p></article><article class="choice"><h3>Original hits</h3><p>Keep EventHits alongside VoxelCloud for the later hit-to-backbone distance calculation.</p></article></section><section class="card "><h2>Proposed Julia documentation</h2><details><summary>Read the proposed docstring</summary><pre><code>VoxelCloud(event_id::Int64, frame::CoordinateFrame, grid::VoxelGrid,
+               x_mm::Vector{Float32}, y_mm::Vector{Float32},
+               z_mm::Vector{Float32}, energy_MeV::Vector{Float32})
+
+Store the occupied grid cells of one event and their deposited energy sums.
+
+# Fields
+`event_id` and `frame` identify the event and its coordinate system.
+`grid` records the grid size and origin in that frame. Position vectors give
+the geometric centres of V cells in mm. `energy_MeV` gives their deposited
+energy sums. All four physical vectors have length V and Float32 elements.
+
+Cells follow ascending lexicographic (ix, iy, iz) order. Each cell appears once.
+Each occupied cell contains at least one hit, including cells with zero energy.
+
+# Validation and ownership
+V is positive. Centres are finite grid-centre positions at Float32
+precision; energies are finite and nonnegative.
+Construction copies each array separately. Throw DimensionMismatch for unequal
+centre/energy lengths; throw ArgumentError for invalid values or cell ordering.
+Agreement with the originating hits is tested in voxelize_hits.
+
+# Example
+For 1 mm cells at origin (0, 0, 0), hits at x=[0.25, -0.25, 0.75, 1.0],
+all with y=z=0.25 mm, occupy cells with x centres [-0.5, 0.5, 1.5] mm.</code></pre></details></section><nav class="page-nav" aria-label="Review sequence"><a href="#voxel-grid">← VoxelGrid</a><a class="next" href="#voxelize">Next: voxelize_hits →</a></nav></article>
+<article id="voxelize" class="review-page" aria-labelledby="voxelize-title"><header class="page-header"><div class="eyebrow">Group two · voxelisation · 06 / 06 · Pure function</div><h1 id="voxelize-title" tabindex="-1">voxelize_hits</h1><p class="lead">Assign hits to cells and sum their deposited energies.</p><span class="badge">Superseded · pending review</span></header><section class="card "><h2>Purpose</h2><p>Bin a hit cloud on a 3D grid, summing deposited energies in each occupied cell. The pipeline supplies vertex-centred hits and an explicit grid specification.</p></section><section class="card declaration"><h2>Signature</h2><div class="code-head"><span>Proposed Julia interface</span><button class="copy" type="button">Copy code</button></div><pre><code>voxelize_hits(hits::EventHits, grid::VoxelGrid)::VoxelCloud</code></pre></section><section class="card "><h2>Inputs & output</h2><div class="table-scroll"><table><thead><tr><th scope="col">Argument / return</th><th scope="col">Julia type</th><th scope="col">Proposed contract</th></tr></thead><tbody><tr><td><code>hits</code></td><td><code>EventHits</code></td><td>One valid event with its original hit order.</td></tr><tr><td><code>grid</code></td><td><code>VoxelGrid</code></td><td>Grid definition in hits.frame.</td></tr><tr><td>Return</td><td><code>VoxelCloud</code></td><td>Same event ID and frame; grid definition, cell centres and energy sums.</td></tr></tbody></table></div></section><section class="card "><h2>Worked example</h2><div class="table-scroll"><table><thead><tr><th scope="col">Input hit j</th><th scope="col">x, y, z · mm</th><th scope="col">Energy · MeV</th><th scope="col">Cell key</th></tr></thead><tbody><tr><td>1</td><td>(0.25, 0.25, 0.25)</td><td>0.001</td><td>(0, 0, 0)</td></tr><tr><td>2</td><td>(-0.25, 0.25, 0.25)</td><td>0.002</td><td>(-1, 0, 0)</td></tr><tr><td>3</td><td>(0.75, 0.25, 0.25)</td><td>0.003</td><td>(0, 0, 0)</td></tr><tr><td>4</td><td>(1.0, 0.25, 0.25)</td><td>0.004</td><td>(1, 0, 0)</td></tr></tbody></table></div><pre><code>hits = EventHits(Int64(42), vertex_frame,
+    Float32[0.25, -0.25, 0.75, 1.0],
+    Float32[0.25, 0.25, 0.25, 0.25],
+    Float32[0.25, 0.25, 0.25, 0.25],
+    Float32[0.001, 0.002, 0.003, 0.004],
+    Float32[0, 0, 0, 0], Int32[1, 1, 1, 1], Int32[0, 1, 2, 3])
+cloud = voxelize_hits(hits, VoxelGrid(1f0, (0f0, 0f0, 0f0)))</code></pre><div class="table-scroll"><table><thead><tr><th scope="col">Cloud index v</th><th scope="col">Cell key</th><th scope="col">Centre · mm</th><th scope="col">Energy · MeV</th></tr></thead><tbody><tr><td>1</td><td>(-1, 0, 0)</td><td>(-0.5, 0.5, 0.5)</td><td>0.002</td></tr><tr><td>2</td><td>(0, 0, 0)</td><td>(0.5, 0.5, 0.5)</td><td>0.004</td></tr><tr><td>3</td><td>(1, 0, 0)</td><td>(1.5, 0.5, 0.5)</td><td>0.004</td></tr></tbody></table></div><p class="caption">Illustrative 1 mm cells with origin (0, 0, 0). Energies are displayed as decimal values; stored sums use Float32.</p></section><section class="card "><h2>Validation & ownership</h2><ol><li>Validate the event and grid.</li><li>Compute each hit’s integer (ix, iy, iz) cell key.</li><li>Sort occupied keys lexicographically to assign voxel indices.</li><li>Sum each cell’s energy in Float32, visiting hits in (particle_id, hit_id) order.</li><li>Calculate the geometric cell centres.</li><li>Return independently owned arrays, preserving the input values.</li></ol></section><section class="card "><h2>Proposed tests</h2><div class="table-scroll"><table><thead><tr><th scope="col">Case</th><th scope="col">Expected evidence</th></tr></thead><tbody><tr><td>Cell assignment and boundaries</td><td>Known 3D cells, negative coordinates, exact edges and adjacent Float32 values; repeat with nonzero origins and non-unit sizes.</td></tr><tr><td>Complete binning</td><td>Every hit contributes once to its expected cell; each output cell is occupied, including zero-energy cells.</td></tr><tr><td>Energy conservation</td><td>Compare each voxel and event total against independently grouped Float64 sums; report absolute errors and their fraction of 0.0125 MeV.</td></tr><tr><td>Permutation reproducibility</td><td>Reordering hits preserves cell order and energy sums.</td></tr><tr><td>Frame and translations</td><td>Preserve event ID/frame. A common hit/grid translation preserves cell keys and energies at the agreed precision.</td></tr><tr><td>Purity and validation</td><td>Check input snapshots and output ownership; reject invalid mutable hit contents and unrepresentable cell keys or centres.</td></tr></tbody></table></div></section><section class="card decisions"><h2>Choices for joint review</h2><article class="choice"><h3>Energy accumulation</h3><p>Propose Float32 sums with canonical hit-identity ordering. Validate the error on fixtures and representative NEXUS events against the 12.5 keV resolution scale before accepting this reduction.</p></article><article class="choice"><h3>Numerical cell boundaries</h3><p>Review the lower-inclusive rule using stored Float32 inputs. Boundary tests will determine the arithmetic needed to honour it for shifted grids and general voxel sizes.</p></article><article class="choice"><h3>Graph threshold</h3><p>Voxelisation includes every hit and occupied cell. GraphSpec will supply the subsequent voxel-energy threshold.</p></article></section><section class="card "><h2>Proposed Julia documentation</h2><details><summary>Read the proposed docstring</summary><pre><code>voxelize_hits(hits::EventHits, grid::VoxelGrid) -&gt; VoxelCloud
+
+Bin one event&#x27;s hits into cubic cells and sum their deposited energies.
+
+# Inputs and output
+`hits` supplies finite Float32 positions in mm, energies in MeV and unique
+(particle_id, hit_id) identities. `grid` defines the grid in hits.frame.
+Return a VoxelCloud carrying hits.event_id, hits.frame and grid.
+
+# Assignment and ordering
+On each axis, the cell key is floor((coordinate - origin) / size). Lower cell
+boundaries are inclusive and upper boundaries exclusive. Sort occupied keys
+lexicographically. Store geometric cell centres as Float32 positions in mm.
+
+# Energy reduction
+Every hit contributes its energy once, including zero-energy deposits.
+Within a cell, visit hits in (particle_id, hit_id) order and accumulate in
+Float32. This fixes summation order under input permutations. Validate errors
+against independent Float64 reference sums before accepting this reduction.
+
+# Ownership and errors
+Inputs retain their values; output arrays are independently owned.
+Validate current hit-array contents on entry. Throw DimensionMismatch for
+unequal hit-vector lengths. Throw ArgumentError for invalid values or
+identities, or cell keys/centres outside their representable range.
+
+# Worked example
+With 1 mm cells at origin (0, 0, 0), x=[0.25, -0.25, 0.75, 1.0] mm and
+y=z=0.25 mm, return x centres [-0.5, 0.5, 1.5] mm.
+For energies [0.001, 0.002, 0.003, 0.004] MeV, the cell sums are approximately
+[0.002, 0.004, 0.004] MeV, with Float32 rounding.</code></pre></details></section><nav class="page-nav" aria-label="Review sequence"><a href="#voxel-cloud">← VoxelCloud</a><a class="next" href="#info">Return to EventInfo ↑</a></nav></article>
+  <footer class="footer">Group one declarations and docstrings come from <a href="../../src/event_analysis/types.jl">types.jl</a> and <a href="../../src/event_analysis/coordinates.jl">coordinates.jl</a>. <a href="../../tests/event_analysis/runtests.jl">Run its tests</a> with <code>make test-event-core</code>. Group two declarations come from <a href="../event_analysis_plan.md">the plan</a>; its proposed contracts and documentation come from <a href="../../scripts/event_review_voxels.py">the voxelisation review content</a>.</footer>
+</main>
+<div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+<script>
+document.documentElement.classList.add('js');
+const pages = [...document.querySelectorAll('.review-page')];
+const links = [...document.querySelectorAll('.review-links a')];
+function activate(focus=false){
+  const target = location.hash.slice(1);
+  const page = pages.find(p=>p.id===target) || pages[0];
+  pages.forEach(p=>p.classList.toggle('active',p===page));
+  links.forEach(a=>{if(a.hash==='#'+page.id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  document.title = page.querySelector('h1').textContent + ' · NAUSICAA API review';
+  if(focus){page.querySelector('h1').focus({preventScroll:true});window.scrollTo(0,0)}
+}
+activate();window.addEventListener('hashchange',()=>activate(true));
+document.getElementById('search').addEventListener('input',e=>{
+  const query=e.target.value.toLowerCase().trim();
+  links.forEach(a=>a.parentElement.hidden=!a.dataset.search.includes(query));
+  document.getElementById('empty-search').hidden=links.some(a=>!a.parentElement.hidden);
+});
+document.querySelectorAll('.copy').forEach(button=>button.addEventListener('click',async()=>{
+  const text=button.closest('.card').querySelector('pre code').textContent;
+  try{
+    if(navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
+    else {const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.append(area);area.select();const ok=document.execCommand('copy');area.remove();if(!ok)throw Error('Clipboard unavailable')}
+    button.textContent='Copied';document.getElementById('announcement').textContent='Julia interface copied.';
+  }catch{button.textContent='Select code to copy';document.getElementById('announcement').textContent='Clipboard unavailable. Select and copy the code manually.'}
+  setTimeout(()=>button.textContent='Copy code',2500);
+}));
+document.getElementById('print').addEventListener('click',()=>window.print());
+</script>
+</body></html>

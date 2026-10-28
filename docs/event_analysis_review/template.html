@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="NAUSICAA event-analysis design: physics, complete data flow, Petit reuse, interface contracts, configuration, outputs and validation.">
+<title>Event analysis design · NAUSICAA</title>
+<style>
+:root{--paper:#f6f5f0;--ink:#1b2b35;--muted:#596975;--line:#dce2e1;--nav:#152b36;--accent:#146b67;--tint:#eaf3ef;--amber:#92551c;--white:#fff;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--accent);text-underline-offset:3px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #eab45b;outline-offset:4px}.skip{position:fixed;top:-100px;left:16px;z-index:20;background:white;padding:12px}.skip:focus{top:12px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:272px;padding:34px 24px;background:var(--nav);color:#ecf3f4;overflow-y:auto}.brand{font-size:13px;font-weight:750;letter-spacing:.19em;color:#99c8c2}.sidebar h2{font-size:23px;line-height:1.25;margin:12px 0 8px;font-weight:600}.sidebar .subtitle{font-size:13px;color:#b1c3ca;margin:0 0 30px}.section-label{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#b1c3ca;margin:26px 0 9px}.sidebar label{display:block;font-size:12px;color:#c1d1d4;margin-bottom:6px}.sidebar input{width:100%;background:#203b47;border:1px solid #48616c;color:white;padding:9px 11px;border-radius:6px;font-size:13px}.sidebar input::placeholder{color:#b2c3ca}.review-links{list-style:none;padding:0;margin:14px 0}.review-links a{display:flex;gap:11px;color:#c5d7dc;text-decoration:none;padding:12px 10px;border-radius:6px;font-size:14px}.review-links a span{font-size:11px;opacity:.7;padding-top:3px}.review-links a:hover{background:#233f4a}.review-links a[aria-current="page"]{background:#e8f1ed;color:#154b4a;font-weight:650}.later{padding-left:10px;font-size:13px;color:#9bb3bd;line-height:2}.sidebar-footer{border-top:1px solid #3d535d;margin-top:30px;padding-top:20px;font-size:12px;color:#afc1c7}.sidebar-footer a{color:#d4e5df}.sidebar-footer button{display:block;background:transparent;border:1px solid #5e7883;border-radius:5px;color:#e1eded;margin:16px 0;padding:7px 11px;font-size:12px}#empty-search{font-size:13px;color:#c6d5d9}main{margin-left:272px;max-width:1320px;padding:0 56px 60px}.topbar{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding:25px 0 18px;font-size:12px;color:var(--muted)}.topbar strong{color:var(--accent);font-weight:600}.page-header{padding:43px 0 28px}.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:650;color:var(--accent)}h1{font:600 clamp(28px,3.6vw,42px)/1.25 var(--mono);letter-spacing:-.04em;margin:13px 0}.lead{font-size:19px;color:var(--muted);margin:0 0 18px;max-width:720px}.badge{display:inline-block;font-size:11px;font-weight:650;letter-spacing:.02em;color:var(--amber);background:#f3e9d7;border:1px solid #e5d2ae;padding:4px 9px;border-radius:4px}.card{background:var(--white);border:1px solid var(--line);border-radius:9px;padding:24px 28px;margin:0 0 18px}.card h2{font-size:17px;margin:0 0 14px;line-height:1.3}.card p{margin:0 0 12px}.card p:last-child{margin-bottom:0}.card ul{padding-left:22px;margin:0}.card li+li{margin-top:8px}code{font:13px/1.65 var(--mono)}td code,p code,li code{background:#edf2f1;padding:2px 4px;border-radius:3px;overflow-wrap:anywhere}pre{margin:0;padding:20px 22px;background:#122a35;color:#d9e9ec;border-radius:6px;overflow-x:auto;tab-size:4}pre code{white-space:pre;font-size:13px;line-height:1.8}.code-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-bottom:9px}.copy{font-size:11px;background:white;border:1px solid #bfcfce;border-radius:4px;color:var(--accent);padding:4px 9px}.table-scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px;text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:650;border-bottom:2px solid var(--line);padding:8px 14px 11px 0}td{padding:13px 14px 13px 0;border-bottom:1px solid #e9edeb;vertical-align:top}tr:last-child td{border-bottom:0}td:first-child{min-width:130px}td:nth-child(2){min-width:150px}.caption{font-size:12px;color:var(--muted);margin:12px 0!important}.matrix{border:1px solid #ceded8;background:var(--tint);padding:16px 20px;border-radius:6px;margin-bottom:18px}.matrix-label{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}.matrix-columns{display:flex;gap:40px;margin-top:10px}.matrix-columns div{display:flex;flex-direction:column}.matrix-columns b{font-size:12px}.matrix-columns span{font:14px/1.9 var(--mono)}.matrix-columns small{font-size:11px;color:var(--muted)}.flow{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:20px;flex-wrap:wrap}.flow div{background:#f0f3f1;padding:12px 16px;border-radius:6px}.flow small{display:block;font-size:10px;color:var(--muted);margin-bottom:8px}.flow .result{background:#e1f0e9}.flow>span{color:var(--accent);font-size:23px}.decisions{border-left:4px solid #c1934d}.choice{padding:0 0 16px;margin:0 0 16px;border-bottom:1px solid var(--line)}.choice:last-child{padding:0;margin:0;border:0}.choice h3{font-size:14px;margin:0 0 7px}.choice p{font-size:14px;color:var(--muted)}details summary{cursor:pointer;font-size:14px;color:var(--accent)}details[open] summary{margin-bottom:15px}.page-nav{display:flex;justify-content:space-between;gap:18px;margin-top:28px;font-size:14px}.page-nav a{text-decoration:none;font-weight:600}.page-nav .next{margin-left:auto}.footer{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--muted)}.js .review-page:not(.active){display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(min-width:1500px){main{margin-left:calc(272px + (100vw - 1500px)/3)}}
+@media(max-width:900px){.sidebar{width:225px;padding:25px 17px}main{margin-left:225px;padding:0 25px 40px}.card{padding:22px}pre{padding:16px}}
+@media(max-width:650px){.sidebar{position:relative;width:100%;padding:20px}.sidebar h2{font-size:21px}.sidebar .subtitle{margin-bottom:14px}.sidebar input,.sidebar label,.sidebar .section-label,.later,.sidebar-footer{display:none}.review-links{display:flex;flex-wrap:wrap;margin:12px 0 0;gap:5px}.review-links a{padding:8px;font-size:12px}.review-links a span{display:none}main{margin:0;padding:0 15px 35px}.topbar{font-size:10px}.page-header{padding-top:25px}.lead{font-size:17px}.card{padding:19px 16px}h1{font-size:29px}.matrix-columns{gap:15px;flex-wrap:wrap}.flow{justify-content:flex-start}.card h2{font-size:16px}}
+@media print{body{background:white;font-size:11pt}.sidebar,.topbar,.page-nav,.copy,.skip{display:none}main{margin:0;max-width:none;padding:0}.js .review-page:not(.active){display:block}.review-page{break-before:page}.review-page:first-of-type{break-before:auto}.page-header{padding:10px 0}.card{break-inside:avoid;padding:15px;margin-bottom:12px}pre{white-space:pre-wrap;background:#f3f5f4;color:#172a35}pre code{white-space:pre-wrap;font-size:9pt}.badge{border:1px solid #aaa;background:white}.table-scroll{overflow:visible}td,th{font-size:9pt}h1{font-size:25pt}}
+.source{margin-top:16px}.source pre{max-height:580px;overflow:auto}.source summary{font-size:12px}.compact-links a{padding:6px 10px;font-size:12px}.page-header h1{font-family:inherit;letter-spacing:-.025em}.card[id]{scroll-margin-top:20px}@media print{.source pre{max-height:none;overflow:visible}}
+.local-toc{margin:0 0 24px;padding:18px 22px;border-left:3px solid var(--accent);background:var(--tint);font-size:13px}.local-toc ul{columns:2;column-gap:28px;margin:8px 0 0;padding-left:18px}.local-toc li{break-inside:avoid;margin-bottom:5px}.local-toc a{text-decoration:none}.equation{padding:18px 22px;background:var(--tint);font-size:18px;text-align:center;margin:16px 0}.pipeline{text-align:center;margin-bottom:20px}.pipeline-node{border:1px solid var(--line);border-radius:7px;padding:15px;background:#f1f5f3}.pipeline-node.highlight{background:#e0efe8;border-color:#99c8b6}.pipeline-arrow{font-size:14px;color:var(--accent);padding:9px}.pipeline-branches{display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left}.pipeline-branches>div{border:1px solid var(--line);border-top:4px solid var(--accent);padding:20px;border-radius:6px}.pipeline-branches b{color:var(--accent)}.topic-group{margin:10px 0}.topic-group summary{color:#c5d7dc;font-size:12px}.topic-group .review-links{margin:8px 0}.topic-group[hidden]{display:none}@media(max-width:650px){.local-toc ul{columns:1}.pipeline-branches{grid-template-columns:1fr}.topic-group{display:none}}@media print{.local-toc{display:none}.pipeline-branches{grid-template-columns:1fr 1fr}.pipeline-node,.equation{background:white}.card{break-inside:auto}h2{break-after:avoid}.source{break-inside:auto}}
+.card pre+p,.card pre+.table-scroll{margin-top:14px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to review</a>
+<aside class="sidebar" aria-label="Design navigation">
+  <div class="brand">NAUSICAA</div><h2>Event analysis</h2><p class="subtitle">Design, interfaces and Petit provenance</p>
+  <label for="search">Find a topic</label><input id="search" type="search" placeholder="Diffusion, charge, types…" autocomplete="off">
+  <div class="section-label">Design and source appendices</div>
+  <ul class="review-links">
+    <!-- PAGE_LINKS -->
+  </ul><p id="empty-search" hidden>No matching section.</p>
+  <div class="section-label">Topics by chapter</div>
+  <!-- TOPIC_LINKS -->
+  <div class="sidebar-footer">Approved algorithms and draft contracts are labelled separately.
+    <button id="print" type="button">Print the full guide</button>
+    <a href="previous_interfaces.html">Earlier interfaces · superseded ↗</a><br>
+    <a href="../event_analysis_plan.md">Plan and review status ↗</a>
+  </div>
+</aside>
+<main id="main">
+  <div class="topbar"><span>Petit → NAUSICAA</span><strong>Design documentation / joint review</strong></div>
+  <!-- REVIEW_PAGES -->
+  <footer class="footer">Offline design documentation with embedded Petit source excerpts. Rebuild with <code>make event-review</code> using Python 3.11+ and refresh this tab. The builder also refreshes the short roadmap. Implementation follows the final contract review.</footer>
+</main>
+<div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+<script>
+document.documentElement.classList.add('js');
+const pages = [...document.querySelectorAll('.review-page')];
+const links = [...document.querySelectorAll('.review-links a')];
+function activate(focus=false){
+  const target = document.getElementById(location.hash.slice(1));
+  const page = target?.closest('.review-page') || pages[0];
+  pages.forEach(p=>p.classList.toggle('active',p===page));
+  links.forEach(a=>{
+    const current = a.hash==='#'+page.id || (target && a.hash==='#'+target.id);
+    if(current) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+  });
+  document.title = page.querySelector('h1').textContent + ' · NAUSICAA';
+  if(target && target!==page){
+    target.scrollIntoView();
+    if(focus) target.querySelector('h2')?.focus({preventScroll:true});
+  }else if(focus){
+    page.querySelector('h1').focus({preventScroll:true});window.scrollTo(0,0);
+  }
+}
+activate();window.addEventListener('hashchange',()=>activate(true));
+document.getElementById('search').addEventListener('input',e=>{
+  const query=e.target.value.toLowerCase().trim();
+  links.forEach(a=>a.parentElement.hidden=!a.dataset.search.includes(query));
+  document.querySelectorAll('.topic-group').forEach(group=>{
+    const matches=[...group.querySelectorAll('a')].some(a=>!a.parentElement.hidden);
+    group.hidden=!!query && !matches;
+    group.open=!!query && matches;
+  });
+  document.getElementById('empty-search').hidden=links.some(a=>!a.parentElement.hidden);
+});
+document.querySelectorAll('.copy').forEach(button=>button.addEventListener('click',async()=>{
+  const text=button.closest('.card').querySelector('pre code').textContent;
+  try{
+    if(navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
+    else {const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.opacity='0';document.body.append(area);area.select();const ok=document.execCommand('copy');area.remove();if(!ok)throw Error('Clipboard unavailable')}
+    button.textContent='Copied';document.getElementById('announcement').textContent='Julia interface copied.';
+  }catch{button.textContent='Select code to copy';document.getElementById('announcement').textContent='Clipboard unavailable. Select and copy the code manually.'}
+  setTimeout(()=>button.textContent='Copy code',2500);
+}));
+document.getElementById('print').addEventListener('click',()=>window.print());
+</script>
+</body></html>

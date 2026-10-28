@@ -1,0 +1,31 @@
+# Initial ionization expectations; no fluctuations, diffusion or collection losses.
+[ionization]
+w_eV = 21.9
+w_status = "Adopted nominal mean energy per electron-ion pair in gaseous xenon; not an atomic ionization threshold or a new measurement."
+reference_key = "Serra:2014zda"
+
+[binning]
+frame_ms = 20.0
+margin_fraction = 0.10
+extra_bins = 1
+centering = "generation_vertex"
+# XY pitch and drift speed are read from config/detector.toml.
+
+[selection]
+xy_halfwidth_mm = 150.0
+# Applied after shifting to the primary vertex. No additional Z cut.
+
+[numerics]
+charge_relative_tolerance = 1e-11
+
+[[samples]]
+id = "0nubb"
+label = "Double beta"
+input = "events/0nubb_hitdf.h5"
+example_event_id = 0
+
+[[samples]]
+id = "electron_0nubb_energy"
+label = "Single electron"
+input = "events/electron_0nubb_energy_hitdf.h5"
+example_event_id = 0
