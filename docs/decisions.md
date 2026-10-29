@@ -1,5 +1,204 @@
 # Model decisions and outstanding inputs
 
+## Electron readout extension (2026-10-29)
+
+Design input from the user: the single-electron or double-electron MC track
+ionises the gas, producing electron and positive-ion trails. The existing
+transport/pixel studies cover positive ions. Extend the simulation to the
+electrons drifting to the anode, retaining both readout populations from the
+same ionisation deposits.
+
+Petit source audit:
+
+- Loaded definitions: `../Petit/src/itaca_functions.jl:17` and `:24`;
+  `../Petit/src/Petit.jl:27` includes that file.
+- Electron widths in mm: `sigma_t_mm(Lcm,Pbar;dtmm)` =
+  `dtmm * sqrt(Lcm/Pbar)`, and `sigma_l_mm(Lcm,Pbar;dlmm)` =
+  `dlmm * sqrt(Lcm/Pbar)`.
+- The numeric inputs are drift distance in cm and pressure in bar. Coefficient
+  units consistent with this convention are mm sqrt(bar/cm).
+- Pure-Xe pair: `(dtmm,dlmm)=(3.5,0.9)`, the function defaults and active
+  `scripts/itaca_single_track_analysis.jl` CLI defaults.
+- Xe–He pair: `(1.6,0.75)`, explicitly identified by the Xe–He variables in
+  `../Petit/pluto/archive/itaca_st.jl:372–379`; the loaded
+  `select_events_itaca` helper also defaults to this pair (`:447–449`).
+- `get_sigma("electron",...)` (`itaca_functions.jl:556`) calls those two
+  functions. Its electron branch uses L, P and the supplied coefficient pair;
+  the `edrift` argument enters the ion branch. The MC diffusion routine then
+  draws independent x/y Gaussians with sigma_t and a z Gaussian with sigma_l.
+
+User revision on 2026-10-29: operating pressure is 15 bar and the Xe–He case
+has a helium fraction of 0.15. These are design inputs, recorded with the Petit
+coefficient pairs in `config/electron_transport.toml`. At this pressure the
+coefficients multiplying sqrt(L_cm) are the Petit values divided by sqrt(15).
+The formula evaluation and Float64 reference checks are saved to
+`results/electron_diffusion/electron_diffusion.h5`; the generated report is
+`latex_generated/electron_diffusion/electron_diffusion.pdf`.
+Electron transport and readout timing need their own configuration and cache
+identity. The inspected code uses supplied diffusion coefficients for the
+electron branch rather than a field-dependent coefficient table.
+
+### Paired drift and ELCC readout (2026-10-29)
+
+User design inputs: sample one longitudinal event location in a TPC with
+L_max = 1.5 m. Ions drift L to the cathode and electrons drift L_max-L to
+the anode. Generate and save both diffused clouds before their respective
+grid mappings, preserving the common event and ionisation-deposit identity.
+
+The electron readout uses 5 mm diameter cylindrical holes on 10 mm pitch,
+with 5 mm depth. Assign arriving electrons to holes using the existing
+geometric collection approach. The reduced EL field is 3 kV/cm/bar; at the
+design pressure of 15 bar this is 45 kV/cm and a 22.5 kV potential rise
+along electron travel through the hole. TOML will record entry-grid and exit
+anode potentials; their absolute reference remains to be specified.
+
+Electroluminescence produces VUV photons along electron passage through the
+hole. The requested optical model accepts forward photons reaching the
+circular SiPM covering the hole without intersecting a wall. Calculate
+emitted and incident photon counts as intermediate quantities; save the
+photoelectron response per SiPM and time bucket.
+
+User refinement: compute geometric photon acceptance analytically and sample
+that fraction, avoiding photon ray generation in each hole. The readout output
+is detected photoelectrons per SiPM per time bucket. Electron
+entry counts are intermediate physical inputs. The electron drift conversion
+is 1 microsecond per mm; initially use 2 microsecond (2 mm) buckets. SiPM PDE
+is configurable in TOML, initially 0.30. The inspected AXEL paper specifies
+VUV-sensitive SiPMs but gives no numerical PDE. These inputs are recorded in
+`config/electron_transport.toml`.
+
+For isotropic emission uniformly along a centred axial electron path in a
+cylindrical hole of radius R and depth h, with a SiPM disk covering the exit
+plane and absorbing walls, the direct acceptance averaged over depth is
+f = (h + R - sqrt(h*h + R*R))/(2*h). For R=2.5 mm and h=5 mm this is
+0.190983 of all emitted photons. This is an axial-path benchmark; lateral
+electron paths require their corresponding solid-angle average. Given an
+emitted count, sample incident counts with Binomial(N_emitted,f), then
+photoelectrons with Binomial(N_incident,PDE). The EL emission-fluctuation
+model remains to be scoped.
+
+EL source audit, 2026-10-29:
+
+- `papers/ELCC/NEXT-EL-Xe-He.pdf`, NEXT, arXiv:1906.03984v3,
+  Table 1: Y = A * max(E/P - X0,0) * P * h, photons per electron,
+  with E/P in kV/cm/bar, P in bar, h in cm, A in photons/electron/kV.
+  Pure Xe: A=137 +/- 1, X0=0.73 +/- 0.01. Xe-15% He:
+  A=139 +/- 1, X0=0.80 +/- 0.02. At E/P=3, P=15, h=0.5,
+  the respective central yields are 2332.425 and 2293.5 photons/electron.
+  The mixture yield is 1.67% below pure Xe for these matched fits.
+  Measurements were at approximately 1.2 bar with an additional systematic
+  uncertainty around 5%; using reduced-field scaling at 15 bar is an
+  extrapolation. Their absolute scale was normalised to an external pure-Xe
+  result. Table 1 and the conclusion give approximately 3% reduction for
+  15% He at E/P=2.5; a discussion paragraph instead says 6%, an internal
+  inconsistency. Use the explicit fit parameters when reporting calculations.
+- `papers/ELCC/EL-Next-DEMO.pdf`, NEXT, arXiv:2604.15905v1,
+  Eq. (2): same yield form, quoting conventional A=140 and X0=0.83
+  (2278.5 photons/electron at our operating point). Measurements span
+  2.0--9.4 bar and show approximately 5% relative slope increase above
+  5 bar. Absolute fitted A values are approximately 211--221, with an
+  overall approximately 30% calibration systematic. This does not supply
+  a measured 15 bar correction or a Xe-He correction.
+
+Proposal for review: use the matched Table 1 pure-Xe and Xe-15% He fits as
+the initial configurable prescriptions, preserving their provenance and the
+reduced-field scaling approximation. Final choice awaits user review.
+
+### Three-cloud propagation prototype and concurrency (2026-10-29)
+
+The prototype `scripts/propagate_cloud_stream.jl` writes one HDF5 cloud stream
+for each combination of source sample (bb0nu, single electron) and carrier
+model (positive ion, pure-Xe electron, Xe-15% He electron). It uses Petit's
+per-carrier Gaussian diffusion and a 100-bin axis histogram. The event
+position is sampled once from a source/event/base-seed identity and reused
+in all three clouds; ion and electron distances sum to 150 cm. Diffusion
+seeds also include the carrier model. The event position spans 0--150 cm.
+Each process writes its own file. Pure-Xe clouds record helium fraction zero;
+the Xe--He and ion clouds record the 15% mixture used by the detector.
+
+`scripts/benchmark_three_clouds.py` ran 100 events in each of six streams,
+including Julia startup, HDF5 reading, diffusion and compressed HDF5 writing:
+1 worker 39.03 s; 2 workers 19.98 s; 4 workers 13.59 s; 6 workers 7.63 s.
+Total cloud output was 64.2 MB at
+every concurrency. The six individual process peak resident-memory values
+were approximately 0.78-0.83 GB each. Their sum, 4.90 GB, is an upper bound
+on simultaneous peak resident memory, not a directly sampled total.
+
+The numerical benchmark is saved in `results/three_cloud_benchmark/benchmark.h5`;
+the cloud HDF5 files are in per-worker subdirectories. The generated PDF is
+`latex_generated/three_cloud_benchmark/three_cloud_benchmark.pdf`.
+`tests/event_analysis/check_three_cloud_benchmark.py` checks that all six
+streams conserve counts, paired distances and produced carrier counts, and
+that cloud arrays match exactly across worker counts.
+
+This is a propagation and concurrency prototype. EL collection and PE
+time-bucketing are subsequent readout stages. A production run still needs
+the cache/resume layout and a full-sample resource check.
+
+### Julia parallel launcher, 500-event sample (2026-10-29)
+
+`scripts/propagate_clouds_parallel.jl` now starts up to six independent Julia
+processes, one per sample/cloud stream, with `--events`, `--workers` and
+`--output` arguments. It writes `propagation_summary.h5` after all streams
+finish. Run used:
+
+```
+julia --project=. scripts/propagate_clouds_parallel.jl --events 500 --workers 6 --output results/three_cloud_sample_500
+```
+
+At 500 events per stream, six workers took 15.33 s including process startup,
+reading, diffusion and HDF5 writes. The six cloud files total 310.3 MB.
+Per-process peak RSS ranged from 0.819 to 0.864 GB; their 5.05 GB sum is an
+upper bound on simultaneous peak RSS. The run summary is
+`results/three_cloud_sample_500/propagation_summary.h5` and the generated
+report is `latex_generated/three_cloud_sample_500/three_cloud_sample_500.pdf`.
+
+Validation checked all 500 events in each sample for common paired drift
+distances, carrier totals and sampled/retained/outside accounting. Every
+saved position, count and drift distance in the first 100 events of all six
+streams exactly matched the earlier single-worker benchmark.
+
+### Full 8,000-event propagation (2026-10-29)
+
+The six-process Julia launcher processed 8,000 events from each source sample,
+producing 48,000 event/cloud records across six HDF5 files under
+`results/three_clouds_8000/`. Wall time was 155.73 s and total compressed
+cloud storage was 5,016.5 MB. Individual process peak RSS values were
+0.95--1.00 GB; the sum of individual peaks is 5.82 GB, a conservative
+upper bound on simultaneous peak RSS. The saved numerical summary is
+`results/three_clouds_8000/propagation_summary.h5`; the generated report is
+`latex_generated/three_clouds_8000/three_clouds_8000.pdf`.
+The full event-by-event validator passed for both samples: each event's three
+clouds share the same sampled location and produced carrier count, ion and
+electron drift distances sum to 150 cm, and sampled counts equal retained
+plus out-of-range counts in every cloud.
+
+### Interactive cloud viewer II (2026-10-29)
+
+The separate browser viewer in `src/cloud_viewer/` reads the six full-run
+HDF5 files directly, one paired event number at a time. Run
+`work/event-viewer-venv/bin/python scripts/serve_cloud_viewer.py --port 8767`
+and open `http://127.0.0.1:8767/`. The first row shows ion, pure-Xe electron
+and Xe--15% He electron clouds for double beta; the second row shows the same
+for single electrons. Each panel gives the event ID, both drift lengths,
+retained carrier count, XY/XZ/YZ count heatmaps and a rotatable 3D plot.
+The 2D plots use every saved bin; the 3D plot groups 4-by-4-by-4 saved cells
+for display while conserving their summed counts. Navigation accepts event
+numbers 0--7999, previous/next buttons and arrow keys.
+
+The API and browser were checked for event 2, and all six 3D plots rendered
+with software WebGL. Independent numerical checks for events 0, 2 and 7999
+compare XY against NumPy's histogram and verify charge conservation in every
+projection and 3D display. The original viewer remains separate.
+
+Local source read: J. Hikida et al., “AXEL: High-pressure xenon gas TPC for
+neutrinoless double beta decay search”, NIM A 1080 (2025) 170706,
+doi:10.1016/j.nima.2025.170706, `papers/ELCC/Axel-ELCC.pdf`.
+Figure 2 and section 2 describe field focusing, EL in holes at approximately
+3 kV/cm/bar and SiPM detection behind a ground mesh. Section 4 describes
+4.5 mm holes covered by 4.7 mm round SiPMs. Our 5/10/5 mm geometry is the
+user's design input. This paper supplies no quantitative EL yield equation.
+
 ## Scope and provenance (2026-10-22)
 
 This milestone implements the first physics stage requested by J. J.

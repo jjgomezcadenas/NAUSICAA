@@ -4,6 +4,25 @@ This repository develops a reproducible physical input-current model for a
 positive-ion CMOS detector. Establish the physics before implementing electronics.
 
 - Xe2+ means the molecular ion Xe_2^+, with charge +e, not atomic Xe^{2+}.
+- Extend event readout to both carrier populations: a single-electron or
+  double-electron ionisation track produces a trail of electrons and positive
+  ions. Work to 2026-10-28 simulated the positive ions; electron drift to the
+  anode is now part of the simulation scope. Trace Petit's electron diffusion
+  laws and pure-Xe/Xe–He coefficient choices before implementation; preserve
+  carrier and gas-model identity in configurations, caches and outputs.
+  Electron readout operates at 15 bar; the Xe–He prescription represents 15% He
+  (user design inputs). Store these in config/electron_transport.toml and derive
+  operating-pressure diffusion coefficients from Petit's pressure scaling.
+- Sample one event location along the 1.5 m TPC: ion and electron drift
+  lengths are complementary, L and L_max-L. Save both diffused clouds before
+  readout. The electron EL grid has 5 mm diameter holes, 10 mm pitch and 5 mm
+  depth, with E/P = 3 kV/cm/bar. Store entry/exit electrode potentials in TOML.
+  Route electrons geometrically to holes. Compute direct VUV collection
+  acceptance analytically for the assumed electron path and sample that
+  fraction. Save only photoelectron histories per SiPM and time bucket;
+  use 1 microsecond per mm and an initial 2 microsecond bucket. SiPM PDE is
+  TOML-configurable, initially 0.30 (user input). These are user design inputs;
+  record the adopted gas-dependent EL yield and optical boundary conditions.
 - Use SI internally for transport, fields and electronics. Preserve particle-
   physics units in NEXUS event tables and hit DataFrames: positions in mm and
   deposited energy in MeV, with the original Float32 precision. Do not convert

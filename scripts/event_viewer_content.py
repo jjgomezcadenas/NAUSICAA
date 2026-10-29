@@ -488,6 +488,93 @@ event pulse means from the sparse histories. Core tests cover strict
 threshold equality, empty extrema, ownership and charge conservation. Next
 interactive work: fix the random-distance control and add separate B/C track
 reconstruction displays.</p>''', 'pixel-charge-batch')
+    body += section('Electron readout: Petit diffusion prescription', '''
+<p>Scope added 2026-10-29: each single-electron or double-electron ionisation
+track supplies both an electron trail and a positive-ion trail. The existing
+studies propagate positive ions. Extend the simulation to electrons drifting
+to the anode, preserving the connection to the same MC energy deposits.</p>
+<p>Petit’s loaded <code>src/itaca_functions.jl:17–25</code> defines
+<code>sigma_t_mm(Lcm,Pbar;dtmm) = dtmm × sqrt(Lcm/Pbar)</code> and
+<code>sigma_l_mm(Lcm,Pbar;dlmm) = dlmm × sqrt(Lcm/Pbar)</code>.
+Widths are mm, L is cm, P is bar. The pressure-normalised coefficients have
+units mm √(bar/cm) under this numeric convention.</p>
+<table><thead><tr><th>Gas prescription</th><th>Transverse coefficient</th>
+<th>Longitudinal coefficient</th><th>Petit source</th></tr></thead><tbody>
+<tr><td>Pure Xe</td><td>3.5</td><td>0.9</td><td>Loaded function defaults and
+active scripts/itaca_single_track_analysis.jl CLI defaults</td></tr>
+<tr><td>Xe–He</td><td>1.6</td><td>0.75</td><td>Explicit Xe–He variables in
+pluto/archive/itaca_st.jl:372–379; loaded select_events_itaca defaults</td></tr>
+</tbody></table>
+<p>The active caller passes its dt/dl and pressure to
+<code>get_sigma("electron",...)</code>, then passes the resulting widths to
+<code>diffuse_xyz_image_mc</code>: independent x/y Gaussian draws with sigma_t
+and z draws with sigma_l. Gas selection enters through the coefficient pair.
+The electron branch uses L, P, dt and dl; the electric-field argument is used
+in the ion branch.</p>
+<p>These source prescriptions identify the starting model. The inspected Xe–He
+calls specify the coefficient pair. The user identifies the operating pressure
+as 15 bar and the Xe–He mixture as 15% helium; these design inputs and both
+coefficient pairs are in <code>config/electron_transport.toml</code>. The
+operating-pressure coefficients are the tabulated values divided by √15.
+<code>scripts/calculate_electron_diffusion.jl</code> saves the evaluated widths
+and Float64 precision checks; <code>scripts/present_electron_diffusion.py</code>
+generates <code>results/electron_diffusion/electron_diffusion.html</code> and
+<code>latex_generated/electron_diffusion/electron_diffusion.pdf</code>. Carrier and
+gas identity must enter the transport settings, cache identity and outputs.</p>''', 'electron-readout-petit')
+    body += section('Paired drift and ELCC electron readout', '''
+<p>User design inputs, 2026-10-29: sample one event location along the
+1.5 m TPC. Ion drift is L towards the cathode; electron drift is 1.5 m − L
+towards the anode. Save both diffused clouds before mapping them through
+their grids, retaining their common event and ionisation-deposit identity.</p>
+<p>The electron grid has cylindrical holes of 5 mm diameter and 5 mm depth,
+on 10 mm pitch. Geometric collection assigns electrons to holes. The EL
+field E/P = 3 kV/cm/bar at 15 bar gives E = 45 kV/cm and a 22.5 kV
+potential rise along electron passage. Entry-grid and exit-anode potentials
+belong in TOML; the absolute voltage reference is an outstanding input.</p>
+<p>Electrons produce VUV photons along the hole. Calculate the direct optical
+acceptance analytically and sample that fraction. Save photoelectron
+histories per SiPM in configurable time buckets. User inputs:
+1 μs per mm of drift, initially 2 μs buckets, and SiPM PDE = 0.30 in TOML.
+For isotropic emission uniformly along the hole axis, an exit-plane SiPM
+covering the full hole, and absorbing walls, the depth-averaged acceptance
+is (h + R − √(h² + R²))/(2h), or 0.190983 for R=2.5 mm and h=5 mm.
+This benchmark specifies an axial electron path. Sample incident photons
+and photoelectrons with successive binomial draws.</p>
+<p>Source: J. Hikida et al., NIM A 1080 (2025) 170706,
+<code>papers/ELCC/Axel-ELCC.pdf</code>, Fig. 2 and sections 2 and 4.
+The paper describes focusing, EL and SiPM readout; its upgraded unit has
+4.5 mm holes covered by 4.7 mm round SiPMs. The 5/10/5 mm geometry above
+is the user's design input. The paper supplies no quantitative EL yield
+equation or numerical SiPM PDE.</p>
+<p>New yield sources: <code>papers/ELCC/NEXT-EL-Xe-He.pdf</code>,
+Table 1, uses Y = A max(E/P − X0,0) P h. At 15 bar, E/P=3 kV/cm/bar
+and h=0.5 cm: pure Xe (A=137, X0=0.73) gives 2332.425 photons/electron;
+Xe–15% He (A=139, X0=0.80) gives 2293.5. These matched fits are the
+proposed starting prescriptions. Their measurements were near 1.2 bar;
+application at 15 bar assumes reduced-field scaling.</p>
+<p><code>papers/ELCC/EL-Next-DEMO.pdf</code>, Eq. (2), quotes the conventional
+pure-Xe A=140, X0=0.83 prescription (2278.5 photons/electron here). Its
+2.0–9.4 bar measurements show about 5% relative slope increase above 5 bar,
+with about 30% absolute calibration uncertainty. It supplies no measured
+15 bar or Xe–He correction. See <code>docs/decisions.md</code> for the source
+audit, uncertainties and the internal percentage discrepancy in the Xe–He
+paper. Yield prescription and EL emission fluctuations await review.</p>''', 'paired-drift-elcc')
+    body += section('Cloud viewer II: paired ion and electron events', '''
+<p><code>scripts/serve_cloud_viewer.py</code> opens a second local viewer at
+<code>http://127.0.0.1:8767/</code>. It reads the six completed HDF5 streams in
+<code>results/three_clouds_8000/</code>. The event number selects the same
+ordinal event from the double-beta and single-electron samples (0–7999).</p>
+<p>The first row shows ions, pure-Xe electrons and Xe–15% He electrons from
+the double-beta event; the second row shows the corresponding three clouds
+from the single-electron event. Every panel displays its event ID, ion drift
+length, electron drift length and retained carrier count, followed by XY,
+XZ, YZ and a rotatable 3D view. Colour encodes carrier counts. The 2D
+projections retain the saved 100-bin resolution. The 3D view groups 4 × 4 × 4
+saved cells for display and preserves the total carrier count. Event navigation
+supports Previous, Next, an event-number field and left/right arrow keys.</p>
+<p>The browser receives one event at a time from
+<code>src/cloud_viewer/server.py</code>. The original interactive viewer
+remains available for MC hits, reconstruction, transport and pad studies.</p>''', 'cloud-viewer-ii')
     body += section('Batch MC single-component selection', '''
 <p><code>make mc-selection</code> runs <code>scripts/analyze_mc_selection.jl</code>
 with <code>config/mc_selection.toml</code>, then generates presentation through

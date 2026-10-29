@@ -1,0 +1,28 @@
+# Electron readout design inputs supplied by the user, 2026-10-29.
+[gas]
+pressure_bar = 15.0
+helium_fraction = 0.15
+
+[placement]
+l_max_cm = 150.0
+min_ion_drift_cm = 0.0
+
+# User readout inputs: 1 microsecond corresponds to 1 mm of drift.
+[readout]
+electron_drift_speed_m_s = 1000.0
+photon_bucket_us = 2.0
+sipm_pde = 0.30
+
+# Petit convention: sigma_mm = d_mm_sqrtbar_per_sqrtcm * sqrt(L_cm / P_bar).
+# Coefficients are the existing Petit prescriptions; the user identifies
+# the Xe-He case with 15% He. Operating-pressure coefficients are derived.
+[diffusion.pure_xe]
+d_T_mm_sqrtbar_per_sqrtcm = 3.5
+d_L_mm_sqrtbar_per_sqrtcm = 0.9
+
+[diffusion.xe_he]
+d_T_mm_sqrtbar_per_sqrtcm = 1.6
+d_L_mm_sqrtbar_per_sqrtcm = 0.75
+
+[evaluation]
+drift_cm = [10.0, 100.0, 150.0]
