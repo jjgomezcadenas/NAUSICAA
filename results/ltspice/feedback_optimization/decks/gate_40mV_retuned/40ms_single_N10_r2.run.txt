@@ -1,0 +1,102 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Thu Oct 29 10:04:32 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+is1: Removing PWL point (1.25e-06,0)
+is1: Removing PWL point (0.00200375,3.99908e-17)
+is1: Removing PWL point (0.0420038,0)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+vernier = 0.5
+vernier = 0.25
+vernier = 0.125
+vernier = 0.0625
+Gmin = 1.10907e-13
+vernier = 0.03125
+vernier = 0.015625
+vernier = 0.0078125
+vernier = 0.00390625
+vernier = 0.00195312
+vernier = 0.000976562
+vernier = 0.000488281
+Gmin = 1.10866e-13
+vernier = 0.000651042
+vernier = 0.000868055
+Gmin = 1.10683e-13
+vernier = 0.00115741
+Gmin = 1.10395e-13
+vernier = 0.00154321
+vernier = 0.00205761
+Gmin = 1.09914e-13
+vernier = 0.00274348
+vernier = 0.00365797
+Gmin = 1.0915e-13
+vernier = 0.0048773
+Gmin = 1.07959e-13
+vernier = 0.00650306
+vernier = 0.00867074
+Gmin = 1.0599e-13
+vernier = 0.011561
+vernier = 0.0154146
+Gmin = 1.02926e-13
+vernier = 0.0205529
+Gmin = 9.82851e-14
+vernier = 0.0274038
+vernier = 0.0365384
+Gmin = 9.09704e-14
+vernier = 0.0487178
+vernier = 0.0649571
+Gmin = 8.04387e-14
+vernier = 0.0866095
+Gmin = 6.63227e-14
+vernier = 0.115479
+vernier = 0.153972
+Gmin = 4.80712e-14
+vernier = 0.205296
+vernier = 0.273728
+Gmin = 2.89178e-14
+vernier = 0.364971
+Gmin = 1.31416e-14
+vernier = 0.486628
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Changing Tseed to 2.5e-10
+Changing Tseed to 2.5e-12
+Changing Tseed to 2.5e-09
+Total elapsed time: 0.343 seconds.

@@ -1,0 +1,6 @@
+{
+  "source": "results/ltspice/feedback_optimization/analysis.h5",
+  "sha256": "007cdf5fe43eb73dcd46e686d55c662d28e374e2ef2861eb2689071ab94b8d93",
+  "generator": "scripts/present_feedback_optimization.py",
+  "selected": "length_400um_gate0_rounded"
+}

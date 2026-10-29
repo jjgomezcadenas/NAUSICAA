@@ -945,3 +945,45 @@ results, and demonstrated event-level performance.
   S/N: 2.871. Twenty new Julia checks and 52 existing Python tests pass.
 - Main manuscript and the 20 ms numerical results are preserved. No report
   compilation or commit requested.
+
+### 2026-10-29: feedback and averaging optimization
+
+- Scanned Mf gate bias and dimensions, then retuned the M4 gate to preserve
+  the reference output operating point. Combined longer channels and grounded
+  feedback gate; repeated the selected case with a four-decimal M4 bias.
+- Best tested candidate: Mf W=0.36 um, L=400 um, gate=0 V; M4 gate=0.6164 V.
+  With 5 ms averaging: ENC=75.84 e and S/N=5.273 for 400 ions / 40 ms;
+  ENC=61.27 e and S/N=1.958 for 120 ions / 20 ms. Discharge time about 8.57 s.
+- The 40 ms signal is 15.189 mV, noise 2.881 mV RMS. Retention and cumulative
+  dynamic range must be evaluated with complete pad histories before updating
+  the paper. The longer averaging window also mixes a few percent between
+  neighbouring buckets; the generated report records those responses.
+- Configuration and full inputs/results: `config/feedback_optimization.toml`,
+  `config/feedback_combined.toml`, `results/ltspice/feedback_optimization/`.
+  Julia reduction: `src/ion_signal/feedback_optimization.jl`. Full reproduction:
+  `scripts/run_feedback_pipeline.py`; report generator:
+  `scripts/present_feedback_optimization.py`.
+- 368 optimization checks and all 52 existing Python tests pass; physics build
+  checks pass. Report source: `latex_generated/feedback_optimization/report.tex`.
+  No compilation or manuscript circuit update performed.
+
+### 2026-10-29: optimized circuit snapshot for Vicente
+
+- Frozen the selected circuit and readout in `LTSpice/optimized_2026-10-29/`,
+  including 20 and 40 ms editable schematics, zero-input references, noise
+  schematic, exact model, PWL inputs, netlists, logs, parameter JSON/HDF5,
+  report source and figures, and a checksum manifest. Generator:
+  `notes/physics/tools/package_optimized_ltspice.py`. Electrical equivalence
+  of the five schematics to archived netlists and all local dependencies checked.
+- Real pad-history sources for the next study are
+  `results/pixel_charge_1mm/{bb0nu,electrons}.h5` (2 mm / 20 ms) and
+  `results/pixel_charge_1mm_4mm/{bb0nu,electrons}.h5` (4 mm / 40 ms).
+  Each has 8000 events per species. Matching IDs, seeds, drift, diffusion
+  widths and ion ledgers were confirmed across configurations. Sparse cells
+  are uncut collected counts with zero-based time_slice and per-event
+  `event_axes/<event_id>/time_edges_ms`; missing cells are zero-charge buckets.
+- Next study must retain empty buckets, accumulated CSA state, and high-charge
+  deposits (up to about 20 times the mean). Saturating blob voxels may be
+  retained as flagged high-charge deposits; quantify recovery and distinguish
+  circuit saturation from ADC overflow. Determine ADC span and bit resolution
+  from actual output histories and allowed quantization contribution.

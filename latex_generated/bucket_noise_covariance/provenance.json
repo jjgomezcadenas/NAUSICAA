@@ -1,0 +1,5 @@
+{
+  "source": "results/ltspice/bucket_noise_covariance/analysis.h5",
+  "sha256": "4749370060c5bc8e1b70c6e544fd17ca97dd2f84e6edf4c15ede7e7b7baacc6c",
+  "generator": "scripts/present_bucket_noise_covariance.py"
+}

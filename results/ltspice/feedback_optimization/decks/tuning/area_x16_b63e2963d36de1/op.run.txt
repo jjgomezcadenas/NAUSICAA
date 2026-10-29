@@ -1,0 +1,153 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Thu Oct 29 10:06:16 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+Gmin = 4.54274e-14
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Semiconductor Device Operating Points:
+                        --- BSIM3 MOSFETS ---
+Name:        m1          m5          m6          m2          m3
+Model:     180nmp      180nmp      180nmp      180nmn      180nmn
+Id:        1.90e-04    3.83e-07    3.83e-07    1.90e-04    1.91e-04
+Vgs:      -8.77e-02   -7.90e-02   -1.50e-01    7.59e-01    5.38e-01
+Vds:       7.39e-01    3.71e-01    5.50e-01    9.59e-01    1.02e-01
+Vbs:       1.70e+00    9.21e-01    5.50e-01   -8.41e-01    0.00e+00
+Vth:      -7.29e-01   -6.25e-01   -4.19e-01    6.63e-01    3.83e-01
+Vdsat:    -1.20e-01   -4.00e-02   -2.17e-01    9.53e-02    1.18e-01
+Gm:        2.83e-03    1.04e-05    2.57e-06    3.56e-03    2.54e-03
+Gds:       1.08e-05    2.67e-08    3.99e-09    2.28e-05    6.34e-04
+Gmb        6.91e-04    2.89e-06    8.26e-07    7.52e-04    7.21e-04
+Cbd:       0.00e+00    0.00e+00    0.00e+00    0.00e+00    0.00e+00
+Cbs:       0.00e+00    0.00e+00    0.00e+00    0.00e+00    0.00e+00
+Cgsov:     1.56e-13    1.56e-13    7.10e-16    6.24e-14    1.54e-13
+Cgdov:     1.56e-13    1.56e-13    7.10e-16    6.24e-14    1.54e-13
+Cgbov:     4.51e-19    4.51e-19    5.95e-18    1.42e-18    1.97e-18
+dQgdVgb:   9.62e-13    4.83e-13    4.19e-14    3.76e-13    3.21e-12
+dQgdVdb:  -1.56e-13   -1.56e-13   -7.69e-16   -6.24e-14   -4.68e-13
+dQgdVsb:  -7.85e-13   -1.61e-13   -3.92e-14   -2.98e-13   -2.61e-12
+dQddVgb:  -4.21e-13   -1.58e-13   -1.75e-14   -1.64e-13   -1.44e-12
+dQddVdb:   1.56e-13    1.56e-13    7.60e-16    6.24e-14    4.26e-13
+dQddVsb:   3.28e-13    2.26e-15    2.20e-14    1.24e-13    1.41e-12
+dQbdVgb:  -1.21e-13   -1.66e-13   -6.99e-15   -4.78e-14   -3.30e-13
+dQbdVdb:  -5.16e-17   -6.66e-19   -4.00e-17   -8.57e-18   -2.29e-13
+dQbdVsb:  -2.69e-14   -3.25e-16   -5.63e-15   -1.31e-14   -3.74e-13
+
+Name:        m4          mf
+Model:     180nmn      180nmn
+Id:       -3.83e-07    9.07e-13
+Vgs:      -3.22e-01   -4.07e-03
+Vds:      -7.77e-01    8.65e-01
+Vbs:      -8.79e-01   -1.41e-02
+Vth:       4.27e-01    3.65e-01
+Vdsat:     5.12e-02    3.33e-02
+Gm:        9.02e-06    5.02e-13
+Gds:       3.47e-08    1.60e-17
+Gmb        2.53e-06    1.80e-13
+Cbd:       0.00e+00    0.00e+00
+Cbs:       0.00e+00    0.00e+00
+Cgsov:     2.22e-15    1.11e-15
+Cgdov:     2.22e-15    1.11e-15
+Cgbov:     1.41e-18    4.00e-16
+dQgdVgb:   2.61e-14    1.37e-12
+dQgdVdb:  -2.22e-15   -1.11e-15
+dQgdVsb:  -2.01e-14   -1.29e-15
+dQddVgb:  -1.01e-14   -1.17e-15
+dQddVdb:   2.22e-15    1.11e-15
+dQddVsb:   1.02e-14    8.81e-17
+dQbdVgb:  -5.97e-15   -1.36e-12
+dQbdVdb:  -6.68e-19   -1.79e-21
+dQbdVsb:  -2.56e-15    5.22e-18
+
+
+Operating Bias Point Solution:
+V(s)                      0.840645   voltage
+V(in)                    0.0140654   voltage
+V(med)                    0.101722   voltage
+V(vdda)                        1.8   voltage
+V(vnmos)                       1.6   voltage
+V(vnload)                 0.538477   voltage
+V(vncasc)                 0.556558   voltage
+V(out)                    0.879027   voltage
+V(vd6)                     1.25015   voltage
+V(vp5)                         0.8   voltage
+V(vp6)                         1.1   voltage
+V(vdis)                       0.01   voltage
+Id(M1)                 0.000190343   device_current
+Ig(M1)                          -0   device_current
+Ib(M1)                 2.67763e-12   device_current
+Is(M1)                -0.000190343   device_current
+Id(M5)                 3.82634e-07   device_current
+Ig(M5)                          -0   device_current
+Ib(M5)                 1.49082e-12   device_current
+Is(M5)                -3.82636e-07   device_current
+Id(M6)                 3.82634e-07   device_current
+Ig(M6)                          -0   device_current
+Ib(M6)                 5.59846e-13   device_current
+Is(M6)                -3.82634e-07   device_current
+Id(M2)                 0.000190343   device_current
+Ig(M2)                           0   device_current
+Ib(M2)                -7.98193e-12   device_current
+Is(M2)                -0.000190343   device_current
+Id(M3)                 0.000190726   device_current
+Ig(M3)                           0   device_current
+Ib(M3)                -1.11543e-13   device_current
+Is(M3)                -0.000190726   device_current
+Id(M4)                -3.82634e-07   device_current
+Ig(M4)                           0   device_current
+Ib(M4)                -1.00057e-12   device_current
+Is(M4)                 3.82635e-07   device_current
+Id(Mf)                 9.07362e-13   device_current
+Ig(Mf)                           0   device_current
+Ib(Mf)                -9.07362e-13   device_current
+Is(Mf)                -1.51461e-26   device_current
+I(Cf)                  2.59488e-27   device_current
+I(Cd1)                 1.75817e-26   device_current
+I(Is1)                           0   device_current
+I(Vdd)                -0.000190726   device_current
+I(Vnmos)                         0   device_current
+I(Vnload)                        0   device_current
+I(Vp6)                           0   device_current
+I(Vp5)                           0   device_current
+I(Vp1)                           0   device_current
+I(Vf1)                           0   device_current
+
+Total elapsed time: 0.003 seconds.
