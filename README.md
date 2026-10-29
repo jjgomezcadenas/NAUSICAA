@@ -32,7 +32,7 @@ If dependencies are already available, set `PYTHON` to that interpreter.
 
 - `config/detector.toml`: SI inputs, source labels, and unresolved assumptions.
 - `src/ion_signal/physics.py`: reusable equations, current convention and models.
-- `scripts/build_physics.py`: figures, LaTeX tables/macros and numerical outputs.
+- `scripts/benchmarks/build_physics.py`: figures, LaTeX tables/macros and numerical outputs.
 - `tests/test_physics.py`: independent surface integration, charge accounting,
   boundary values, drift/diffusion consistency, scaling and convergence.
 - `notes/physics/nausica.tex`: the physics note and derivations.
@@ -124,7 +124,7 @@ For a different input or interactive Julia use:
 
 ```sh
 export JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia"
-julia --project=. scripts/extract_hits.jl ~/NAUSICAA/example.next.h5
+julia --project=. scripts/events/extract_hits.jl ~/NAUSICAA/example.next.h5
 julia --project=.
 ```
 
@@ -178,7 +178,7 @@ The mean projections describe initial selected ionization, not collection at
 physical pads or joint pad/frame occupancy. Relative time uses a uniform speed
 and is not an absolute arrival-time prediction.
 
-`scripts/plot_hit_analysis.py` reads only saved analysis HDF5 files. PNG figures
+`scripts/events/plot_hit_analysis.py` reads only saved analysis HDF5 files. PNG figures
 go beside each result; `latex_generated/ion_tracks/report.pdf` gathers the
 calculation, raw summaries, retained totals, tail diagnostics, figures,
 validation and source provenance. The central Z detail and the full Z vector
@@ -213,7 +213,7 @@ arrivals, with fixed input capacitance 5 pF adopted from Topmetal-S. The ion cou
 N remains free; the noise calculation solves for the minimum N with S/N > 5.
 The simultaneous mid-frame pulse is a numerical cross-check. All numerical
 values, the normalized current/voltage figure, and charge/noise tables are
-produced by `scripts/build_arrival_cases.py` and `scripts/build_noise_study.py`.
+produced by `scripts/benchmarks/build_arrival_cases.py` and `scripts/benchmarks/build_noise_study.py`.
 Their inputs are `config/detector.toml` and `config/realistic_csa.toml`; results
 and provenance are in `results/realistic_csa/arrival_cases_point_samples.json`
 and `noise_point_samples.json`. Signal and noise use point voltage readings.

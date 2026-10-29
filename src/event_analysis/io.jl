@@ -16,7 +16,7 @@ dataset and is kept separate from the event ID.
 """
 function read_event(f::HDF5.File, event_id::Int64)::Tuple{EventHits,EventInfo}
     schema = read(attributes(f)["schema"])
-    schema == EventIO.SCHEMA || error("read_event requires $(EventIO.SCHEMA), got $schema. Regenerate: julia --project=. scripts/extract_hits.jl --overwrite SOURCE.next.h5")
+    schema == EventIO.SCHEMA || error("read_event requires $(EventIO.SCHEMA), got $schema. Regenerate: julia --project=. scripts/events/extract_hits.jl --overwrite SOURCE.next.h5")
     df = EventIO.read_hitdf(f; event_id)
     metadata = EventIO.read_event_metadata(f)
     i = findfirst(==(event_id), metadata.event_id)

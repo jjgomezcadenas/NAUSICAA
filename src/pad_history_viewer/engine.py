@@ -124,8 +124,7 @@ class Engine:
             step=self.config['solver_step_s']/(2 if refine else 1)
             deck=folder/(suffix+'.cir')
             deck.write_text(body+f'Is1 0 in PWL FILE="{suffix}.pwl"\n.tran 0 {inp["stoptime_s"]:.17e} 0 {step:.17e}\n.save V(in) V(out) I(Is1)\n.end\n')
-            sys.path.insert(0,str(ROOT/'scripts'))
-            from build_ltspice_study import run
+            from ion_signal.spice_acquisition import run
             raw=folder/(suffix+'_raw.h5')
             for attempt in range(3):
                 if attempt:

@@ -121,7 +121,7 @@ read_hitdf(path::AbstractString; kwargs...) = h5open(f -> read_hitdf(f; kwargs..
 function read_event_metadata(f::HDF5.File)
     check_schema(f)
     names = (:event_id,:first_row,:n_hits,:energy_MeV,:vertex_x_mm,:vertex_y_mm,:vertex_z_mm,:n_primaries)
-    all(name -> haskey(f,"events/$name"),names) || error("Missing generation vertices; regenerate with scripts/extract_hits.jl --overwrite")
+    all(name -> haskey(f,"events/$name"),names) || error("Missing generation vertices; regenerate with scripts/events/extract_hits.jl --overwrite")
     df = DataFrame([name => read(f["events/$name"]) for name in names]; copycols=false)
     allunique(df.event_id) || error("Repeated event IDs in metadata")
     all(>(0),df.n_primaries) || error("Missing primary particle")
@@ -175,7 +175,7 @@ IDs raise `KeyError`; missing v3 fields or invalid ranges raise an error with
 regeneration guidance. The supplied file remains open.
 """
 function read_primary_ids(f::HDF5.File; event_id)
-    read(attributes(f)["schema"]) == SCHEMA || error("Primary IDs require $SCHEMA; regenerate with julia --project=. scripts/extract_hits.jl --overwrite SOURCE.next.h5")
+    read(attributes(f)["schema"]) == SCHEMA || error("Primary IDs require $SCHEMA; regenerate with julia --project=. scripts/events/extract_hits.jl --overwrite SOURCE.next.h5")
     ids = read(f["events/event_id"])
     i = findfirst(==(event_id), ids)
     i === nothing && throw(KeyError(event_id))

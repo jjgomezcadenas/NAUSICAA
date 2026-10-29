@@ -117,14 +117,14 @@ slice; the reference shifts slightly when the binned approximation is removed.
 \section{Reproduction}
 From the repository root:
 \begin{verbatim}
-python scripts/run_pad_history_pipeline.py \
+python scripts/electronics/histories/run_pad_history_pipeline.py \
   --config config/pad_history_readout_direct.toml \
   --simulator /path/to/LTspice
-python scripts/run_pad_compression.py \
+python scripts/electronics/histories/run_pad_compression.py \
   --config config/pad_history_viewer_direct.toml --workers 4
 julia --project=. scripts/electronics/histories/compare_inputs.jl
 python scripts/electronics/histories/present_input_comparison.py
-python scripts/view_pad_histories.py
+python scripts/viewers/view_pad_histories.py
 \end{verbatim}
 Julia writes \texttt{results/ltspice/pad\_history\_direct\_comparison/comparison.h5};
 Python presents its saved values. The source files, configurations, screen

@@ -73,8 +73,8 @@ are part of each implementation increment. Step-one numerical validation is save
 and presented in latex_generated/event_analysis_step1/report.pdf.
 
 Rebuild with `make event-review PYTHON=/path/to/python3.11-or-newer`.
-The builder reads `scripts/event_design_content.py` for the design and this
-roadmap, `scripts/petit_review_content.py` for the source assessment/decision
+The builder reads `docs/event_analysis_review/content/event_design_content.py` for the design and this
+roadmap, `docs/event_analysis_review/content/petit_review_content.py` for the source assessment/decision
 record, and `docs/event_analysis_review/template.html` for presentation.
 The default Petit checkout is `../Petit`; the builder also accepts `--petit-root`.
 Refresh the existing HTML tab after rebuilding.

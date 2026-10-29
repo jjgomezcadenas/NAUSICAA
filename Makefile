@@ -9,25 +9,25 @@ export XDG_CACHE_HOME := $(CURDIR)/work/cache
 all: test readout note
 
 physics:
-	$(PYTHON) scripts/build_physics.py
+	$(PYTHON) scripts/benchmarks/build_physics.py
 
 readout:
-	$(PYTHON) scripts/build_readout.py
+	$(PYTHON) scripts/benchmarks/build_readout.py
 
 realistic-readout:
-	$(PYTHON) scripts/build_realistic_csa.py
+	$(PYTHON) scripts/benchmarks/build_realistic_csa.py
 
 gain-figure:
-	$(PYTHON) scripts/build_gain_figure.py
+	$(PYTHON) scripts/benchmarks/build_gain_figure.py
 
 arrival-cases:
-	$(PYTHON) scripts/build_arrival_cases.py
+	$(PYTHON) scripts/benchmarks/build_arrival_cases.py
 
 noise-study: arrival-cases
-	$(PYTHON) scripts/build_noise_study.py
+	$(PYTHON) scripts/benchmarks/build_noise_study.py
 
 capacitance-check:
-	$(PYTHON) scripts/build_capacitance_check.py
+	$(PYTHON) scripts/benchmarks/build_capacitance_check.py
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v
@@ -39,20 +39,20 @@ check: test readout note
 
 .PHONY: ltspice-study
 ltspice-study:
-	$(PYTHON) scripts/build_ltspice_study.py --simulator "$(LTSPICE)"
-	$(PYTHON) scripts/analyze_ltspice_study.py
+	$(PYTHON) scripts/electronics/reproduction/initial/build_ltspice_study.py --simulator "$(LTSPICE)"
+	$(PYTHON) scripts/electronics/reproduction/initial/analyze_ltspice_study.py
 
 .PHONY: shaping-study
 shaping-study:
-	$(PYTHON) scripts/build_shaping_study.py --simulator "$(LTSPICE)"
+	$(PYTHON) scripts/electronics/reproduction/initial/build_shaping_study.py --simulator "$(LTSPICE)"
 
 .PHONY: ion-shaping-study
 ion-shaping-study:
-	$(PYTHON) scripts/build_shaping_study.py --include-ion-frames --simulator "$(LTSPICE)"
+	$(PYTHON) scripts/electronics/reproduction/initial/build_shaping_study.py --include-ion-frames --simulator "$(LTSPICE)"
 
 .PHONY: spice-paper
 spice-paper: spice-averaging-plot
-	$(PYTHON) scripts/build_spice_paper.py
+	$(PYTHON) scripts/paper/build_spice_paper.py
 
 .PHONY: julia-env test-events extract-hits
 julia-env:
@@ -66,7 +66,7 @@ test-event-core:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl
 
 event-review:
-	$(PYTHON) scripts/build_event_review.py
+	$(PYTHON) scripts/documentation/build_event_review.py
 
 .PHONY: validate-event-step1 report-event-step1
 # Reader/reconstruction checkpoint; input reduced files must already be v3.
@@ -75,12 +75,12 @@ validate-event-step1:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_event_io.jl > work/event_analysis/step1_io.log 2>&1 || { cat work/event_analysis/step1_io.log; exit 1; }
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl > work/event_analysis/step1_core.log 2>&1 || { cat work/event_analysis/step1_core.log; exit 1; }
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_event_analysis.jl > work/event_analysis/step1_legacy.log 2>&1 || { cat work/event_analysis/step1_legacy.log; exit 1; }
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validate_event_step1.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/validate_event_step1.jl
 	$(MAKE) report-event-step1
 	$(MAKE) event-review
 
 report-event-step1:
-	$(PYTHON) scripts/report_event_step1.py
+	$(PYTHON) scripts/validation/report_event_step1.py
 	cd latex_generated/event_analysis_step1 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
 
 .PHONY: test-event-diffusion validate-event-step2 report-event-step2
@@ -90,12 +90,12 @@ test-event-diffusion:
 validate-event-step2:
 	mkdir -p work/event_analysis
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step2 > work/event_analysis/step2_tests.log 2>&1 || { cat work/event_analysis/step2_tests.log; exit 1; }
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validate_event_step2.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/validate_event_step2.jl
 	$(MAKE) report-event-step2
 	$(MAKE) event-review
 
 report-event-step2:
-	$(PYTHON) scripts/report_event_step2.py
+	$(PYTHON) scripts/validation/report_event_step2.py
 	cd latex_generated/event_analysis_step2 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
 
 .PHONY: test-event-collection validate-event-step3 report-event-step3
@@ -105,12 +105,12 @@ test-event-collection:
 validate-event-step3:
 	mkdir -p work/event_analysis
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step3 > work/event_analysis/step3_tests.log 2>&1 || { cat work/event_analysis/step3_tests.log; exit 1; }
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validate_event_step3.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/validate_event_step3.jl
 	$(MAKE) report-event-step3
 	$(MAKE) event-review
 
 report-event-step3:
-	$(PYTHON) scripts/report_event_step3.py
+	$(PYTHON) scripts/validation/report_event_step3.py
 	cd latex_generated/event_analysis_step3 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
 
 .PHONY: test-event-ensemble validate-event-step4 report-event-step4
@@ -118,7 +118,7 @@ report-event-step3:
 VIEWER_PYTHON ?= $(if $(wildcard work/event-viewer-venv/bin/python),work/event-viewer-venv/bin/python,$(PYTHON))
 .PHONY: view-events check-event-viewer
 view-events:
-	$(VIEWER_PYTHON) scripts/view_events.py
+	$(VIEWER_PYTHON) scripts/viewers/view_events.py
 
 check-event-viewer:
 	$(VIEWER_PYTHON) tests/event_viewer/check_session.py
@@ -129,35 +129,35 @@ test-event-ensemble:
 validate-event-step4:
 	mkdir -p work/event_analysis
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/runtests.jl --step4 > work/event_analysis/step4_tests.log 2>&1 || { cat work/event_analysis/step4_tests.log; exit 1; }
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/scan_event_analysis.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/scan_event_analysis.jl
 	$(MAKE) report-event-step4
 	$(MAKE) event-review
 
 report-event-step4:
-	$(PYTHON) scripts/report_event_step4.py
+	$(PYTHON) scripts/validation/report_event_step4.py
 	cd latex_generated/event_analysis_step4 && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
 
 RAW_EVENTS_DIR ?= $(HOME)/NAUSICAA
 extract-hits:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/extract_hits.jl "$(RAW_EVENTS_DIR)/0nubb.next.h5" "$(RAW_EVENTS_DIR)/electron_0nubb_energy.next.h5"
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/events/extract_hits.jl "$(RAW_EVENTS_DIR)/0nubb.next.h5" "$(RAW_EVENTS_DIR)/electron_0nubb_energy.next.h5"
 
 .PHONY: spice-averaging spice-averaging-plot
 spice-averaging:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/build_averaging_scan.jl
-	$(PYTHON) scripts/plot_averaging_scan.py
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/electronics/readout/build_averaging_scan.jl
+	$(PYTHON) scripts/electronics/readout/plot_averaging_scan.py
 
 spice-averaging-plot:
-	$(PYTHON) scripts/plot_averaging_scan.py
+	$(PYTHON) scripts/electronics/readout/plot_averaging_scan.py
 
 .PHONY: test-ion-analysis ion-analysis ion-report ion-tracks
 test-ion-analysis:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. tests/test_event_analysis.jl
 
 ion-analysis:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/analyze_hits.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/events/analyze_hits.jl
 
 ion-report:
-	$(PYTHON) scripts/plot_hit_analysis.py
+	$(PYTHON) scripts/events/plot_hit_analysis.py
 	mkdir -p work/ion_tracks_latex
 	cd latex_generated/ion_tracks && latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=../../work/ion_tracks_latex report.tex
 	cp work/ion_tracks_latex/report.pdf latex_generated/ion_tracks/report.pdf
@@ -167,72 +167,86 @@ ion-tracks: ion-analysis
 
 .PHONY: spice2-reproduction spice2-plots
 spice2-reproduction:
-	$(PYTHON) scripts/reproduce_spice2.py --simulator "$(LTSPICE)"
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/analyze_spice2.jl
-	$(PYTHON) scripts/plot_spice2.py
+	$(PYTHON) scripts/electronics/reproduction/spice2/reproduce_spice2.py --simulator "$(LTSPICE)"
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/electronics/reproduction/spice2/analyze_spice2.jl
+	$(PYTHON) scripts/electronics/reproduction/spice2/plot_spice2.py
 
 spice2-plots:
-	$(PYTHON) scripts/plot_spice2.py
+	$(PYTHON) scripts/electronics/reproduction/spice2/plot_spice2.py
 
 .PHONY: spice2-enc spice2-enc-plots
 spice2-enc:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(PYTHON) scripts/run_spice2_enc.py --simulator "$(LTSPICE)" --julia "$(JULIA)"
-	$(PYTHON) scripts/plot_spice2_enc.py
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(PYTHON) scripts/electronics/reproduction/spice2/run_spice2_enc.py --simulator "$(LTSPICE)" --julia "$(JULIA)"
+	$(PYTHON) scripts/electronics/reproduction/spice2/plot_spice2_enc.py
 
 spice2-enc-plots:
-	$(PYTHON) scripts/plot_spice2_enc.py
+	$(PYTHON) scripts/electronics/reproduction/spice2/plot_spice2_enc.py
 
 .PHONY: ramo-note ramo-note-render
 ramo-note:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/check_ramo_note.jl
-	$(PYTHON) scripts/write_ramo_note.py
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --project=. scripts/paper/check_ramo_note.jl
+	$(PYTHON) scripts/paper/write_ramo_note.py
 
 ramo-note-render:
-	$(PYTHON) scripts/write_ramo_note.py
+	$(PYTHON) scripts/paper/write_ramo_note.py
 
 .PHONY: mc-selection present-mc-selection
 mc-selection:
 	mkdir -p work/mc_selection
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/events/analyze_mc_selection.jl
 	$(MAKE) present-mc-selection
 
 present-mc-selection:
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_mc_selection.py
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/events/present_mc_selection.py
 
 .PHONY: pixel-charge present-pixel-charge
 pixel-charge:
 	mkdir -p work/pixel_charge
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/run_pixel_charge_direct.jl config/pixel_charge.toml
 	$(MAKE) present-pixel-charge
 
 present-pixel-charge:
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_direct --latex-dir latex_generated/pixel_charge_direct
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_pixel_charge.py --results-dir results/pixel_charge_direct --latex-dir latex_generated/pixel_charge_direct
 
 .PHONY: pixel-charge-1mm
 pixel-charge-1mm:
 	mkdir -p work/pixel_charge_1mm
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge_1mm.toml
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_direct --latex-dir latex_generated/pixel_charge_1mm_direct
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/run_pixel_charge_direct.jl config/pixel_charge_1mm.toml
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_pixel_charge.py --results-dir results/pixel_charge_1mm_direct --latex-dir latex_generated/pixel_charge_1mm_direct
 
 .PHONY: pixel-charge-1mm-3mm
 pixel-charge-1mm-3mm:
 	mkdir -p work/pixel_charge_1mm_3mm
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge_1mm_3mm.toml
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_3mm_direct --latex-dir latex_generated/pixel_charge_1mm_3mm_direct
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/run_pixel_charge_direct.jl config/pixel_charge_1mm_3mm.toml
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_pixel_charge.py --results-dir results/pixel_charge_1mm_3mm_direct --latex-dir latex_generated/pixel_charge_1mm_3mm_direct
 
 .PHONY: pixel-charge-1mm-4mm
 pixel-charge-1mm-4mm:
 	mkdir -p work/pixel_charge_1mm_4mm
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge_1mm_4mm.toml
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_4mm_direct --latex-dir latex_generated/pixel_charge_1mm_4mm_direct
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/run_pixel_charge_direct.jl config/pixel_charge_1mm_4mm.toml
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_pixel_charge.py --results-dir results/pixel_charge_1mm_4mm_direct --latex-dir latex_generated/pixel_charge_1mm_4mm_direct
 
 .PHONY: grid-readout present-grid-readout
 grid-readout:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/test_grid_readout.jl
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/sample_collect_parallel.jl --events 8000 --workers 6 --output results/grid_readout_direct_8000
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/summarize_grid_readout.jl results/grid_readout_direct_8000
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/sample_collect_parallel.jl --events 8000 --workers 6 --output results/grid_readout_direct_8000
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/summarize_grid_readout.jl results/grid_readout_direct_8000
 	$(PYTHON) tests/event_analysis/check_grid_readout.py results/grid_readout_direct_8000 --events 8000
 	$(MAKE) present-grid-readout
 
 present-grid-readout:
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_grid_readout.py
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_grid_readout.py
+
+.PHONY: pdf-grid-readout pdf-electron-diffusion pdf-mc-selection
+pdf-grid-readout:
+	cd latex_generated/grid_readout_direct && latexmk -pdf -interaction=nonstopmode -halt-on-error grid_readout.tex
+
+pdf-electron-diffusion:
+	cd latex_generated/electron_diffusion && latexmk -pdf -interaction=nonstopmode -halt-on-error electron_diffusion.tex
+
+pdf-mc-selection:
+	cd latex_generated/mc_selection && latexmk -pdf -interaction=nonstopmode -halt-on-error mc_selection.tex
+
+.PHONY: test-script-layout
+test-script-layout:
+	$(VIEWER_PYTHON) tests/script_layout/check_migration.py

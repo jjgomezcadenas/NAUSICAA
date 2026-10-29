@@ -1,4 +1,4 @@
-include(joinpath(ROOT,"scripts/pixel_diffusion_cache.jl"))
+include(joinpath(ROOT,"src/event_analysis/batch/pixel_diffusion_cache.jl"))
 @testset "Diffusion cache independent of collection grid" begin
     mktempdir(joinpath(ROOT,"work");prefix="cache-test-") do dir
         source=joinpath(dir,"source.h5");h5open(f->(f["test"]=[1]),source,"w")

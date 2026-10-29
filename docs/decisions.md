@@ -106,7 +106,7 @@ approximation.
 
 ### Three-cloud propagation prototype and concurrency (2026-10-29)
 
-The prototype `scripts/propagate_cloud_stream.jl` writes one HDF5 cloud stream
+The prototype `scripts/transport/propagate_cloud_stream.jl` writes one HDF5 cloud stream
 for each combination of source sample (bb0nu, single electron) and carrier
 model (positive ion, pure-Xe electron, Xe-15% He electron). It uses Petit's
 per-carrier Gaussian diffusion and a 100-bin axis histogram. The event
@@ -116,7 +116,7 @@ seeds also include the carrier model. The event position spans 0--150 cm.
 Each process writes its own file. Pure-Xe clouds record helium fraction zero;
 the Xe--He and ion clouds record the 15% mixture used by the detector.
 
-`scripts/benchmark_three_clouds.py` ran 100 events in each of six streams,
+`scripts/transport/benchmark_three_clouds.py` ran 100 events in each of six streams,
 including Julia startup, HDF5 reading, diffusion and compressed HDF5 writing:
 1 worker 39.03 s; 2 workers 19.98 s; 4 workers 13.59 s; 6 workers 7.63 s.
 Total cloud output was 64.2 MB at
@@ -137,13 +137,13 @@ the cache/resume layout and a full-sample resource check.
 
 ### Julia parallel launcher, 500-event sample (2026-10-29)
 
-`scripts/propagate_clouds_parallel.jl` now starts up to six independent Julia
+`scripts/transport/propagate_clouds_parallel.jl` now starts up to six independent Julia
 processes, one per sample/cloud stream, with `--events`, `--workers` and
 `--output` arguments. It writes `propagation_summary.h5` after all streams
 finish. Run used:
 
 ```
-julia --project=. scripts/propagate_clouds_parallel.jl --events 500 --workers 6 --output results/three_cloud_sample_500
+julia --project=. scripts/transport/propagate_clouds_parallel.jl --events 500 --workers 6 --output results/three_cloud_sample_500
 ```
 
 At 500 events per stream, six workers took 15.33 s including process startup,
@@ -175,7 +175,7 @@ plus out-of-range counts in every cloud.
 
 ### Direct six-stream grid readout (2026-10-29)
 
-`scripts/sample_collect_parallel.jl` runs six independent Julia workers.
+`scripts/collection/sample_collect_parallel.jl` runs six independent Julia workers.
 For each source hit, the worker samples its positive-ion or electron Gaussian
 positions and increments the containing pad/EL hole and 2 mm longitudinal
 bucket immediately. A sparse signed-index map extends the saved axes around
@@ -204,7 +204,7 @@ time slices and 2,181 occupied pad/time cells, compared with 15 and 702
 from the binned intermediate representation.
 
 The two-panel viewer in `src/cloud_viewer/` reads the direct histories. Run
-`work/event-viewer-venv/bin/python scripts/serve_cloud_viewer.py --port 8767`
+`work/event-viewer-venv/bin/python scripts/viewers/serve_cloud_viewer.py --port 8767`
 and open `http://127.0.0.1:8767/`. Choose double beta or single electrons,
 then pure Xe or Xe–15% He for the PE panel. The ion panel comes from the
 same event in the selected sample. Each panel gives complementary drift
@@ -214,7 +214,7 @@ event, stored under `events/99`. Previous/next buttons and arrow keys step
 through the selected sample. The URL retains the sample, gas and position.
 
 The earlier ion-only pixel-charge workflow also has a direct sampler in
-`scripts/run_pixel_charge_direct.jl`. It replays each event's Gaussian draws
+`scripts/collection/run_pixel_charge_direct.jl`. It replays each event's Gaussian draws
 once to calculate the exact retained-carrier x/y centre and minimum z, then
 replays the same draws into its configured pad and frame grid. This preserves
 that viewer's grid-reference convention without a carrier-coordinate cache.

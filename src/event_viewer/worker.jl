@@ -161,7 +161,7 @@ function main()
                         h5open(target,"r") do f
                             read(attributes(f)["schema"])=="nausicaa.hitdf.v3" || error("Existing reduced file needs regeneration: $target")
                             read(f["metadata/source_sha256"])==EventAnalysis.EventIO.file_sha256(path) ||
-                                error("Existing reduced file belongs to different source contents: $target. Regenerate it with scripts/extract_hits.jl --overwrite.")
+                                error("Existing reduced file belongs to different source contents: $target. Regenerate it with scripts/events/extract_hits.jl --overwrite.")
                         end
                     else
                         EventAnalysis.EventIO.convert_hits(path)
