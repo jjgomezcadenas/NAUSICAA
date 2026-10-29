@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NAUSICAA · Pad histories</title><link rel="stylesheet" href="/style.css"><script src="/plotly.js" defer></script><script src="/app.js" defer></script></head>
+<body><header><div><p class="eyebrow">NAUSICAA / OPTIMIZED CSA</p><h1>Pad histories</h1></div><nav aria-label="View"><button id="historyTab" class="active">History</button><button id="statsTab">Compression study</button></nav></header>
+<main><section id="historyView">
+<div class="controls"><label>Configuration and sample<select id="sample"></select></label><label>Standard events<select id="standard"><option value="">Choose a standard event</option></select></label><label>Demanding histories<select id="ranked"><option value="">Choose a history</option></select></label></div>
+<div class="controls"><div><label for="event">Event ID</label><div class="joined"><button id="prevEvent" aria-label="Previous event">←</button><input id="event" type="number" min="0"><button id="loadEvent">Load</button><button id="nextEvent" aria-label="Next event">→</button></div></div>
+<div class="padField"><label for="pad">Pad (x, y) · ordered by minimum linear voltage</label><div class="joined"><button id="prevPad" aria-label="Previous pad">←</button><select id="pad"></select><button id="nextPad" aria-label="Next pad">→</button></div></div>
+<button id="simulate" class="primary">Calculate SPICE response</button></div>
+<div id="summary" class="summary" aria-live="polite"></div>
+<div class="plotTools"><button id="activity">Fit occupied interval</button><button id="eventRange">Whole event</button><button id="whole">Include recovery</button><label><input id="showLinear" type="checkbox" checked> Linear prediction</label><label><input id="showTruth" type="checkbox" checked> Collected counts in lower panel</label><label><input id="showNoise" type="checkbox"> ±1 ENC band</label></div>
+<p id="coverage" class="footnote" aria-live="polite"></p>
+<p id="status" role="status">Loading stored histories…</p><div id="chart" role="img" aria-label="Three linked plots: collected ions, CSA output voltage and estimated charge per bucket"></div>
+<p id="assumptions" class="footnote"></p>
+</section>
+<section id="statsView" hidden><div class="statsIntro"><div><h2>Compression across events</h2><p>Response loss compares the transistor simulation with the linear prediction for the same history.</p></div><button id="refreshStats">Refresh results</button></div>
+<div class="controls"><label>Minimum missing signal<select id="noiseCut"><option value="0">Any positive deficit</option><option value="1" selected>1 nominal ENC</option><option value="3">3 nominal ENC</option></select></label></div>
+<p id="studyStatus" role="status"></p><div class="tableWrap"><table id="statsTable"><thead></thead><tbody></tbody></table></div>
+<div id="statsChart" role="img" aria-label="Fraction of events with confirmed compression, as a function of response loss"></div>
+<p class="footnote">Each event is counted once if a tested pad has an occupied bucket satisfying both criteria. Affected events remain available for track reconstruction. Candidate histories use a conservative linear-voltage screen; sampled controls check the remaining range. Fractions during an incomplete batch show confirmed cases so far.</p>
+</section></main></body></html>

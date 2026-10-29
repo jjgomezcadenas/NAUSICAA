@@ -1,4 +1,4 @@
-"""Verify full-cloud ideal pad collection and the interactive pad/time display."""
+"""Verify direct ion-pad collection and the interactive pad/time display."""
 from pathlib import Path
 import sys,tempfile
 import h5py
@@ -12,19 +12,14 @@ def check(session,p):
     assert info['total_ions']==t['retained_ions']
     assert all(0<=v<info['pitch_mm'] for v in info['grid_offset_mm'])
     with h5py.File(session.work/'current.h5') as f:
-        b=f['transport/bins'];g=f['pads'];h=g['history']
+        assert f.attrs['schema'] == b'nausicaa.event.viewer.v2'
+        g=f['pads'];h=g['history']
         assert h['ions'][:].sum()==info['total_ions']
         assert np.allclose(np.diff(g['time_edges_ms'][:]),20,atol=.01)
         assert np.allclose(np.diff(g['display/axes/x_edges_mm'][:]),2,atol=.001)
         assert np.allclose(np.diff(g['display/axes/y_edges_mm'][:]),2,atol=.001)
         ix,iy,it=(h[k][:]-1 for k in ('pad_ix','pad_iy','slice_index'))
-        # Independent charge assignment from saved diffusion centres and grid axes.
-        edges=[g['display/axes/'+a+'_edges_mm'][:] for a in 'xy']+[g['z_edges_mm'][:]]
-        idx=[np.minimum(np.searchsorted(e,b[a][:],side='right')-1,len(e)-2) for e,a in zip(edges,'xyz')]
-        if info['drift_direction']==-1:idx[2]=len(edges[2])-2-idx[2]
-        expected={}
-        for key,n in zip(zip(*idx),b['ions'][:]):expected[key]=expected.get(key,0)+int(n)
-        assert expected==dict(zip(zip(ix,iy,it),map(int,h['ions'][:])))
+        assert len(set(zip(ix,iy,it)))==len(ix)
         for plane in ('xy','xz','yz'):
             gdisplay=g['display/projections/'+plane+'_ions'][:]
             assert gdisplay.sum()==info['total_ions']
@@ -51,5 +46,5 @@ with tempfile.TemporaryDirectory(prefix='pad-check-',dir=ROOT/'work') as work:
     s=Session(ROOT/'config/event_viewer.toml',work)
     try:
         assert check(s,s.navigate({}))==sig
-        print('Both species: full ion collection, independent pad assignment, exact charge projections, 2 mm pitch/20 ms slices, shared transport, realisations and restart passed.')
+        print('Both species: direct ion collection, exact charge projections, 2 mm pitch/20 ms slices, shared transport, realisations and restart passed.')
     finally:s.close()

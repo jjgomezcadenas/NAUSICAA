@@ -1,0 +1,16 @@
+output = "results/ltspice/pad_compression"
+report = "latex_generated/pad_compression"
+readout_card = "config/pad_history_readout.toml"
+screen_voltage_V = 0.35
+control_voltage_edges_V = [0.35, 0.5, 0.65, 0.8, 1.0]
+controls_per_stratum = 12
+random_seed = 20261029
+loss_fractions = [0.1, 0.25, 0.5, 0.75]
+deficit_noise_multiples = [0.0, 1.0, 3.0]
+current_step_s = 0.000005
+solver_step_s = 0.00025
+recovery_tail_s = 3.0
+prehistory_s = 0.003
+host = "127.0.0.1"
+port = 0
+initial_sample = "p4_bb0nu"

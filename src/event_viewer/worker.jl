@@ -82,7 +82,7 @@ preserved. The reader owns and retains its original input-file handle.
 function write_snapshot(hits,info,maps,source,sample,position,event_count,request_id,nbins;graph=nothing,transport=nothing,active_transport=false,pads=nothing,active_pads=false)
     target=joinpath(WORK,"current.h5");temporary=joinpath(WORK,"current.tmp.h5")
     h5open(temporary,"w") do f
-        attributes(f)["schema"]="nausicaa.event.viewer.v1"
+        attributes(f)["schema"]="nausicaa.event.viewer.v2"
         attributes(f)["status"]="complete"
         for (k,v) in ("request_id"=>request_id,"sample"=>sample,"source_path"=>source,
                 "source_schema"=>"nausicaa.hitdf.v3",

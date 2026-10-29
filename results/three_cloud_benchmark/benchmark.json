@@ -1,0 +1,206 @@
+[
+  {
+    "workers": 1,
+    "events_per_stream": 100,
+    "wall_seconds": 39.03321245801635,
+    "total_bytes": 64196485,
+    "sum_worker_peak_rss_bytes": 5001117696,
+    "streams": [
+      {
+        "sample": "bb0nu",
+        "carrier": "ion",
+        "seconds": 6.59589908295311,
+        "bytes": 8367751,
+        "peak_rss_bytes": 790675456
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "pure_xe",
+        "seconds": 7.297116957837716,
+        "bytes": 14588045,
+        "peak_rss_bytes": 867680256
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "xe_he",
+        "seconds": 6.3462347919121385,
+        "bytes": 11423749,
+        "peak_rss_bytes": 843644928
+      },
+      {
+        "sample": "electrons",
+        "carrier": "ion",
+        "seconds": 6.0626792090479285,
+        "bytes": 6118363,
+        "peak_rss_bytes": 798801920
+      },
+      {
+        "sample": "electrons",
+        "carrier": "pure_xe",
+        "seconds": 6.536424749996513,
+        "bytes": 13445804,
+        "peak_rss_bytes": 849805312
+      },
+      {
+        "sample": "electrons",
+        "carrier": "xe_he",
+        "seconds": 6.193538833875209,
+        "bytes": 10252773,
+        "peak_rss_bytes": 850509824
+      }
+    ]
+  },
+  {
+    "workers": 2,
+    "events_per_stream": 100,
+    "wall_seconds": 19.97931750002317,
+    "total_bytes": 64196504,
+    "sum_worker_peak_rss_bytes": 5104435200,
+    "streams": [
+      {
+        "sample": "bb0nu",
+        "carrier": "ion",
+        "seconds": 6.538331916090101,
+        "bytes": 8367831,
+        "peak_rss_bytes": 839581696
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "pure_xe",
+        "seconds": 7.04725645808503,
+        "bytes": 14588094,
+        "peak_rss_bytes": 872890368
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "xe_he",
+        "seconds": 6.813129500020295,
+        "bytes": 11423643,
+        "peak_rss_bytes": 865959936
+      },
+      {
+        "sample": "electrons",
+        "carrier": "ion",
+        "seconds": 6.23900083382614,
+        "bytes": 6118432,
+        "peak_rss_bytes": 798375936
+      },
+      {
+        "sample": "electrons",
+        "carrier": "pure_xe",
+        "seconds": 6.692332124803215,
+        "bytes": 13445760,
+        "peak_rss_bytes": 860880896
+      },
+      {
+        "sample": "electrons",
+        "carrier": "xe_he",
+        "seconds": 6.511607125168666,
+        "bytes": 10252744,
+        "peak_rss_bytes": 866746368
+      }
+    ]
+  },
+  {
+    "workers": 4,
+    "events_per_stream": 100,
+    "wall_seconds": 13.585418416885659,
+    "total_bytes": 64196665,
+    "sum_worker_peak_rss_bytes": 5057118208,
+    "streams": [
+      {
+        "sample": "bb0nu",
+        "carrier": "ion",
+        "seconds": 6.938956375000998,
+        "bytes": 8367749,
+        "peak_rss_bytes": 834355200
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "pure_xe",
+        "seconds": 7.26789641706273,
+        "bytes": 14588196,
+        "peak_rss_bytes": 861569024
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "xe_he",
+        "seconds": 7.059375207871199,
+        "bytes": 11423651,
+        "peak_rss_bytes": 840187904
+      },
+      {
+        "sample": "electrons",
+        "carrier": "ion",
+        "seconds": 6.610487833851948,
+        "bytes": 6118432,
+        "peak_rss_bytes": 805912576
+      },
+      {
+        "sample": "electrons",
+        "carrier": "pure_xe",
+        "seconds": 6.869856292149052,
+        "bytes": 13445865,
+        "peak_rss_bytes": 850722816
+      },
+      {
+        "sample": "electrons",
+        "carrier": "xe_he",
+        "seconds": 6.645949583034962,
+        "bytes": 10252772,
+        "peak_rss_bytes": 864370688
+      }
+    ]
+  },
+  {
+    "workers": 6,
+    "events_per_stream": 100,
+    "wall_seconds": 7.625812290934846,
+    "total_bytes": 64196376,
+    "sum_worker_peak_rss_bytes": 4895604736,
+    "streams": [
+      {
+        "sample": "bb0nu",
+        "carrier": "ion",
+        "seconds": 7.218516874825582,
+        "bytes": 8367798,
+        "peak_rss_bytes": 782303232
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "pure_xe",
+        "seconds": 7.62533933413215,
+        "bytes": 14588017,
+        "peak_rss_bytes": 828145664
+      },
+      {
+        "sample": "bb0nu",
+        "carrier": "xe_he",
+        "seconds": 7.37794395792298,
+        "bytes": 11423619,
+        "peak_rss_bytes": 822755328
+      },
+      {
+        "sample": "electrons",
+        "carrier": "ion",
+        "seconds": 7.083932125009596,
+        "bytes": 6118414,
+        "peak_rss_bytes": 817201152
+      },
+      {
+        "sample": "electrons",
+        "carrier": "pure_xe",
+        "seconds": 7.5441625830717385,
+        "bytes": 13445754,
+        "peak_rss_bytes": 825147392
+      },
+      {
+        "sample": "electrons",
+        "carrier": "xe_he",
+        "seconds": 7.413300707936287,
+        "bytes": 10252774,
+        "peak_rss_bytes": 820051968
+      }
+    ]
+  }
+]

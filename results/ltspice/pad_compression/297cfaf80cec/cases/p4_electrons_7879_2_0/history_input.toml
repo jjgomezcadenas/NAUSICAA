@@ -1,0 +1,6 @@
+prehistory_s = 0.003
+charge_C = 2.6272373164164875e-15
+offset_s = 0.6
+stoptime_s = 3.288
+current_step_s = 5.0e-6
+charge_error = 4.694022948115162e-13

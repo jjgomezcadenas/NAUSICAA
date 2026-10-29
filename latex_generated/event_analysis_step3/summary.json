@@ -1,0 +1,26 @@
+{
+  "passed": 2016,
+  "samples": [
+    {
+      "sample": "Double beta",
+      "acceptance_fraction": 0.4399999976158142,
+      "accepted_below_graph_threshold_ions": 7393,
+      "accepted_events": 22,
+      "accepted_retained_ions": 2468695,
+      "mean_seconds": 0.054790468380000006,
+      "pad_ions": 2468695,
+      "tested_events": 50
+    },
+    {
+      "sample": "Electron background",
+      "acceptance_fraction": 0.6200000047683716,
+      "accepted_below_graph_threshold_ions": 14821,
+      "accepted_events": 31,
+      "accepted_retained_ions": 3474395,
+      "mean_seconds": 0.04928784758000001,
+      "pad_ions": 3474395,
+      "tested_events": 50
+    }
+  ],
+  "drift_direction": 1
+}

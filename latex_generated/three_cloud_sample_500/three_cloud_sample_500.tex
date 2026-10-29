@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage[margin=23mm]{geometry}
+\usepackage{booktabs}
+\title{Six-stream cloud propagation: 500-event sample}
+\author{NAUSICAA analysis}
+\date{29 October 2026}
+\begin{document}
+\maketitle
+\section*{Method}
+For each of two MC source samples, 500 events were propagated into three
+HDF5 clouds: positive ions, pure-Xe electrons and Xe--15\%~He electrons.
+One event location was sampled uniformly over the 0--150~cm drift length.
+Ions and electrons used complementary distances. The Julia launcher used
+six independent processes and separate output files. Timing includes Julia
+startup, source reads, per-carrier diffusion, histogramming and HDF5 writes.
+
+\section*{Run results}
+Workers: 6. Events per stream: 500. Total wall time: 15.33~s. Total cloud storage: 310.3~MB.
+
+\begin{center}
+\begin{tabular}{llrrr}
+\toprule
+Sample & Cloud & Time (s) & HDF5 (MB) & Peak RSS (GB) \\
+\midrule
+bb0nu & ion & 13.14 & 39.1 & 0.84 \\
+bb0nu & pure Xe electron & 15.15 & 71.4 & 0.86 \\
+bb0nu & Xe--15\% He electron & 14.37 & 56.3 & 0.83 \\
+electrons & ion & 12.65 & 30.0 & 0.85 \\
+electrons & pure Xe electron & 14.72 & 64.8 & 0.86 \\
+electrons & Xe--15\% He electron & 13.71 & 48.7 & 0.82 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The sum of the six individual peak resident-memory measurements is 5.05~GB; it bounds the simultaneous peak from above.
+
+\section*{Output and checks}
+Each cloud file contains occupied Float32 histogram-bin positions in mm,
+Int64 carrier counts, explicit bin edges, common event location, both drift
+distances, evaluated diffusion widths, source identity and random seeds.
+The validation checks each event's three matching locations and produced
+carrier totals, the complementary drift distances, and the charge ledger
+between sampled, retained and out-of-range carriers.
+\end{document}

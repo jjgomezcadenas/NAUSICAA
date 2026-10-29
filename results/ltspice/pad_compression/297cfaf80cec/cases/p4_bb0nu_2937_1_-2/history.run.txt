@@ -1,0 +1,66 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Thu Oct 29 17:21:48 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+is1: Removing PWL point (0.0413583,1.99954e-17)
+is1: Removing PWL point (0.0414731,1.99954e-17)
+is1: Removing PWL point (0.0415379,1.99954e-17)
+is1: Removing PWL point (0.0415729,1.99954e-17)
+is1: Removing PWL point (0.0416427,1.99954e-17)
+is1: Removing PWL point (0.0416976,1.99954e-17)
+is1: Removing PWL point (0.0417575,1.99954e-17)
+is1: Removing PWL point (0.0418373,1.99954e-17)
+is1: Removing PWL point (0.0418922,1.99954e-17)
+is1: Removing PWL point (0.0419222,1.99954e-17)
+is1: Removing PWL point (0.041982,1.99954e-17)
+is1: Removing PWL point (0.0422515,1.99954e-17)
+is1: Removing PWL point (0.0423064,1.99954e-17)
+is1: Removing PWL point (0.0423313,1.99954e-17)
+is1: Removing PWL point (0.042496,1.99954e-17)
+is1: Removing PWL point (0.042516,1.99954e-17)
+is1: Removing PWL point (0.0425559,1.99954e-17)
+is1: Removing PWL point (0.0426008,1.99954e-17)
+is1: Removing PWL point (0.0426457,1.99954e-17)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+Gmin = 4.54274e-14
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Changing Tseed to 1e-08
+Total elapsed time: 0.105 seconds.

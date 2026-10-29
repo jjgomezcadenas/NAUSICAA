@@ -49,8 +49,8 @@ The electron readout uses 5 mm diameter cylindrical holes on 10 mm pitch,
 with 5 mm depth. Assign arriving electrons to holes using the existing
 geometric collection approach. The reduced EL field is 3 kV/cm/bar; at the
 design pressure of 15 bar this is 45 kV/cm and a 22.5 kV potential rise
-along electron travel through the hole. TOML will record entry-grid and exit
-anode potentials; their absolute reference remains to be specified.
+along electron travel through the hole. TOML records entry-grid and exit
+anode potentials as 0 and 22,500 V in a relative voltage gauge.
 
 Electroluminescence produces VUV photons along electron passage through the
 hole. The requested optical model accepts forward photons reaching the
@@ -72,10 +72,10 @@ cylindrical hole of radius R and depth h, with a SiPM disk covering the exit
 plane and absorbing walls, the direct acceptance averaged over depth is
 f = (h + R - sqrt(h*h + R*R))/(2*h). For R=2.5 mm and h=5 mm this is
 0.190983 of all emitted photons. This is an axial-path benchmark; lateral
-electron paths require their corresponding solid-angle average. Given an
-emitted count, sample incident counts with Binomial(N_emitted,f), then
-photoelectrons with Binomial(N_incident,PDE). The EL emission-fluctuation
-model remains to be scoped.
+electron paths require their corresponding solid-angle average. The first
+implementation holds the fitted EL yield at its mean and samples detected PE
+with Binomial(round(N_electrons × yield), f × PDE). PE are assigned to the
+parent electron's 2 microsecond arrival bucket.
 
 EL source audit, 2026-10-29:
 
@@ -100,9 +100,9 @@ EL source audit, 2026-10-29:
   overall approximately 30% calibration systematic. This does not supply
   a measured 15 bar correction or a Xe-He correction.
 
-Proposal for review: use the matched Table 1 pure-Xe and Xe-15% He fits as
-the initial configurable prescriptions, preserving their provenance and the
-reduced-field scaling approximation. Final choice awaits user review.
+The matched Table 1 pure-Xe and Xe-15% He fits are the initial configurable
+prescriptions, preserving their provenance and the reduced-field scaling
+approximation.
 
 ### Three-cloud propagation prototype and concurrency (2026-10-29)
 
@@ -173,23 +173,57 @@ clouds share the same sampled location and produced carrier count, ion and
 electron drift distances sum to 150 cm, and sampled counts equal retained
 plus out-of-range counts in every cloud.
 
-### Interactive cloud viewer II (2026-10-29)
+### Direct six-stream grid readout (2026-10-29)
 
-The separate browser viewer in `src/cloud_viewer/` reads the six full-run
-HDF5 files directly, one paired event number at a time. Run
+`scripts/sample_collect_parallel.jl` runs six independent Julia workers.
+For each source hit, the worker samples its positive-ion or electron Gaussian
+positions and increments the containing pad/EL hole and 2 mm longitudinal
+bucket immediately. A sparse signed-index map extends the saved axes around
+every retained sample. Individual carrier coordinates and diffusion display
+histograms are not saved. The previous binned clouds and two-stage readouts
+remain in `results/three_clouds_8000/` and `results/grid_readout_8000/` for
+audit; their pad/time distributions are superseded.
+
+Ion buckets span 20 ms at the configured drift speed. Electron buckets are
+specified as 2 mm in `config/electron_transport.toml` and span 2 microseconds
+at 1 mm per microsecond. Electron arrivals per hole/bucket are converted to
+PE using the Table 1 mean EL yield, axial direct-light acceptance, PDE 0.30
+and an exact binomial draw. Each PE stays in its parent arrival bucket. The
+pure-Xe and Xe–He grids share one event phase. The direct HDF5 histories and
+numerical summary are in `results/grid_readout_direct_8000/`; the generated
+report is `latex_generated/grid_readout_direct/grid_readout.pdf`.
+Run `make grid-readout` for the complete calculation, validation and report,
+or `make present-grid-readout` to regenerate presentation from saved HDF5.
+
+The full direct run processed 8,000 events per sample in 55.97 s with six
+Julia processes; the six readout files occupy 977.1 MB. The event-wise
+validator checked ion conservation, sampled/retained/outside accounting,
+bucket widths, shared electron-grid phases and ensemble PE yields. For the
+extended electron event 3790, the corrected ion readout has 66 occupied
+time slices and 2,181 occupied pad/time cells, compared with 15 and 702
+from the binned intermediate representation.
+
+The two-panel viewer in `src/cloud_viewer/` reads the direct histories. Run
 `work/event-viewer-venv/bin/python scripts/serve_cloud_viewer.py --port 8767`
-and open `http://127.0.0.1:8767/`. The first row shows ion, pure-Xe electron
-and Xe--15% He electron clouds for double beta; the second row shows the same
-for single electrons. Each panel gives the event ID, both drift lengths,
-retained carrier count, XY/XZ/YZ count heatmaps and a rotatable 3D plot.
-The 2D plots use every saved bin; the 3D plot groups 4-by-4-by-4 saved cells
-for display while conserving their summed counts. Navigation accepts event
-numbers 0--7999, previous/next buttons and arrow keys.
+and open `http://127.0.0.1:8767/`. Choose double beta or single electrons,
+then pure Xe or Xe–15% He for the PE panel. The ion panel comes from the
+same event in the selected sample. Each panel gives complementary drift
+lengths, signal count, XY/X–time/Y–time heatmaps and a rotatable 3D view.
+Navigation uses one-based positions in the file: 100 selects the hundredth
+event, stored under `events/99`. Previous/next buttons and arrow keys step
+through the selected sample. The URL retains the sample, gas and position.
 
-The API and browser were checked for event 2, and all six 3D plots rendered
-with software WebGL. Independent numerical checks for events 0, 2 and 7999
-compare XY against NumPy's histogram and verify charge conservation in every
-projection and 3D display. The original viewer remains separate.
+The earlier ion-only pixel-charge workflow also has a direct sampler in
+`scripts/run_pixel_charge_direct.jl`. It replays each event's Gaussian draws
+once to calculate the exact retained-carrier x/y centre and minimum z, then
+replays the same draws into its configured pad and frame grid. This preserves
+that viewer's grid-reference convention without a carrier-coordinate cache.
+The 2, 3 and 4 mm full-sample histories and regenerated reports are in the
+matching `results/pixel_charge_1mm*_direct/` and
+`latex_generated/pixel_charge_1mm*_direct/` directories. Their old binned
+counterparts remain available for audit. Electronics studies previously run
+from the binned pixel histories retain their original provenance; they need
+new input selection and acquisition before conclusions are updated.
 
 Local source read: J. Hikida et al., “AXEL: High-pressure xenon gas TPC for
 neutrinoless double beta decay search”, NIM A 1080 (2025) 170706,

@@ -987,3 +987,107 @@ results, and demonstrated event-level performance.
   retained as flagged high-charge deposits; quantify recovery and distinguish
   circuit saturation from ADC overflow. Determine ADC span and bit resolution
   from actual output histories and allowed quantization contribution.
+
+### 2026-10-29: complete pad-history accumulation and dynamic range
+
+- Read all four stored uncut histories at 2 mm / 20 ms and 4 mm / 40 ms,
+  including zero buckets. Propagated every pad with the optimized small-signal
+  packet response, and ran twelve demanding histories directly in LTspice with
+  matched baselines, two resolutions and 20 s recovery tails.
+- Configuration: `config/pad_history_readout.toml`. Julia calculations:
+  `src/ion_signal/pad_history_readout.jl`, `src/ion_signal/pad_history_spice.jl`.
+  Complete pipeline: `scripts/run_pad_history_pipeline.py`. Saved inputs,
+  netlists, model copies, raw reductions, provenance and results:
+  `results/ltspice/pad_history_readout/`. Report source and figures:
+  `latex_generated/pad_history_readout/`.
+- Large deposits cause gain compression while the output remains above ground.
+  The 0.2 V guard used for the ensemble screen is a diagnostic selection, not
+  an established saturation threshold. Its pad/event fractions are recorded
+  separately from the twelve direct nonlinear simulations.
+- Empty-frame residuals were evaluated with the same averaging and corrected
+  difference used for charge measurement. The largest positive residuals are
+  below one nominal quiescent ENC. Some cases have a larger negative residual
+  in the first evaluated empty bucket. Recovery of gain for a new small packet
+  while the output is displaced still needs testing.
+- The ADC assessment includes 1 and 2 V spans and 10, 12, 13 and 16 bits.
+  Twelve bits contribute little noise relative to the saved analogue ENC.
+  Quantization assumptions and numerical values come from `summary.h5`.
+- 32 new accounting/kernel checks and 48 nonlinear SPICE checks pass.
+  `make test physics` also passes (52 Python regression tests). Main manuscript
+  unchanged; report source generated without compilation, following the user's
+  instruction to compile only on request.
+- Next: calibrate a CSA-compression flag and assess track reconstruction with
+  flagged high-charge deposits. ADC overflow alone cannot identify compression.
+
+### 2026-10-29: interactive pad histories and event compression study
+
+- Added `scripts/view_pad_histories.py` and `src/pad_history_viewer/`: local
+  HTML/Plotly viewer with configuration, event and pad navigation; linked
+  collected-count, CSA-voltage and frame-estimate panels; cached or on-demand
+  full-history SPICE calculations; and a compression-statistics tab.
+- Physical calculations remain in Julia (`src/ion_signal/pad_compression.jl`).
+  Configuration is `config/pad_history_viewer.toml`; the batch and report pipeline
+  is `scripts/run_pad_compression.py`. Complete counts and zero buckets are
+  restored from the existing event-analysis HDF5 files without changing them.
+- Completed the conservative candidate set and fixed-seed control histories.
+  Numerical results, model/current/netlist provenance and per-case outputs are
+  in `results/ltspice/pad_compression/297cfaf80cec/`. Generated report source and
+  figures are in `latex_generated/pad_compression/297cfaf80cec/`.
+- Severity compares nonlinear and linear frame signals for the same complete
+  history. Event fractions and affected collected-charge fractions are saved
+  for several relative-loss and absolute-deficit criteria. A flag identifies
+  distortion; track reconstruction will determine event usefulness.
+- Four exported-current resolution failures passed after finer-step retries.
+  The final accounting/convergence checks, real-source/SPICE/HTTP integration
+  checks and existing Python/physics checks pass. Viewer navigation and an
+  on-demand simulation were verified in the browser. No manuscript prose
+  changes or PDF compilation performed.
+
+### 2026-10-29: event 3790 time-axis and diffusion-resolution audit
+
+- The electron event 3790 has a 10.04 s relative arrival axis, set by the full
+  retained event's z extent. The primary interaction is near the late end of
+  that extent. This is separate from the common absolute drift delay.
+- The audit also finds diffusion cells wider than the 20 ms readout's 2 mm z
+  slices for this extended event. Assigning diffusion-bin centres to pads and
+  slices can make histories artificially sparse and concentrate individual
+  bucket counts. The existing compression study measures the response to its
+  stored counts; event-performance fractions need a diffusion-grid convergence
+  check before being treated as final physical predictions.
+- Recorded source/histogram audit in `src/ion_signal/history_time_audit.jl`,
+  launched by `scripts/audit_history_time.jl`. Saved arrays, derived quantities
+  and hashes: `results/ltspice/history_time_audit/event_3790.h5`. Generated report
+  source and figures: `latex_generated/history_time_audit/event_3790/`.
+- Existing source histories and numerical studies preserved. No changes to the
+  event-analysis implementation or manuscript; no PDF compilation.
+
+### 2026-10-29: electronics rerun with direct carrier collection
+
+- The other agent implemented direct Gaussian sampling into physical grids.
+  Corrected ion histories retain the earlier sparse-cell schema in
+  `results/pixel_charge_1mm_direct/` and
+  `results/pixel_charge_1mm_4mm_direct/`. The electronics rerun uses those
+  datasets at 2 mm / 20 ms and 4 mm / 40 ms, preserving the historical sources.
+- Added `config/pad_history_readout_direct.toml` and
+  `config/pad_history_viewer_direct.toml`; configurable history CLI entry points
+  now default to direct inputs. The circuit, nominal noise, current benchmark,
+  uniform intra-frame arrivals and averaging are unchanged.
+- Repeated every-pad linear screening, twelve selected matched-baseline SPICE
+  histories, the nonlinear event candidate/control study and standard-case
+  caching. New outputs are `results/ltspice/pad_history_readout_direct/` and
+  `results/ltspice/pad_compression_direct/8b0d8b859f56/`. Viewer defaults now use
+  the corrected source files and display their input method explicitly.
+- Added a Julia comparison of historical and direct inputs in
+  `src/ion_signal/direct_history_comparison.jl`. Reproduction and presentation
+  wrappers are in the proposed `scripts/electronics/histories/` directory.
+  Exact event IDs, seeds, drift, diffusion widths and produced carrier counts
+  agree; retained/outside ledgers also agree between the input versions.
+- Numerical before/after results, pulse statistics and event 3790 distributions
+  are saved in `results/ltspice/pad_history_direct_comparison/comparison.h5`.
+  Generated comparison report source:
+  `latex_generated/pad_history_direct_comparison/report.tex`.
+- The screen (32 checks), selected-history transients (48), event statistics
+  (304), before/after comparison (60), direct-source/refinement/viewer checks
+  (33), and existing Python regression tests (52) pass. Historical result files
+  are preserved; earlier wrappers/screen code have source snapshots. No main
+  manuscript prose changes or report PDF compilation performed.

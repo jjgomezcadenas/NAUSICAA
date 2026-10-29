@@ -1,0 +1,53 @@
+\documentclass[11pt]{article}
+\usepackage[margin=20mm]{geometry}
+\usepackage{booktabs,hyperref}
+\begin{document}
+\title{Event analysis: step-one checkpoint}
+\author{NAUSICAA}
+\date{}
+\maketitle
+The implemented checkpoint covers the versioned hit reader and Petit's
+deterministic binning, graph, backbone and truth-path functions. Physical arrays
+and arithmetic use Float32 in mm, MeV and ns. The reduced v3 files retain MC time
+and actual primary IDs; their values are verified against the original sources.
+
+\section*{Validation}
+\begin{center}\begin{tabular}{lr}\toprule
+Julia suite & Passed assertions \\\midrule
+Event core & 1877 \\
+Event IO & 92 \\
+Legacy ion analysis & 61 \\
+\bottomrule\end{tabular}\end{center}
+The pinned Petit fixtures cover line, curved, branched, dense, lattice and
+separated geometries. Tie-free fixtures require matching graph edges and paths
+(up to reversal), with numerical tolerances for Float32 lengths and scores.
+Tied cases check valid neighbour choices, component sizes and energies, and
+path validity. The maximum accepted edge distance is explicit in every case.
+
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+Sample & Events & Hits & MB & Max relative error & Read ms \\\midrule
+Double beta & 8995 & 2833001 & 37.51 & 1.66e-06 & 1.12 \\
+Electron background & 8483 & 2732400 & 35.94 & 1.86e-06 & 1.13 \\
+\bottomrule\end{tabular}\end{center}
+The energy error compares Float32 source-order event sums against independent
+Float64 sums over all events. The detector's reference relative energy resolution
+is 0.005. Read time is the mean of five indexed event reads after warming the
+reader, with the file already open; it depends on the machine and file cache.
+
+Five events spread across each sample also exercise the deterministic stages
+on raw hits: 2 mm bins, kNN with k=10, 4 mm maximum distance and zero energy
+threshold. These are software checks. Scientific selection efficiencies require
+the subsequent ion-production and diffusion implementation. The approved
+production reconstruction prescription is b=3 sigma and d=6 sigma at every L.
+
+\section*{Reproduction and next checkpoint}
+\begin{verbatim}
+make validate-event-step1 PYTHON=/path/to/python3.11-or-newer
+# Presentation only, from the existing HDF5:
+make report-event-step1 PYTHON=/path/to/python3.11-or-newer
+\end{verbatim}
+Numerical values and source hashes are saved in
+\texttt{results/event\_analysis/step1\_validation.h5}.
+The HTML review guide contains the implemented interfaces, docstrings and
+remaining design contracts. Implementation stops at this checkpoint.
+\end{document}

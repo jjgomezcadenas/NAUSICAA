@@ -1,0 +1,75 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Thu Oct 29 17:21:49 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+is1: Removing PWL point (0.281338,9.99771e-17)
+is1: Removing PWL point (0.281408,9.99771e-17)
+is1: Removing PWL point (0.281513,9.99771e-17)
+is1: Removing PWL point (0.281563,9.99771e-17)
+is1: Removing PWL point (0.281578,9.99771e-17)
+is1: Removing PWL point (0.281598,9.99771e-17)
+is1: Removing PWL point (0.281618,9.99771e-17)
+is1: Removing PWL point (0.281678,9.99771e-17)
+is1: Removing PWL point (0.281713,9.99771e-17)
+is1: Removing PWL point (0.281782,9.99771e-17)
+is1: Removing PWL point (0.281882,9.99771e-17)
+is1: Removing PWL point (0.281902,9.99771e-17)
+is1: Removing PWL point (0.281942,9.99771e-17)
+is1: Removing PWL point (0.281997,9.99771e-17)
+is1: Removing PWL point (0.282032,9.99771e-17)
+is1: Removing PWL point (0.282057,9.99771e-17)
+is1: Removing PWL point (0.282072,9.99771e-17)
+is1: Removing PWL point (0.282167,9.99771e-17)
+is1: Removing PWL point (0.282256,9.99771e-17)
+is1: Removing PWL point (0.282306,9.99771e-17)
+is1: Removing PWL point (0.282351,9.99771e-17)
+is1: Removing PWL point (0.282406,9.99771e-17)
+is1: Removing PWL point (0.282431,9.99771e-17)
+is1: Removing PWL point (0.282506,9.99771e-17)
+is1: Removing PWL point (0.282526,9.99771e-17)
+is1: Removing PWL point (0.282546,9.99771e-17)
+is1: Removing PWL point (0.282571,9.99771e-17)
+is1: Removing PWL point (0.282631,9.99771e-17)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+Gmin = 4.54274e-14
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Changing Tseed to 1e-08
+Total elapsed time: 0.148 seconds.

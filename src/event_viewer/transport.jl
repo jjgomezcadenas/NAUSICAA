@@ -23,7 +23,7 @@ function transport_event(hits,source,mode,fixed_cm,realisation)
     w=Float32(c["ionisation_energy_eV"]);n=ion_counts(hits,w)
     d=diffuse_xyz_image_mc(Xoshiro(seed⊻0x9e3779b97f4a7c15),hits,n.sampled;
         sigma_t_mm=sigma,sigma_l_mm=sigma,nbins=Int(c["nbins"]),nsigma=Float32(c["nsigma"]),ionisation_energy_eV=w)
-    return (;d,drift_cm=drift,sigma_t_mm=sigma,sigma_l_mm=sigma,mode,fixed_cm=Float32(fixed_cm),realisation,
+    return (;d,hits,drift_cm=drift,sigma_t_mm=sigma,sigma_l_mm=sigma,mode,fixed_cm=Float32(fixed_cm),realisation,
         seed=string(seed),ionisation_energy_eV=w,temperature_K=Float32(det["gas"]["temperature_K"]),
         field_V_cm=Float32(det["bias"]["bulk_field_V_m"])/100f0,
         detector_toml=read(joinpath(ROOT,c["detector_card"]),String))

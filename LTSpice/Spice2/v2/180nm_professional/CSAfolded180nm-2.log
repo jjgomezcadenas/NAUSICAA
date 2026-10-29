@@ -1,0 +1,32 @@
+LTspice 26.0.1 for Windows
+Circuit: C:\Users\rogelio\Desktop\TopMetal2 JJ Proyecto\Diseños TopMetalX\180nm\CSA 180 nm Nausica 2\CSAfolded180nm-2.net
+Start Time: Tue Oct 27 09:59:34 2026
+C:\Users\rogelio\Desktop\TopMetal2 JJ Proyecto\Diseños TopMetalX\180nm\CSA 180 nm Nausica 2\180nm_professional.inc(44): Ignoring unknown model parameter. This may or may not be a problem.
++NOIBE   = 144543.977074592  
++NOIC    = -1.24515784572817E-12  
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+solver = Normal
+Maximum thread count: 16
+tnom = 27
+temp = 27
+method = modified trap
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration succeeded in finding operating point.
+Total elapsed time: 0.153 seconds.
+
+Files loaded:
+C:\Users\rogelio\Desktop\TopMetal2 JJ Proyecto\Diseños TopMetalX\180nm\CSA 180 nm Nausica 2\CSAfolded180nm-2.net
+C:\Users\rogelio\AppData\Local\LTspice\lib\cmp\standard.mos
+C:\Users\rogelio\Desktop\TopMetal2 JJ Proyecto\Diseños TopMetalX\180nm\CSA 180 nm Nausica 2\180nm_professional.inc
+

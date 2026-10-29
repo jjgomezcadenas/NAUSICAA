@@ -1,0 +1,4 @@
+*/cases/**/simulation.lock
+*/cases/**/*.raw
+*/cases/**/*.log
+*/cases/**/*_raw.h5

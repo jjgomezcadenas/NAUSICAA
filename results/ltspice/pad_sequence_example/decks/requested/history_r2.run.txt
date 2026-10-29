@@ -1,0 +1,177 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Thu Oct 29 15:56:01 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+is1: Removing PWL point (0.0413333,7.99817e-16)
+is1: Removing PWL point (0.0413508,7.99817e-16)
+is1: Removing PWL point (0.0413808,7.99817e-16)
+is1: Removing PWL point (0.0413933,7.99817e-16)
+is1: Removing PWL point (0.0414158,7.99817e-16)
+is1: Removing PWL point (0.0414633,7.99817e-16)
+is1: Removing PWL point (0.0414833,7.99817e-16)
+is1: Removing PWL point (0.0414933,7.99817e-16)
+is1: Removing PWL point (0.0415132,7.99817e-16)
+is1: Removing PWL point (0.0415657,7.99817e-16)
+is1: Removing PWL point (0.0416082,7.99817e-16)
+is1: Removing PWL point (0.0416332,7.99817e-16)
+is1: Removing PWL point (0.0416507,7.99817e-16)
+is1: Removing PWL point (0.0416632,7.99817e-16)
+is1: Removing PWL point (0.0416807,7.99817e-16)
+is1: Removing PWL point (0.0416982,7.99817e-16)
+is1: Removing PWL point (0.0417131,7.99817e-16)
+is1: Removing PWL point (0.0417306,7.99817e-16)
+is1: Removing PWL point (0.0417531,7.99817e-16)
+is1: Removing PWL point (0.0417656,7.99817e-16)
+is1: Removing PWL point (0.0418056,7.99817e-16)
+is1: Removing PWL point (0.0418331,7.99817e-16)
+is1: Removing PWL point (0.0418531,7.99817e-16)
+is1: Removing PWL point (0.0418656,7.99817e-16)
+is1: Removing PWL point (0.0418931,7.99817e-16)
+is1: Removing PWL point (0.041918,7.99817e-16)
+is1: Removing PWL point (0.041943,7.99817e-16)
+is1: Removing PWL point (0.041958,7.99817e-16)
+is1: Removing PWL point (0.0419805,7.99817e-16)
+is1: Removing PWL point (0.041993,7.99817e-16)
+is1: Removing PWL point (0.0420055,7.99817e-16)
+is1: Removing PWL point (0.0420255,7.99817e-16)
+is1: Removing PWL point (0.0420355,7.99817e-16)
+is1: Removing PWL point (0.0420605,7.99817e-16)
+is1: Removing PWL point (0.042088,7.99817e-16)
+is1: Removing PWL point (0.0421104,7.99817e-16)
+is1: Removing PWL point (0.0421204,7.99817e-16)
+is1: Removing PWL point (0.0421379,7.99817e-16)
+is1: Removing PWL point (0.0421579,7.99817e-16)
+is1: Removing PWL point (0.0421904,7.99817e-16)
+is1: Removing PWL point (0.0422129,7.99817e-16)
+is1: Removing PWL point (0.0422254,7.99817e-16)
+is1: Removing PWL point (0.0422479,7.99817e-16)
+is1: Removing PWL point (0.0422629,7.99817e-16)
+is1: Removing PWL point (0.0422729,7.99817e-16)
+is1: Removing PWL point (0.0423078,7.99817e-16)
+is1: Removing PWL point (0.0423178,7.99817e-16)
+is1: Removing PWL point (0.0423553,7.99817e-16)
+is1: Removing PWL point (0.0423903,7.99817e-16)
+is1: Removing PWL point (0.0424053,7.99817e-16)
+is1: Removing PWL point (0.0424203,7.99817e-16)
+is1: Removing PWL point (0.0424328,7.99817e-16)
+is1: Removing PWL point (0.0424478,7.99817e-16)
+is1: Removing PWL point (0.0424578,7.99817e-16)
+is1: Removing PWL point (0.0424828,7.99817e-16)
+is1: Removing PWL point (0.0424978,7.99817e-16)
+is1: Removing PWL point (0.0425277,7.99817e-16)
+is1: Removing PWL point (0.0425727,7.99817e-16)
+is1: Removing PWL point (0.0425977,7.99817e-16)
+is1: Removing PWL point (0.0426127,7.99817e-16)
+is1: Removing PWL point (0.0426477,7.99817e-16)
+is1: Removing PWL point (0.0426577,7.99817e-16)
+is1: Removing PWL point (0.0427151,7.99817e-16)
+is1: Removing PWL point (0.0427376,7.99817e-16)
+is1: Removing PWL point (0.0427551,7.99817e-16)
+is1: Removing PWL point (0.0427676,7.99817e-16)
+is1: Removing PWL point (0.0427826,7.99817e-16)
+is1: Removing PWL point (0.0428101,7.99817e-16)
+is1: Removing PWL point (0.0428201,7.99817e-16)
+is1: Removing PWL point (0.0428351,7.99817e-16)
+is1: Removing PWL point (0.0428551,7.99817e-16)
+is1: Removing PWL point (0.0428876,7.99817e-16)
+is1: Removing PWL point (0.0429225,7.99817e-16)
+is1: Removing PWL point (0.0429625,7.99817e-16)
+is1: Removing PWL point (0.201341,3.99908e-17)
+is1: Removing PWL point (0.201356,3.99908e-17)
+is1: Removing PWL point (0.201381,3.99908e-17)
+is1: Removing PWL point (0.201401,3.99908e-17)
+is1: Removing PWL point (0.201428,3.99908e-17)
+is1: Removing PWL point (0.201443,3.99908e-17)
+is1: Removing PWL point (0.201471,3.99908e-17)
+is1: Removing PWL point (0.201528,3.99908e-17)
+is1: Removing PWL point (0.201541,3.99908e-17)
+is1: Removing PWL point (0.201561,3.99908e-17)
+is1: Removing PWL point (0.201593,3.99908e-17)
+is1: Removing PWL point (0.201623,3.99908e-17)
+is1: Removing PWL point (0.201646,3.99908e-17)
+is1: Removing PWL point (0.201666,3.99908e-17)
+is1: Removing PWL point (0.201686,3.99908e-17)
+is1: Removing PWL point (0.201708,3.99908e-17)
+is1: Removing PWL point (0.201721,3.99908e-17)
+is1: Removing PWL point (0.201763,3.99908e-17)
+is1: Removing PWL point (0.201778,3.99908e-17)
+is1: Removing PWL point (0.201813,3.99908e-17)
+is1: Removing PWL point (0.201823,3.99908e-17)
+is1: Removing PWL point (0.201863,3.99908e-17)
+is1: Removing PWL point (0.201891,3.99908e-17)
+is1: Removing PWL point (0.201908,3.99908e-17)
+is1: Removing PWL point (0.201943,3.99908e-17)
+is1: Removing PWL point (0.201958,3.99908e-17)
+is1: Removing PWL point (0.201996,3.99908e-17)
+is1: Removing PWL point (0.202043,3.99908e-17)
+is1: Removing PWL point (0.20205,3.99908e-17)
+is1: Removing PWL point (0.202088,3.99908e-17)
+is1: Removing PWL point (0.202108,3.99908e-17)
+is1: Removing PWL point (0.202153,3.99908e-17)
+is1: Removing PWL point (0.202185,3.99908e-17)
+is1: Removing PWL point (0.20223,3.99908e-17)
+is1: Removing PWL point (0.202248,3.99908e-17)
+is1: Removing PWL point (0.202333,3.99908e-17)
+is1: Removing PWL point (0.20237,3.99908e-17)
+is1: Removing PWL point (0.2024,3.99908e-17)
+is1: Removing PWL point (0.202425,3.99908e-17)
+is1: Removing PWL point (0.202445,3.99908e-17)
+is1: Removing PWL point (0.202458,3.99908e-17)
+is1: Removing PWL point (0.202483,3.99908e-17)
+is1: Removing PWL point (0.202575,3.99908e-17)
+is1: Removing PWL point (0.202605,3.99908e-17)
+is1: Removing PWL point (0.202635,3.99908e-17)
+is1: Removing PWL point (0.202658,3.99908e-17)
+is1: Removing PWL point (0.202668,3.99908e-17)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+Gmin = 4.54274e-14
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Heightened Def Con from 5e-10 to 6.25e-10
+Heightened Def Con from 8.75e-10 to 1.875e-09
+Heightened Def Con from 4.375e-09 to 5.375e-09
+Heightened Def Con from 5.375e-09 to 6.375e-09
+Heightened Def Con from 8.875e-09 to 9.875e-09
+Heightened Def Con from 0.282105 to 0.282105
+Heightened Def Con from 0.282105 +to 0.282105
+Heightened Def Con from 0.322125 to 0.322125
+Heightened Def Con from 0.362085 +to 0.362085
+Heightened Def Con from 0.362085 to 0.362085
+Total elapsed time: 0.204 seconds.

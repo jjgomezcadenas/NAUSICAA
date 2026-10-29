@@ -1,0 +1,23 @@
+{
+  "passed": 1953,
+  "samples": [
+    {
+      "sample": "Double beta",
+      "events": 8995.0,
+      "max_absolute_relative_expectation_error": 2.5713950170702573e-07,
+      "max_absolute_relative_rounding": 0.00017214975378010422,
+      "max_outside_fraction": 0.0003208041490669946,
+      "mean_rounding_difference": 0.5979788899421692,
+      "mean_seconds": 0.006550514649999999
+    },
+    {
+      "sample": "Electron background",
+      "events": 8483.0,
+      "max_absolute_relative_expectation_error": 3.2722689116273117e-07,
+      "max_absolute_relative_rounding": 0.00017214975378010422,
+      "max_outside_fraction": 0.00020493263953239718,
+      "mean_rounding_difference": 0.5592959523200989,
+      "mean_seconds": 0.0059937500999999995
+    }
+  ]
+}

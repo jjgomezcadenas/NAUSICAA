@@ -3,18 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NAUSICAA · Paired diffusion clouds</title>
+  <title>NAUSICAA · Ion and PE readout</title>
   <link rel="stylesheet" href="/style.css">
   <script src="/plotly.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <div><span class="eyebrow">NAUSICAA / EVENT VIEWER II</span><h1>Paired diffusion clouds</h1></div>
+    <div><span class="eyebrow">NAUSICAA / EVENT VIEWER II</span><h1>Ion and PE readout</h1></div>
     <div class="controls">
+      <label for="sample">Sample</label>
+      <select id="sample">
+        <option value="bb0nu">0νββ</option>
+        <option value="electrons">Single electron</option>
+      </select>
+      <label for="gas">Electron gas</label>
+      <select id="gas">
+        <option value="pure_xe">Pure Xe</option>
+        <option value="xe_he">Xe + 15% He</option>
+      </select>
       <button id="previous" title="Previous event (←)">← Previous</button>
-      <label for="event">Event number</label>
-      <input id="event" type="number" min="0" value="0" step="1">
+      <label for="event">Event in file</label>
+      <input id="event" type="number" min="1" value="1" step="1">
       <button id="go">Go</button>
       <button id="next" title="Next event (→)">Next →</button>
       <span id="counter"></span>
@@ -22,6 +32,6 @@
   </header>
   <div id="status" role="status">Loading event…</div>
   <main id="board"></main>
-  <footer>Colour represents carriers per display cell. The rotatable 3D view groups 4 × 4 × 4 saved cells; all counts are retained.</footer>
+  <footer id="footnote">Colour represents ions per pad/frame or PE per SiPM/bucket. The third axis is relative arrival time.</footer>
 </body>
 </html>

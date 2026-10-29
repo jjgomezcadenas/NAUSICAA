@@ -1,0 +1,154 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,microtype,amsmath,booktabs,graphicx,siunitx}
+\usepackage[margin=20mm]{geometry}
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue]{hyperref}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\input{values}
+\title{Initial ionization from NEXUS tracks}
+\author{NAUSICAA analysis}\date{}
+\begin{document}\maketitle
+\section{Calculation and interpretation}
+For each deposited-energy hit, the expected number of positive ions is
+\[
+ \overline n_i=10^6 E_i[\mathrm{MeV}]/W[\mathrm{eV}],\qquad
+ E_{\rm evt}=\sum_i E_i,\qquad \overline N_{\rm evt}=\sum_i\overline n_i.
+\]
+We adopt $W=\IonWorkEv$ eV as a configurable nominal mean energy per electron--ion
+pair in gaseous xenon. It describes the partition of deposited energy between
+ionization and other processes, rather than the atomic ionization threshold;
+see Ref.~\cite{Serra:2014zda}. This is an adopted input, not a measurement from these samples.
+Counts are continuous expectations, not rounded integer realizations. Each
+molecular $\mathrm{Xe}_2^+$ ion carries charge $+e$.
+
+The per-event mean ions per hit is $\overline N_{\rm evt}/N_{\rm hits}$.
+The table reports the mean and population dispersion of this quantity across
+events. The pooled value instead divides total ions by total hits. Hit-level
+quantities depend on the Geant4 deposition subdivision.
+
+Each event is translated to the common generation vertex of its primary
+particles, copied from the original NEXUS particle table:
+$\mathbf r'_i=\mathbf r_i-\mathbf r_{\rm vertex}$. Orientations are preserved;
+no energy barycenter is used to define the origin.
+XY bins have pitch \IonPitchMm~mm. With the configured uniform speed
+\IonSpeedMmMs~mm/ms, a \IonFrameMs~ms interval corresponds to a Z bin of
+\IonZBinMm~mm. The time axis is relative to the generation vertex, not an absolute
+arrival-time prediction. Projections are averaged over all saved events,
+including zero contributions, without normalizing individual event energies.
+
+This stage describes initial ion production. It includes no ionization
+fluctuations, recombination, diffusion, focusing or collection losses.
+The two marginal projections do not determine joint pad-and-frame occupancy.
+
+\par The spatial selection keeps $|x'|\leq 150.0$ mm and the same bound on $|y'|$. It is applied after translating to the generation vertex. No Z cut or subsequent recentering is applied. Raw energy totals include every original hit; the mean maps use the selected hits and the original number of events. The full uncut marginal histograms and per-event discarded energy are retained. Common grids enclose every selected hit with the configured margin; bins are left-closed/right-open, with the final upper edge included.
+Common XY grid: 168 by 168 bins, from -168 to 168 mm on each axis. Z: 1896 bins, from -1896 to 1896 mm.
+\clearpage
+\section{Double beta}
+\input{0nubb_values.tex}
+Saved events: \num{8995}; hits: \num{2.833e+06}.
+Total expected ions: \num{1.00887e+09}. Pooled ions/hit: \num{356.115}.
+\begin{center}\small\input{0nubb_tables.tex}\end{center}
+The table above uses all original hits. After the vertex-relative XY cut, the mean retained energy is \num{2.41807} MeV and the mean retained ion count is \num{110414} per event.
+Discarded hits: \num{84533} (\num{2.98387}\%). Discarded ions: \num{1.56993e+07} (\num{1.55612}\%). Empty events: \num{0}.
+Maximum discarded ion fraction in an individual event: \num{70.9945}\%. Discarded energy is never restored by rescaling.
+\begin{figure}[htbp]\centering
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/0nubb/xy_mean.png}}
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/0nubb/z_mean.png}}
+\caption{Selected ensemble mean, with zero contributions included in the denominator. XY is integrated over z; Z is integrated over x and y. The right panel shows the central longitudinal detail; it applies no additional Z cut.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/0nubb/xy_event_0.png}}
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/0nubb/z_event_0.png}}
+\caption{Selected hits of example event 0. XY is integrated over z; Z is integrated over x and y. The right panel shows the central longitudinal detail; it applies no additional Z cut.}
+\end{figure}
+\clearpage\subsection*{Tail diagnostics}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.82\linewidth]{\detokenize{../../results/ion_tracks/0nubb/xy_tails_hits.png}}
+\caption{Uncut vertex-relative distributions. Dashed lines mark the XY cut; bottom panels show a detail of the same histograms.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.82\linewidth]{\detokenize{../../results/ion_tracks/0nubb/xy_tails_ions.png}}
+\caption{Uncut vertex-relative distributions. Dashed lines mark the XY cut; bottom panels show a detail of the same histograms.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.82\linewidth]{\detokenize{../../results/ion_tracks/0nubb/z_mean_full.png}}
+\caption{Full longitudinal distribution of retained hits.}
+\end{figure}
+\clearpage
+\section{Single electron}
+\input{electron_0nubb_energy_values.tex}
+Saved events: \num{8483}; hits: \num{2.7324e+06}.
+Total expected ions: \num{9.51437e+08}. Pooled ions/hit: \num{348.205}.
+\begin{center}\small\input{electron_0nubb_energy_tables.tex}\end{center}
+The table above uses all original hits. After the vertex-relative XY cut, the mean retained energy is \num{2.39425} MeV and the mean retained ion count is \num{109326} per event.
+Discarded hits: \num{121374} (\num{4.44203}\%). Discarded ions: \num{2.40203e+07} (\num{2.52463}\%). Empty events: \num{0}.
+Maximum discarded ion fraction in an individual event: \num{89.5198}\%. Discarded energy is never restored by rescaling.
+\begin{figure}[htbp]\centering
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/electron_0nubb_energy/xy_mean.png}}
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/electron_0nubb_energy/z_mean.png}}
+\caption{Selected ensemble mean, with zero contributions included in the denominator. XY is integrated over z; Z is integrated over x and y. The right panel shows the central longitudinal detail; it applies no additional Z cut.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/electron_0nubb_energy/xy_event_0.png}}
+\includegraphics[width=.49\linewidth]{\detokenize{../../results/ion_tracks/electron_0nubb_energy/z_event_0.png}}
+\caption{Selected hits of example event 0. XY is integrated over z; Z is integrated over x and y. The right panel shows the central longitudinal detail; it applies no additional Z cut.}
+\end{figure}
+\clearpage\subsection*{Tail diagnostics}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.82\linewidth]{\detokenize{../../results/ion_tracks/electron_0nubb_energy/xy_tails_hits.png}}
+\caption{Uncut vertex-relative distributions. Dashed lines mark the XY cut; bottom panels show a detail of the same histograms.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.82\linewidth]{\detokenize{../../results/ion_tracks/electron_0nubb_energy/xy_tails_ions.png}}
+\caption{Uncut vertex-relative distributions. Dashed lines mark the XY cut; bottom panels show a detail of the same histograms.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.82\linewidth]{\detokenize{../../results/ion_tracks/electron_0nubb_energy/z_mean_full.png}}
+\caption{Full longitudinal distribution of retained hits.}
+\end{figure}
+\clearpage\section{Validation and provenance}
+The Julia calculation checks that each event's XY and Z projections sum to its
+retained expected ion count. The summed mean projections must equal the retained mean ion count
+per event. No renormalization is applied. Out-of-range hits cause an error.
+The following relative errors must be below \num{\IonTolerance}.
+\begin{center}\begin{tabular}{lrrr}\toprule
+Sample & Worst event & Mean XY & Mean Z\\\midrule
+Double beta & \num{8.88e-16} & \num{2.22e-16} & \num{6.66e-16} \\
+Single electron & \num{8.88e-16} & \num{1.11e-16} & \num{1.11e-16} \\\bottomrule\end{tabular}\end{center}
+\subsection*{Double beta}
+\begin{tabular}{lp{.65\linewidth}}\toprule
+Input & events/0nubb\_hitdf.h5 \\
+Original & 0nubb.next.h5 \\
+Generator & Decay0Interface \\
+Generated events & 10000 \\
+Source lower energy cut & 2300 keV \\
+Source upper energy cut & 2470 keV \\
+Source radius & 2. m \\
+Source height & 4. m \\
+Source pressure & 15. bar \\
+\bottomrule\end{tabular}
+\par\small Input SHA-256: \texttt{627a22476784b5279e8d716b581237c50789ba07ba1c80d0a573abfcb8c6e12f}.
+\par Analysis code SHA-256: \texttt{6ed06e3d0e26540893703c8659bba7f37a569929b1cceadec1b66ad86e2b2573}.
+ormalsize
+\subsection*{Single electron}
+\begin{tabular}{lp{.65\linewidth}}\toprule
+Input & events/electron\_0nubb\_energy\_hitdf.h5 \\
+Original & electron\_0nubb\_energy.next.h5 \\
+Generator & SingleParticleGenerator \\
+Generated events & 10000 \\
+Source lower energy cut & 2300 keV \\
+Source upper energy cut & 2470 keV \\
+Source radius & 2. m \\
+Source height & 4. m \\
+Source pressure & 15. bar \\
+\bottomrule\end{tabular}
+\par\small Input SHA-256: \texttt{8d36747bba5b67515a9bf19d3d94aeb7252b3bf77f2a6583a1564c8a6852ecbe}.
+\par Analysis code SHA-256: \texttt{6ed06e3d0e26540893703c8659bba7f37a569929b1cceadec1b66ad86e2b2573}.
+ormalsize
+\par Numerical quantities, plots and tables are read from the Julia HDF5 result.
+The HDF5 files also retain configuration and software hashes, per-event
+quantities, bin edges and per-hit ion expectations in source row order.
+\bibliographystyle{unsrt}\bibliography{references}
+\end{document}

@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage{booktabs}
+\begin{document}
+\title{MC graph fragmentation diagnostic}\date{28 October 2026}\maketitle
+The first 100 double-beta events and 100 electron events in the reduced
+HDF5 catalogues were inspected. These are consecutive events, not a random
+ensemble estimate. Source coordinates and all MC particles were used, without
+diffusion or a fiducial cut. Voxel width is fixed at 0.5 mm. Each connected
+component is counted, including single-node components. Radius equality is
+accepted. Thresholds apply inclusively to summed voxel energy; kNN uses $k=10$
+with the stated radius cap. Calculation uses Float32.
+
+\begin{center}
+\begin{tabular}{lrrrr}\toprule
+Method & Radius [mm] & Threshold [keV] & $0\nu\beta\beta$: single & Electron: single\\\midrule
+KDT & 1.25 & 1 & 1 & 1 \\
+KDT & 1.25 & 0 & 1 & 1 \\
+KDT & 2 & 1 & 45 & 44 \\
+KDT & 3 & 1 & 57 & 46 \\
+KDT & 5 & 1 & 60 & 49 \\
+kNN & 1.25 & 1 & 1 & 1 \\
+\bottomrule\end{tabular}
+\end{center}
+At the viewer defaults, the median component counts are 6.0 and 7.0,
+respectively. Original Petit Float64 voxelisation and graph construction were
+run independently on the same hits. Equality of complete component membership
+for all tested events: double beta True; electrons True.
+
+The strong radius dependence identifies short-distance graph fragmentation.
+Removing the threshold does not recover the single-component population.
+Switching to kNN with the same radius cap does not cure the observed splitting.
+Petit uses these MC defaults and subsequently walks only its highest-energy
+component. The viewer displays all components. Increasing the radius is a
+diagnostic, not an adopted selection prescription. Remaining disconnected
+deposits require event inspection and MC-truth validation. Viewer settings
+remain unchanged.
+
+Numerical source: \texttt{results/event\_analysis/mc\_graph\_diagnostic/results.h5}.
+Original code: Petit \texttt{src/voxels.jl}, \texttt{src/track\_building.jl};
+MC caller: \texttt{scripts/itaca\_single\_track\_analysis.jl}.
+\end{document}

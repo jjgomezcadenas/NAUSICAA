@@ -10,8 +10,31 @@ min_ion_drift_cm = 0.0
 # User readout inputs: 1 microsecond corresponds to 1 mm of drift.
 [readout]
 electron_drift_speed_m_s = 1000.0
+bucket_width_mm = 2.0
+# Historical two-stage collection uses this time setting.
 photon_bucket_us = 2.0
 sipm_pde = 0.30
+
+# Relative potential gauge: entry gate = 0 V. The physical drop is 22.5 kV.
+[elcc]
+hole_diameter_mm = 5.0
+pitch_mm = 10.0
+hole_depth_mm = 5.0
+sipm_diameter_mm = 5.0
+entry_gate_voltage_V = 0.0
+exit_anode_voltage_V = 22500.0
+reduced_field_kV_cm_bar = 3.0
+
+# Table 1, NEXT Xe-He EL yield paper (arXiv:1906.03984).
+# Y [photons/electron] = A [photons/electron/kV] *
+#   (E/P - threshold) [kV/cm/bar] * pressure [bar] * depth [cm].
+[el_yield.pure_xe]
+gain_photons_per_electron_kV = 137.0
+threshold_kV_cm_bar = 0.73
+
+[el_yield.xe_he]
+gain_photons_per_electron_kV = 139.0
+threshold_kV_cm_bar = 0.80
 
 # Petit convention: sigma_mm = d_mm_sqrtbar_per_sqrtcm * sqrt(L_cm / P_bar).
 # Coefficients are the existing Petit prescriptions; the user identifies

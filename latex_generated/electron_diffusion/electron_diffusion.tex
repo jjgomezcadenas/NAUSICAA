@@ -1,0 +1,13 @@
+\documentclass{article}\usepackage[margin=22mm]{geometry}\usepackage{booktabs}\setlength{\emergencystretch}{2em}\begin{document}\title{Electron diffusion at operating pressure}\author{}\date{\today}\maketitle
+Operating pressure: 15 bar. Xe-He helium fraction: 15\% (user design inputs). Petit prescription: sigma\_T,L [mm] = d\_T,L [mm sqrt(bar/cm)] sqrt(L\_cm/P\_bar). The operating-pressure coefficients below multiply sqrt(L\_cm). Pure-Xe reference coefficients are 3.5/0.9; Xe-He coefficients are 1.6/0.75. Widths use Float32; maximum absolute difference from Float64 evaluation is 5.81e-07 mm. The electron formula uses the supplied coefficients and pressure; it has no explicit electric-field argument.
+\begin{center}\begin{tabular}{lll}\toprule Gas & $d_T(15\,\mathrm{bar})$ [mm/$\sqrt{\mathrm{cm}}$] & $d_L(15\,\mathrm{bar})$ [mm/$\sqrt{\mathrm{cm}}$]\\\midrule
+Pure Xe & 0.903696 & 0.232379\\
+Xe + 15\% He & 0.413118 & 0.193649\\\bottomrule\end{tabular}\end{center}
+\begin{center}\begin{tabular}{llll}\toprule Gas & Drift [cm] & $\sigma_T$ [mm] & $\sigma_L$ [mm]\\\midrule
+Pure Xe & 10 & 2.8577 & 0.7348\\
+Pure Xe & 100 & 9.0370 & 2.3238\\
+Pure Xe & 150 & 11.0680 & 2.8460\\
+Xe + 15\% He & 10 & 1.3064 & 0.6124\\
+Xe + 15\% He & 100 & 4.1312 & 1.9365\\
+Xe + 15\% He & 150 & 5.0596 & 2.3717\\\bottomrule\end{tabular}\end{center}
+\end{document}

@@ -1,0 +1,24 @@
+\documentclass{article}\usepackage[margin=18mm]{geometry}\usepackage{graphicx,booktabs}\begin{document}\title{Pixel charge per electronics frame}\author{}\date{\today}\maketitle
+Requested 8,000 catalogue events per species from the input samples; processed 8,000 double-beta and 8,000 electron events, limited by available input events. All events and all MC particles reach collection. MC generation step: 1 mm (simulation input). Random drift uniform in 10--150 cm; thermal isotropic Gaussian diffusion, 200 V/cm bulk field and 293.15 K; W = 21.9 eV. The diffusion histogram has 100 bins per axis and 3$\sigma$ padding. Out-of-histogram ions are recorded. Ideal hole/pixel assignment maps each diffusion-bin centre to its containing 2 mm pixel. Frame width is 20 ms (2 mm slices at 0.1 m/s). Time is relative to the first arrival edge, increasing source z is later. Per-hit ion counts are rounded integers. Each event has an independent reproducible drift, diffusion and transverse grid phase. A pulse is a pixel--frame cell with positive ion count. Inclusive, event mean and event maximum include every pulse, with no charge threshold. Every event with pulses enters the minimum histogram, using its true minimum over all positive cells. All four distributions have no charge cut. The event mean is its total pulse-ion sum divided by its number of pulses. Events without pulses have no distribution entries. The statistics table uses the same event populations as each histogram. An empty minimum distribution has unavailable mean/median. All histogram count and ion axes are logarithmic; bins are shared between species. Track-reconstruction decisions do not gate this study. No time-integrated pixel charge is used in these plots. Ion retention is all collected pixel ions divided by produced event ions, before histogram truncation. The aggregate ratio uses sums over events; event mean and median give every event equal weight. Loss is one minus retention, caused here only by diffusion-histogram truncation. The minimum histogram selection introduces no collection or threshold loss. Produced ions use the saved per-hit rounded counts. Diffused ion clouds are saved independently of the collection grid when a cache is enabled. Pixel pitch and frame duration can change without repeating Gaussian draws; changing transport or diffusion-histogram settings selects a different cache. Run times include first-event compilation; initial Julia process startup and final histogram/presentation generation are separate.
+\section*{Charge accounting}\noindent\resizebox{\linewidth}{!}{\begin{tabular}{llllll}\toprule Species & Events & Events with charge & Pixel--frame cells with charge & Collected ions & Outside diffusion histogram\\\midrule
+Double beta & 8000 & 8000 & 13,334,119 & 897,137,559 & 158,573\\
+Single electrons & 8000 & 8000 & 15,841,990 & 897,135,815 & 131,334\\\bottomrule\end{tabular}}
+\section*{Ion retention}\noindent\resizebox{\linewidth}{!}{\begin{tabular}{llllll}\toprule Species & Pixels included & Aggregate retention [\%] & Mean event retention [\%] & Median event retention [\%] & Aggregate loss [\%]\\\midrule
+Double beta & All pixels & 99.9823 & 99.9823 & 99.9831 & 0.0177\\
+Single electrons & All pixels & 99.9854 & 99.9854 & 99.9866 & 0.0146\\\bottomrule\end{tabular}}
+\section*{Ion loss accounting}\noindent\resizebox{\linewidth}{!}{\begin{tabular}{lll}\toprule Species & Outside histogram [ions] & Histogram loss [\%]\\\midrule
+Double beta & 158,573 & 0.0177\\
+Single electrons & 131,334 & 0.0146\\\bottomrule\end{tabular}}
+\section*{Distribution means and medians}\noindent\resizebox{\linewidth}{!}{\begin{tabular}{lllll}\toprule Species & Distribution & Events & Mean [ions/pulse] & Median [ions/pulse]\\\midrule
+Double beta & Maximum & 8000 & 2039.02 & 1568.00\\
+Double beta & Minimum & 8000 & 1.00 & 1.00\\
+Double beta & Event mean & 8000 & 82.90 & 67.38\\
+Single electrons & Maximum & 8000 & 1913.05 & 1471.00\\
+Single electrons & Minimum & 8000 & 1.00 & 1.00\\
+Single electrons & Event mean & 8000 & 70.45 & 56.28\\\bottomrule\end{tabular}}
+\section*{Run time}\noindent\resizebox{\linewidth}{!}{\begin{tabular}{lllllll}\toprule Species & Source read [s] & Diffusion [s] & Cache read [s] & Cache write [s] & Collection/reduction [s] & Total [s]\\\midrule
+Double beta & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 53.607\\
+Single electrons & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 52.084\\\bottomrule\end{tabular}}
+\clearpage\section*{Double beta}\noindent\includegraphics[width=\linewidth]{bb0nu_pixel_charge.png}
+\clearpage\section*{Single electrons}\noindent\includegraphics[width=\linewidth]{electrons_pixel_charge.png}
+\end{document}

@@ -202,26 +202,37 @@ present-mc-selection:
 .PHONY: pixel-charge present-pixel-charge
 pixel-charge:
 	mkdir -p work/pixel_charge
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge.toml
 	$(MAKE) present-pixel-charge
 
 present-pixel-charge:
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_direct --latex-dir latex_generated/pixel_charge_direct
 
 .PHONY: pixel-charge-1mm
 pixel-charge-1mm:
 	mkdir -p work/pixel_charge_1mm
-	PIXEL_CHARGE_CARD="$(CURDIR)/config/pixel_charge_1mm.toml" JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm --latex-dir latex_generated/pixel_charge_1mm
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge_1mm.toml
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_direct --latex-dir latex_generated/pixel_charge_1mm_direct
 
 .PHONY: pixel-charge-1mm-3mm
 pixel-charge-1mm-3mm:
 	mkdir -p work/pixel_charge_1mm_3mm
-	PIXEL_CHARGE_CARD="$(CURDIR)/config/pixel_charge_1mm_3mm.toml" JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_3mm --latex-dir latex_generated/pixel_charge_1mm_3mm
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge_1mm_3mm.toml
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_3mm_direct --latex-dir latex_generated/pixel_charge_1mm_3mm_direct
 
 .PHONY: pixel-charge-1mm-4mm
 pixel-charge-1mm-4mm:
 	mkdir -p work/pixel_charge_1mm_4mm
-	PIXEL_CHARGE_CARD="$(CURDIR)/config/pixel_charge_1mm_4mm.toml" JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/analyze_mc_selection.jl --pixel-charge --repixelize-only
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_4mm --latex-dir latex_generated/pixel_charge_1mm_4mm
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/run_pixel_charge_direct.jl config/pixel_charge_1mm_4mm.toml
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_pixel_charge.py --results-dir results/pixel_charge_1mm_4mm_direct --latex-dir latex_generated/pixel_charge_1mm_4mm_direct
+
+.PHONY: grid-readout present-grid-readout
+grid-readout:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/test_grid_readout.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/sample_collect_parallel.jl --events 8000 --workers 6 --output results/grid_readout_direct_8000
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/summarize_grid_readout.jl results/grid_readout_direct_8000
+	$(PYTHON) tests/event_analysis/check_grid_readout.py results/grid_readout_direct_8000 --events 8000
+	$(MAKE) present-grid-readout
+
+present-grid-readout:
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/present_grid_readout.py

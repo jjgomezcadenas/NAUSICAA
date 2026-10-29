@@ -1,0 +1,81 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Thu Oct 29 21:39:31 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+is1: Removing PWL point (0.0213333,4.7989e-17)
+is1: Removing PWL point (0.0213483,4.7989e-17)
+is1: Removing PWL point (0.0214182,4.7989e-17)
+is1: Removing PWL point (0.0214481,4.7989e-17)
+is1: Removing PWL point (0.021513,4.7989e-17)
+is1: Removing PWL point (0.0215329,4.7989e-17)
+is1: Removing PWL point (0.0216028,4.7989e-17)
+is1: Removing PWL point (0.0217275,4.7989e-17)
+is1: Removing PWL point (0.0217475,4.7989e-17)
+is1: Removing PWL point (0.0217874,4.7989e-17)
+is1: Removing PWL point (0.0218373,4.7989e-17)
+is1: Removing PWL point (0.0218623,4.7989e-17)
+is1: Removing PWL point (0.0218822,4.7989e-17)
+is1: Removing PWL point (0.0219022,4.7989e-17)
+is1: Removing PWL point (0.0219521,4.7989e-17)
+is1: Removing PWL point (0.0219721,4.7989e-17)
+is1: Removing PWL point (0.021992,4.7989e-17)
+is1: Removing PWL point (0.022007,4.7989e-17)
+is1: Removing PWL point (0.022022,4.7989e-17)
+is1: Removing PWL point (0.0220569,4.7989e-17)
+is1: Removing PWL point (0.0220918,4.7989e-17)
+is1: Removing PWL point (0.0221467,4.7989e-17)
+is1: Removing PWL point (0.0221766,4.7989e-17)
+is1: Removing PWL point (0.0222016,4.7989e-17)
+is1: Removing PWL point (0.0222764,4.7989e-17)
+is1: Removing PWL point (0.0223962,4.7989e-17)
+is1: Removing PWL point (0.0224162,4.7989e-17)
+is1: Removing PWL point (0.022476,4.7989e-17)
+is1: Removing PWL point (0.0225459,4.7989e-17)
+is1: Removing PWL point (0.0226806,4.7989e-17)
+is1: Removing PWL point (0.0227156,4.7989e-17)
+is1: Removing PWL point (0.0227904,4.7989e-17)
+is1: Removing PWL point (0.0228453,4.7989e-17)
+is1: Removing PWL point (0.022995,4.7989e-17)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+Gmin = 4.54274e-14
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Changing Tseed to 1e-08
+Total elapsed time: 0.096 seconds.

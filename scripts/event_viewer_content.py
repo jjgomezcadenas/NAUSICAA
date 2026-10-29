@@ -399,11 +399,11 @@ width scaling, new realisations, invalid distances and session restart.</p>
 tab with its separate voxelisation, graph and single-component selection.</p>''', 'viewer-transport')
     body += section('Pad charge and the three reconstruction stages', '''
 <p>The Pad charge tab collects the same transported event on the detector’s
-2 mm regular hole/pad lattice. Its reference is the full transported cloud’s
+2 mm regular hole/pad lattice. Its reference is the exact retained carriers'
 ion-weighted x/y centre and minimum z. One independent uniform x/y phase within
-a pitch is fixed per event realisation. Axes extend to cover every retained
-diffusion-bin centre. This uses the existing ideal geometric assignment to the
-containing hole/pad cell.</p>
+a pitch is fixed per event realisation. The same diffusion seed is replayed
+to assign each sampled position directly to its containing pad and time bucket.
+Axes extend to cover every retained carrier.</p>
 <p>XY displays each pad’s total collected charge in fC. X–time and Y–time sum
 the opposite transverse coordinate. The 3D heatmap displays individual
 pad/time cells. The saved history preserves integer ions per pad and slice;
@@ -413,9 +413,8 @@ the drift sign and source-z edges are saved. The visible drift label refers
 to the same Gaussian transport used in Transported hits.</p>
 <p>All retained ions are collected, including low-count cells. Collection and
 the transport realisation are shared across tabs, navigation and restart.
-The existing pad/time history and covering-axis routines perform the calculation;
-the new explicit-reference pad_axes method supports collection before track
-selection. Python reads saved charge arrays to construct the plots. Framing
+The direct sampler and sparse pad/time history perform the calculation.
+Python reads saved charge arrays to construct the plots. Framing
 uses twice the occupied track extent, keeping empty grid margins outside the
 initial view.</p>
 <p>Keep three independent reconstruction observations: A on original MC,
@@ -452,37 +451,33 @@ introduces no threshold loss. The reducer refreshes these quantities from saved
 sparse histories without repeating transport or collection.</p>
 <p>Save complete sparse event/pixel/frame counts, per-event axes, ion ledgers,
 drift distances, seeds, grid phases, histograms, event pulse means, provenance and
-timings in <code>results/pixel_charge/bb0nu.h5</code> and
+timings in <code>results/pixel_charge_direct/bb0nu.h5</code> and
 <code>electrons.h5</code>. <code>scripts/present_pixel_charge.py</code> generates
-one 2×2 PNG per species, <code>results/pixel_charge/pixel_charge.html</code>,
-and <code>latex_generated/pixel_charge/pixel_charge.tex</code>/<code>.pdf</code>.
+one 2×2 PNG per species, <code>results/pixel_charge_direct/pixel_charge.html</code>,
+and <code>latex_generated/pixel_charge_direct/pixel_charge.tex</code>/<code>.pdf</code>.
 <code>make present-pixel-charge</code> refreshes presentation from saved results.</p>
 <p><code>make pixel-charge-1mm</code> applies the same study to the original
 1 mm-step inputs, using <code>config/pixel_charge_1mm.toml</code>. Its HDF5,
-figures and HTML are separate under <code>results/pixel_charge_1mm/</code>,
-with LaTeX/PDF under <code>latex_generated/pixel_charge_1mm/</code>.
+figures and HTML are separate under <code>results/pixel_charge_1mm_direct/</code>,
+with LaTeX/PDF under <code>latex_generated/pixel_charge_1mm_direct/</code>.
 Both cards record the MC generation step, and presentation accepts explicit
 <code>--results-dir</code> and <code>--latex-dir</code> paths.</p>
-<p>Diffused ion clouds are cached separately in <code>results/diffused_tracks/</code>.
-Each event stores losslessly compressed Float32 diffusion-bin centres/energies,
-Int64 ions, explicit diffusion edges, distance, width, seed and ion ledger.
-Cache identity includes the source content/path, physical transport parameters,
-histogram resolution/padding, random seed, Julia version and transport code.
-Pitch, longitudinal bucket size and requested event count are independent.
-The optional <code>--repixelize-only</code> flag refuses to generate diffusion
-when an event is missing from the cache, guaranteeing a collection-only run.
-Completed events are reused and additional events can extend the cache.</p>
+<p>The active ion-only pixel study replays deterministic diffusion twice per
+event: first to obtain the exact retained-carrier centre/minimum-z reference,
+then to assign the same sampled positions directly to the physical pad/time
+grid. It writes only sparse pixel/frame histories and provenance; changing
+pitch or bucket width replays the diffusion seed. Earlier binned cloud caches
+remain available for audit.</p>
 <p>Set <code>pads.pitch_mm</code> and <code>pads.z_bin_width_mm</code> in the card
 to re-pixelise. <code>config/pixel_charge_1mm_3mm.toml</code> and
 <code>make pixel-charge-1mm-3mm</code> use 3 mm pitch and 3 mm longitudinal buckets
-(30 ms). Outputs go to <code>results/pixel_charge_1mm_3mm/</code> and
-<code>latex_generated/pixel_charge_1mm_3mm/</code>. Per-sample timings record cache
-hits/misses and read/write time separately from newly computed diffusion.
+(30 ms). Outputs go to <code>results/pixel_charge_1mm_3mm_direct/</code> and
+<code>latex_generated/pixel_charge_1mm_3mm_direct/</code>. Per-sample timings
+record the direct transport and collection work.
 <code>config/pixel_charge_1mm_4mm.toml</code> and
-<code>make pixel-charge-1mm-4mm</code> use the same cache for 4 mm pitch and
-40 ms frames, with separate <code>pixel_charge_1mm_4mm/</code> output directories.
-The cache preserves the chosen diffusion-histogram resolution; grid changes
-use those saved occupied cells directly.</p>
+<code>make pixel-charge-1mm-4mm</code> replay the same seeds for 4 mm pitch and
+40 ms frames, with separate <code>pixel_charge_1mm_4mm_direct/</code> output directories.
+Grid changes use sampled positions directly.</p>
 <p>Tests independently reconstruct event extrema, all histogram counts and
 event pulse means from the sparse histories. Core tests cover strict
 threshold equality, empty extrema, ownership and charge conservation. Next
@@ -529,8 +524,8 @@ their grids, retaining their common event and ionisation-deposit identity.</p>
 <p>The electron grid has cylindrical holes of 5 mm diameter and 5 mm depth,
 on 10 mm pitch. Geometric collection assigns electrons to holes. The EL
 field E/P = 3 kV/cm/bar at 15 bar gives E = 45 kV/cm and a 22.5 kV
-potential rise along electron passage. Entry-grid and exit-anode potentials
-belong in TOML; the absolute voltage reference is an outstanding input.</p>
+potential rise along electron passage. TOML records entry-grid and exit-anode
+potentials as 0 and 22,500 V in a relative voltage gauge.</p>
 <p>Electrons produce VUV photons along the hole. Calculate the direct optical
 acceptance analytically and sample that fraction. Save photoelectron
 histories per SiPM in configurable time buckets. User inputs:
@@ -538,8 +533,10 @@ histories per SiPM in configurable time buckets. User inputs:
 For isotropic emission uniformly along the hole axis, an exit-plane SiPM
 covering the full hole, and absorbing walls, the depth-averaged acceptance
 is (h + R − √(h² + R²))/(2h), or 0.190983 for R=2.5 mm and h=5 mm.
-This benchmark specifies an axial electron path. Sample incident photons
-and photoelectrons with successive binomial draws.</p>
+This benchmark specifies an axial electron path. The first implementation
+holds the fitted EL yield at its mean and samples detected PE with an exact
+binomial draw using direct acceptance × PDE. PE are assigned to the parent
+electron's 2 μs arrival bucket.</p>
 <p>Source: J. Hikida et al., NIM A 1080 (2025) 170706,
 <code>papers/ELCC/Axel-ELCC.pdf</code>, Fig. 2 and sections 2 and 4.
 The paper describes focusing, EL and SiPM readout; its upgraded unit has
@@ -550,7 +547,7 @@ equation or numerical SiPM PDE.</p>
 Table 1, uses Y = A max(E/P − X0,0) P h. At 15 bar, E/P=3 kV/cm/bar
 and h=0.5 cm: pure Xe (A=137, X0=0.73) gives 2332.425 photons/electron;
 Xe–15% He (A=139, X0=0.80) gives 2293.5. These matched fits are the
-proposed starting prescriptions. Their measurements were near 1.2 bar;
+initial configurable prescriptions. Their measurements were near 1.2 bar;
 application at 15 bar assumes reduced-field scaling.</p>
 <p><code>papers/ELCC/EL-Next-DEMO.pdf</code>, Eq. (2), quotes the conventional
 pure-Xe A=140, X0=0.83 prescription (2278.5 photons/electron here). Its
@@ -558,23 +555,34 @@ pure-Xe A=140, X0=0.83 prescription (2278.5 photons/electron here). Its
 with about 30% absolute calibration uncertainty. It supplies no measured
 15 bar or Xe–He correction. See <code>docs/decisions.md</code> for the source
 audit, uncertainties and the internal percentage discrepancy in the Xe–He
-paper. Yield prescription and EL emission fluctuations await review.</p>''', 'paired-drift-elcc')
-    body += section('Cloud viewer II: paired ion and electron events', '''
-<p><code>scripts/serve_cloud_viewer.py</code> opens a second local viewer at
-<code>http://127.0.0.1:8767/</code>. It reads the six completed HDF5 streams in
-<code>results/three_clouds_8000/</code>. The event number selects the same
-ordinal event from the double-beta and single-electron samples (0–7999).</p>
-<p>The first row shows ions, pure-Xe electrons and Xe–15% He electrons from
-the double-beta event; the second row shows the corresponding three clouds
-from the single-electron event. Every panel displays its event ID, ion drift
-length, electron drift length and retained carrier count, followed by XY,
-XZ, YZ and a rotatable 3D view. Colour encodes carrier counts. The 2D
-projections retain the saved 100-bin resolution. The 3D view groups 4 × 4 × 4
-saved cells for display and preserves the total carrier count. Event navigation
-supports Previous, Next, an event-number field and left/right arrow keys.</p>
-<p>The browser receives one event at a time from
-<code>src/cloud_viewer/server.py</code>. The original interactive viewer
-remains available for MC hits, reconstruction, transport and pad studies.</p>''', 'cloud-viewer-ii')
+paper.</p>''', 'paired-drift-elcc')
+    body += section('Readout viewer: selected ion and electron events', '''
+<p><code>scripts/sample_collect_parallel.jl</code> samples each carrier's
+Float32 x/y/z Gaussian displacement and increments its containing pad or EL
+hole and 2 mm longitudinal bucket immediately. An internal sparse map uses
+signed lattice indices, so saved axes cover every retained sample. Its
+history records integer signal counts, explicit Float32 axes, the source-frame
+grid reference and phase, and exact sampled/retained/outside accounting.
+The existing diffusion widths, finite window, seeds and Gaussian draw order
+are preserved. Electron arrivals per hole/bucket are converted to detected
+PE using the configured EL yield, axial optical acceptance and PDE.</p>
+<p>The worker writes six version-2 HDF5 readout streams to
+<code>results/grid_readout_direct_8000/</code>. No individual carrier coordinate
+or display-histogram arrays are saved. Ion buckets have 2 mm width and 20 ms
+duration; electron buckets use <code>readout.bucket_width_mm = 2</code> and
+last 2 μs at the configured speed. The full 8,000-event run took 55.97 s
+with six processes and produced 977.1 MB of stream files. The numerical
+summary is <code>grid_readout_summary.h5</code> in that directory, and the
+generated report is <code>latex_generated/grid_readout_direct/grid_readout.pdf</code>.</p>
+<p><code>scripts/serve_cloud_viewer.py</code> opens the two-panel readout viewer
+at <code>http://127.0.0.1:8767/</code>. Choose the double-beta or
+single-electron sample and the pure-Xe or Xe–15% He electron gas. The ion
+panel and selected PE panel read the same event position in that sample.
+Each panel gives complementary drift lengths, XY/X–time/Y–time heatmaps and
+a rotatable 3D plot. Colour encodes ions or PE per occupied pad/SiPM and
+bucket. The event field uses positions 1–8000 in the file; position 100
+reads <code>events/99</code>. Previous/Next and arrow keys advance within the
+selected sample. The URL retains the sample, gas and event position.</p>''', 'cloud-viewer-ii')
     body += section('Batch MC single-component selection', '''
 <p><code>make mc-selection</code> runs <code>scripts/analyze_mc_selection.jl</code>
 with <code>config/mc_selection.toml</code>, then generates presentation through

@@ -1,24 +1,38 @@
 """Collect the full transported ion cloud on the detector's regular hole/pad grid.
 
-Use the cloud's ion-weighted x/y centre and minimum z as reference, with one
+Use the retained carrier positions' ion-weighted x/y centre and minimum z as reference, with one
 reproducible uniform transverse phase in [0,pitch) per event realisation. The
 phase uses a separate RNG stream from diffusion and drift. Read pitch and ion
 speed from the saved transport detector card, explicitly converting SI to mm
-and mm/ms. Reuse pad_axes, compute_occupancy_analysis and pad_projections.
+and mm/ms. Replay the same diffusion seed to determine the reference and to
+assign each carrier directly to its physical pad/time bucket.
 Return the sparse pad-by-time history, axes, projections, phase, reference and
 SI charge per ion. Every retained ion is collected, including low-count bins.
-The geometric approximation assigns each occupied diffusion-bin centre to its
-containing hole/pad cell. It models ideal routing and collection. Reconstruction
+The geometric approximation models ideal routing and collection. Reconstruction
 A/B/C decisions are separate downstream observations.
 """
 function collect_pads(t)
-    d=t.d.bins;c=CONFIG["pads"];det=TOML.parse(t.detector_toml)
+    c=CONFIG["pads"];det=TOML.parse(t.detector_toml)
     pitch=Float32(det["geometry"]["pitch_m"])*1000f0
     speed=Float32(det["gas"]["bulk_speed_m_s"]) # 1 m/s = 1 mm/ms.
-    phase=sample_grid_offset_mm(Xoshiro(parse(UInt64,t.seed)⊻0xd1b54a32d192ed03),pitch)
-    axes,history=collect_ion_cloud(d;pitch_mm=pitch,z_bin_width_mm=Float32(c["z_bin_width_mm"]),
-        grid_offset_mm=phase,minimum_xy_span_mm=Float32(c["minimum_xy_span_mm"]),
-        drift_speed_mm_ms=speed,drift_direction=Int(c["drift_direction"]))
+    seed=parse(UInt64,t.seed)
+    diffusion_seed=seed⊻0x9e3779b97f4a7c15
+    counts=ion_counts(t.hits,t.ionisation_energy_eV).sampled
+    reference=diffused_carrier_reference(Xoshiro(diffusion_seed),t.hits,counts;
+        sigma_t_mm=t.sigma_t_mm,sigma_l_mm=t.sigma_l_mm,
+        nsigma=Float32(CONFIG["transport"]["nsigma"])).reference_mm
+    phase=sample_grid_offset_mm(Xoshiro(seed⊻0xd1b54a32d192ed03),pitch)
+    history=diffuse_to_grid(Xoshiro(diffusion_seed),t.hits,counts;
+        sigma_t_mm=t.sigma_t_mm,sigma_l_mm=t.sigma_l_mm,
+        nsigma=Float32(CONFIG["transport"]["nsigma"]),reference_mm=reference,
+        grid_offset_mm=phase,pitch_mm=pitch,
+        bucket_width_mm=Float32(c["z_bin_width_mm"]),
+        drift_speed_mm_ms=speed,drift_direction=Int(c["drift_direction"]),
+        minimum_xy_span_mm=Float32(c["minimum_xy_span_mm"]))
+    first_edge_indices=(round(Int64,(first(history.x_edges_mm)-reference[1]-phase[1])/pitch),
+        round(Int64,(first(history.y_edges_mm)-reference[2]-phase[2])/pitch),
+        round(Int64,(first(history.z_edges_mm)-reference[3])/Float32(c["z_bin_width_mm"])))
+    axes=(;reference_mm=reference,grid_offset_mm=phase,first_edge_indices)
     projections=pad_projections(history)
     @assert history.total_ions==t.d.retained_ions
     return (;axes,history,projections,pitch_mm=pitch,drift_speed_mm_ms=speed,

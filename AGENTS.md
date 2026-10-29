@@ -14,14 +14,17 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   (user design inputs). Store these in config/electron_transport.toml and derive
   operating-pressure diffusion coefficients from Petit's pressure scaling.
 - Sample one event location along the 1.5 m TPC: ion and electron drift
-  lengths are complementary, L and L_max-L. Save both diffused clouds before
-  readout. The electron EL grid has 5 mm diameter holes, 10 mm pitch and 5 mm
-  depth, with E/P = 3 kV/cm/bar. Store entry/exit electrode potentials in TOML.
+  lengths are complementary, L and L_max-L. Sample each diffused carrier
+  directly into its physical grid cell and longitudinal bucket; save sparse
+  readout histories, seeds and provenance. The electron EL grid has 5 mm
+  diameter holes, 10 mm pitch and 5 mm depth, with E/P = 3 kV/cm/bar.
+  Store entry/exit electrode potentials in TOML.
   Route electrons geometrically to holes. Compute direct VUV collection
   acceptance analytically for the assumed electron path and sample that
   fraction. Save only photoelectron histories per SiPM and time bucket;
-  use 1 microsecond per mm and an initial 2 microsecond bucket. SiPM PDE is
-  TOML-configurable, initially 0.30 (user input). These are user design inputs;
+  use 1 microsecond per mm and an initial 2 mm bucket (2 microseconds at this
+  speed). SiPM PDE is TOML-configurable, initially 0.30 (user input).
+  These are user design inputs;
   record the adopted gas-dependent EL yield and optical boundary conditions.
 - Use SI internally for transport, fields and electronics. Preserve particle-
   physics units in NEXUS event tables and hit DataFrames: positions in mm and
@@ -42,10 +45,11 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   Distinguish reconstruction A on pure MC, B after diffusion before pad
   discretisation, and C after diffusion and pad discretisation. Preserve and
   compare their components, backbones and decisions; A/B selections do not gate
-  propagation to later stages. Interactive pad collection uses the full transported
-  cloud's ion-weighted x/y centre and minimum z as its grid reference, with one
-  random transverse phase per event realisation. Extend the grid to cover all
-  retained diffusion charge, including ions below reconstruction thresholds.
+  propagation to later stages. Interactive pad collection uses the exact
+  retained carriers' ion-weighted x/y centre and minimum z as its grid
+  reference, with one random transverse phase per event realisation. Extend
+  the grid to cover all retained diffusion charge, including ions below
+  reconstruction thresholds.
   Existing selected-event batch studies retain their recorded reference convention.
 - Electronics track observables are ions per pixel per frame;
   time-integrated pixel charge belongs to energy analysis. Say "pixels with
@@ -55,10 +59,12 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   only if that minimum > n_min. This display selection causes no charge loss.
   Current pixel-charge cards set n_min = 0, so all four distributions have no
   charge cut and the minimum histogram includes every event with pulses.
-- Persist intermediate diffused ion clouds in HDF5 independently of pad pitch
-  and frame width. Re-pixelisation reuses the same cloud, drift and random seed.
-  Cache identity includes source contents and physical transport parameters;
-  changing diffusion resolution or transport inputs requires a different cache.
+- The active readout replays source hits and deterministic diffusion seeds when
+  pitch or bucket width changes; it does not save individual carrier coordinates.
+  Histogram cell centres are valid for display and historical comparison, not
+  physical pad/time assignment. Version new HDF5 readout schemas and retain old
+  binned outputs for audit. Record source contents, cards, seeds and code hashes
+  so the sampled realization is reproducible.
 - General analysis workflow: Julia performs physical calculations, data analysis
   and reduction, and saves numerical results and provenance to HDF5. Python
   reads these results to produce final figures, tables and LaTeX macros without
@@ -107,6 +113,8 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
 - Keep scratch files in work/.
 - Cite primary sources in notes/physics/references.bib. Record user-provided
   revisions as design inputs, not as published measurements.
+- Keep large datasets and binary simulation files outside Git. Never configure
+  or use Git LFS without the user's explicit approval.
 - Do not change the existing remote or publish/push without a user request.
 
 ## Related ITACA sources

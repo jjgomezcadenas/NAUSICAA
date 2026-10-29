@@ -8,6 +8,7 @@ energy in MeV and MC deposition time in ns.
 module EventAnalysis
 
 using DataFrames, Graphs, NearestNeighbors, LinearAlgebra, SparseArrays, Statistics, HDF5, Random
+using Distributions: Binomial
 import StatsBase
 
 export CoordinateFrame, source_frame, vertex_frame, EventInfo, EventHits, center_hits,
@@ -19,7 +20,10 @@ export CoordinateFrame, source_frame, vertex_frame, EventInfo, EventHits, center
        align_pad_history, ensemble_pad_maps, write_ensemble, read_ensemble,
        MCEnergyMaps, bin_mc_energy, MCGraphSettings, MCComponent,
        resolved_mc_distance, build_mc_components, analyze_mc_event,
-       collect_ion_cloud, pixel_frame_statistics
+       collect_ion_cloud, pixel_frame_statistics,
+       el_photon_yield, axial_light_acceptance, sample_detected_pe,
+       collect_grid_history, detect_pe_history, diffuse_to_grid,
+       diffused_carrier_reference
 
 include("types.jl")
 include("coordinates.jl")
@@ -35,6 +39,7 @@ include("production.jl")
 include("diffusion.jl")
 include("collection.jl")
 include("pixel_charge.jl")
+include("grid_readout.jl")
 include("ensemble.jl")
 include("display.jl")
 include("mc_inspection.jl")

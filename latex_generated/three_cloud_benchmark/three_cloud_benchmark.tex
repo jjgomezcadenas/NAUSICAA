@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage[margin=25mm]{geometry}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\title{Three-cloud propagation prototype: concurrency benchmark}
+\author{NAUSICAA analysis}
+\date{29 October 2026}
+\begin{document}
+\maketitle
+\section*{Method}
+For each of 100 events from each 1~mm source sample (double beta and single
+electrons), the Julia prototype produced an ion cloud and electron clouds using
+the pure-Xe and Xe--15\%~He Petit diffusion coefficients. The event location was
+drawn once per source event; ion and electron distances sum to 150~cm. The
+benchmark includes Julia process startup, HDF5 source reads, diffusion and
+compressed HDF5 output. Each stream writes a separate file.
+
+\section*{Results}
+\begin{center}
+\begin{tabular}{rrrrr}
+\toprule
+Workers & Events/stream & Wall time (s) & Speedup & Output (MB) \\
+\midrule
+1 & 100 & 39.03 & 1.00 & 64.2 \\
+2 & 100 & 19.98 & 1.95 & 64.2 \\
+4 & 100 & 13.59 & 2.87 & 64.2 \\
+6 & 100 & 7.63 & 5.12 & 64.2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The sum of individual peak resident-memory measurements for six processes is 4.90 GB. This sum is a conservative ceiling for simultaneous resident memory, not a measured concurrent peak.
+
+\section*{Validation and limits}
+All 100 events in each source sample have the same sampled ion drift distance
+across their three clouds. Ion and electron drift distances sum to 150~cm.
+Every cloud conserves its sampled carriers across retained and outside-bin
+counts. Per-event arrays and counts match exactly for one, two, four and six
+workers. These measurements cover 100 events per stream and include output
+to the local filesystem; production-scale throughput and concurrent peak
+resident memory require a separate full-run measurement.
+\end{document}

@@ -1,0 +1,106 @@
+LTspice 17.2.4 for MacOS
+Circuit: * M3 geometry scan
+Start Time: Thu Oct 29 21:39:39 2026
+solver = Normal
+Maximum thread count: 1
+tnom = 27
+temp = 20
+method = modified trap
+abstol = 1e-19
+reltol = 1e-06
+volttol = 1e-10
+is1: Removing PWL point (0.441343,2.39945e-17)
+is1: Removing PWL point (0.441361,2.39945e-17)
+is1: Removing PWL point (0.441393,2.39945e-17)
+is1: Removing PWL point (0.441406,2.39945e-17)
+is1: Removing PWL point (0.441413,2.39945e-17)
+is1: Removing PWL point (0.441456,2.39945e-17)
+is1: Removing PWL point (0.441463,2.39945e-17)
+is1: Removing PWL point (0.441476,2.39945e-17)
+is1: Removing PWL point (0.441491,2.39945e-17)
+is1: Removing PWL point (0.441528,2.39945e-17)
+is1: Removing PWL point (0.441536,2.39945e-17)
+is1: Removing PWL point (0.441546,2.39945e-17)
+is1: Removing PWL point (0.441593,2.39945e-17)
+is1: Removing PWL point (0.441608,2.39945e-17)
+is1: Removing PWL point (0.441628,2.39945e-17)
+is1: Removing PWL point (0.441653,2.39945e-17)
+is1: Removing PWL point (0.441671,2.39945e-17)
+is1: Removing PWL point (0.441678,2.39945e-17)
+is1: Removing PWL point (0.441716,2.39945e-17)
+is1: Removing PWL point (0.441723,2.39945e-17)
+is1: Removing PWL point (0.441758,2.39945e-17)
+is1: Removing PWL point (0.441783,2.39945e-17)
+is1: Removing PWL point (0.441806,2.39945e-17)
+is1: Removing PWL point (0.441843,2.39945e-17)
+is1: Removing PWL point (0.441866,2.39945e-17)
+is1: Removing PWL point (0.441883,2.39945e-17)
+is1: Removing PWL point (0.441958,2.39945e-17)
+is1: Removing PWL point (0.441971,2.39945e-17)
+is1: Removing PWL point (0.441991,2.39945e-17)
+is1: Removing PWL point (0.442043,2.39945e-17)
+is1: Removing PWL point (0.442058,2.39945e-17)
+is1: Removing PWL point (0.442085,2.39945e-17)
+is1: Removing PWL point (0.44211,2.39945e-17)
+is1: Removing PWL point (0.442133,2.39945e-17)
+is1: Removing PWL point (0.44214,2.39945e-17)
+is1: Removing PWL point (0.442158,2.39945e-17)
+is1: Removing PWL point (0.442193,2.39945e-17)
+is1: Removing PWL point (0.44222,2.39945e-17)
+is1: Removing PWL point (0.442233,2.39945e-17)
+is1: Removing PWL point (0.44224,2.39945e-17)
+is1: Removing PWL point (0.44227,2.39945e-17)
+is1: Removing PWL point (0.442283,2.39945e-17)
+is1: Removing PWL point (0.442313,2.39945e-17)
+is1: Removing PWL point (0.442325,2.39945e-17)
+is1: Removing PWL point (0.442345,2.39945e-17)
+is1: Removing PWL point (0.442358,2.39945e-17)
+is1: Removing PWL point (0.442375,2.39945e-17)
+is1: Removing PWL point (0.442405,2.39945e-17)
+is1: Removing PWL point (0.44242,2.39945e-17)
+is1: Removing PWL point (0.442443,2.39945e-17)
+is1: Removing PWL point (0.442453,2.39945e-17)
+is1: Removing PWL point (0.442478,2.39945e-17)
+is1: Removing PWL point (0.442485,2.39945e-17)
+is1: Removing PWL point (0.442543,2.39945e-17)
+is1: Removing PWL point (0.442555,2.39945e-17)
+is1: Removing PWL point (0.44257,2.39945e-17)
+is1: Removing PWL point (0.442603,2.39945e-17)
+is1: Removing PWL point (0.44262,2.39945e-17)
+is1: Removing PWL point (0.44273,2.39945e-17)
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Warning: Pd = 0 is less than W.
+Warning: Ps = 0 is less than W.
+Direct Newton iteration failed to find .op point.  (Use ".option noopiter" to skip.)
+Starting Gmin stepping
+Gmin = 10
+Gmin = 1.07374
+Gmin = 0.115292
+Gmin = 0.0123794
+Gmin = 0.00132923
+Gmin = 0.000142725
+Gmin = 1.5325e-05
+Gmin = 1.6455e-06
+Gmin = 1.76685e-07
+Gmin = 1.89714e-08
+Gmin = 2.03704e-09
+Gmin = 2.18725e-10
+Gmin = 2.34854e-11
+Gmin = 2.52173e-12
+Gmin = 2.70769e-13
+Terminal Gmin changed to 1e-14
+Gmin = 4.54274e-14
+Gmin = 0
+Gmin stepping succeeded in finding the operating point.
+
+Changing Tseed to 1e-08
+Total elapsed time: 0.256 seconds.

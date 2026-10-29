@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage[margin=21mm]{geometry}
+\usepackage{booktabs,graphicx}
+\title{Direct ion pad and electron SiPM readout}
+\author{NAUSICAA analysis}
+\date{29 October 2026}
+\begin{document}
+\maketitle
+6 Julia processes sampled and collected 8,000 events from each MC sample in 55.97~s. 
+Each retained sampled carrier was assigned directly to its physical pad or EL hole
+and longitudinal bucket. Pure-Xe and Xe--15\%~He electron arrivals were
+reduced to detected photoelectrons (PE) per SiPM and time bucket.
+\begin{center}\small
+\begin{tabular}{llrrrr}
+\toprule
+Sample & Readout & Input/event & Signal/event & Signal/input & Buckets/event\\
+\midrule
+bb0nu & ions & 112,143 & 112,143 & 1.00 & 1,584 \\
+bb0nu & pure Xe e$^{-}$ & 112,106 & 14,981,373 & 133.64 & 1,005 \\
+bb0nu & Xe--He e$^{-}$ & 112,129 & 14,734,402 & 131.41 & 396 \\
+electrons & ions & 112,143 & 112,143 & 1.00 & 1,879 \\
+electrons & pure Xe e$^{-}$ & 112,114 & 14,982,550 & 133.64 & 1,236 \\
+electrons & Xe--He e$^{-}$ & 112,132 & 14,734,791 & 131.41 & 489 \\
+\bottomrule
+\end{tabular}\end{center}
+\begin{center}\includegraphics[width=.94\linewidth]{pe_per_electron.png}\end{center}
+\paragraph{Grid and timing inputs.}
+Ion pads have 2~mm pitch and 2~mm longitudinal buckets
+(20~ms at 0.1~m/s drift speed). 
+Electron holes have 10~mm pitch and 5~mm diameter, with 5~mm EL depth. PE use 2~mm buckets (2~microseconds) at the configured electron drift speed. The ion and electron
+arrival orders are opposite. An independent uniform phase is used for each
+physical grid; the electron phase is shared by the two gas models of an event.
+The EL reduced field is 3~kV/cm/bar at 15~bar, with gate/anode potentials 0/22500~V in a relative voltage gauge.
+\paragraph{Optical model.}
+The fitted mean EL yields from the Xe--He study are 2332.4 and 2293.5 photons per electron
+for pure Xe and Xe--15\%~He. Photons are isotropic along the hole axis;
+VUV rays touching the walls are absorbed. The analytic direct-light
+acceptance is 0.190983 and the configured SiPM PDE is 30\%. The fitted yield is held at its mean;
+PE counts are sampled with an exact binomial draw from the combined optical
+acceptance and PDE. PE are placed in the parent electron's arrival bucket;
+in-hole transit delay and electronics noise are outside this readout stage.
+The Xe--He EL fits were measured near 1.2~bar; their use at 15~bar applies
+reduced-field scaling.
+\paragraph{Validation.}
+The ion signal equals the retained input ion count in every event. Saved
+grid indices and time buckets account for each signal; pure-Xe and Xe--He
+readouts share a transverse grid phase per event. The finite diffusion window
+is the source-hit extent plus 3 diffusion widths
+on each side. The fractions outside that window in the two ion streams are
+0.0171\% and 0.0142\%, respectively. The complete event-wise validation results accompany
+the HDF5 run summary.
+\end{document}

@@ -1,0 +1,13 @@
+output = "results/ltspice/pad_sequence_example"
+report = "latex_generated/pad_sequence_example"
+frame_s = 0.04
+averaging_s = 0.005
+prehistory_s = 0.003
+recovery_tail_s = 1.0
+counts = [200, 200, 100, 400, 10, 10, 0, 5000, 200, 0]
+max_steps_s = [0.000005, 0.0000025]
+solver_max_steps_s = [0.0001, 0.00005]
+circuit_results = "results/ltspice/feedback_optimization/length_400um_gate0_rounded.h5"
+circuit_analysis = "results/ltspice/feedback_optimization/analysis.h5"
+circuit_name = "length_400um_gate0_rounded"
+source_decks = "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded"

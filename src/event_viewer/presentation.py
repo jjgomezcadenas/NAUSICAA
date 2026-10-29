@@ -71,7 +71,7 @@ uses its own padded data bounds; the 3D scene maps them to a cube. Coordinates
 and hover bounds remain in mm while the displayed axis scales are independent.
 """
     with h5py.File(path) as f:
-        if text(f.attrs['schema']) != 'nausicaa.event.viewer.v1' or text(f.attrs['status']) != 'complete':
+        if text(f.attrs['schema']) not in ('nausicaa.event.viewer.v1', 'nausicaa.event.viewer.v2') or text(f.attrs['status']) != 'complete':
             raise ValueError('The event snapshot is incomplete or has an unsupported schema')
         transported=bool(f['context/active_transport'][()]) if 'context/active_transport' in f else False
         pads=bool(f['context/active_pads'][()]) if 'context/active_pads' in f else False
