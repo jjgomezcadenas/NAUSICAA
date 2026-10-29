@@ -5,7 +5,7 @@
     "config/discharge_calibration.toml": "e7c697f2d4d2770984ebc00ffe37d906b81916082f4b5a262db0ae91f4dae29b",
     "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir": "9b23882ffaa12fe126ecd92d31ec6231b8677f3078f398efd527f2a6e1c0c350",
     "LTSpice/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
-    "scripts/build_spice_paper.py": "86cbe7a49a67f72c5dc960fdddf761171164cabc0369949e4c73d3f41c861eb1"
+    "scripts/paper/build_spice_paper.py": "b326dd380b8c5de61ffc51b98586224477c3feb69eef20d037f577805e3b74d4"
   },
   "frame_s": 0.02,
   "averaging_s": 0.0003,

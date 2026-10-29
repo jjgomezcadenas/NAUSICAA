@@ -2,7 +2,7 @@
   "source_sha256": {
     "results/ltspice/discharge_calibration/20ms/analysis.h5": "03953354ffadddb8d424e0ea3e6bab83072f35fa3f43ba9e7a871e4c29ee2900",
     "config/discharge_calibration.toml": "e7c697f2d4d2770984ebc00ffe37d906b81916082f4b5a262db0ae91f4dae29b",
-    "scripts/build_spice_paper.py": "86cbe7a49a67f72c5dc960fdddf761171164cabc0369949e4c73d3f41c861eb1"
+    "scripts/paper/build_spice_paper.py": "b326dd380b8c5de61ffc51b98586224477c3feb69eef20d037f577805e3b74d4"
   },
   "macro": "SpiceCorrectionSeconds",
   "tau_s": 2.4541580456882253,

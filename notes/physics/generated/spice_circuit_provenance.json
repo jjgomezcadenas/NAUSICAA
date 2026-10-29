@@ -4,7 +4,7 @@
     "LTSpice/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
     "config/bucket_study.toml": "c4b4594c9cd7543ff9ac18171706922ece956e2581f4e38e57bc05a19ef45a4d",
     "results/ltspice/m3_scan/analysis.h5": "3675039bd4976a51be356c20c15a102cfb99592855f5f91a53df4ee8e8654297",
-    "scripts/build_spice_paper.py": "86cbe7a49a67f72c5dc960fdddf761171164cabc0369949e4c73d3f41c861eb1"
+    "scripts/paper/build_spice_paper.py": "b326dd380b8c5de61ffc51b98586224477c3feb69eef20d037f577805e3b74d4"
   },
   "biases_V": {
     "Vdd": 1.8,
