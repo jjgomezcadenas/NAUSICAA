@@ -143,6 +143,21 @@ saved. The final graph references branch files instead of copying them.
 
 ## Implementation and validation sequence
 
+The first detector pilot is implemented with the five cards under
+`config/specs/`, the terminal form `scripts/production/run_pilot.py`, the
+Julia runner `scripts/production/run_detector_pilot.jl`, and the types and
+sampling functions in `src/event_analysis/production_readout.jl`. The default
+form runs three events from each 1 mm source sample and generates separate
+ion and photon HDF5 histories, a numerical summary, and a run-specific
+`formulas.tex`/PDF. Run it with
+`python3.13 scripts/production/run_pilot.py --defaults`.
+
+The default pilot uses `J = 0.01` at `E/P = 3 kV/cm/bar`. The user supplied
+approximate readings of Oliveira et al., Figure 6: `J ≈ 0.1` at 1.5,
+`J ≈ 0.05` at 2, and `J ≈ 0.01` at 3 kV/cm/bar. Between these anchors,
+the form requires an explicit `J`; it does not interpolate the curve.
+The adopted electron-diffusion coefficients still require validation.
+
 1. Define the TOML contracts, canonical identity calculation, result resolver
    and new HDF5 schemas. Preserve existing PE/readout files for audit.
 2. Implement deterministic shared Fano draws and event placement. Verify that
@@ -164,7 +179,10 @@ saved. The final graph references branch files instead of copying them.
 ## Physical inputs still to settle
 
 Oliveira et al. give J versus E/P for pure Xe in a 10 bar planar EL region.
-The sampling prescription and J(E/P) for Xe--15%He at our 15 bar hole geometry
-need an explicit, sourced model or a recorded approximation before production
-runs. The Fano-compatible integer pair sampler must also be selected and
-validated for low-energy source hits.
+Digitise that curve for the configured field range and record the agreed
+same-curve approximation for Xe--15%He at our 15 bar hole geometry before
+physical production runs.
+The pilot integer sampler uses Bernoulli counts below one expected pair and
+an adjacent-integer/binomial mixture above that. The integer variance floor
+limits the Fano target for some low-energy source hits; quantify its effect
+before using the sampler for physical production results.

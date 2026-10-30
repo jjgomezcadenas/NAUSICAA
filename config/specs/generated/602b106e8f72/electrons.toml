@@ -1,0 +1,25 @@
+bucket_width_us = 2.0
+drift_speed_mm_us = 1.0
+helium_fraction = 0.15
+hole_depth_mm = 5.0
+hole_diameter_mm = 5.0
+hole_pitch_mm = 10.0
+j_status = "oliveira_fig6_user_reading"
+j_variance_ratio = 0.01
+lifetime_ms = 15.0
+pressure_bar = 15.0
+reduced_field_kV_cm_bar = 3.0
+schema = "nausicaa.electron_detector_spec.v1"
+sipm_diameter_mm = 5.0
+
+[pure_xe]
+d_L_mm_sqrtbar_per_sqrtcm = 0.9
+d_T_mm_sqrtbar_per_sqrtcm = 3.5
+yield_gain_photons_per_electron_kV = 137.0
+yield_threshold_kV_cm_bar = 0.73
+
+[xe_he15]
+d_L_mm_sqrtbar_per_sqrtcm = 0.75
+d_T_mm_sqrtbar_per_sqrtcm = 1.6
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.8

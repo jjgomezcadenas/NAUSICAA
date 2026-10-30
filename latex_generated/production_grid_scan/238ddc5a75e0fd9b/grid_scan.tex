@@ -1,0 +1,39 @@
+\documentclass[11pt]{article}
+\usepackage[margin=20mm]{geometry}
+\usepackage{booktabs}
+\begin{document}
+\title{Detector production: 8,000-event ion-grid scan}
+\author{NAUSICAA generated report}
+\date{}\maketitle
+\section*{Configuration}
+Each of the two 1 mm Geant4 samples uses one shared event placement and one Fano-sampled primary-pair realisation. Its ions are collected on three pad grids. The electron branch uses the same realization and is propagated once per sample, producing separate pure-Xe and Xe--15\% He incident-photon histories. The electron settings are identical for all ion-grid choices.
+\begin{center}\begin{tabular}{lr}\toprule Parameter & Value\\\midrule
+TPC length & 150.0 cm\\
+Pair-creation energy $W$ & 21.90 eV\\
+Fano factor $F$ & 0.150\\
+Electron lifetime & 15.0 ms\\
+Electron hole pitch / bucket & 10.0 mm / 2.0 $\mu$s\\
+EL $E/P$ and $J$ & 3.0 kV/cm/bar; 0.010\\
+\bottomrule\end{tabular}\end{center}
+The $J=0.01$ operating-point input is the user's approximate reading of Oliveira et al., Figure 6. The saved histories are ions per pad/time frame and photons incident on each SiPM/time bucket. SiPM PDE and electronics are subsequent stages.
+\section*{Event and charge ledgers}
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+Sample & Events & Pairs/ions & Surviving $e^-$ & Xe photons & Xe--He photons\\\midrule
+bb0nu & 8,000 & 897,306,359 & 856,854,917 & 381,687,642,280 & 375,319,166,815\\
+single electrons & 8,000 & 897,244,198 & 856,968,162 & 381,739,047,046 & 375,368,751,796\\
+\bottomrule\end{tabular}\end{center}
+Every ion-grid file has exactly one collected ion per sampled pair. Each ion-only replay verified every event's pair checksum against the shared realization before collecting charge.
+\section*{Ion-grid outputs}
+\begin{center}\begin{tabular}{llrrrr}\toprule
+Sample & Grid pitch & Frame & Ions & File size & Ion-only time\\\midrule
+bb0nu & 2 mm & 20 ms & 897,306,359 & 138.8 MB & 45.6 s\\
+bb0nu & 3 mm & 30 ms & 897,306,359 & 125.3 MB & joint run\\
+bb0nu & 4 mm & 40 ms & 897,306,359 & 120.4 MB & 42.8 s\\
+single electrons & 2 mm & 20 ms & 897,244,198 & 142.9 MB & 43.5 s\\
+single electrons & 3 mm & 30 ms & 897,244,198 & 127.3 MB & joint run\\
+single electrons & 4 mm & 40 ms & 897,244,198 & 121.7 MB & 40.1 s\\
+\bottomrule\end{tabular}\end{center}
+The 3 mm histories were produced in the joint ion/electron run; their separate ion-only runtime was not measured. The index HDF5 stores full paths and source/configuration identities for every branch.
+\section*{Provenance}
+Run ID: \texttt{238ddc5a75e0fd9b}. Numerical index: \texttt{grid\_scan\_summary\_238ddc5a75e0fd9b.h5}. The index records the SHA-256 digest of the joint-run summary and the resolved realisation, ion and electron TOML cards.
+\end{document}

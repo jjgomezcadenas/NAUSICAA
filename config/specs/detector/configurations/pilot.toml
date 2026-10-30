@@ -1,0 +1,4 @@
+schema = "nausicaa.detector_configuration.v1"
+realisation = "config/specs/realisations/pilot_1mm.toml"
+ions = "config/specs/detector/ions/pitch3mm_bucket30ms.toml"
+electrons = "config/specs/detector/electrons/elcc_pilot.toml"

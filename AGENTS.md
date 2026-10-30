@@ -27,6 +27,11 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   speed). SiPM PDE is TOML-configurable, initially 0.30 (user input).
   These are user design inputs;
   record the adopted gas-dependent EL yield and optical boundary conditions.
+- For EL variance, use the user's approximate readings of Oliveira et al.,
+  Figure 6: J ≈ 0.10 at E/P = 1.5, J ≈ 0.05 at 2.0 and J ≈ 0.01 at 3.0
+  kV/cm/bar. The current operating point is E/P = 3.0 and J = 0.01. Treat
+  these as approximate readings, not a fitted interpolation; require an
+  explicit J for a field between the recorded points.
 - Use SI internally for transport, fields and electronics. Preserve particle-
   physics units in NEXUS event tables and hit DataFrames: positions in mm and
   deposited energy in MeV, with the original Float32 precision. Do not convert
@@ -118,6 +123,9 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
 - Keep scratch files in work/.
 - Cite primary sources in notes/physics/references.bib. Record user-provided
   revisions as design inputs, not as published measurements.
+- Cite physics formulas to primary papers or documented local derivations,
+  and point to our implementation when describing the calculation used.
+  Petit establishes implementation lineage, not physical provenance.
 - When the user says "commit", include the completed work in the current flow.
   Inspect staged, unstaged and untracked files; commit relevant code, tests,
   TOML, TeX, notes, documentation, papers and generated report artifacts.

@@ -24,7 +24,7 @@ MILESTONES = [
     ('Ion production and diffusion · step 2 complete', 'Implemented explicit RNG boundaries, common W-value, per-hit rounding, thermal widths and histogram accounting. Validated statistics, reproducibility and charge counts, with generated figures and a PDF checkpoint.'),
     ('Selection and pad histories · step 3 complete', 'Connected exact ion-threshold reconstruction to single-track selection and the full retained diffusion table to pad histories. Validated grid phase, extended coverage, relative-time axes and exact charge conservation.'),
     ('Ensembles and paired scans · step 4 complete', 'Save exact ensemble numerators, both denominators, aligned histories and provenance in HDF5. Compare numerical and selection settings on paired events. Python generates PNGs, tables and a compiled LaTeX report.'),
-    ('Production review and full samples', 'Review ensemble alignment and the measured histogram sensitivity, select the required pad-response accuracy, then run both full samples and measure runtime/memory.'),
+    ('Detector production pilot · implemented', 'The new shared-pair Fano sampler and branch-specific direct collection save separate ion and incident-photon histories. The terminal form writes five cards; the six-event pilot and generated formula report are complete. The user supplied approximate Oliveira Figure 6 J readings at E/P=1.5, 2 and 3; validate adopted electron-diffusion coefficients before physical full-sample runs.'),
 ]
 
 CONFIG = '''# Proposed event-analysis card; names/schema await interface review.
@@ -78,7 +78,8 @@ The canonical design and decision record are in the
 [HTML documentation](event_analysis_review/index.html). Read Purpose and physics,
 Event flow, Reuse and development, Interface drafts, Configuration and outputs,
 and Validation and roadmap. The Petit source assessment and the full decision
-record remain embedded as appendices.
+record remain embedded as appendices. Production detector interfaces and the
+pilot are in Production detector model.
 
 ## Current status
 
@@ -100,6 +101,16 @@ accepted/processed denominators, HDF5 round trips and twelve paired settings on
 100 validation events. Selection is stable across 100, 200 and 400 histogram
 bins; pad histories retain measurable resolution sensitivity. Review the working
 alignment and required pad-response accuracy before the full-sample run.
+
+Detector production pilot: an event-level Fano pair draw is shared by ion and
+both electron-gas branches. Direct grid sampling saves sparse ion-pad and
+incident-photon SiPM histories. Five resolved TOML cards, HDF5 identities and
+ledgers, a terminal parameter form, and a generated LaTeX/PDF report are in
+place. The first pilot processes three events from each 1 mm source sample.
+The default uses J=0.01 at E/P=3 kV/cm/bar, an approximate user reading of
+Oliveira et al., Figure 6; intermediate fields require an explicit J. Validation of the
+electron-diffusion coefficients and quantification of the low-count integer
+variance floor are required before physical full-sample production.
 
 Interactive viewer: the user has approved the two-tab MC energy / MC tracks
 scope, Petit defaults, repository layout and explicit Apply controls. Viewer

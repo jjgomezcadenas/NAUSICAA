@@ -51,7 +51,8 @@ end
 """
     sigma_t_ion_mm(T_K::Float32, L_cm::Float32, E_V_cm::Float32)::Float32
 
-Petit's thermal positive-ion width: sqrt(2(kB/e) T L/E) × 10, in mm, with
+Thermal positive-ion width from ITACA Revisited, Eq. (2.1)
+(arXiv:2604.02443): sqrt(2(kB/e) T L/E) × 10, in mm, with
 kB/e = 8.6173f-5 V/K as in the source. Inputs are temperature in K, common event
 drift distance in cm and field magnitude in V/cm. The factor 10 converts cm
 to mm. The model assumes a uniform field and thermal, singly charged ions.
@@ -59,8 +60,8 @@ The baseline uses this same width longitudinally and transversely.
 
 Require finite positive T and E and nonnegative L. Zero L gives zero width.
 Return Float32, preserving inputs; nonfinite results raise ArgumentError.
-Source: Petit src/itaca_functions.jl:sigma_t_ion_mm. Detector SI fields are
-converted explicitly by the caller: E_V_cm = E_V_m / 100.
+Detector SI fields are converted explicitly by the caller:
+E_V_cm = E_V_m / 100.
 
 # Example
 ```julia

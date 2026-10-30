@@ -1,0 +1,50 @@
+\documentclass[11pt]{article}
+\usepackage[margin=20mm]{geometry}
+\usepackage{amsmath,booktabs,longtable}
+\begin{document}
+\title{Detector production pilot: formulas and results}
+\author{NAUSICAA generated report}
+\date{}
+\maketitle
+\noindent This calculation uses the recorded parameter cards. The approximate $J$ values at $E/P=1.5, 2, 3$ are user readings of Oliveira et al., Figure 6; the form requires an explicit $J$ at intermediate fields.
+\section*{Resolved inputs}
+\begin{tabular}{ll}\toprule Parameter & Value\\\midrule
+TPC length & 150.0 cm\\
+Pressure & 15.0 bar\\
+Ion drift field & 200.0 V/cm\\
+Ion pitch, frame & 3.0 mm, 30.0 ms\\
+Electron hole pitch, bucket & 10.0 mm, 2.0 $\mu$s\\
+Electron lifetime & 15.0 ms\\
+EL $E/P$ & 3.00 kV/cm/bar\\
+Pair-creation energy $W$, Fano factor $F$ & 21.90 eV, 0.150\\
+EL variance ratio $J$ & 0.010\\
+$J$ source & oliveira\_fig6\_user\_reading\\
+\bottomrule\end{tabular}
+\section*{Calculations and assumptions}
+\begin{align*}
+\mu_i &= 10^6 E_i/W, &\operatorname{Var}(N_i)&\simeq F\mu_i,\\
+L_e &= L_{\max}-L_i, & L_i&\sim U(L_{\min},L_{\max}),\\
+\sigma_{i,T}=\sigma_{i,L}&=10\sqrt{2(k_B/e)TL_i/E_d}\ {\rm mm},\\
+\sigma_{e,T/L}&=d_{T/L}\sqrt{L_e/P}, &p_{\rm survive}&=e^{-L_e/(v_e\tau_e)},\\
+Y_g&=a_g\max(E/P-x_{0,g},0)Ph, &\operatorname{Var}(N_{\rm EL}|n_e)&=n_e JY_g,\\
+A&=(h+r-\sqrt{h^2+r^2})/(2h), &N_{\rm incident}|N_{\rm EL}&\sim\mathrm{Binomial}(N_{\rm EL},A).
+\end{align*}
+At each source hit, one integer pair draw creates both initial carrier populations. The minimum integer variance limits the Fano target at low occupancy. Electron attachment is sampled once per pair realisation and shared by the two gas alternatives. Diffused carriers enter physical grid cells directly; there is no diffusion-window charge loss. VUV photons touching a hole wall are absorbed; a circular SiPM covers its exit.
+\par\medskip
+\begin{tabular}{lrr}\toprule Derived quantity & Pure Xe & Xe--15\% He\\\midrule
+Max transverse electron $\sigma$ (mm) & 11.068 & 5.060\\
+Max longitudinal electron $\sigma$ (mm) & 2.846 & 2.372\\
+Mean EL yield (photons/electron) & 2,332.4 & 2,293.5\\
+\bottomrule\end{tabular}
+\par Ion width at maximum drift: 1.947 mm. Ion frame: 3.0 mm. Electron bucket: 2.0 mm. Minimum electron survival: 0.9048. Direct optical acceptance: 0.19098. Gate/anode potentials relative to cathode: 30.0 / 52.5 kV.
+\section*{Saved event totals and validation}
+\begin{center}\small\begin{tabular}{lrrrrrr}\toprule Sample & Events & Pairs & Ions & Surviving $e^-$ & Xe photons & Xe--He photons\\\midrule
+bb0nu & 8,000 & 897,306,359 & 897,306,359 & 856,854,917 & 381,687,642,280 & 375,319,166,815\\
+single\_electrons & 8,000 & 897,244,198 & 897,244,198 & 856,968,162 & 381,739,047,046 & 375,368,751,796\\
+\bottomrule\end{tabular}\end{center}
+\par The ion ledger is exact for both samples: ions in pad/time cells equal initial pairs. For each gas, incident photons do not exceed emitted photons. The three branch files store matching per-event pair checksums.
+\section*{Provenance and scope}
+Run ID: \texttt{238ddc5a75e0fd9b}. Code SHA-256 prefix: \texttt{803fbbe616ed98ec}. The complete digest is in the HDF5 summary.
+Peak process RSS: 1069.2 MB. Source hit tables are the 1 mm Geant4 samples.
+Ion thermal diffusion follows ITACA Revisited, Eq. (2.1) (arXiv:2604.02443). The pure-Xe transverse coefficient is its Table 1 input; other diffusion coefficients are recorded model inputs. EL yield coefficients follow Fernandes et al., JHEP 04 (2020) 034, Table 1. The definition of $J$ follows Oliveira et al., JINST 6 (2011) P05007, Eq. (4.6); the recorded field-point values are approximate user readings of its Figure 6.
+\end{document}

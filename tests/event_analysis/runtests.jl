@@ -33,6 +33,8 @@ suite = @testset "Event analysis through step $STEP" begin
     include("test_mc_selection.jl")
     include("test_pixel_charge.jl")
     include("test_diffusion_cache.jl")
+    include("test_production_readout.jl")
+    include("test_production_specs.jl")
 end
 
 function counts(testset)

@@ -1,0 +1,6 @@
+bucket_width_ms = 20.0
+drift_field_V_cm = 200.0
+drift_speed_m_s = 0.1
+pad_pitch_mm = 2.0
+schema = "nausicaa.ion_detector_spec.v1"
+temperature_K = 293.15

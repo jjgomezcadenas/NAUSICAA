@@ -1,0 +1,6 @@
+schema = "nausicaa.detector_run.v1"
+detector_configuration = "config/specs/detector/configurations/pilot.toml"
+results_dir = "results/simulations/production_pilot"
+report_dir = "latex_generated/production_pilot"
+pilot_only = true
+selected_samples = ["bb0nu", "single_electrons"]

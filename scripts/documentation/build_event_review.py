@@ -20,6 +20,7 @@ import subprocess
 
 from docs.event_analysis_review.content.petit_review_content import assessment_pages
 from docs.event_analysis_review.content.event_design_content import design_pages, roadmap_markdown
+from docs.event_analysis_review.content.production_model_content import production_page
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'docs/event_analysis_review/index.html'
@@ -92,13 +93,14 @@ def build():
         page['title'] = title
     appendices[-1]['summary'] = 'Approved adaptation decisions and the validation proposal, with source context.'
     appendices[-1]['status'] = 'Decision record · analysis steps 1–4 implemented'
-    pages = design_pages(ROOT, section, table, code) + appendices
+    pages = design_pages(ROOT, section, table, code) + [production_page(section, table, code)] + appendices
     license_text = sources.read('LICENSE')
     provenance = sources.provenance()
     provenance += '<details><summary>Petit source licence · MIT</summary>' + code(license_text) + '</details>'
     local_files = ['config/event_analysis.toml', 'config/detector.toml', 'config/ion_tracks.toml', 'Project.toml',
                    'src/event_analysis/types.jl', 'src/event_analysis/coordinates.jl',
                    'src/ion_signal/event_io.jl', 'docs/event_analysis_review/content/event_design_content.py',
+                   'docs/event_analysis_review/content/production_model_content.py',
                    'docs/event_analysis_review/content/petit_review_content.py', 'scripts/documentation/build_event_review.py',
                    'docs/event_analysis_review/content/event_viewer_content.py', 'config/event_viewer.toml',
                    'docs/event_analysis_review/template.html']

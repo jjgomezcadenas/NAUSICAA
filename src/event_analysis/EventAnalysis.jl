@@ -24,6 +24,11 @@ export CoordinateFrame, source_frame, vertex_frame, EventInfo, EventHits, center
        el_photon_yield, axial_light_acceptance, sample_detected_pe,
        collect_grid_history, detect_pe_history, diffuse_to_grid,
        diffused_carrier_reference
+export EventPlacement, GridSpec, SparseCells, IonPadHistory, PhotonSiPMHistory,
+       sample_integer_moments, sample_fano_pairs, sample_attached_electrons,
+       sample_el_photons, sample_incident_photons, collect_ion_pad_history,
+       collect_photon_sipm_history, write_ion_history, read_ion_history,
+       write_photon_history, read_photon_history
 
 include("types.jl")
 include("coordinates.jl")
@@ -40,6 +45,7 @@ include("diffusion.jl")
 include("collection.jl")
 include("pixel_charge.jl")
 include("grid_readout.jl")
+include("production_readout.jl")
 include("ensemble.jl")
 include("display.jl")
 include("mc_inspection.jl")

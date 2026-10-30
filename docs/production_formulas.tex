@@ -1,0 +1,190 @@
+\documentclass[11pt]{article}
+\usepackage[margin=22mm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,hyperref,pgfmath}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+\title{Detector-production formulas and default operating point}
+\author{NAUSICAA design note}
+\date{30 October 2026}
+
+% The displayed default evaluations are calculated from these inputs at build time.
+\newcommand{\TPCcm}{150}
+\newcommand{\PressureBar}{15}
+\newcommand{\TemperatureK}{293.15}
+\newcommand{\DriftFieldVcm}{200}
+\newcommand{\IonSpeedMps}{0.1}
+\newcommand{\ElectronSpeedMMus}{1}
+\newcommand{\LifetimeMS}{15}
+\newcommand{\ELReducedField}{3}
+\newcommand{\ELDepthCM}{0.5}
+\newcommand{\HoleRadiusMM}{2.5}
+\newcommand{\HoleDepthMM}{5}
+\newcommand{\IonFrameMS}{30}
+\newcommand{\ElectronFrameUS}{2}
+\pgfmathsetmacro{\electronMaxDriftMS}{10*\TPCcm/(1000*\ElectronSpeedMMus)}
+\pgfmathsetmacro{\ionMaxDriftS}{10*\TPCcm/(1000*\IonSpeedMps)}
+\pgfmathsetmacro{\minimumSurvival}{exp(-\electronMaxDriftMS/\LifetimeMS)}
+\pgfmathsetmacro{\attenuationLengthM}{\ElectronSpeedMMus*\LifetimeMS}
+% Reorder k_B/e to retain precision in PGF's fixed-point evaluator.
+\pgfmathsetmacro{\ionSigmaMaxMM}{10*sqrt(2*(0.086173*\TemperatureK/1000)*(\TPCcm/\DriftFieldVcm))}
+\pgfmathsetmacro{\xeSigmaTMaxMM}{3.5*sqrt(\TPCcm/\PressureBar)}
+\pgfmathsetmacro{\xeSigmaLMaxMM}{0.9*sqrt(\TPCcm/\PressureBar)}
+\pgfmathsetmacro{\heSigmaTMaxMM}{1.6*sqrt(\TPCcm/\PressureBar)}
+\pgfmathsetmacro{\heSigmaLMaxMM}{0.75*sqrt(\TPCcm/\PressureBar)}
+\pgfmathsetmacro{\yieldXe}{137*(\ELReducedField-0.73)*\PressureBar*\ELDepthCM}
+\pgfmathsetmacro{\yieldHe}{139*(\ELReducedField-0.80)*\PressureBar*\ELDepthCM}
+\pgfmathsetmacro{\acceptance}{(\HoleDepthMM+\HoleRadiusMM-sqrt(\HoleDepthMM^2+\HoleRadiusMM^2))/(2*\HoleDepthMM)}
+\pgfmathsetmacro{\incidentXe}{\yieldXe*\acceptance}
+\pgfmathsetmacro{\incidentHe}{\yieldHe*\acceptance}
+\pgfmathsetmacro{\gateKV}{\DriftFieldVcm/1000*\TPCcm}
+\pgfmathsetmacro{\anodeKV}{\gateKV+\ELReducedField*\PressureBar*\ELDepthCM}
+\pgfmathsetmacro{\ionBinMM}{1000*\IonSpeedMps*\IonFrameMS/1000}
+\pgfmathsetmacro{\electronBinMM}{\ElectronSpeedMMus*\ElectronFrameUS}
+
+\begin{document}
+\maketitle
+\noindent This note defines the fields proposed for the detector-production
+interface. Defaults are design inputs for the 1~mm Geant4 hit samples. The
+producer records the selected values, source hash, seeds and code identity in
+its HDF5 outputs. Pure Xe and Xe--15\% He are separate electron-gas outputs
+of the same initial ionisation realisation.
+
+\section{Initial pairs and event location}
+For source hit $i$, with deposited energy $E_i$ in MeV and common pair-creation
+energy $W=21.9$~eV, the expected number of electron--ion pairs is
+\begin{equation}
+  \mu_i=\frac{10^6 E_i}{W}.
+\end{equation}
+The Fano target is $\mathrm{Var}(N_i)\simeq F\mu_i$ with $F=0.15$ for the
+integer pair-count model at sufficiently large $\mu_i$ \cite{Oliveira:2011xk}.
+For $0\leq\mu_i<1$, use $N_i\sim\mathrm{Bernoulli}(\mu_i)$, which preserves
+$\mathbb{E}[N_i]=\mu_i$ and has variance $\mu_i(1-\mu_i)$. One draw sets both
+the initial positive-ion and electron counts for that hit. The exact integer
+Fano sampler at $\mu_i\geq1$ is to be specified and validated in the pilot.
+
+Sample the ion drift length $L_i\sim U(0,L_{\max})$ and set the electron
+length $L_e=L_{\max}-L_i$, with $L_{\max}=\TPCcm$~cm by default. The source
+hit coordinates stay in mm; no individual carrier positions are saved.
+
+\section{Ion transport and pad frames}
+The thermal width for singly charged Xe$_2^+$ is ITACA Revisited,
+eq.~(2.1) \cite{itaca2026}:
+\begin{equation}
+ \sigma_{i,T}=\sigma_{i,L}=
+ 10\sqrt{2\frac{k_B}{e}\frac{T L_i}{E_d}}\ \mathrm{mm},
+ \qquad \frac{k_B}{e}=8.6173\times10^{-5}\ \mathrm{V/K},
+\end{equation}
+where $T$ is in kelvin, $L_i$ in cm and the drift field $E_d$ in V/cm.
+The implemented calculation is
+\texttt{src/event\_analysis/production.jl:sigma\_t\_ion\_mm}; the same
+thermal width is used longitudinally in the current model.
+At $T=\TemperatureK$~K, $E_d=\DriftFieldVcm$~V/cm and
+$L_i=\TPCcm$~cm, $\sigma_i=\pgfmathprintnumber[fixed,precision=3]{\ionSigmaMaxMM}$~mm.
+
+The ion drift speed is $v_i=\IonSpeedMps$~m/s. A
+$\Delta t_i=\IonFrameMS$~ms frame corresponds to
+$v_i\Delta t_i=\pgfmathprintnumber[fixed,precision=1]{\ionBinMM}$~mm;
+maximum drift time is
+$\pgfmathprintnumber[fixed,precision=1]{\ionMaxDriftS}$~s. The transverse
+pad pitch is an independent default of 3~mm. A uniform event-level grid
+phase in $[0,p)$ is sampled independently in $x$ and $y$.
+
+\section{Electron drift and survival}
+The electron-width model implemented in
+\texttt{config/electron\_transport.toml} is
+\begin{equation}
+ \sigma_T=d_T\sqrt{\frac{L_e}{P}},\qquad
+ \sigma_L=d_L\sqrt{\frac{L_e}{P}},
+\end{equation}
+with $L_e$ in cm, $P$ in bar, widths in mm, and coefficient units
+mm$\sqrt{\mathrm{bar}/\mathrm{cm}}$. The gas-model inputs and widths at the
+maximum drift, $L_e=\TPCcm$~cm and $P=\PressureBar$~bar, are:
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Gas & $d_T$ & $d_L$ & $\sigma_T$ (mm) & $\sigma_L$ (mm)\\
+\midrule
+Pure Xe & 3.5 & 0.9 & \pgfmathprintnumber[fixed,precision=3]{\xeSigmaTMaxMM} & \pgfmathprintnumber[fixed,precision=3]{\xeSigmaLMaxMM}\\
+Xe--15\% He & 1.6 & 0.75 & \pgfmathprintnumber[fixed,precision=3]{\heSigmaTMaxMM} & \pgfmathprintnumber[fixed,precision=3]{\heSigmaLMaxMM}\\
+\bottomrule
+\end{tabular}
+\end{center}
+ITACA Revisited table~1 \cite{itaca2026} gives the pure-Xe transverse
+coefficient $d_T=3.5$ in these units. The remaining coefficients in this
+table are adopted inputs from \texttt{config/electron\_transport.toml};
+their numerical provenance requires a separate validation against electron
+transport measurements or calculations at the chosen field and gas mixture.
+The 15\% He mixture identity is the adopted design input. At
+$v_e=\ElectronSpeedMMus$~mm/$\mu$s the
+maximum drift time is
+$\pgfmathprintnumber[fixed,precision=3]{\electronMaxDriftMS}$~ms.
+The electron lifetime $\tau_e=\LifetimeMS$~ms gives independent survival
+probability $p_e=\exp[-t_e/\tau_e]$. Its equivalent attenuation length is
+$v_e\tau_e=\pgfmathprintnumber[fixed,precision=1]{\attenuationLengthM}$~m.
+The \emph{minimum} survival, at maximum drift, is
+$\pgfmathprintnumber[fixed,precision=4]{\minimumSurvival}$.
+Electron attachment changes only the electron branch. A
+$\Delta t_e=\ElectronFrameUS~\mu$s bucket corresponds to
+$\pgfmathprintnumber[fixed,precision=1]{\electronBinMM}$~mm.
+
+\section{EL light, fluctuations and optical collection}
+For a hole depth $h$ in cm, the gas-specific fitted mean EL yield is
+\begin{equation}
+ Y_g=a_g\max(E/P-x_{0,g},0)\,P h
+ \quad\text{photons per entering electron},
+\end{equation}
+with $E/P$ in kV/cm/bar and $a_g$ in photons/electron/kV
+\cite[table~1]{NEXT:2019oxh}. The pure-Xe parameters are $(a,x_0)=(137,0.73)$;
+the Xe--15\% He parameters are $(139,0.80)$. At
+$E/P=\ELReducedField$, $P=\PressureBar$~bar and $h=\ELDepthCM$~cm,
+$Y_{\rm Xe}=\pgfmathprintnumber[fixed,precision=1]{\yieldXe}$ and
+$Y_{\rm XeHe}=\pgfmathprintnumber[fixed,precision=1]{\yieldHe}$ photons/electron.
+
+The EL fluctuation parameter is
+$J(E/P)=\mathrm{Var}(N_{\rm EL}\mid1\ e^-)/Y_g$ as defined by Oliveira
+et al.\ \cite[eq.\ (4.6)]{Oliveira:2011xk}. The design uses the same $J(E/P)$ curve for
+both gas models as an adopted approximation. The user supplied the following
+approximate readings of the pure-Xe curve in Figure~6 of that paper:
+\begin{center}
+\begin{tabular}{cc}\toprule
+$E/P$ (kV/cm/bar) & $J$\\\midrule
+1.5 & 0.10\\
+2.0 & 0.05\\
+3.0 & 0.01\\
+\bottomrule\end{tabular}
+\end{center}
+The default operating point uses $J=0.01$. At fields between these three
+anchors, the production form requires an explicit $J$ value; it does not
+interpolate or extrapolate the plotted curve.
+
+For isotropic VUV emission uniformly along the axis of a cylindrical hole,
+absorbing walls and a SiPM covering its exit, the direct geometric acceptance
+is
+\begin{equation}
+ A(r,h)=\frac{h+r-\sqrt{h^2+r^2}}{2h}.
+\end{equation}
+For radius $r=\HoleRadiusMM$~mm and depth $h=\HoleDepthMM$~mm,
+$A=\pgfmathprintnumber[fixed,precision=6]{\acceptance}$. Conditional on
+emitted photons, the incident count is binomial with success probability $A$.
+The corresponding mean incident photons per entering electron are
+\pgfmathprintnumber[fixed,precision=1]{\incidentXe} (pure Xe) and
+\pgfmathprintnumber[fixed,precision=1]{\incidentHe} (Xe--He). SiPM PDE is
+applied in the subsequent response stage.
+
+\section{Electrode potentials and grid assignment}
+Choose the cathode as the zero of potential. For drift field $E_d$ and TPC
+length $L_{\max}$,
+\begin{equation}
+ V_{\rm gate}=E_dL_{\max},\qquad
+ V_{\rm anode}=V_{\rm gate}+10^3(E/P)P h.
+\end{equation}
+The defaults give $V_{\rm gate}=\pgfmathprintnumber[fixed,precision=1]{\gateKV}$~kV
+and $V_{\rm anode}=\pgfmathprintnumber[fixed,precision=1]{\anodeKV}$~kV.
+The electron-hole pitch is 10~mm and the hole diameter and depth are 5~mm.
+The source-energy-weighted transverse centre and minimum source $z$ define
+the ion-grid reference. For either transverse grid, one event-level phase is
+uniform over a pitch; the physical cell index is obtained by the floor of
+the position relative to that reference and phase, divided by the pitch.
+
+\bibliographystyle{unsrt}
+\bibliography{../notes/physics/references}
+\end{document}

@@ -1,0 +1,4 @@
+electrons = "config/specs/generated/9d5f403be80c/electrons.toml"
+ions = "config/specs/generated/9d5f403be80c/ions.toml"
+realisation = "config/specs/generated/9d5f403be80c/realisation.toml"
+schema = "nausicaa.detector_configuration.v1"

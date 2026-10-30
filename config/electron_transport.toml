@@ -36,9 +36,10 @@ threshold_kV_cm_bar = 0.73
 gain_photons_per_electron_kV = 139.0
 threshold_kV_cm_bar = 0.80
 
-# Petit convention: sigma_mm = d_mm_sqrtbar_per_sqrtcm * sqrt(L_cm / P_bar).
-# Coefficients are the existing Petit prescriptions; the user identifies
-# the Xe-He case with 15% He. Operating-pressure coefficients are derived.
+# Implemented model: sigma_mm = d_mm_sqrtbar_per_sqrtcm * sqrt(L_cm / P_bar).
+# ITACA Revisited, table 1 (arXiv:2604.02443), gives pure-Xe d_T = 3.5.
+# The other coefficients are adopted model inputs pending validation against
+# electron-transport measurements or calculations at this field and mixture.
 [diffusion.pure_xe]
 d_T_mm_sqrtbar_per_sqrtcm = 3.5
 d_L_mm_sqrtbar_per_sqrtcm = 0.9

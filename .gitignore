@@ -36,6 +36,7 @@ results/ltspice/noise_audit/decks/*.log
 results/ltspice/noise_audit/decks/*.db
 
 # Large local datasets and simulation outputs; regenerate from tracked scripts.
+/results/simulations/
 /results/diffused_tracks/bb0nu_5d8a633757fb06b5.h5
 /results/diffused_tracks/electrons_e617229529b63a69.h5
 /results/event_analysis/step3_validation.h5

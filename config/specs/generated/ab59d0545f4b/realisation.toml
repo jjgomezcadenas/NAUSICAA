@@ -1,0 +1,11 @@
+chamber_length_cm = 150.0
+fano_factor = 0.15
+max_events_per_sample = 100
+min_ion_drift_cm = 10.0
+schema = "nausicaa.realisation_spec.v1"
+seed = 2026
+w_eV = 21.9
+
+[samples]
+bb0nu = "events/0nubb_hitdf.h5"
+single_electrons = "events/electron_0nubb_energy_hitdf.h5"
