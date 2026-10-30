@@ -51,6 +51,7 @@ results/ltspice/noise_audit/decks/*.db
 /results/grid_readout_direct_8000/electrons_ion.h5
 /results/grid_readout_direct_8000/electrons_pure_xe.h5
 /results/grid_readout_direct_8000/electrons_xe_he.h5
+/results/grid_readout_direct_3mm_8000/
 /results/ltspice/m3_scan/decks/scale_8_gate_0.5265441373_injection_precise_N0_r1.raw
 /results/ltspice/pad_history_readout/p2_bb0nu.h5
 /results/ltspice/pad_history_readout/p2_electrons.h5

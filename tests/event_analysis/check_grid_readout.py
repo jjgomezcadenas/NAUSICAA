@@ -16,6 +16,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", type=Path)
     parser.add_argument("--events", type=int, required=True)
+    parser.add_argument("--ion-pitch-mm", type=float, default=2.0)
+    parser.add_argument("--ion-bucket-ms", type=float, default=20.0)
     args = parser.parse_args()
     for sample in ("bb0nu", "electrons"):
         paths = [args.directory / f"{sample}_{carrier}.h5"
@@ -28,6 +30,8 @@ def main():
                 assert file["metadata/event_count"][()] == args.events
                 assert len(file["events"]) == args.events
                 assert text(file["metadata/signal_unit"][()]) == ("ions" if carrier == "ion" else "pe")
+                expected_pitch = args.ion_pitch_mm if carrier == "ion" else 10.0
+                assert abs(float(file["metadata/pitch_mm"][()]) - expected_pitch) < 0.003
             total_electrons = [0, 0]
             total_pe = [0, 0]
             for event in range(args.events):
@@ -51,8 +55,12 @@ def main():
                     edges = group["time_edges_ms" if index == 0 else "time_edges_us"][()]
                     assert len(edges) == len(group["z_edges_mm"])
                     assert np.all(np.diff(edges) > 0)
-                    width = 20 if index == 0 else 2
+                    width = args.ion_bucket_ms if index == 0 else 2.0
                     assert abs(float(np.median(np.diff(edges))) - width) < 0.003
+                    pitch = args.ion_pitch_mm if index == 0 else 10.0
+                    for axis in "xy":
+                        position_edges = group[f"{axis}_edges_mm"][()]
+                        assert abs(float(np.median(np.diff(position_edges))) - pitch) < 0.003
                     if index == 0:
                         assert group["total_signal"][()] == group["input_carriers"][()]
                     else:

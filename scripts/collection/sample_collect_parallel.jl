@@ -9,7 +9,8 @@ const STREAMS=[(sample,carrier) for sample in ("bb0nu","electrons")
 """Parse event count, worker count and versioned output directory."""
 function options(args)
     values=Dict("--events"=>"100","--workers"=>"6",
-                "--output"=>"results/grid_readout_direct_8000")
+                "--output"=>"results/grid_readout_direct_8000",
+                "--ion-card"=>"config/pixel_charge_1mm.toml")
     length(args)%2==0 || error("Options require values")
     for i in 1:2:length(args)
         haskey(values,args[i]) || error("Unknown option: $(args[i])")
@@ -18,14 +19,15 @@ function options(args)
     events=parse(Int,values["--events"]);workers=parse(Int,values["--workers"])
     events>0 || error("--events must be positive")
     1<=workers<=6 || error("--workers must be in 1:6")
-    return (;events,workers,output=abspath(joinpath(ROOT,values["--output"])))
+    return (;events,workers,output=abspath(joinpath(ROOT,values["--output"])),
+            ion_card=realpath(joinpath(ROOT,values["--ion-card"])))
 end
 
 """Run one worker with a private HDF5 file and captured timing/peak RSS."""
-function run_stream(sample,carrier,events,output)
+function run_stream(sample,carrier,events,output,ion_card)
     target=joinpath(output,"$(sample)_$(carrier).h5")
     log=joinpath(output,"$(sample)_$(carrier).log")
-    cmd=addenv(`$(Base.julia_cmd()) --startup-file=no --project=$ROOT $WORKER $sample $carrier $events $target`,
+    cmd=addenv(`$(Base.julia_cmd()) --startup-file=no --project=$ROOT $WORKER $sample $carrier $events $target --ion-card $ion_card`,
                "JULIA_NUM_THREADS"=>"1")
     println("Starting $sample/$carrier");flush(stdout)
     started=time_ns()
@@ -46,14 +48,14 @@ The workers independently replay event placement, Gaussian diffusion and
 physical grid assignment. Their outputs contain ion or PE pad/time histories,
 with no per-carrier coordinate cache or intermediate display histogram.
 """
-function sample_collect_parallel(events::Int,workers::Int,output::String)
+function sample_collect_parallel(events::Int,workers::Int,output::String,ion_card::String)
     mkpath(output)
     started=time_ns()
     channel=Channel{NamedTuple}(6)
     @sync for worker in 1:workers
         @async for index in worker:workers:6
             sample,carrier=STREAMS[index]
-            put!(channel,run_stream(sample,carrier,events,output))
+            put!(channel,run_stream(sample,carrier,events,output,ion_card))
         end
     end
     rows=[take!(channel) for _ in 1:6]
@@ -64,6 +66,7 @@ function sample_collect_parallel(events::Int,workers::Int,output::String)
         attributes(file)["schema"]="nausicaa.direct_grid_readout_summary.v2"
         file["events_per_stream"]=Int64(events)
         file["workers"]=Int64(workers)
+        file["ion_card_path"]=ion_card
         file["wall_seconds"]=wall
         file["sample"]=[r.sample for r in rows]
         file["carrier"]=[r.carrier for r in rows]
@@ -80,5 +83,5 @@ end
 
 if abspath(PROGRAM_FILE)==@__FILE__
     cfg=options(ARGS)
-    sample_collect_parallel(cfg.events,cfg.workers,cfg.output)
+    sample_collect_parallel(cfg.events,cfg.workers,cfg.output,cfg.ion_card)
 end

@@ -177,7 +177,7 @@ plus out-of-range counts in every cloud.
 
 `scripts/collection/sample_collect_parallel.jl` runs six independent Julia workers.
 For each source hit, the worker samples its positive-ion or electron Gaussian
-positions and increments the containing pad/EL hole and 2 mm longitudinal
+positions and increments the containing pad/EL hole and configured longitudinal
 bucket immediately. A sparse signed-index map extends the saved axes around
 every retained sample. Individual carrier coordinates and diffusion display
 histograms are not saved. The previous binned clouds and two-stage readouts
@@ -212,6 +212,24 @@ lengths, signal count, XY/X–time/Y–time heatmaps and a rotatable 3D view.
 Navigation uses one-based positions in the file: 100 selects the hundredth
 event, stored under `events/99`. Previous/next buttons and arrow keys step
 through the selected sample. The URL retains the sample, gas and position.
+
+### Direct 3 mm ion pad case (2026-10-30)
+
+`make grid-readout-3mm` uses `config/pixel_charge_1mm_3mm.toml` for a
+3 mm ion pad pitch and 3 mm longitudinal buckets, corresponding to 30 ms at
+the configured ion drift speed. The electron EL grid retains its 10 mm pitch
+and 2 microsecond buckets. The six-stream output and numerical summary are in
+`results/grid_readout_direct_3mm_8000/`; the self-contained report is
+`latex_generated/grid_readout_direct_3mm/grid_readout.pdf`.
+`make present-grid-readout-3mm` regenerates presentation from the saved HDF5.
+
+The full run processed 8,000 events per sample with the same placement and
+diffusion seeds as the 2 mm case. The event-wise carrier ledgers and total
+signals agree across configurations. The ion pad/frame occupancy changes with
+the coarser pitch and time bucket; the electron PE histories retain their
+original grid settings. The paired six-stream study uses the source-hit
+reference saved in each event. The earlier ion-only pixel-charge study
+uses its recorded retained-carrier reference convention.
 
 The earlier ion-only pixel-charge workflow also has a direct sampler in
 `scripts/collection/run_pixel_charge_direct.jl`. It replays each event's Gaussian draws

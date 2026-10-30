@@ -35,7 +35,8 @@ function readout_settings(carrier::String,ion_card,detector,electron_card)
     ion=carrier=="ion"
     pressure=Float32(electron_card["gas"]["pressure_bar"])
     w=Float32(ion_card["transport"]["ionisation_energy_eV"])
-    pitch=ion ? Float32(detector["geometry"]["pitch_m"]*1000) :
+    pitch=ion ? Float32(get(ion_card["pads"],"pitch_mm",
+                             detector["geometry"]["pitch_m"]*1000)) :
                 Float32(electron_card["elcc"]["pitch_mm"])
     bucket=ion ? Float32(ion_card["pads"]["z_bin_width_mm"]) :
                  Float32(electron_card["readout"]["bucket_width_mm"])
@@ -110,11 +111,12 @@ history with complete axes, exact accounting, saved cards, seeds and source
 hash. The file is moved into place only after a completion marker is written.
 """
 function sample_collect_stream(sample::String,carrier::String,limit::Int,
-                               output::String;event_id::Union{Nothing,Int64}=nothing)
+                               output::String;event_id::Union{Nothing,Int64}=nothing,
+                               ion_card_path::String=joinpath(ROOT,"config/pixel_charge_1mm.toml"))
     sample in ("bb0nu","electrons") || error("Unknown sample")
     carrier in ("ion","pure_xe","xe_he") || error("Unknown carrier")
     limit>0 || error("Event limit must be positive")
-    ion_card_path=joinpath(ROOT,"config/pixel_charge_1mm.toml")
+    ion_card_path=realpath(ion_card_path)
     detector_path=joinpath(ROOT,"config/detector.toml")
     electron_card_path=joinpath(ROOT,"config/electron_transport.toml")
     ion_card=TOML.parsefile(ion_card_path)
@@ -142,6 +144,7 @@ function sample_collect_stream(sample::String,carrier::String,limit::Int,
             target["metadata/source_path"]=source
             target["metadata/source_sha256"]=open(io->bytes2hex(sha256(io)),source)
             target["metadata/ion_card_toml"]=read(ion_card_path,String)
+            target["metadata/ion_card_path"]=ion_card_path
             target["metadata/electron_card_toml"]=read(electron_card_path,String)
             target["metadata/detector_card_toml"]=read(detector_path,String)
             target["metadata/pitch_mm"]=settings.pitch
@@ -210,7 +213,20 @@ function sample_collect_stream(sample::String,carrier::String,limit::Int,
 end
 
 if abspath(PROGRAM_FILE)==@__FILE__
-    length(ARGS) in (4,5) || error("Expected SAMPLE CARRIER LIMIT OUTPUT [EVENT_ID]")
+    length(ARGS)>=4 || error("Expected SAMPLE CARRIER LIMIT OUTPUT [--event-id ID] [--ion-card CARD]")
+    options=Dict("--event-id"=>nothing,"--ion-card"=>joinpath(ROOT,"config/pixel_charge_1mm.toml"))
+    extra=ARGS[5:end]
+    if length(extra)==1 && !startswith(extra[1],"--")
+        options["--event-id"]=extra[1]
+    else
+        iseven(length(extra)) || error("Options require values")
+        for i in 1:2:length(extra)
+            haskey(options,extra[i]) || error("Unknown option: $(extra[i])")
+            options[extra[i]]=extra[i+1]
+        end
+    end
     sample_collect_stream(ARGS[1],ARGS[2],parse(Int,ARGS[3]),abspath(ARGS[4]);
-                          event_id=length(ARGS)==5 ? parse(Int64,ARGS[5]) : nothing)
+                          event_id=options["--event-id"]===nothing ? nothing :
+                                   parse(Int64,options["--event-id"]),
+                          ion_card_path=options["--ion-card"])
 end

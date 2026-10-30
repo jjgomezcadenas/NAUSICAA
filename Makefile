@@ -237,9 +237,24 @@ grid-readout:
 present-grid-readout:
 	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_grid_readout.py
 
-.PHONY: pdf-grid-readout pdf-electron-diffusion pdf-mc-selection
+.PHONY: grid-readout-3mm present-grid-readout-3mm
+grid-readout-3mm:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/event_analysis/test_grid_readout.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/sample_collect_parallel.jl --events 8000 --workers 6 --ion-card config/pixel_charge_1mm_3mm.toml --output results/grid_readout_direct_3mm_8000
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/collection/summarize_grid_readout.jl results/grid_readout_direct_3mm_8000
+	$(PYTHON) tests/event_analysis/check_grid_readout.py results/grid_readout_direct_3mm_8000 --events 8000 --ion-pitch-mm 3 --ion-bucket-ms 30
+	$(MAKE) present-grid-readout-3mm
+
+present-grid-readout-3mm:
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_grid_readout.py --input results/grid_readout_direct_3mm_8000/grid_readout_summary.h5 --output latex_generated/grid_readout_direct_3mm
+	$(MAKE) pdf-grid-readout-3mm
+
+.PHONY: pdf-grid-readout pdf-grid-readout-3mm pdf-electron-diffusion pdf-mc-selection
 pdf-grid-readout:
 	cd latex_generated/grid_readout_direct && latexmk -pdf -interaction=nonstopmode -halt-on-error grid_readout.tex
+
+pdf-grid-readout-3mm:
+	cd latex_generated/grid_readout_direct_3mm && latexmk -pdf -interaction=nonstopmode -halt-on-error grid_readout.tex
 
 pdf-electron-diffusion:
 	cd latex_generated/electron_diffusion && latexmk -pdf -interaction=nonstopmode -halt-on-error electron_diffusion.tex
