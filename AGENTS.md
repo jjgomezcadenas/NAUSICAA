@@ -21,8 +21,9 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   Store entry/exit electrode potentials in TOML.
   Route electrons geometrically to holes. Compute direct VUV collection
   acceptance analytically for the assumed electron path and sample that
-  fraction. Save only photoelectron histories per SiPM and time bucket;
-  use 1 microsecond per mm and an initial 2 mm bucket (2 microseconds at this
+  fraction. Save photons reaching each SiPM per time bucket. Apply SiPM PDE and
+  electronics in a separate response stage. Use 1 microsecond per mm and an
+  initial 2 mm bucket (2 microseconds at this
   speed). SiPM PDE is TOML-configurable, initially 0.30 (user input).
   These are user design inputs;
   record the adopted gas-dependent EL yield and optical boundary conditions.
@@ -113,8 +114,13 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
 - Keep scratch files in work/.
 - Cite primary sources in notes/physics/references.bib. Record user-provided
   revisions as design inputs, not as published measurements.
-- Keep large datasets and binary simulation files outside Git. Never configure
-  or use Git LFS without the user's explicit approval.
+- When the user says "commit", include the completed work in the current flow.
+  Inspect staged, unstaged and untracked files; commit relevant code, tests,
+  TOML, TeX, notes, documentation, papers and generated report artifacts.
+  Check sizes and file types before staging. Keep large datasets and binary
+  simulation outputs outside Git, and leave unrelated work untouched. Ask the
+  user if the boundary of the current work is unclear. Never configure or use
+  Git LFS without the user's explicit approval.
 - Do not change the existing remote or publish/push without a user request.
 
 ## Related ITACA sources
