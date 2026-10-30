@@ -78,6 +78,10 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   generated analysis reports in latex_generated/.
 - When requirements, physical assumptions or analysis choices are unclear,
   consult the user before proceeding with the uncertain part of the work.
+- Evaluate user-proposed methods on their merits. Offer a better alternative
+  when one comes to mind, with its rationale; otherwise explain why the
+  proposal works. Do not agree by default or invent complexity merely to
+  offer an alternative.
 - For event-analysis development, trace the loaded Petit implementation and
   its callers before proposing types or algorithms. Present existing behaviour,
   types/interfaces and the justified adaptation in the HTML review guide first.
