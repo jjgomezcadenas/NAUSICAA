@@ -121,6 +121,9 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   simulation outputs outside Git, and leave unrelated work untouched. Ask the
   user if the boundary of the current work is unclear. Never configure or use
   Git LFS without the user's explicit approval.
+- Track and commit changes under papers/, including PDFs, with the relevant
+  work. Check each file's size; ask before committing a paper larger than 20 MB
+  rather than silently omitting it.
 - Do not change the existing remote or publish/push without a user request.
 
 ## Related ITACA sources
