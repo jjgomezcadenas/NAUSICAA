@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "name": "length_1200um",
+      "returncode": 0,
+      "log": "results/ltspice/retention_comparison/batch_logs/length_1200um.stdout"
+    },
+    {
+      "name": "length_1600um",
+      "returncode": 1,
+      "log": "results/ltspice/retention_comparison/batch_logs/length_1600um.stdout"
+    },
+    {
+      "name": "length_2000um",
+      "returncode": 0,
+      "log": "results/ltspice/retention_comparison/batch_logs/length_2000um.stdout"
+    },
+    {
+      "name": "length_4000um",
+      "returncode": 1,
+      "log": "results/ltspice/retention_comparison/batch_logs/length_4000um.stdout"
+    }
+  ],
+  "elapsed_s": 1916.9914232909214
+}

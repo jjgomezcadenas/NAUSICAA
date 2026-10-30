@@ -17,9 +17,12 @@ def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--config',type=Path,default=ROOT/'config/pad_history_viewer_direct.toml')
  p.add_argument('--simulator',type=Path);p.add_argument('--julia');p.add_argument('--workers',type=int,default=4)
+ p.add_argument('--gear-on-timeout',action='store_true',help='Retry a timed-out transient with Gear integration')
+ p.add_argument('--simulation-timeout-s',type=float,default=120,help='Wall time allowed per LTspice transient')
  p.add_argument('--limit',type=int);p.add_argument('--refine',type=int,default=24);p.add_argument('--retry-failed',action='store_true')
+ p.add_argument('--work-dir',type=Path,help='Private Julia worker directory for concurrent independent studies')
  args=p.parse_args()
- engine=Engine(args.config,ROOT/'notes/physics/work/pad_compression_batch',args.simulator,args.julia)
+ engine=Engine(args.config,args.work_dir or ROOT/'notes/physics/work/pad_compression_batch',args.simulator,args.julia,args.simulation_timeout_s,args.gear_on_timeout)
  failures=[];started=time.monotonic()
  try:
   plan=engine.plan();tasks=[]
@@ -50,6 +53,13 @@ def main():
   controls=[next((t for t in alltasks if t[0]==name and t[4]>0),None) for name in engine.samples]
   controls=[t for t in controls if t is not None]
   chosen=alltasks[::max(1,len(alltasks)//max(1,args.refine))][:max(0,args.refine-len(controls))]+controls
+  # Numerically stiff cases get an independent finer-grid check as well.
+  for task in alltasks:
+   sample,event,px,py,_=task;case=engine.directory/'cases'/f'{sample}_{event}_{px}_{py}'/'spice.h5'
+   if case.exists():
+    with h5py.File(case) as h:
+     method=h.attrs.get('solver_method','');method=method.decode() if isinstance(method,bytes) else method
+     if method=='gear' and task not in chosen:chosen.append(task)
   for task in chosen:
    try:engine.simulate(*task[:4],refine=True)
    except Exception as error:failures.append({'history':task,'refinement_error':str(error)})

@@ -1,0 +1,44 @@
+* M3 geometry scan; M4 x4 and its tuned bias retained
+M1 s in med Vdda 180nmP l={Lcs} w={Wcs} m={Mp}
+Vdd Vdda 0 1.8
+M2 Vdda Vnmos s 0 180nmN l={Ln} w={Wn} m={Mn}
+Vnmos Vnmos 0 1.6
+M3 med Vnload 0 0 180nmN l={Lnload} w={Wnload} m={Mload}
+Vnload Vnload 0 0.538477478921
+M4 med Vncasc out 0 180nmN l={Lncasc} w={Wncasc} m={Mncasc}
+M5 vd6 Vp5 out Vdda 180nmP l={Lcs} w={Wcs} m={Mp}
+M6 Vdda Vp6 vd6 Vdda 180nmP l={Lp6} w={Wp6} m={Mp6}
+Vp6 Vp6 0 1.1
+Vp5 Vp5 0 0.8
+Vp1 Vncasc 0 0.6621
+Cf out in 3f
+Mf out Vdis in 0 180nmN l={LMf} w={WMf} m=1
+Vf1 Vdis 0 0
+Cd1 in 0 1.24999999999999992e-12
+.lib corrected.inc
+.param Lcs=0.5u
+.param Wcs=220u
+.param Ln=0.5u
+.param Wn=27u
+.param Lnload=2u
+.param Wnload=200u
+.param Mn=3
+.param Mp=1
+.param Mload=1
+.param Lp6=6u
+.param Wp6=1u
+.param Mp6=1
+.param Lp5=40u
+.param Wp5=1.0u
+.param Mp5=1
+.param Lncasc=1.44u
+.param Wncasc=2.88u
+.param Mncasc=1
+.parameter WMf=3.59999999999999994e-07
+.parameter LMf=1.19999999999999989e-03
+.temp 20
+.options reltol=1e-6 abstol=1e-19 vntol=1e-10 numdgt=15 plotwinsize=0
+Is1 0 in PWL FILE="../../inputs/40ms_tail_N100_r2.pwl"
+.tran 0 6.04999999999999982e+00 0 2.50000000000000005e-04
+.save V(in) V(out) I(Is1)
+.end

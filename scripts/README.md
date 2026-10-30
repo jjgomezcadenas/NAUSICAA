@@ -68,6 +68,32 @@ The viewer's calculation worker remains in `src/pad_history_viewer`; its reusabl
 LTspice runner is `src/ion_signal/spice_acquisition.py`. Existing source hashes
 and cached numerical outputs remain attached to their original studies.
 
+## Longer CSA retention
+
+```sh
+python scripts/electronics/feedback/run_retention_comparison.py \
+  --simulator /path/to/LTspice
+```
+
+This runs the preserved feedback-length studies in
+`config/retention_scan.toml` and `config/retention_scan_extension.toml`, screens
+all direct-collection pad histories and simulates the candidate/control pads.
+Julia saves calibration, noise, validation and nonlinear statistics as HDF5;
+Python acquires LTspice results and presents the saved numbers.
+
+To regenerate the combined report source and figures:
+
+```sh
+julia --project=. scripts/electronics/feedback/combine_retention_scans.jl \
+  config/retention_comparison.toml
+python scripts/electronics/feedback/present_retention_scan.py \
+  --config config/retention_comparison.toml
+```
+
+Results are in `results/ltspice/retention_{scan,scan_extension,comparison}`;
+the combined report is `latex_generated/retention_comparison/report.tex`.
+[Study configuration and validation](../notes/physics/retention_study.md).
+
 ## Documents and path history
 
 Presentation commands write report source and figures. Compile reports explicitly

@@ -1,0 +1,27 @@
+Output: /Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/retention_scan_extension/compression/length_4000um/5969b0a76d44 planned: 5075
+250/5075, 82.8 s, failures=0
+500/5075, 152.4 s, failures=0
+750/5075, 238.3 s, failures=0
+1000/5075, 294.8 s, failures=0
+1250/5075, 356.4 s, failures=0
+1500/5075, 425.8 s, failures=0
+1750/5075, 492.9 s, failures=0
+2000/5075, 570.5 s, failures=0
+2250/5075, 648.1 s, failures=0
+2500/5075, 730.7 s, failures=0
+2750/5075, 816.9 s, failures=0
+3000/5075, 904.6 s, failures=0
+3250/5075, 1007.6 s, failures=0
+3500/5075, 1120.6 s, failures=0
+3750/5075, 1233.8 s, failures=0
+4000/5075, 1329.9 s, failures=0
+4250/5075, 1413.2 s, failures=0
+4500/5075, 1508.1 s, failures=0
+4750/5075, 1605.4 s, failures=0
+5000/5075, 1699.3 s, failures=0
+5075/5075, 1743.9 s, failures=0
+Complete: /Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/retention_scan_extension/compression/length_4000um/5969b0a76d44
+Test Summary:                | Pass  Total  Time
+Event compression accounting |  304    304  1.1s
+/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/retention_scan_extension/compression/length_4000um/5969b0a76d44/presentation.h5
+/Users/jjgomezcadenas/Projects/NAUSICAA/latex_generated/retention_scan_extension/compression/length_4000um/5969b0a76d44/report.tex

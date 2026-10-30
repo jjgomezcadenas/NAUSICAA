@@ -1,0 +1,40 @@
+output = "results/ltspice/retention_scan"
+report = "latex_generated/retention_scan"
+detector = "config/detector.toml"
+source_deck = "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N400_r2.cir"
+model = "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/corrected.inc"
+reference_results = "results/ltspice/feedback_optimization/length_400um_gate0_rounded.h5"
+reference_analysis = "results/ltspice/feedback_optimization/analysis.h5"
+history_card = "config/pad_history_readout_direct.toml"
+compression_card = "config/pad_history_viewer_direct.toml"
+frames_s = [0.02, 0.04]
+averaging_s = 0.005
+prehistory_s = 0.01
+max_steps_s = [0.000005, 0.0000025]
+tail_max_steps_s = [0.0005, 0.00025]
+tail_duration_s = 6.0
+noise_low_Hz = 0.0001
+noise_high_Hz = 1000000.0
+noise_densities = [200, 400]
+counts = [0, 10, 100, 120, 400, 2000]
+feedback_width_m = 0.00000036
+feedback_gate_V = 0.0
+bias_decimal_places = 4
+minimum_output_V = 0.2
+maximum_output_V = 1.6
+
+[[variants]]
+name = "length_400um"
+length_m = 0.0004
+[[variants]]
+name = "length_800um"
+length_m = 0.0008
+[[variants]]
+name = "length_1200um"
+length_m = 0.0012
+[[variants]]
+name = "length_1600um"
+length_m = 0.0016
+[[variants]]
+name = "length_2000um"
+length_m = 0.002

@@ -1,0 +1,17 @@
+{
+  "planned": 3930,
+  "scheduled": 3930,
+  "failed": [
+    {
+      "history": [
+        "p4_electrons",
+        1667,
+        1,
+        1,
+        0
+      ],
+      "error": "Command '['/Users/jjgomezcadenas/Projects/NAUSICAA/notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app/Contents/MacOS/LTspice', '-b', '/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/retention_scan/compression/length_800um/caac67eddc10/cases/p4_electrons_1667_1_1/history.cir']' timed out after 120 seconds"
+    }
+  ],
+  "elapsed_s": 907.4456905839033
+}

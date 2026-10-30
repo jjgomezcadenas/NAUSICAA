@@ -1,0 +1,5 @@
+/inputs/
+*.raw
+*.log
+*.op.raw
+*.h5

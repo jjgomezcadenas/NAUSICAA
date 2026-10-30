@@ -1,0 +1,30 @@
+# Design inputs supplied in the discussion; revised IFG voltages supersede
+# arXiv:2604.02443v1 section 3.8. All computational fields are SI unless noted.
+[geometry]
+hole_diameter_m = 0.0005
+pitch_m = 0.002
+ifg_thickness_m = 0.010
+gap_m = 0.005
+pad_width_m = 0.0005
+bulk_reference_length_m = 1.5
+pad_model = "square_in_grounded_plane" # Benchmark assumption; actual pad shape TBD.
+
+[bias]
+pad_voltage_V = 0.0
+ic_voltage_V = 3000.0
+gate_voltage_V = 8000.0
+bulk_field_V_m = 20000.0
+
+[gas]
+species = "Xe2+ molecular ion"
+charge_e = 1
+pressure_bar = 15.0
+temperature_K = 293.15 # Room-temperature benchmark, not a measured operating value.
+bulk_speed_m_s = 0.1  # User operating assumption, used to infer mobility.
+
+[provenance]
+revision = "2026-10-22 physics milestone 1"
+geometry_source = "User discussion and ITACA revisited arXiv:2604.02443v1"
+voltage_source = "User correction: IFG drop 5 kV, IC +3 kV, pads 0 V"
+transport_status = "Constant mobility and thermal isotropic diffusion are approximations"
+unresolved = ["Pad outline and surrounding metal", "IFG wall material and metallization", "Dielectric stack", "Mobility and diffusion versus reduced field", "Edge geometry and alignment tolerances"]

@@ -1,0 +1,18 @@
+identity = "d33a9d9f18627868dfc2fb830592c013bfa18a2d3876079edcec11baa6ede3f3"
+
+[sha256]
+"results/ltspice/retention_scan_extension/cards/length_3000um_viewer.toml" = "8761af16992705ff01efcf50bd5e6059ceb2583198073041dc66b6b160d7a2fd"
+"src/ion_signal/bucket_study.jl" = "862f686463e014e3e73652112aab361370e84e05f5d27bdc1f1746a2863cffc9"
+"results/ltspice/retention_scan_extension/decks/length_3000um/40ms_single_N400_r2.cir" = "cb15647060d9f7e3c7ec89fedcae5ad2a811e4cdf5e9d58e132d8e97de03e4d6"
+"results/ltspice/retention_scan_extension/cards/length_3000um_readout.toml" = "566766f954847b23910bd66d2e5023a57d7f5f21b8148f59c3508ff9167bd664"
+"results/ltspice/retention_scan_extension/screens/length_3000um/p4_electrons.h5" = "3e56a9cc20639a29063f44138eb0e7661ac1fbd04d5630c1a86c17c8de6fbc37"
+"results/ltspice/retention_scan_extension/screens/length_3000um/p2_bb0nu.h5" = "dff3efdd6701bc73bb182fc3bb7521d4f5d357b73f227c6e367366c7867ead46"
+"results/ltspice/retention_scan_extension/decks/length_3000um/corrected.inc" = "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608"
+"results/ltspice/retention_scan_extension/screens/length_3000um/p4_bb0nu.h5" = "60519821a5276f00db1a2a312cd07bdf2dc364ec7d0752fbd2b775105727dae3"
+"src/ion_signal/pad_compression.jl" = "4770e1dfee52c20bc248484bf9227e81ee38a6e40c10446b3b558f08913510e7"
+"src/ion_signal/pad_history_readout.jl" = "1865b012509dbca52d6add19e664984b51368c6cf6497dcaa4e73724d207bc4b"
+"src/ion_signal/discharge_calibration.jl" = "355e202de7f6a0560789d2691eb9fefe2a3225737fe982a8488b8094af639071"
+"results/ltspice/retention_scan_extension/variants/length_3000um.h5" = "87d234db6de53af9249e8a781494fe07d8959ffd057d2d855147cfcdec5a41b4"
+"results/ltspice/retention_scan_extension/analysis.h5" = "fd6e25bc41be54bbd19c30b2c5d0c6b7f2845dd712e7176ed157076e2d6ccacf"
+"results/ltspice/retention_scan_extension/screens/length_3000um/p2_electrons.h5" = "b8515850dec6a2f1dcc84cb7e3a040e6d6320f49037751175c32e4fd837ba751"
+"src/ion_signal/averaging_scan.jl" = "59d2910425a319723df58477b87f524ea089c0ce01f83d554df1623da20a74fc"

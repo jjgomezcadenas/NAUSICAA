@@ -1,0 +1,27 @@
+# Current provisional CSA design, adopted by the user on 2026-10-30.
+# The nominal 20 s label corresponds to the already simulated 19.54 s circuit.
+version = "v3"
+status = "provisional working design"
+nominal_discharge_time_s = 20.0
+selected_variant = "length_1200um"
+study_directory = "results/ltspice/retention_scan"
+study_card = "config/retention_scan.toml"
+readout_card = "results/ltspice/retention_scan/cards/length_1200um_readout.toml"
+compression_card = "results/ltspice/retention_scan/cards/length_1200um_viewer.toml"
+package_directory = "LTSpice/v3"
+frames_s = [0.02, 0.04]
+averaging_s = 0.005
+# Readout correction factors and gain use the fitted circuit response.
+calibration_source = "results/ltspice/retention_scan/analysis.h5"
+calibration_group = "length_1200um"
+
+[feedback]
+width_m = 0.00000036
+length_m = 0.0012
+gate_V = 0.0
+
+[bias]
+m4_gate_V = 0.6621
+
+[provenance]
+selection = "User adopts nominal 20 s retention as the working CSA design."

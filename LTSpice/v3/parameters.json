@@ -1,0 +1,245 @@
+{
+  "version": "v3",
+  "nominal_discharge_time_s": 20.0,
+  "selected_variant": "length_1200um",
+  "averaging_s": 0.005,
+  "external_input_capacitance_F": 1.25e-12,
+  "feedback_capacitance_F": 3.0000000000000002e-15,
+  "temperature_K": 293.15,
+  "transistors": {
+    "M1": {
+      "model": "180nmP",
+      "terminals_D_G_S_B": [
+        "s",
+        "in",
+        "med",
+        "Vdda"
+      ],
+      "length_m": 5e-07,
+      "width_m": 0.00021999999999999998,
+      "multiplicity": 1.0
+    },
+    "M2": {
+      "model": "180nmN",
+      "terminals_D_G_S_B": [
+        "Vdda",
+        "Vnmos",
+        "s",
+        "0"
+      ],
+      "length_m": 5e-07,
+      "width_m": 2.7e-05,
+      "multiplicity": 3.0
+    },
+    "M3": {
+      "model": "180nmN",
+      "terminals_D_G_S_B": [
+        "med",
+        "Vnload",
+        "0",
+        "0"
+      ],
+      "length_m": 2e-06,
+      "width_m": 0.00019999999999999998,
+      "multiplicity": 1.0
+    },
+    "M4": {
+      "model": "180nmN",
+      "terminals_D_G_S_B": [
+        "med",
+        "Vncasc",
+        "out",
+        "0"
+      ],
+      "length_m": 1.44e-06,
+      "width_m": 2.88e-06,
+      "multiplicity": 1.0
+    },
+    "M5": {
+      "model": "180nmP",
+      "terminals_D_G_S_B": [
+        "vd6",
+        "Vp5",
+        "out",
+        "Vdda"
+      ],
+      "length_m": 5e-07,
+      "width_m": 0.00021999999999999998,
+      "multiplicity": 1.0
+    },
+    "M6": {
+      "model": "180nmP",
+      "terminals_D_G_S_B": [
+        "Vdda",
+        "Vp6",
+        "vd6",
+        "Vdda"
+      ],
+      "length_m": 6e-06,
+      "width_m": 1e-06,
+      "multiplicity": 1.0
+    },
+    "Mf": {
+      "model": "180nmN",
+      "terminals_D_G_S_B": [
+        "out",
+        "Vdis",
+        "in",
+        "0"
+      ],
+      "length_m": 0.0012,
+      "width_m": 3.6e-07,
+      "multiplicity": 1.0
+    }
+  },
+  "voltage_sources": {
+    "Vdd": {
+      "positive_node": "Vdda",
+      "negative_node": "0",
+      "voltage_V": 1.8
+    },
+    "Vnmos": {
+      "positive_node": "Vnmos",
+      "negative_node": "0",
+      "voltage_V": 1.6
+    },
+    "Vnload": {
+      "positive_node": "Vnload",
+      "negative_node": "0",
+      "voltage_V": 0.538477478921
+    },
+    "Vp6": {
+      "positive_node": "Vp6",
+      "negative_node": "0",
+      "voltage_V": 1.1
+    },
+    "Vp5": {
+      "positive_node": "Vp5",
+      "negative_node": "0",
+      "voltage_V": 0.8
+    },
+    "Vp1": {
+      "positive_node": "Vncasc",
+      "negative_node": "0",
+      "voltage_V": 0.6621
+    },
+    "Vf1": {
+      "positive_node": "Vdis",
+      "negative_node": "0",
+      "voltage_V": 0.0
+    }
+  },
+  "frames": {
+    "20ms": {
+      "ENC_e_rms": 50.179501626864536,
+      "alpha": 0.998977194863515,
+      "best_index": 1,
+      "charge_error": 1.4432899320127035e-15,
+      "frame_s": 0.02,
+      "gain_change": 0.0012269232408675945,
+      "quadrature_error": 2.0616841567289157e-13,
+      "spectral_error": 7.684583673839285e-07,
+      "tail_fit_error": 5.431387947174571e-07,
+      "tau_amplitude_error": 8.014142682810643e-09,
+      "tau_refinement_error": 0.00022660302856325476,
+      "tau_s": 19.54406513139911,
+      "transient_error": 7.273321500633756e-07,
+      "gain_V_per_ion": 4.015668528417012e-05,
+      "noise_rms_V": 0.002015042454546502
+    },
+    "40ms": {
+      "ENC_e_rms": 58.442067200649156,
+      "alpha": 0.9979554287308572,
+      "best_index": 1,
+      "charge_error": 1.2212453270876722e-15,
+      "frame_s": 0.04,
+      "gain_change": 0.0012273530197666194,
+      "quadrature_error": 8.494316361407073e-13,
+      "spectral_error": 8.643465194690947e-07,
+      "tail_fit_error": 6.230677416230179e-07,
+      "tau_amplitude_error": 2.236527607557548e-08,
+      "tau_refinement_error": 0.00022311174697553504,
+      "tau_s": 19.54399693920536,
+      "transient_error": 3.667703920573473e-07,
+      "gain_V_per_ion": 4.1479170629499564e-05,
+      "noise_rms_V": 0.0024241284773564064
+    }
+  },
+  "circuit": {
+    "baseline_V": 0.8863611214728842,
+    "config_sha256": "f4530b5246856cec6057463d0862f9ace696d35d9f05fbd18b86cdd6faea149e",
+    "gate_V": 0.0,
+    "inputs_sha256": "2c3cd5e98b9ba9d71e9a9cd29ec03b898c543d35073c77962ba1145f8035804a",
+    "length_m": 0.0012,
+    "m4_gate_V": 0.6621,
+    "model_sha256": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+    "name": "length_1200um",
+    "raw_sha256": "343ddf06b75f37110c986885e81d17354ea24fa14acf5f51a618ba60c57f3747",
+    "simulator_sha256": "4036f0d4a9a94471481d498cf4e06531c74f95bf4d29dd5010e1e7888c74b209",
+    "source_sha256": "120033283068546101cdf686f60574ae35a13c176eebd043ccd605372b68d145",
+    "width_m": 3.6e-07
+  },
+  "operating_point": {
+    "I(Cd1)": 1.6868672746408745e-27,
+    "I(Cf)": 2.6550348829595143e-27,
+    "I(Is1)": 0.0,
+    "I(Vdd)": -0.00021069233172835072,
+    "I(Vf1)": 0.0,
+    "I(Vnload)": 0.0,
+    "I(Vnmos)": 0.0,
+    "I(Vp1)": 0.0,
+    "I(Vp5)": 0.0,
+    "I(Vp6)": 0.0,
+    "Ib(M1)": 2.5995964213653158e-12,
+    "Ib(M2)": -7.968603347348695e-12,
+    "Ib(M3)": -1.9419565302082455e-13,
+    "Ib(M4)": -1.0905567744937086e-12,
+    "Ib(M5)": 1.4834698567722047e-12,
+    "Ib(M6)": 5.598309782450888e-13,
+    "Ib(Mf)": -8.982308169310599e-13,
+    "Id(M1)": 0.00021030968550954203,
+    "Id(M2)": 0.00021030969347814605,
+    "Id(M3)": 0.0002106923217709603,
+    "Id(M4)": -3.8263366182127507e-07,
+    "Id(M5)": 3.826341671390224e-07,
+    "Id(M6)": 3.826336073080393e-07,
+    "Id(Mf)": 8.98230816931059e-13,
+    "Ig(M1)": -0.0,
+    "Ig(M2)": 0.0,
+    "Ig(M3)": 0.0,
+    "Ig(M4)": 0.0,
+    "Ig(M5)": -0.0,
+    "Ig(M6)": -0.0,
+    "Ig(Mf)": 0.0,
+    "Is(M1)": -0.00021030968810913846,
+    "Is(M2)": -0.0002103096855095427,
+    "Is(M3)": -0.00021069232157676466,
+    "Is(M4)": 3.8263475237804956e-07,
+    "Is(M5)": -3.826356506088792e-07,
+    "Is(M6)": -3.8263416713901754e-07,
+    "Is(Mf)": 9.087677628146056e-28,
+    "V(in)": 0.0013494938197126996,
+    "V(med)": 0.18420246285178543,
+    "V(out)": 0.8863611214728842,
+    "V(s)": 0.8362011157828982,
+    "V(vd6)": 1.2501690217513863,
+    "V(vdda)": 1.8,
+    "V(vdis)": 0.0,
+    "V(vncasc)": 0.6621,
+    "V(vnload)": 0.538477478921,
+    "V(vnmos)": 1.6,
+    "V(vp5)": 0.8,
+    "V(vp6)": 1.1
+  },
+  "physical_input": {
+    "assumptions": "Central 0.5 mm square pad in an infinite grounded plane; pad weighting potential 1, plane and infinity 0; homogeneous gas; central constant-speed 3 m/s trajectory through the finite 5 mm gap. Uniform ion collection within each frame; finite-path charge retained without renormalization or a collection impulse.",
+    "config_sha256": "f4530b5246856cec6057463d0862f9ace696d35d9f05fbd18b86cdd6faea149e",
+    "detector_sha256": "628be0c9c8b9db1e18db69743b55d3e200610b62b07e3181c54eecb2125e214c",
+    "gap_m": 0.005,
+    "gap_speed_m_s": 3.0,
+    "generator_sha256": "e87d3020695d2f909759bc25a2e28f06bd03d2bef3ce5ef8e6ca26e80c95d2f9",
+    "pad_halfwidth_m": 0.00025,
+    "single_ion_charge_C": 1.5996330470144225e-19,
+    "waveform_sha256": "862f686463e014e3e73652112aab361370e84e05f5d27bdc1f1746a2863cffc9"
+  }
+}

@@ -27,6 +27,9 @@ def scalar(value):
 def write_toml(path,values):
     path.write_text(''.join(f'{key} = '+('true' if val is True else 'false' if val is False else json.dumps(val))+'\n' for key,val in values.items()))
 
+# Keep the loaded acquisition version stable during a long-running batch.
+ENGINE_SHA = sha(Path(__file__))
+
 class Worker:
     """One resident Julia calculator; requests are serialized by a thread lock."""
     def __init__(self,card,work,julia=None):
@@ -38,7 +41,8 @@ class Worker:
         env=os.environ.copy()
         env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
         executable=julia or env.get('JULIA') or shutil.which('julia') or str(Path.home()/'.juliaup/bin/julia')
-        self.process=subprocess.Popen([executable,'--startup-file=no','--project='+str(ROOT),str(Path(__file__).with_name('worker.jl')),str(self.work),str(card)],cwd=ROOT,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
+        worker=ROOT/tomllib.loads(Path(card).read_text()).get('worker_script','src/pad_history_viewer/worker.jl')
+        self.process=subprocess.Popen([executable,'--startup-file=no','--project='+str(ROOT),str(worker),str(self.work),str(card)],cwd=ROOT,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
         ready=self.process.stdout.readline().strip().split('\t')
         if len(ready)!=2 or ready[0]!='READY':
             self.close();raise RuntimeError(f'Julia worker failed; see {self.work}/worker.log')
@@ -65,7 +69,8 @@ class Worker:
 
 class Engine:
     """Own the calculation worker, immutable case files and simulator selection."""
-    def __init__(self,card=None,work=None,simulator=None,julia=None):
+    def __init__(self,card=None,work=None,simulator=None,julia=None,simulation_timeout_s=120,gear_on_timeout=False):
+        self.simulation_timeout_s=simulation_timeout_s;self.gear_on_timeout=gear_on_timeout
         self.card=Path(card or ROOT/'config/pad_history_viewer_direct.toml').resolve()
         self.config=tomllib.loads(self.card.read_text())
         self.readout=tomllib.loads((ROOT/self.config['readout_card']).read_text())
@@ -120,6 +125,10 @@ class Engine:
             if not model.exists():shutil.copyfile(self.model,model)
             if sha(model)!=sha(self.model):raise ValueError('Cached model differs from the selected circuit')
             body='\n'.join(x for x in self.source.read_text().splitlines() if not x.lower().startswith(('is1 ','.tran','.save','.end')))+'\n'
+            if refine and (folder/'spice.h5').exists():
+                with h5py.File(folder/'spice.h5') as coarse:
+                    if scalar(coarse.attrs.get('solver_method',''))=='gear':
+                        body=body.replace('.options reltol=', '.options method=gear reltol=')
             inp=tomllib.loads((folder/(suffix+'_input.toml')).read_text())
             step=self.config['solver_step_s']/(2 if refine else 1)
             deck=folder/(suffix+'.cir')
@@ -130,10 +139,15 @@ class Engine:
                 if attempt:
                     step=min(step/4,self.config['current_step_s']/2**attempt)
                     deck.write_text(body+f'Is1 0 in PWL FILE="{suffix}.pwl"\n.tran 0 {inp["stoptime_s"]:.17e} 0 {step:.17e}\n.save V(in) V(out) I(Is1)\n.end\n')
-                wave,_=run(self.simulator,deck)
+                try:
+                    wave,_=run(self.simulator,deck,timeout_s=self.simulation_timeout_s)
+                except subprocess.TimeoutExpired:
+                    if not self.gear_on_timeout:raise
+                    deck.write_text(deck.read_text().replace('.options reltol=', '.options method=gear reltol='))
+                    wave,_=run(self.simulator,deck,timeout_s=self.simulation_timeout_s)
                 with h5py.File(raw,'w') as h:
                     for key,val in wave.items():h.create_dataset(key,data=np.asarray(val).real,compression='gzip',shuffle=True)
-                    h.attrs.update(deck_sha256=sha(deck),model_sha256=sha(model),simulator_sha256=sha(self.simulator),acquisition_sha256=sha(Path(__file__)),solver_step_s=step,charge_resolution_retries=attempt)
+                    h.attrs.update(deck_sha256=sha(deck),model_sha256=sha(model),simulator_sha256=sha(self.simulator),acquisition_sha256=ENGINE_SHA,solver_step_s=step,charge_resolution_retries=attempt,solver_method=('gear' if '.options method=gear' in deck.read_text() else 'modified_trap'))
                 try:
                     answer=self.worker.request('reduce',**fields,refine=refine)
                     break

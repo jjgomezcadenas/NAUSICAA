@@ -1,0 +1,9 @@
+# Source files loaded by the original full-history worker processes.
+engine_sha256 = "9fdaa46f46774cfd4f1dc92f6a1c8df5dd48ffd341d82c7471f6954fa4f21927"
+worker_sha256 = "417cc383ad429e1b414e5cc36944d5c27e26e5c018d4578019fbabc6f204a2f0"
+original_kernel_sha256 = "4770e1dfee52c20bc248484bf9227e81ee38a6e40c10446b3b558f08913510e7"
+validated_retry_kernel_sha256 = "0f518312cc2f509c97b0daba9fd62c1b8defb73eb89fb11ef5ad797547051c26"
+validated_retry_variants = ["length_4000um"]
+# Early acquisition attributes hashed the file at write time; source edits during
+# the long batch can therefore change that attribute while the loaded code is
+# unchanged. The loaded versions above and all reported file versions are kept.

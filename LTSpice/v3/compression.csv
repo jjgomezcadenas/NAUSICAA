@@ -1,0 +1,5 @@
+feedback_length_um,sample,pads_simulated,events,event_percent_loss25,event_percent_loss50,event_percent_loss75,refined_histories,maximum_refinement_error
+1200.0,p2_bb0nu,60,8000,0.08750000000000001,0.0375,0.0,1,4.783264229711084e-07
+1200.0,p2_electrons,56,8000,0.025,0.0125,0.0,1,6.992857983764813e-07
+1200.0,p4_bb0nu,2776,8000,15.2375,8.6375,3.0,15,3.6053879941477896e-06
+1200.0,p4_electrons,1848,8000,10.475,5.975,2.3375,7,2.8985893426502513e-06

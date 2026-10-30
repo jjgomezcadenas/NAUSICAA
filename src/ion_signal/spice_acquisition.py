@@ -2,8 +2,8 @@
 import subprocess
 from .spice import read_raw
 
-def run(simulator,deck):
-    result=subprocess.run([str(simulator),'-b',str(deck.resolve())],cwd=deck.parent,capture_output=True,timeout=120)
+def run(simulator,deck,*,timeout_s=120):
+    result=subprocess.run([str(simulator),'-b',str(deck.resolve())],cwd=deck.parent,capture_output=True,timeout=timeout_s)
     log=deck.with_suffix('.log')
     if log.exists():
         b=log.read_bytes();text=b.decode('utf-16le' if b[1:2]==b'\x00' else 'utf-8',errors='replace')
