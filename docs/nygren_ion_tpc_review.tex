@@ -1,0 +1,238 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=23mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,booktabs,hyperref,xurl}
+\usepackage[numbers,sort&compress]{natbib}
+\input{latex_generated/nygren_review/values.tex}
+\title{Assessment of the SeF$_6$ ion-TPC proposal:\\noise, collection time, pile-up and calorimetry}
+\author{NAUSICAA working note}
+\date{4 November 2026}
+\begin{document}
+\maketitle
+
+\section{Assessment and scope}
+Nygren et al.~\cite{Nygren_2018} establish an attractive physics case:
+the high $^{82}$Se $Q$ value suppresses common gamma backgrounds, thermal
+ions diffuse little, and direct collection avoids multiplication noise.
+The difficult part is simultaneously obtaining fine tracking, complete
+charge collection and low-noise calorimetry for slow, distributed charge.
+The original sub-50-electron ENC is an engineering projection. Later
+Topmetal-S measurements in the local literature are about 115--140
+electrons, and the N$\nu$DEx conceptual design explicitly identifies
+two-neutrino coincidence backgrounds for enriched gas.
+
+This note distinguishes measured electronics performance, design assumptions,
+and analytical estimates. It is not a new SeF$_6$ transport or track simulation.
+The calculations use $Q=2.995$ MeV, $W=32$ eV and $F=0.19$ from the original
+paper; $W$ and $F$ were inferred using SF$_6$, rather than measured in the
+proposed high-pressure SeF$_6$ detector. Track extents below are illustrative.
+
+\section{What supports the CSA noise assumption?}
+Section 4 and figure 7 of Nygren et al. propose a collection electrode smaller
+than approximately 1 mm, a few pF of input capacitance, a femtofarad feedback
+capacitor and an almost-off feedback transistor with adjustable resistance.
+Charge focusing allows a small collection electrode at a several-mm to cm
+pixel pitch. Direct waveform digitization replaces a long analog shaper;
+timing comes from the rising edge and energy from digital filtering. They
+require a long signal retention time and good noise at that integration time.
+They do not give a measured ENC-versus-shaping-time curve for the proposed
+few-pF electrode, a complete parallel/series noise budget, or a calibrated
+MeV calorimetric demonstration at 10 bar.
+
+Their cited Topmetal-II$^-$ demonstration~\cite{An2016TopmetalII} reported
+13.9 electrons ENC with a 1 ms digital trapezoidal filter and 7.6 ms feedback
+decay. This used a $25\times25~\mu$m collection node and approximately
+23 fF input capacitance. The injection capacitance of 5.5 fF came from
+simulation and was explicitly not independently calibrated. This is evidence
+for direct ion sensing, but it does not establish the same ENC for a roughly
+3 pF electrode and a much longer input pulse.
+
+The later local papers provide more concrete information:
+\begin{itemize}
+\item Yang et al.~\cite{Yang2024TopmetalCSA}, sections 2--3, describe a
+130 nm CMOS folded-cascode CSA, PMOS input transistor chosen for flicker
+noise, adjustable feedback and external digitization. They measure input
+capacitance near 3 pF, injection capacitance near 250 fF, gain around
+220 mV/fC and ENC around 115 electrons after digital trapezoidal shaping.
+They explicitly state that their required ENC below 45 electrons for the
+target resolution has not yet been met.
+\item Liang et al.~\cite{Liang2024TopmetalS}, section 2.2, measure
+$121\pm9$ electrons ENC after calibrating the injection capacitance against
+external capacitors. They report $255\pm10$ fF and explain that earlier
+underestimation of this capacitance led to underestimated noise in earlier
+Topmetal-S reports. This finding should not be applied as an unmeasured
+numerical correction to Topmetal-II$^-$, which is a different device.
+ENC rises to about 140 electrons as feedback decay is shortened from
+200 to 10 ms; the pulse rise time is about 3 ms. The tested feedback decay
+range extends to about 1.5 s. A long decay time alone does not establish
+low ENC for every slow charge waveform. Ion demonstrations use air and
+SF$_6$ near atmospheric pressure, not a complete 10-bar SeF$_6$ calorimeter.
+\item The 2025 low-leakage study~\cite{Wang2025LowLeakage}, sections III--IV,
+demonstrates charge retention of tens of seconds and sub-0.6 fA inferred
+leakage. Its low-noise CSA plus switch performance is a separate simulation:
+29 electrons for the CSA, 487 with the switch, and 39 after an ideal noiseless
+CR--RC filter. The simulated filtered ENC grows to 52 electrons as the
+injection duration reaches 300 ms. Thus 39 electrons is not a measured
+system ENC for second-long high-pressure events.
+\end{itemize}
+
+The physical difficulty is the trade-off between bandwidth, input capacitance,
+leakage/feedback noise, flicker noise and baseline stability. Suppressing white
+series noise by longer filtering does not also suppress all parallel or
+low-frequency noise. As an illustrative charge-counting limit only, independent
+Poisson leakage contributes
+\begin{equation}
+ \sigma_{\rm leak}^2=I_{\rm leak}T/e.
+\end{equation}
+For a constant 0.6 fA leakage current integrated for 1 s this gives
+\LeakageShotOneSecond\ electrons RMS. This is not a prediction for the
+switch circuit: its feedback correlations and actual filter must be included.
+
+\section{Track length and drift times}
+Nygren section 5 compares 10-bar gases at their respective endpoints:
+about 2.99 MeV for $^{82}$Se and 2.46 MeV for $^{136}$Xe. The paper argues
+for less multiple scattering in the lower-$Z$ mixture and longer tracks at
+the higher endpoint. It does not provide a quantitative same-energy range
+comparison or distributions of track length and $\Delta z$ for both gases.
+Figure 8 illustrates centimetre-scale extents; the CDR uses approximately
+10 cm as a characteristic 0$\nu\beta\beta$ event size at 10 bar.
+
+Consequently, the qualitative topology advantage is supported, but a generic
+claim that SeF$_6$ has a longer electron stopping range at equal pressure and
+equal energy is not established by these papers. Equal pressure fixes
+molecule/atom number density at a fixed temperature, not mass density or
+stopping power. Less multiple scattering, true path length, endpoint
+separation and projection along $z$ are distinct quantities. A quantitative
+gas comparison would require matched transport simulations and orientation
+distributions. One displayed event is not an ensemble range measurement.
+
+For an ion mobility $K$ and field $E$, distinguish full drift latency from
+the arrival spread of one species across a track:
+\begin{equation}
+ v=KE,\qquad t_{\rm drift}=L/v,\qquad
+ \Delta t_{\rm track}=\Delta z/v.
+\end{equation}
+For reduced mobility $K_0$ referenced to $(P_0,T_0)$,
+\begin{equation}
+ K=K_0\frac{P_0}{P}\frac{T}{T_0}.
+\end{equation}
+Using Nygren's approximate $K_0=0.4$--$0.6$ cm$^2$/(V s), 10 bar,
+293.15 K and 400 V/cm gives \SpeedLow--\SpeedHigh\ m/s. This extrapolates
+SF$_6$ information to SeF$_6$. The CDR adopts a speed above 20 cm/s and
+approximately 7 s full drift over 1.6 m~\cite{NnDEx-100:2023alw}. The
+original paper's 0.5--1 s ton-scale drift estimate and mm/ms language should
+not be used without this density correction; they are optimistic compared
+with its own reduced mobilities at 10 bar and the later CDR.
+
+\begin{center}\small
+\input{latex_generated/nygren_review/timing_table.tex}
+\end{center}
+The 0.1 m/s column is the current NAUSICAA adopted Xe-ion speed, a design
+assumption rather than a measured equality of Xe and SeF$_6$ mobilities.
+Thus 10--20 mm implies 0.05--0.2 s at these representative speeds. A
+1--2 s interval is appropriate for 10--20 cm at 0.1 m/s, or requires a
+slower speed of 1 cm/s for the original 10--20 mm extent. Diffusion,
+multiple ion species and electronics response can broaden the observed
+waveform beyond the single-species geometrical estimate.
+
+An additional primary-source check is the 2026 simulation framework
+\cite{Liang2026NvDExSimulation}, which calculates reduced SeF$_5^-$ and
+SeF$_6^-$ mobilities of 0.444 and 0.430 cm$^2$/(V s). These are calculations,
+not high-pressure SeF$_6$ measurements. It explicitly treats the two species
+as a hypothesis because their yields and the lifetime of SeF$_6^-$ in pure
+high-pressure gas remain unverified.
+
+\section{Pile-up and the absence of prompt timing}
+The relevant event rate includes the entire low-energy background and
+two-neutrino spectrum, not just the very small single-event rate at $Q$.
+For a local Poisson rate $r$ and unresolved time interval $T$, the probability
+of another event is $1-e^{-rT}$, approximately $rT$ at low occupancy.
+The ambiguous spacetime volume also matters: simultaneous events on distant
+channels need not be confused. Full drift latency does not equal mandatory
+global acquisition dead time in a continuously digitized TPC.
+
+The CDR section IV.E explicitly estimates the coincidence problem. Assuming
+events are separable when approximately $10\times10\times10$ cm$^3$ apart,
+its approximate $2\nu\beta\beta+2\nu\beta\beta$ background in the ROI is
+0.06 events/year for 100 kg natural SeF$_6$ and about 8 events/year for
+enriched gas. The latter exceeds its approximately 0.4 events/year
+single-event gamma estimate before topological rejection. These are CDR
+projections under their energy-window and separation assumptions, not new
+rates inferred from our timing table. Their proposed remedies include
+topology studies and potentially prompt scintillation readout, whose light
+yield and practical implementation require study.
+
+Two distinct negative-ion mobilities can in principle provide an absolute
+drift distance from
+\begin{equation}
+ \Delta t_{12}=L(1/v_1-1/v_2).
+\end{equation}
+This helps fiducialization without a prompt $t_0$, but requires identifying
+and pairing both species. It does not automatically associate all charge
+unambiguously when two extended tracks overlap. The 2026 framework retains
+this dual-species assumption explicitly. A complete pile-up assessment must
+include the waveform, threshold, local occupancy and pairing ambiguity.
+
+\section{Energy-resolution budget}
+For $N=Q/W=\PrimaryPairs$ primary charges and one complete-event charge
+estimate per selected channel, assume independent identical RMS noise ENC.
+Adding independent variance gives
+\begin{equation}
+ R_{\rm FWHM}=2\sqrt{2\ln2}\,
+ \frac{\sqrt{FN+n\,\mathrm{ENC}^2}}{N}.
+ \label{eq:budget}
+\end{equation}
+This is an optimistic instrumental budget: it assumes complete collection,
+perfect gain/baseline calibration, no thresholds, no recombination or
+attachment fluctuations, no pile-up and independent channel estimates.
+The intrinsic FWHM is \IntrinsicFWHM.
+
+\begin{center}\small
+\input{latex_generated/nygren_review/energy_table.tex}
+\end{center}
+
+The CDR's 25 channels at 30 electrons reproduces its quoted 0.51\% FWHM.
+Nygren's few-hundred-pixel assumption yields a considerably less favorable
+budget even at 50 electrons. In particular, a total electronic noise near
+1000 electrons gives \ThousandENCResolution\ FWHM including Fano noise;
+being below 1000 electrons is not by itself sufficient to ensure below 2\%.
+The maximum independent-channel budgets before additional imperfections are:
+
+\begin{center}\small
+\input{latex_generated/nygren_review/limits_table.tex}
+\end{center}
+These are continuous variance budgets; an integer channel limit is their floor.
+
+For correlated channel/time estimates, replace $n\,\mathrm{ENC}^2$ by
+$\boldsymbol w^T C\boldsymbol w$, using the actual estimator weights and
+noise covariance. Sample counts cannot be equated to independent noise
+measurements. Conversely, a short injected-pulse ENC cannot simply be used
+once per pixel for an extended, time-dependent ion current without verifying
+the complete estimator. Threshold selection can discard low-density track
+charge and produce energy bias and non-Gaussian tails; the original variance
+budget does not cover these effects. Measuring both polarities can reduce
+independent instrumental noise but not the shared Fano fluctuation.
+
+\section{Implications and reproducibility}
+The strongest demonstrated advantages are high endpoint energy and thermal
+ion diffusion. The limiting engineering evidence concerns noise at realistic
+input capacitance and waveform duration, reliable collection and charge
+reconstruction, and enriched-gas pile-up. A convincing calorimetric validation
+should inject known charge with realistic time distributions, measure the
+full channel covariance and baseline stability, and report total reconstructed
+energy as channel multiplicity and duration vary. A matched SeF$_6$/Xe track
+study would resolve the separate question of $z$-extent distributions.
+
+Numerical inputs are in \path{config/nygren_review.toml}. Julia saves SI-based
+calculations, source hashes and code in \path{results/nygren_review/budgets.h5};
+Python presents the saved values. Reproduce from the repository root:
+\begin{verbatim}
+JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia" \
+  julia --startup-file=no --project=. scripts/validation/nygren_review.jl
+python3.13 scripts/validation/present_nygren_review.py
+latexmk -pdf -interaction=nonstopmode -halt-on-error \
+  -outdir=latex_generated/nygren_review docs/nygren_ion_tpc_review.tex
+\end{verbatim}
+\bibliographystyle{unsrtnat}
+\bibliography{notes/physics/references}
+\end{document}

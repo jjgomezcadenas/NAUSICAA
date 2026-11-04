@@ -1,0 +1,31 @@
+schema = "nausicaa.nygren_review.v1"
+# Nygren et al., JINST 13 P03015, section 3; SeF6 values inferred from SF6.
+Q_eV = 2995000.0
+W_eV = 32.0
+fano = 0.19
+enc_e = [30.0, 50.0, 120.0]
+independent_channels = [25, 100, 300, 400]
+target_fwhm_fraction = [0.005, 0.007, 0.01, 0.02]
+# Illustrative extents, not a simulated track-length distribution.
+z_extent_m = [0.01, 0.02, 0.10, 0.20, 1.60]
+# NAUSICAA adopted Xe-ion speed and conservative NνDEx CDR speed, respectively.
+drift_speed_m_s = [0.10, 0.20]
+speed_labels = ["NAUSICAA adopted ion speed", "NnuDEx CDR approximate speed"]
+# Nygren reduced mobility range; SI conversion of 0.4--0.6 cm2/(V s).
+reduced_mobility_m2_V_s = [0.00004, 0.00006]
+reference_pressure_Pa = 101325.0
+reference_temperature_K = 273.15
+pressure_Pa = 1000000.0
+temperature_K = 293.15
+field_V_m = 40000.0
+# An illustrative independent Poisson leakage-current contribution to boxcar charge.
+leakage_A = 0.6e-15
+integration_s = [0.1, 0.2, 1.0, 2.0]
+sources = [
+ "papers/TopMetal-Nvdev/ion_tpc_nygren.pdf",
+ "papers/TopMetal-Nvdev/nvdex-cdr.pdf",
+ "papers/TopMetal-Nvdev/Top-metal-design.pdf",
+ "papers/TopMetal-Nvdev/TopMetal-S-performance.pdf",
+ "papers/TopMetal-Nvdev/topMetalII.pdf",
+ "papers/TopMetal-Nvdev/topmetal_slow_leakage.pdf",
+]
