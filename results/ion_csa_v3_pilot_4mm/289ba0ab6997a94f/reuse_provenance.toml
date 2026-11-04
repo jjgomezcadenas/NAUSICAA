@@ -1,0 +1,4 @@
+source_study = "results/ion_csa_v3_pilot_4mm/fa07f78d3daa901b"
+validation = "Exact current.pwl and transistor-model SHA-256 match before raw cache reuse"
+reduction = "Recomputed with current implementation; three histories rerun at finer resolution to satisfy the original charge-integral bound"
+implementation_identity = "Includes Julia and Python physical/acquisition sources"

@@ -1,0 +1,8 @@
+{
+  "fresh_cases": 100,
+  "workers": 4,
+  "elapsed_s": 3.7056568330153823,
+  "wall_seconds_per_history": 0.037056568330153826,
+  "estimated_acquisition_s_for_pilot_selected_histories": 104.75891866934487,
+  "scope": "Fresh acquisitions only; current generation, reduction, noise sampling and presentation are separate."
+}

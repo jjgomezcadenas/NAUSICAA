@@ -1,0 +1,19 @@
+schema = "nausicaa.csa_design_note.v1"
+design_card = "config/csa_design_v3.toml"
+response_card = "config/specs/response/ion_csa/csa_v1.toml"
+reconstruction_card = "config/specs/response/ion_csa/reconstruction_v1.toml"
+parameters = "LTSpice/v3/parameters.json"
+retention = "results/ltspice/retention_scan/analysis.h5"
+calibration = "results/ltspice/csa_v3_response_calibration/analysis.h5"
+results_directory = "results/csa_design"
+report_directory = "latex_generated/csa_design"
+
+[[pilots]]
+pitch_mm = 2
+index = "results/ion_csa_v3_corrected_2mm/latest.toml"
+[[pilots]]
+pitch_mm = 3
+index = "results/ion_csa_v3_corrected/latest.toml"
+[[pilots]]
+pitch_mm = 4
+index = "results/ion_csa_v3_corrected_4mm/latest.toml"

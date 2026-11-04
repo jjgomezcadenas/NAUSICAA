@@ -37,6 +37,20 @@ note: physics readout spice-paper
 
 check: test readout note
 
+.PHONY: sipm-test sipm-pilot sipm-report
+sipm-test:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_sipm_response.jl
+
+sipm-pilot: sipm-test
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_sipm_pilot.jl
+	$(MAKE) sipm-report
+
+sipm-report:
+	$(PYTHON) scripts/production/present_sipm_pilot.py
+	cd latex_generated/sipm_response && latexmk -pdf -interaction=nonstopmode -halt-on-error report.tex
+	latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=work/sipm_model_build docs/sipm_electronics_model.tex
+	cp work/sipm_model_build/sipm_electronics_model.pdf latex_generated/sipm_response/sipm_electronics_model.pdf
+
 .PHONY: ltspice-study
 ltspice-study:
 	$(PYTHON) scripts/electronics/reproduction/initial/build_ltspice_study.py --simulator "$(LTSPICE)"
@@ -265,3 +279,46 @@ pdf-mc-selection:
 .PHONY: test-script-layout
 test-script-layout:
 	$(VIEWER_PYTHON) tests/script_layout/check_migration.py
+
+.PHONY: ion-csa-test ion-csa-pilot csa-design-note
+ion-csa-test:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_response.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_correction.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_pipeline.jl
+
+ion-csa-pilot:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_ion_csa.jl config/specs/runs/ion_csa_v3_pilot_all.toml
+
+csa-design-note:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_csa_design.jl
+	$(VIEWER_PYTHON) scripts/production/present_csa_design.py
+
+.PHONY: response-overview response-overview-present response-viewer response-overview-test
+response-overview:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_response_overview.jl
+	$(MAKE) response-overview-present
+
+response-overview-present:
+	$(VIEWER_PYTHON) scripts/production/present_response_overview.py
+
+response-viewer:
+	$(VIEWER_PYTHON) scripts/viewers/serve_cloud_viewer.py --production config/specs/runs/response_overview.toml --port 8769
+
+response-overview-test:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_response_overview.jl
+	$(VIEWER_PYTHON) tests/test_production_viewer.py
+
+.PHONY: electron-operating-points electron-point-2p5 electron-point-3 electron-operating-points-present
+electron-operating-points:
+	$(MAKE) -j2 electron-point-2p5 electron-point-3
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_electron_operating_points.jl
+	$(MAKE) electron-operating-points-present
+
+electron-point-2p5:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_electron_operating_point.jl ep2p5
+
+electron-point-3:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_electron_operating_point.jl ep3
+
+electron-operating-points-present:
+	MPLCONFIGDIR=work/matplotlib $(VIEWER_PYTHON) scripts/production/present_electron_operating_points.py

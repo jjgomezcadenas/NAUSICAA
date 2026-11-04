@@ -1,0 +1,60 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm]{geometry}
+\usepackage{booktabs,longtable,hyperref}
+\title{Electron photon histories with 250 ns buckets}
+\author{NAUSICAA production analysis}
+\date{\today}
+\begin{document}\maketitle
+\section*{Run and detector settings}
+The detector-stage electron branch was replayed from the saved common
+primary-pair realisation. The two samples use the same source events,
+placement, pair draws, and attachment streams as the earlier 2~$\mu$s run.
+The ion histories were retained. Pure Xe and Xe--15\% He are alternative gas
+models for each event. The HDF5 inputs to the SiPM response are VUV photons
+incident on each SiPM per time bucket, before PDE or electronics.
+
+\begin{center}\begin{tabular}{lr}\toprule
+Quantity & Value\\\midrule
+Electron time bucket & 0.25~$\mu$s\\
+Longitudinal bucket width & 0.25~mm\\
+Electron drift speed & 1~mm/$\mu$s\\
+Pressure & 15~bar\\
+Helium fraction in mixture & 15\%\\
+EL hole pitch, diameter, depth & 10, 5, 5~mm\\
+Reduced EL field & 3~kV/cm/bar\\
+Electron lifetime & 15~ms\\
+Primary $W$, Fano $F$ & 21.9~eV, 0.15\\
+EL variance ratio $J$ & 0.01\\
+\bottomrule\end{tabular}\end{center}
+
+\section*{Production ledgers}
+\small
+\begin{longtable}{llrrrrr}\toprule
+Sample & Gas & Events & Initial pairs & Surviving $e^-$ & Emitted photons & Incident photons\\\midrule
+$0\nu\beta\beta$ & Pure Xe & 8,000 & 897,306,359 & 856,854,917 & 1,998,549,749,864 & 381,689,031,793 \\
+$0\nu\beta\beta$ & Xe--15\% He & 8,000 & 897,306,359 & 856,854,917 & 1,965,197,038,264 & 375,318,926,831 \\
+Single electrons & Pure Xe & 8,000 & 897,244,198 & 856,968,162 & 1,998,813,669,858 & 381,740,368,430 \\
+Single electrons & Xe--15\% He & 8,000 & 897,244,198 & 856,968,162 & 1,965,456,724,396 & 375,369,610,548 \\
+\bottomrule\end{longtable}
+\normalsize
+Every event replays and checks its primary-pair checksum against the saved
+realisation. The electron/photon ledger requires surviving electrons no
+greater than initial pairs and incident photons no greater than emitted
+photons. Photon groups retain event, gas, SiPM and signed bucket indices.
+
+\section*{Timing and optical assumptions}
+Electrons are diffused directly into the physical 10~mm SiPM grid and
+0.25~mm longitudinal buckets. EL yield and its $J$ fluctuation,
+electron attachment and analytic direct optical acceptance follow the
+resolved detector card and \texttt{docs/production\_formulas.tex}.
+Photon time is assigned to the parent electron's arrival bucket at the EL
+hole. The model does not resolve electron flight or photon emission time
+within the 5~mm hole. The finer 250~ns bucket therefore resolves the saved
+arrival-coordinate model; it does not add a measured EL time profile.
+
+The numerical source and full provenance are stored in the HDF5 summary
+under the production pilot results directory. Its filename is
+\texttt{electron\_250ns\_summary\_} followed by the run identity
+\texttt{464425eac32a2c34} and \texttt{.h5}. Large branch histories remain
+local beside that summary.
+\end{document}

@@ -1,0 +1,20 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm]{geometry}
+\usepackage{booktabs,amsmath,hyperref}
+\providecommand{\SiPMGeneratedParameters}{}
+\input{parameters.tex}
+\title{SiPM and ASIC response: first pilot}
+\author{NAUSICAA}\date{}
+\begin{document}\maketitle
+The Julia response starts from saved incident photons, applies binomial PDE,
+uniform microcell illumination and exponential recovery, and adds Poisson
+primary dark pulses. The independent ASIC stage adds Gaussian PE noise and
+clips the bucket-average current at the configured upper limit. All avalanche
+charge is assigned to the trigger bucket. Crosstalk, afterpulsing and gain
+spread are deferred. Dark initial ages are stationary; the PDE is constant
+during recovery. Float64 charge accumulators preserve the sampled sensor charge.
+The physical model and source discussion are in \texttt{docs/sipm\_electronics\_model.tex}.
+\section{Saved parameters}
+\begin{center}\SiPMGeneratedParameters\end{center}
+\input{pilot_results.tex}
+\end{document}

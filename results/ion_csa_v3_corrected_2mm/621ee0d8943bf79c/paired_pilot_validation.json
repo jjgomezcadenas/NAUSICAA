@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": 410,
+  "events_per_sample": 100,
+  "samples": 2,
+  "pitches_mm": [
+    2,
+    3,
+    4
+  ],
+  "checks_per_event": [
+    "same_pair_checksum",
+    "same_initial_pairs"
+  ],
+  "response_files_hash_verified": 4
+}

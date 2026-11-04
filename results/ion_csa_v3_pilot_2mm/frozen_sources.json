@@ -1,0 +1,23 @@
+{
+  "src/ion_signal/ion_csa_response.jl": "14f4f2812585f6bf12bf458db46c767af7e33b3ff30399eb433166c89d04caa9",
+  "src/ion_signal/ion_csa_summary.jl": "5a172091a6261ff99e92826ccd5176b40198ca8e91fef54e0ddbcc6cdabc2de0",
+  "src/ion_signal/ion_csa_correction.jl": "fcaf814f72b3a2d1ed8055423733316efdb3f7ac93924e882270bc6e6c968a14",
+  "src/ion_signal/pad_history_readout.jl": "1865b012509dbca52d6add19e664984b51368c6cf6497dcaa4e73724d207bc4b",
+  "src/ion_signal/bucket_study.jl": "862f686463e014e3e73652112aab361370e84e05f5d27bdc1f1746a2863cffc9",
+  "src/ion_signal/averaging_scan.jl": "59d2910425a319723df58477b87f524ea089c0ce01f83d554df1623da20a74fc",
+  "src/ion_signal/discharge_calibration.jl": "355e202de7f6a0560789d2691eb9fefe2a3225737fe982a8488b8094af639071",
+  "src/ion_signal/bucket_noise_covariance.jl": "c075a658013c443159bc23161c4efb8b0ddc18fca8957963e80d3934bbac2355",
+  "src/ion_signal/spice_acquisition.py": "94eb994ffbbe22abd1a2267625874ec29f119634c890b2c6187c2fd6c70bcacd",
+  "src/ion_signal/spice.py": "da056df5fae8c15a7ee828bc86c09e3653ad590303d369195ab525ccfca46439",
+  "src/event_analysis/production_readout.jl": "d29134c897b854a416fafd5d3842d64e10e645bb528b4105652aea9121afc52f",
+  "scripts/production/specs.jl": "b9ab5a3cfdbbe4b2004345eeb9b71fd7cefa2dae9a019c6e475b7366f48f9ea7",
+  "scripts/production/run_ion_csa_pilot.py": "a5a4aa997c72da280b2ac8e5f3117212123bfd835f00b509eb8b1b10a298e92d",
+  "scripts/production/ion_csa_pilot.jl": "cef7f4073840e1d8457797a711caa869a5c211f77bbd9c73f031280842075edc",
+  "scripts/production/run_ion_csa_correction.py": "9b2a79384edaf290b9a2f5c53fcd1d0e9e301e172fcf4107063418c42203c6a5",
+  "scripts/production/ion_csa_correction.jl": "d0ec057ef01a7f008127aad8bfd433c97f65a4fc0a88a033c222883f64125350",
+  "scripts/production/present_ion_csa_pilot.py": "fb731118a3a80ac7c10eb2f9857be9b2b96eea257cf34b20acaa292bb475b85f",
+  "config/specs/response/ion_csa/csa_v1.toml": "fae8481329b3b87e388c080a564a5d5f005cf07bf572db0e4ed4116106f6a514",
+  "config/specs/response/ion_csa/reconstruction_v1.toml": "0c37ab3b374ac75cf0706fd1ee1ed9a6ee74fae334f12e4a90d7b7d44492ec8c",
+  "config/csa_design_v3.toml": "4f601e81ec0205970e119e20591962409aeb3e0827205cd22dee332367c862c2",
+  "config/csa_v3_response_calibration.toml": "e103d3102fd298aef1b96b5f981161d091d43e11a9733bcc58ace08925b164f3"
+}

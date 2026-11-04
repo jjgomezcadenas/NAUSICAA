@@ -1,0 +1,26 @@
+summary = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_response_pilot/ac2d42c2e5bfd335/summary.h5"
+sensor_model_id = "4463de9748482d545cfb30b770ddbe7bb5cc185cc603c17e72c9ecade0083d41"
+electronics_model_id = "c9581fce2a9035862f4129038361b1adc3a039e7363f194742a92ac0a960473a"
+study_id = "ac2d42c2e5bfd335"
+run_card_toml = """schema = \"nausicaa.sipm_run.v1\"\npilot_only = true\nphoton_index = \"results/simulations/production_pilot/electron_250ns_summary_464425eac32a2c34.h5\"\nsipm_card = \"config/specs/response/sipm/sipm_v1.toml\"\nelectronics_card = \"config/specs/response/sipm_electronics/readout_v1.toml\"\nsamples = [\"bb0nu\", \"single_electrons\"]\ngases = [\"pure_xe\", \"xe_he15\"]\nevent_ids = [0]\nresults_directory = \"results/sipm_response_pilot\"\nreport_directory = \"latex_generated/sipm_response\"\n"""
+
+[[outputs]]
+electronics = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/b3e56ceb24a2971d61625b533c5bda63e83b4d734bf470e340b308aeb0e3b1a4/electron_response.h5"
+sensor = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/9d05b92a52cb41d786c943b33addb61831b4628887da225752a1dff7893b6298/sipm_response.h5"
+sample = "bb0nu"
+gas = "pure_xe"
+[[outputs]]
+electronics = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/214181aecdf62878f0451906c1e8215a5c50e86785bf788da820e9e0c551396a/electron_response.h5"
+sensor = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/88e04c7ee8b319257078f366ab42251109d6fe1e12b56b562388ebb20f7164fe/sipm_response.h5"
+sample = "bb0nu"
+gas = "xe_he15"
+[[outputs]]
+electronics = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/afbd8fb8a00d398175c6649bbd2061bc38f27956401c0d4c70649ccb951e8ec8/electron_response.h5"
+sensor = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/eabea1c432033c0fbd5d96a6006fffefed0720fa1b87658f9f80bcc73d86eb6f/sipm_response.h5"
+sample = "single_electrons"
+gas = "pure_xe"
+[[outputs]]
+electronics = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/aec3b937a6cf6c58ebf9bec7051f24270a636a9213ca4d424ff4cdd930390d50/electron_response.h5"
+sensor = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/b9d579d7252d1ac85ae2006a6d5fe9f2ab5fce4098d4e053bdc3bb2ffb699966/sipm_response.h5"
+sample = "single_electrons"
+gas = "xe_he15"

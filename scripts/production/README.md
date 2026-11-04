@@ -44,7 +44,9 @@ cards and provenance.
 The saved sparse histories also feed an event-level pulse comparison. For
 each event, Julia computes the mean over all occupied cells and the maximum
 cell count. Ion cells are pixel–frame pairs at the three grid settings;
-photon cells are SiPM–2 µs buckets for pure Xe and Xe–15% He. No count cut or
+photon cells are SiPM–0.25 µs buckets for pure Xe and Xe–15% He. The ion
+histories come from the grid-scan index and the photon histories from the
+250 ns electron index. No count cut or
 time integration is applied. Regenerate the numerical HDF5 reduction, browser
 page, figures and PDF in one command:
 
@@ -56,3 +58,26 @@ JULIA_DEPOT_PATH="$PWD/work/julia_depot:$HOME/.julia" \
 The outputs are `results/readout_pulses_8000/readout_pulses.h5`,
 `results/readout_pulses_8000/readout_pulses.html`, and
 `latex_generated/readout_pulses_8000/readout_pulses.tex`/`.pdf`.
+
+## Electron photon histories at 250 ns
+
+The electron-only replay uses the same 8,000-event primary-pair realisations
+and detector settings as the grid scan, with `bucket_width_us = 0.25`
+(0.25 mm at 1 mm/µs). It writes new pure-Xe and Xe–15% He photon files for
+both samples and leaves the ion histories intact. Run from the repository
+root:
+
+```sh
+JULIA_DEPOT_PATH="$PWD/work/julia_depot:$HOME/.julia" \
+  julia --project=. scripts/production/run_electron_250ns.jl \
+  config/specs/runs/electron_250ns.toml
+python3.13 scripts/production/present_electron_250ns.py \
+  results/simulations/production_pilot/electron_250ns_summary_464425eac32a2c34.h5
+```
+
+The summary stores the four gas/sample paths, counts, resolved cards and
+provenance. The generated report is
+`latex_generated/electron_250ns/464425eac32a2c34/electron_250ns.pdf`.
+The current SiPM input paths are listed in
+`docs/sipm_electronics_handoff.md`. An optional final integer argument to
+`run_electron_250ns.jl` limits events for a pilot and writes to `work/`.

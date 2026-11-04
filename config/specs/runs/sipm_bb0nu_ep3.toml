@@ -1,0 +1,9 @@
+gases = ["pure_xe", "xe_he15"]
+report_directory = "latex_generated/sipm_response_production"
+event_selection = "all_sorted_source_ids"
+photon_index = "results/simulations/production_pilot/electron_250ns_summary_3c12a84f1fdbc522.h5"
+pilot_card = "config/specs/runs/sipm_response_ep3.toml"
+sample = "bb0nu"
+results_directory = "results/sipm_response_ep3"
+schema = "nausicaa.sipm_production_run.v1"
+shard_events = 100

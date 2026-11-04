@@ -75,7 +75,7 @@ def rows_for(f, kind):
     return rows
 
 
-def figure(f, kind, output):
+def figure(f, kind, output, photon_bucket_us):
     """Plot saved, common-bin event-mean and event-maximum histograms."""
     fig, axes = plt.subplots(2, 2, figsize=(12, 8.7), layout="constrained")
     for row, (sample, sample_label) in enumerate(SAMPLES):
@@ -90,7 +90,7 @@ def figure(f, kind, output):
                 if int(counts.sum()) != int(scalar(g, "events_with_charge")):
                     raise ValueError(f"Histogram entry mismatch: {kind}/{sample}/{case}/{field}")
             unit = ("Ions / occupied pixel–frame cell" if kind == "ions" else
-                    "Incident photons / SiPM–2 µs bucket")
+                    f"Incident photons / SiPM–{photon_bucket_us:g} µs bucket")
             ax.set(title=f"{sample_label} · {title}", xlabel=unit, ylabel="Events",
                    xscale="log", yscale="log", xlim=(edges[0], edges[-1]))
             ax.grid(alpha=0.18)
@@ -110,13 +110,22 @@ def present(input_path: Path, output_dir: Path, latex_dir: Path) -> tuple[Path, 
     with h5py.File(input_path) as f:
         schema = f.attrs["schema"]
         schema = schema.decode() if isinstance(schema, bytes) else schema
-        if schema != "nausicaa.readout_pulses.v1" or not scalar(f["metadata"], "complete"):
+        if schema != "nausicaa.readout_pulses.v2" or not scalar(f["metadata"], "complete"):
             raise ValueError("Incomplete or incompatible pulse reduction")
         m = f["metadata"]
         realisation = tomllib.loads(scalar(m, "realisation_card"))
         electron = tomllib.loads(scalar(m, "electron_card"))
         ion_cards = {pitch: tomllib.loads(scalar(m, f"ion_card_{pitch}mm"))
                      for pitch in (2, 3, 4)}
+        photon_bucket_us = float(electron["bucket_width_us"])
+        if photon_bucket_us != 0.25:
+            raise ValueError("Expected 0.25 µs electron buckets")
+        for sample, _ in SAMPLES:
+            for gas, _, _ in CONFIGS["photons"]:
+                g = f[f"cases/photons/{sample}/{gas}"]
+                if (float(scalar(g, "bucket_duration")) != photon_bucket_us or
+                        scalar(g, "bucket_unit") != "us"):
+                    raise ValueError(f"Photon bucket mismatch: {sample}/{gas}")
         for pitch, card in ion_cards.items():
             if (card["pad_pitch_mm"] != pitch or
                     card["bucket_width_ms"] != 10 * pitch):
@@ -125,7 +134,7 @@ def present(input_path: Path, output_dir: Path, latex_dir: Path) -> tuple[Path, 
         photon_rows = rows_for(f, "photons")
         for kind in ("ions", "photons"):
             png = figures / f"{kind}_mean_max.png"
-            figure(f, kind, png)
+            figure(f, kind, png, photon_bucket_us)
             shutil.copy2(png, latex_dir / png.name)
         headers = ("Species", "Setting", "Events", "Occupied cells", "Total signal",
                    "Mean of means", "Median mean", "Mean maximum", "Median maximum")
@@ -135,7 +144,8 @@ def present(input_path: Path, output_dir: Path, latex_dir: Path) -> tuple[Path, 
                      "2, 3 and 4 mm along drift. Every event mean is its total ions "
                      "divided by its number of occupied pixel–frame cells; the event "
                      "maximum is the largest cell count.")
-        photon_intro = ("A photon pulse is one SiPM–2 µs bucket with positive incident "
+        photon_intro = (f"A photon pulse is one SiPM–{photon_bucket_us:g} µs "
+                        "(250 ns) bucket with positive incident "
                         "VUV photon count. Pure Xe and Xe–15% He use the same 10 mm "
                         "hole pitch and electron settings. Every event mean divides its "
                         "total incident photons by its occupied SiPM–bucket count; "
@@ -171,8 +181,10 @@ def present(input_path: Path, output_dir: Path, latex_dir: Path) -> tuple[Path, 
                 + '<img src="figures/photons_mean_max.png" alt="Photon event mean and maximum distributions">'
                 + "<h2>Provenance</h2>"
                 + f"<p>Numerical HDF5 reduction: <code>{html.escape(str(input_path))}</code>. "
-                + f"Grid-scan index SHA-256: <code>{html.escape(scalar(m, 'scan_index_sha256'))}</code>. "
-                + f"Run ID: <code>{html.escape(scalar(m, 'run_id'))}</code>. "
+                + f"Ion grid-scan index SHA-256: <code>{html.escape(scalar(m, 'scan_index_sha256'))}</code>. "
+                + f"Electron 250 ns index SHA-256: <code>{html.escape(scalar(m, 'electron_index_sha256'))}</code>. "
+                + f"Ion run ID: <code>{html.escape(scalar(m, 'run_id'))}</code>; "
+                + f"electron run ID: <code>{html.escape(scalar(m, 'electron_run_id'))}</code>. "
                 + "The HDF5 reduction records each branch file, source and code identity, "
                   "per-event pulse totals and shared histogram edges.</p>")
         html_path = output_dir / "readout_pulses.html"
@@ -199,9 +211,14 @@ def present(input_path: Path, output_dir: Path, latex_dir: Path) -> tuple[Path, 
                      r"\begin{center}\includegraphics[width=\linewidth]{photons_mean_max.png}\end{center}",
                      r"\section*{Provenance}",
                      rf"Numerical reduction: \texttt{{{input_path.name.replace('_', r'\_')}}}. "
-                     rf"Run ID: \texttt{{{scalar(m, 'run_id')}}}. "
-                     r"The HDF5 file preserves per-event values, histogram bins, resolved "
-                     r"cards, source/code hashes and charge/light ledgers.",
+                     r"\par\noindent "
+                     rf"Ion run ID: \texttt{{{scalar(m, 'run_id')}}}. "
+                     r"\par\noindent "
+                     rf"Electron run ID: \texttt{{{scalar(m, 'electron_run_id')}}}. "
+                     r"\par\noindent "
+                     r"The HDF5 file preserves per-event values, histogram bins, and "
+                     r"resolved cards.\par\noindent It also records source/code hashes "
+                     r"and charge/light ledgers.",
                      r"\end{document}"]
         tex = latex_dir / "readout_pulses.tex"
         tex.write_text("\n".join(tex_lines) + "\n")

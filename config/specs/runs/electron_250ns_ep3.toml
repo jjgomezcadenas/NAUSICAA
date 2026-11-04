@@ -1,0 +1,6 @@
+schema = "nausicaa.detector_run.v1"
+detector_configuration = "config/specs/detector/configurations/electron_250ns_ep3.toml"
+selected_samples = ["bb0nu"]
+results_dir = "results/simulations/production_pilot"
+report_dir = "latex_generated/electron_250ns"
+pilot_only = true

@@ -118,7 +118,31 @@ and a numerical HDF5 validation summary. The checked default pilot has a
         ('Runtime', 'Benchmark a short run for both samples and three streams; record wall time and peak memory before selecting a full-run event count.'),
     ]), 'production-pilot')
 
+    response = section('SiPM and ASIC response: approved interface', '''
+<p><code>read_photon_history</code> supplies incident photons with signed
+SiPM/bucket keys. The response uses these photons directly, retaining the gas,
+event, pair checksum and geometry. The Petit diffusion and optical-collection
+callers remain upstream in the production detector stage.</p>
+<p><code>SiPMResponse.Sensor</code> holds PDE, effective microcell count, gain,
+recovery time in seconds and primary dark rate in Hz.
+<code>simulate_channel</code> consumes an RNG, integer photon counts and bucket
+duration, returning detected PE, dark pulses and optical/dark/total charge in C.
+The acquisition contains each event's illuminated channels, all intervening
+zero-photon buckets and four quiet buckets at each end. Initial microcell ages
+follow stationary dark noise. Times and charge accumulators use Float64.</p>
+<p><code>SiPMElectronics.Electronics</code> holds bucket duration, noise RMS in PE
+and the current limit. <code>apply_electronics</code> consumes saved SiPM charge,
+returns independent Gaussian noise, unclipped/current outputs in A and saturation
+flags, and preserves the input. The two TOML cards select the approved models.</p>
+<p>Versioned <code>sipm_response.h5</code> and <code>electron_response.h5</code>
+save independent stages. The sensor identity uses photon contents, sensor card,
+code and event selection; electronics adds its own card/code identity. Per-event
+and per-channel seeds are independent of processing order and event selection.
+Each file retains source hashes and exact cards. The first pilot uses event 0
+from each of the four 250 ns files. Full-sample production follows review.</p>
+''', 'production-sipm-response')
+
     return dict(id='production-model', title='8. Production detector model',
                 summary='Shared pair sampling, branch-specific transport, sparse histories and pilot validation.',
                 status='Pilot implemented · J anchor readings recorded',
-                body=flow + types + funcs + rng + files + pilot)
+                body=flow + types + funcs + rng + files + pilot + response)

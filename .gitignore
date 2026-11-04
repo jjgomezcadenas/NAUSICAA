@@ -100,3 +100,15 @@ results/ltspice/noise_audit/decks/*.db
 /LTSpice/*.fls
 /LTSpice/*.fdb_latexmk
 /LTSpice/*.synctex.gz
+
+# Model-note build intermediates.
+/docs/*.aux
+/docs/*.log
+/docs/*.out
+/docs/*.fls
+/docs/*.fdb_latexmk
+/docs/*.synctex.gz
+
+# Production numerical files; retain cards, manifests and presentation artifacts.
+/results/sipm_response_production/**/*.h5
+/results/sipm_response_ep*/**/*.h5

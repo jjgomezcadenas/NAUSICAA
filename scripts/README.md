@@ -43,6 +43,25 @@ To inspect the saved ion and PE histories event by event, run
 open `http://127.0.0.1:8767/`. The viewer selects one sample and one electron
 gas; event numbers are positions in the file, starting at 1.
 
+## Production ion CSA response
+
+```sh
+julia --project=. scripts/production/run_ion_csa.jl \
+  config/specs/runs/ion_csa_v3_pilot_all.toml
+```
+
+The Julia entry point validates and publishes the six corrected 100-event
+pilot files at 2, 3 and 4 mm pitch. It saves compact input-charged pixel rows,
+complete bucket histories and signed reconstructed counts. The run manifest
+locates the final matrices and covariance. Branches without a saved corrected
+study execute the existing acquisition and reconstruction pipeline.
+`config/specs/runs/ion_csa_v3_production.toml` selects the full samples for an
+explicit production run. See [interfaces, schema and controls](../docs/ion_csa_response.md).
+
+`make ion-csa-test` runs the response, reconstruction and production tests.
+`make csa-design-note` regenerates the three-pilot technical note's numerical
+summary, tables and figures. Compilation is a separate step.
+
 ## CSA response to stored pad histories
 
 ```sh

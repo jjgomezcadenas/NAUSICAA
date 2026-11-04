@@ -1,0 +1,118 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Ion and SiPM response production specification</title><style>body{font:16px/1.55 system-ui,sans-serif;color:#243348;max-width:1100px;
+margin:32px auto;padding:0 22px}h1,h2{line-height:1.2}h1{margin-bottom:1.4em}
+h2{border-bottom:1px solid #dce3ec;padding-bottom:.25em;margin-top:2em}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid #dce3ec;
+padding:8px;text-align:left;vertical-align:top}th{background:#edf2f6}
+code{background:#f3f6f8;padding:1px 3px;overflow-wrap:anywhere}
+ol li{margin-bottom:.45em}</style><h1>Ion and SiPM response production specification</h1>
+<h2>First complete case</h2>
+<p>The first complete response case uses the existing 8,000-event <code>bb0nu</code> primary
+realisation. Its ion input is the <strong>3 mm pad / 30 ms frame</strong> history. Its
+electron inputs are the two <strong>250 ns</strong> incident-photon histories, for pure Xe
+and Xe–15% He. They are alternative gas models with the same primary-pair draw
+and event placement. The source indices are
+<code>results/simulations/production_pilot/grid_scan_summary_238ddc5a75e0fd9b.h5</code>
+and
+<code>results/simulations/production_pilot/electron_250ns_summary_464425eac32a2c34.h5</code>.
+The 2 and 4 mm ion configurations and <code>single_electrons</code> await review of this
+first case.</p>
+<h2>Response graph and units</h2>
+<table>
+<thead>
+<tr>
+<th>Node</th>
+<th>Input</th>
+<th>Main output</th>
+<th>Time unit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ion CSA</td>
+<td>Sparse positive ions per pad/frame</td>
+<td>Signed reconstructed ion charges per selected pad/frame</td>
+<td>30 ms</td>
+</tr>
+<tr>
+<td>SiPM sensor</td>
+<td>Sparse incident VUV photons per SiPM/bucket</td>
+<td>Integer detected PE and real-valued sensor PE equivalent per selected SiPM/bucket</td>
+<td>250 ns</td>
+</tr>
+<tr>
+<td>Electron ASIC</td>
+<td>Sensor PE equivalent per SiPM/bucket</td>
+<td>Signed, clipped readout PE equivalent per selected SiPM/bucket</td>
+<td>250 ns</td>
+</tr>
+</tbody>
+</table>
+<p>One ion carries <code>+e</code>. The CSA converts to SI current and voltage, then
+calibrates its output in elementary-charge units. One fully recovered SiPM
+avalanche carries <code>gain × e</code>; sensor PE equivalent is sensor charge divided
+by that charge. The ASIC's bucket-average current is multiplied by the bucket
+duration and divided by that same charge to obtain readout PE equivalent.
+Recovery, Gaussian noise and clipping make the latter two values real rather
+than integer. Negative ASIC estimates remain signed; saturation flags mark
+the upper 1 mA limit.</p>
+<h2>Saved data contracts</h2>
+<p>Every node uses the original sample name, source event ID and gas identity
+where applicable. The ion response uses sorted signed pad indices and a full
+time vector for each pad with input charge. It saves input ions, noiseless
+response, sampled noise, signed reconstructed counts and frame covariance.
+The HDF5/Python matrices are <code>(pad, frame)</code>; Julia reads <code>(frame, pad)</code>.
+Zero-input frames, leading quiet frames and the recovery interval remain in
+the selected histories. Spatial pixels without input charge are absent.</p>
+<p>The electron response keeps the source's signed <code>(pixel_ix, pixel_iy, bucket)</code>
+keys. The sensor file's main columns are <code>detected_pe::Int64</code> and
+<code>sensor_pe_equiv::Float64</code> for each saved SiPM–bucket. The ASIC file's main
+column is <code>readout_pe_equiv::Float64</code>, with <code>saturated::Bool</code>. Both stages
+retain the selected SiPMs' global photon interval plus four quiet buckets at
+each end, including cells with zero incident photons. A remote photon adds
+its receiving SiPM only. The source photon files are referenced by path and
+content hash; production files do not duplicate their event groups.</p>
+<p>Each output records the exact parsed cards, source content hash, model/code
+hashes, Julia version, RNG policy, selected event IDs, event count, bucket
+duration, units and a completion flag. Sensor and ASIC files are independent
+cache nodes. Changing only the ASIC card reuses the sensor file. A run manifest
+lists the ion and both gas-specific electron response nodes, their hashes and
+the shared realisation/pair identities.</p>
+<h2>Adopted first response models</h2>
+<p>The ion branch uses the v3 circuit, 5 ms centred voltage averages, finite-gap
+square-pad weighting benchmark, uniform mean ion arrival times within each
+frame, a three-frame inverse and stationary correlated noise from the
+quiescent one-sided SPICE spectrum. The ion card and reconstruction card are
+<code>config/specs/response/ion_csa/csa_v1.toml</code> and
+<code>config/specs/response/ion_csa/reconstruction_v1.toml</code>.</p>
+<p>The SiPM branch uses binomial PDE 0.30, 7,854 effective microcells, 73.4 ns
+recovery, uniform arrival times within each 250 ns bucket, uniform microcell
+assignment and area-scaled primary dark pulses. The ASIC adds independent
+0.5 PE RMS Gaussian noise per bucket and clips bucket-average current above
+1 mA. The approved sensor and ASIC cards are
+<code>config/specs/response/sipm/sipm_v1.toml</code> and
+<code>config/specs/response/sipm_electronics/readout_v1.toml</code>. Crosstalk,
+afterpulsing, intrinsic gain spread, recovery-dependent PDE and ASIC pulse
+shaping are deferred model extensions. The simulated sensor and ASIC values
+are assigned to their trigger bucket.</p>
+<h2>Validation and execution gates</h2>
+<ol>
+<li>Reject stale CSA calibration if its saved card, source deck, transistor
+model, derived inputs or simulator hash differs from the current resources.</li>
+<li>Validate source schemas, complete flags, exact event sets, source hashes,
+common primary-pair checksums and complementary drift lengths.</li>
+<li>Verify every ion cell and event ledger, signed bucket alignment, finite
+output, temporal covariance and reconstruction additivity.</li>
+<li>Verify <code>0 ≤ detected_pe ≤ incident_photons</code> for every SiPM–bucket, sensor
+charge bounds, complete selected-channel windows, ASIC noise and clipping
+behavior. Record clipped-cell fractions with explicit denominators and
+charge/PE-equivalent loss as a separate quantity.</li>
+<li>Benchmark a bounded subset and an interrupted-run replay before all 8,000
+events. Save versioned HDF5 results atomically or in complete shards with
+hashes and a manifest. Julia computes numerical summaries; Python presents
+the saved results in HTML and a generated LaTeX/PDF report.</li>
+</ol>
+<p>The physical source and interface detail is in <code>notes/physics/csa_design.tex</code>,
+<code>docs/ion_csa_response.md</code>, <code>docs/sipm_electronics_model.tex</code> and
+<code>docs/sipm_response.md</code>. This specification fixes the first production data
+contract; those notes retain the derivations and validation evidence.</p>
+</html>

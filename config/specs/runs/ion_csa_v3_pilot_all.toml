@@ -1,0 +1,24 @@
+schema = "nausicaa.ion_csa_pipeline_run.v1"
+response_card = "config/specs/response/ion_csa/csa_v1.toml"
+reconstruction_card = "config/specs/response/ion_csa/reconstruction_v1.toml"
+ion_index = "results/simulations/production_pilot/grid_scan_summary_238ddc5a75e0fd9b.h5"
+samples = ["bb0nu", "single_electrons"]
+selection = "evenly_spaced_sorted_event_ids"
+channel_selection = "pixels_with_positive_input_charge"
+absent_channel_policy = "no_input_charge_noise_not_simulated"
+measured_zero_suppression = false
+negative_estimate_clipping = false
+events_per_sample = 100
+results_directory = "results/ion_csa_v3_production_pilot"
+
+[[branches]]
+pitch_mm = 2
+corrected_study = "results/ion_csa_v3_corrected_2mm/621ee0d8943bf79c"
+
+[[branches]]
+pitch_mm = 3
+corrected_study = "results/ion_csa_v3_corrected/bfe6dd3720d0e9b9"
+
+[[branches]]
+pitch_mm = 4
+corrected_study = "results/ion_csa_v3_corrected_4mm/1a907c5dff36993d"

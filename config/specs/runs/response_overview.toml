@@ -1,0 +1,22 @@
+sample = "bb0nu"
+output = "results/response_overview"
+sipm_manifest = "results/sipm_response_production/0246ff441c441632/manifest.toml"
+[[ions]]
+pitch_mm = 2
+path = "results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/ions/17bb8250a71cf1c20a3e6efe80fc0726464623a10f087946322f29ad971743fe/1e26af39961a7e18226f01dfd4ef248ffee396b8bbd06152ad3b17581ab4678e/ion_response.h5"
+[[ions]]
+pitch_mm = 3
+path = "results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/ions/d978512060a41657396c2741c45a5cc4925c5f22daab718af0831cfac1d153c0/708c9d6fbed1ba4538bfe0a3678c2af37d8531663bf9da018da54ac6d15f5490/ion_response.h5"
+[[ions]]
+pitch_mm = 4
+path = "results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/ions/14d59c9436d9cdfa37465d0e788feefa4b84f153c118c1bc1ed5c937e3cd06ac/5387d1f10e2bcf209446696a2c0d7b62fb1b1e323eb022b57e6fac9b10aaa6dc/ion_response.h5"
+
+[[operating_points]]
+id = "ep2p5"
+label = "E/P 2.5 · J 0.015"
+index = "results/electron_operating_points/ep2p5.toml"
+
+[[operating_points]]
+id = "ep3"
+label = "E/P 3.0 · J 0.025"
+index = "results/electron_operating_points/ep3.toml"

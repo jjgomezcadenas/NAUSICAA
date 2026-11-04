@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 # Reduce sparse ion/pixel and photon/SiPM histories to event pulse statistics.
-using HDF5, SHA, Statistics, TOML
+using HDF5, SHA, Statistics
 
 const ROOT=normpath(joinpath(@__DIR__,"../.."))
 
@@ -86,43 +86,60 @@ function histogram(values::Vector{Float64},edges::Vector{Float64})
     return counts
 end
 
-"""Reduce the ten branch files referenced by a completed grid-scan index.
+"""Reduce six ion branches and four 250 ns photon branches.
 
 Write per-event mean and maximum pulse counts, exact signal totals, shared
 histogram edges, summary statistics and source/code identities to one HDF5
 file. The presentation stage only reads these numerical results.
 """
-function reduce_scan(index_path::String,output_path::String)
+function reduce_scan(index_path::String,electron_index_path::String,output_path::String)
     cases=Dict{Tuple{String,String,String},Any}()
     cards=Dict{String,String}()
     index_sha=bytes2hex(sha256(read(index_path)))
+    electron_index_sha=bytes2hex(sha256(read(electron_index_path)))
     electron_bucket_us=Ref(0.0)
     h5open(index_path,"r") do index
         String(read(attributes(index)["schema"]))=="nausicaa.detector_grid_scan.v1" ||
             error("Grid-scan index schema mismatch")
         Bool(read(index["metadata/complete"])) || error("Incomplete grid-scan index")
-        for name in ("realisation_card","electron_card","ion_card_2mm",
+        for name in ("realisation_card","ion_card_2mm",
                      "ion_card_3mm","ion_card_4mm","run_id")
             cards[name]=saved_string(index["metadata"],name)
         end
-        electron_card=TOML.parse(cards["electron_card"])
-        electron_bucket_us[]=Float64(electron_card["bucket_width_us"])
-        for sample in ("bb0nu","single_electrons")
-            g=index[sample];events=Int(read(g["events"]))
-            for pitch in ("2","3","4")
-                branch=g["ions/$pitch"]
-                path=saved_string(branch,"path")
-                cases[("ions",sample,pitch)]=(
-                    data=reduce_file(path,"ions",events,Int64(read(branch["ions"]))),
-                    path=path,label="$(pitch) mm",frame=Float64(read(branch["bucket_width_ms"])))
-            end
-            for gas in ("pure_xe","xe_he15")
-                branch=g["photons/$gas"]
-                path=saved_string(branch,"path")
-                cases[("photons",sample,gas)]=(
-                    data=reduce_file(path,"photons",events,
-                        Int64(read(branch["incident_photons"]))),
-                    path=path,label=gas,frame=electron_bucket_us[])
+        h5open(electron_index_path,"r") do electron_index
+            String(read(attributes(electron_index)["schema"]))==
+                "nausicaa.electron_rebin_summary.v1" || error("Electron index schema mismatch")
+            Bool(read(electron_index["metadata/complete"])) || error("Incomplete electron index")
+            cards["electron_card"]=saved_string(electron_index["metadata"],"electron_card")
+            cards["electron_run_id"]=saved_string(electron_index["metadata"],"run_id")
+            saved_string(electron_index["metadata"],"realisation_card")==
+                cards["realisation_card"] || error("Primary realisation cards differ")
+            electron_bucket_us[]=Float64(read(electron_index["metadata/bucket_width_us"]))
+            electron_bucket_us[]==0.25 || error("Expected 0.25 µs photon buckets")
+            for sample in ("bb0nu","single_electrons")
+                g=index[sample];eg=electron_index[sample]
+                events=Int(read(g["events"]))
+                events==Int(read(eg["events"])) || error("Event counts differ: $sample")
+                for field in ("realisation_id","source_sha256")
+                    saved_string(g,field)==saved_string(eg,field) ||
+                        error("$field differs: $sample")
+                end
+                Int64(read(g["pairs"]))==Int64(read(eg["initial_pairs"])) ||
+                    error("Primary pair totals differ: $sample")
+                for pitch in ("2","3","4")
+                    branch=g["ions/$pitch"]
+                    path=saved_string(branch,"path")
+                    cases[("ions",sample,pitch)]=(
+                        data=reduce_file(path,"ions",events,Int64(read(branch["ions"]))),
+                        path=path,label="$(pitch) mm",frame=Float64(read(branch["bucket_width_ms"])))
+                end
+                for gas in ("pure_xe","xe_he15")
+                    path=saved_string(eg,"$(gas)_path")
+                    cases[("photons",sample,gas)]=(
+                        data=reduce_file(path,"photons",events,
+                            Int64(read(eg["$(gas)_incident"]))),
+                        path=path,label=gas,frame=electron_bucket_us[])
+                end
             end
         end
     end
@@ -130,11 +147,13 @@ function reduce_scan(index_path::String,output_path::String)
     temporary=output_path*".tmp"
     isfile(temporary) && rm(temporary)
     h5open(temporary,"w") do out
-        attributes(out)["schema"]="nausicaa.readout_pulses.v1"
+        attributes(out)["schema"]="nausicaa.readout_pulses.v2"
         m=create_group(out,"metadata")
         m["complete"]=false
         m["scan_index"]=abspath(index_path)
         m["scan_index_sha256"]=index_sha
+        m["electron_index"]=abspath(electron_index_path)
+        m["electron_index_sha256"]=electron_index_sha
         m["reducer_sha256"]=bytes2hex(sha256(read(@__FILE__)))
         for (name,body) in cards
             m[name]=body
@@ -202,6 +221,6 @@ function reduce_scan(index_path::String,output_path::String)
 end
 
 if abspath(PROGRAM_FILE)==@__FILE__
-    length(ARGS)==2 || error("Usage: reduce_readout_pulses.jl GRID_SCAN_INDEX.h5 OUTPUT.h5")
-    println(reduce_scan(ARGS[1],ARGS[2]))
+    length(ARGS)==3 || error("Usage: reduce_readout_pulses.jl GRID_SCAN_INDEX.h5 ELECTRON_INDEX.h5 OUTPUT.h5")
+    println(reduce_scan(ARGS[1],ARGS[2],ARGS[3]))
 end

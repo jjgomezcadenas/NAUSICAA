@@ -22,12 +22,19 @@
         <option value="pure_xe">Pure Xe</option>
         <option value="xe_he">Xe + 15% He</option>
       </select>
+      <span id="production-controls" hidden>
+        <label>EL <select id="operating_point"><option value="legacy">E/P 3.0 · J 0.010 (previous)</option></select></label>
+        <label>Ion pitch <select id="pitch"><option>2</option><option selected>3</option><option>4</option></select> mm</label>
+        <label>Ions <select id="stage"><option value="input">Input</option><option value="response" selected>CSA corrected</option></select></label>
+        <label>Electrons <select id="electron_stage"><option value="photons">Photons</option><option value="detected">Detected PE</option><option value="sensor">SiPM response</option><option value="readout" selected>Electronics PE</option></select></label>
+      </span>
       <button id="previous" title="Previous event (←)">← Previous</button>
       <label for="event">Event in file</label>
       <input id="event" type="number" min="1" value="1" step="1">
       <button id="go">Go</button>
       <button id="next" title="Next event (→)">Next →</button>
       <span id="counter"></span>
+      <button id="produce-png">Produce PNG</button>
     </div>
   </header>
   <div id="status" role="status">Loading event…</div>

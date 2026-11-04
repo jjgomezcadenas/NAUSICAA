@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "responses": 1,
+  "events": 1,
+  "checks": 434,
+  "payload": "all event, calibration and covariance datasets exactly equal to corrected parent"
+}

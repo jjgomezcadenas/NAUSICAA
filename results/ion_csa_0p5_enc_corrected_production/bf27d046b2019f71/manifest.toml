@@ -1,0 +1,9 @@
+parent_response_hashes = ["01c4419265893c4c985b875cc78c3d4a5ac7bdc961ad73b7bf1f2533a53b6de8"]
+code_hash = "675706bfcdeab6be872d64a482e3bdc0aaf0c2d0ad999a884af66838d398274f"
+run_card = "config/specs/runs/ion_csa_0p5_enc_corrected_production.toml"
+reconstruction_card = "config/specs/response/ion_csa/reconstruction_v1.toml"
+parent_study_directory = "results/ion_csa_0p5_enc_production/0127dbf33ad328c8"
+reconstruction_method = "three_frame_inverse"
+study_id = "bf27d046b2019f71"
+model_id = "dd3d4116e74893175bb8a20645ddb114cc696a6dea2408e87696fa8b6b2785ca"
+parent_response_paths = ["/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/ions/d978512060a41657396c2741c45a5cc4925c5f22daab718af0831cfac1d153c0/d5323e7ef4f9bcbff1ec4272425149967df2ea5643f9c4b157d85300f2038600/ion_response.h5"]

@@ -1,0 +1,5 @@
+source_study = "results/ion_csa_v3_pilot/e350c80d4a1396a4"
+original_acquisitions = "results/ion_csa_v3_pilot/d6798a937b24dfd0"
+validation = "Exact current.pwl and transistor-model SHA-256 match before raw cache reuse"
+reduction = "Recomputed with current implementation"
+implementation_identity = "Includes Julia and Python physical/acquisition sources"

@@ -1,0 +1,10 @@
+schema = "nausicaa.sipm_run.v1"
+pilot_only = true
+photon_index = "results/simulations/production_pilot/electron_250ns_summary_464425eac32a2c34.h5"
+sipm_card = "config/specs/response/sipm/sipm_v1.toml"
+electronics_card = "config/specs/response/sipm_electronics/readout_v1.toml"
+samples = ["bb0nu", "single_electrons"]
+gases = ["pure_xe", "xe_he15"]
+event_ids = [0]
+results_directory = "results/sipm_response_pilot"
+report_directory = "latex_generated/sipm_response"

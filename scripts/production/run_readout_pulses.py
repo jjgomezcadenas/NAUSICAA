@@ -17,6 +17,9 @@ def main() -> None:
     parser.add_argument("--scan-index", type=Path,
                         default=ROOT / "results/simulations/production_pilot/"
                                        "grid_scan_summary_238ddc5a75e0fd9b.h5")
+    parser.add_argument("--electron-index", type=Path,
+                        default=ROOT / "results/simulations/production_pilot/"
+                                       "electron_250ns_summary_464425eac32a2c34.h5")
     parser.add_argument("--output-dir", type=Path,
                         default=ROOT / "results/readout_pulses_8000")
     parser.add_argument("--latex-dir", type=Path,
@@ -26,7 +29,8 @@ def main() -> None:
     reduction = args.output_dir / "readout_pulses.h5"
     subprocess.run([os.environ.get("JULIA", "julia"), "--project=.",
                     str(ROOT / "scripts/production/reduce_readout_pulses.jl"),
-                    str(args.scan_index), str(reduction)], cwd=ROOT, check=True)
+                    str(args.scan_index), str(args.electron_index), str(reduction)],
+                   cwd=ROOT, check=True)
     subprocess.run([sys.executable,
                     str(ROOT / "scripts/production/present_readout_pulses.py"),
                     str(reduction), "--output-dir", str(args.output_dir),

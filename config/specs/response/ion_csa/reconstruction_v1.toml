@@ -1,0 +1,12 @@
+schema = "nausicaa.ion_csa_reconstruction.v1"
+method = "three_frame_inverse"
+input = "saved_mean_and_noise_realisation"
+boundary_signal = "zero_collected_ions_beyond_saved_quiet_frames"
+noise = "exact_covariance_transform"
+nonnegative_constraint = false
+signal_to_noise_cut = false
+compression_fractions = [0.1, 0.25, 0.5, 0.75]
+compression_minimum_deficit_ENC = 1.0
+numerical_tolerance_ENC = 0.001
+covariance_relative_tolerance = 0.0000000001
+sampling_tolerance = 0.01

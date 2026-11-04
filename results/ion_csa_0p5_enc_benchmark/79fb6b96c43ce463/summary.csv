@@ -1,0 +1,2 @@
+sample,events,positive_cells,pad_histories,direct_spice_histories,ENC_ions_rms,cell_weighted_mean_snr,event_weighted_mean_snr,mean_histories_loss50_per_event,events_loss50_percent,mean_positive_cell_compression_deficit_percent,mean_noiseless_total_charge_bias_percent,mean_noisy_total_charge_bias_percent
+bb0nu,100,68417,15012,180,54.62584116681557,3.1259842066408536,3.6495785358260076,0.0,0.0,0.09396677248041496,4.233510375801136,4.385385528820924

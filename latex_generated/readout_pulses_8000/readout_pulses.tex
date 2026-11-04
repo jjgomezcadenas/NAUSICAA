@@ -19,14 +19,14 @@ Single electrons & 4 mm / 40 ms & 8,000 & 3,412,957 & 897,244,198 & 304.33 & 264
 \bottomrule\end{tabular}}\end{center}
 \begin{center}\includegraphics[width=\linewidth]{ions_mean_max.png}\end{center}
 \clearpage\section*{Photon SiPM--bucket pulses}
-A photon pulse is one SiPM--2 $\mu$s bucket with positive incident VUV photon count. Pure Xe and Xe--15\% He use the same 10 mm hole pitch and electron settings. Every event mean divides its total incident photons by its occupied SiPM--bucket count; the event maximum is the largest bucket count. These are incident photons before SiPM PDE and electronics.
+A photon pulse is one SiPM--0.25 $\mu$s (250 ns) bucket with positive incident VUV photon count. Pure Xe and Xe--15\% He use the same 10 mm hole pitch and electron settings. Every event mean divides its total incident photons by its occupied SiPM--bucket count; the event maximum is the largest bucket count. These are incident photons before SiPM PDE and electronics.
 \begin{center}\resizebox{\linewidth}{!}{\begin{tabular}{lllllllll}\toprule Species & Setting & Events & Occupied cells & Total signal & Mean of means & Median mean & Mean maximum & Median maximum\\\midrule
-Double beta & Pure Xe & 8,000 & 7,709,774 & 381,687,642,280 & 79,472.22 & 50,385.34 & 1,302,701.2 & 844,057.0\\
-Double beta & Xe--15\% He & 8,000 & 3,048,897 & 375,319,166,815 & 165,930.15 & 123,124.19 & 2,453,245.4 & 2,038,311.0\\
-Single electrons & Pure Xe & 8,000 & 9,368,261 & 381,739,047,046 & 65,305.89 & 41,346.55 & 1,219,160.9 & 789,159.0\\
-Single electrons & Xe--15\% He & 8,000 & 3,731,089 & 375,368,751,796 & 135,647.88 & 100,328.55 & 2,269,206.3 & 1,891,749.0\\
+Double beta & Pure Xe & 8,000 & 41,729,458 & 381,689,031,793 & 13,944.03 & 9,124.57 & 208,350.4 & 118,787.0\\
+Double beta & Xe--15\% He & 8,000 & 17,838,016 & 375,318,926,831 & 27,735.57 & 20,890.06 & 382,535.6 & 285,552.0\\
+Single electrons & Pure Xe & 8,000 & 50,220,521 & 381,740,368,430 & 11,559.64 & 7,559.79 & 197,679.1 & 111,555.0\\
+Single electrons & Xe--15\% He & 8,000 & 21,662,478 & 375,369,610,548 & 22,867.47 & 17,111.54 & 357,864.0 & 265,750.0\\
 \bottomrule\end{tabular}}\end{center}
 \begin{center}\includegraphics[width=\linewidth]{photons_mean_max.png}\end{center}
 \section*{Provenance}
-Numerical reduction: \texttt{readout\_pulses.h5}. Run ID: \texttt{238ddc5a75e0fd9b}. The HDF5 file preserves per-event values, histogram bins, resolved cards, source/code hashes and charge/light ledgers.
+Numerical reduction: \texttt{readout\_pulses.h5}. \par\noindent Ion run ID: \texttt{238ddc5a75e0fd9b}. \par\noindent Electron run ID: \texttt{464425eac32a2c34}. \par\noindent The HDF5 file preserves per-event values, histogram bins, and resolved cards.\par\noindent It also records source/code hashes and charge/light ledgers.
 \end{document}

@@ -1,0 +1,8 @@
+code_hash = "214a4c034a9ec466a65a0c9411ef93e5d01e1aa6ce3650fd8e7c4fa9998ca4a0"
+run_card = "/Users/jjgomezcadenas/Projects/NAUSICAA/config/specs/runs/ion_csa_v3_pilot_4mm.toml"
+source_hashes = ["295ead117d4bf0b9a5525d4038d55b8209bb0ed89814fea7514c07f1557f6245", "f6450b0a669c83c162839922de79e681cfa9853e22c5c6ae4b438febb57b6d79"]
+source_paths = ["/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/ions/14d59c9436d9cdfa37465d0e788feefa4b84f153c118c1bc1ed5c937e3cd06ac/ions.h5", "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/detector/ions/efb4c32699fa7b814ce163d7a8f01ad5b927f93100c59438013ed5918de9d956/ions.h5"]
+calibration_sha256 = "9676b2a7629884894a189789aa087eed58961f4992217a41486bab65541e9d25"
+response_card = "config/specs/response/ion_csa/csa_v1.toml"
+study_id = "289ba0ab6997a94f"
+model_id = "715f1cf2228ecbc83c1aabccc44038f14304d7479613902420cece8ed6e0c30b"

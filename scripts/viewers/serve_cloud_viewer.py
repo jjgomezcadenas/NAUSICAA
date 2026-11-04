@@ -18,11 +18,12 @@ from cloud_viewer.server import serve
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--readout", type=Path, default=ROOT / "results/grid_readout_direct_8000")
+    parser.add_argument("--production", type=Path, help="Response overview TOML card")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8767)
     parser.add_argument("--open-browser", action="store_true")
     args = parser.parse_args()
-    serve(args.readout, args.host, args.port, args.open_browser)
+    serve(args.readout, args.host, args.port, args.open_browser, args.production)
 
 
 if __name__ == "__main__":

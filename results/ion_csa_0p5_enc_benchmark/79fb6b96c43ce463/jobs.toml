@@ -1,0 +1,722 @@
+guard_V = 0.6
+
+[[jobs]]
+key = "bb0nu_p3_0_-12_6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_0_-12_6"
+row = 6
+[[jobs]]
+key = "bb0nu_p3_0_4_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_0_4_-3"
+row = 96
+[[jobs]]
+key = "bb0nu_p3_0_5_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_0_5_-3"
+row = 106
+[[jobs]]
+key = "bb0nu_p3_81_-4_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_81_-4_4"
+row = 192
+[[jobs]]
+key = "bb0nu_p3_162_-4_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_162_-4_8"
+row = 325
+[[jobs]]
+key = "bb0nu_p3_242_-13_5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_242_-13_5"
+row = 419
+[[jobs]]
+key = "bb0nu_p3_242_-2_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_242_-2_-3"
+row = 473
+[[jobs]]
+key = "bb0nu_p3_242_9_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_242_9_-3"
+row = 535
+[[jobs]]
+key = "bb0nu_p3_242_10_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_242_10_-3"
+row = 539
+[[jobs]]
+key = "bb0nu_p3_323_-7_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_323_-7_-1"
+row = 552
+[[jobs]]
+key = "bb0nu_p3_323_0_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_323_0_-1"
+row = 604
+[[jobs]]
+key = "bb0nu_p3_323_0_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_323_0_0"
+row = 605
+[[jobs]]
+key = "bb0nu_p3_323_1_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_323_1_0"
+row = 619
+[[jobs]]
+key = "bb0nu_p3_404_6_-11"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_404_6_-11"
+row = 836
+[[jobs]]
+key = "bb0nu_p3_566_-2_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_566_-2_0"
+row = 1113
+[[jobs]]
+key = "bb0nu_p3_566_-1_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_566_-1_-1"
+row = 1121
+[[jobs]]
+key = "bb0nu_p3_566_0_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_566_0_-1"
+row = 1129
+[[jobs]]
+key = "bb0nu_p3_727_-7_-9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_727_-7_-9"
+row = 1404
+[[jobs]]
+key = "bb0nu_p3_727_7_2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_727_7_2"
+row = 1451
+[[jobs]]
+key = "bb0nu_p3_727_8_2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_727_8_2"
+row = 1456
+[[jobs]]
+key = "bb0nu_p3_808_-2_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_808_-2_-4"
+row = 1490
+[[jobs]]
+key = "bb0nu_p3_808_-2_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_808_-2_-3"
+row = 1491
+[[jobs]]
+key = "bb0nu_p3_808_-1_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_808_-1_-1"
+row = 1502
+[[jobs]]
+key = "bb0nu_p3_808_-1_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_808_-1_0"
+row = 1503
+[[jobs]]
+key = "bb0nu_p3_889_-10_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_889_-10_-4"
+row = 1555
+[[jobs]]
+key = "bb0nu_p3_889_-9_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_889_-9_-3"
+row = 1563
+[[jobs]]
+key = "bb0nu_p3_889_7_3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_889_7_3"
+row = 1658
+[[jobs]]
+key = "bb0nu_p3_889_8_3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_889_8_3"
+row = 1664
+[[jobs]]
+key = "bb0nu_p3_970_-5_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_970_-5_-6"
+row = 1688
+[[jobs]]
+key = "bb0nu_p3_970_-4_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_970_-4_-6"
+row = 1695
+[[jobs]]
+key = "bb0nu_p3_970_-4_-5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_970_-4_-5"
+row = 1696
+[[jobs]]
+key = "bb0nu_p3_970_3_3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_970_3_3"
+row = 1779
+[[jobs]]
+key = "bb0nu_p3_970_4_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_970_4_8"
+row = 1799
+[[jobs]]
+key = "bb0nu_p3_1050_-1_22"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1050_-1_22"
+row = 1999
+[[jobs]]
+key = "bb0nu_p3_1131_-5_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1131_-5_0"
+row = 2122
+[[jobs]]
+key = "bb0nu_p3_1212_-16_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1212_-16_-4"
+row = 2299
+[[jobs]]
+key = "bb0nu_p3_1212_-15_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1212_-15_-4"
+row = 2306
+[[jobs]]
+key = "bb0nu_p3_1212_-2_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1212_-2_0"
+row = 2365
+[[jobs]]
+key = "bb0nu_p3_1293_2_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1293_2_0"
+row = 2589
+[[jobs]]
+key = "bb0nu_p3_1374_-1_3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1374_-1_3"
+row = 2716
+[[jobs]]
+key = "bb0nu_p3_1454_0_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1454_0_-2"
+row = 2850
+[[jobs]]
+key = "bb0nu_p3_1454_0_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1454_0_-1"
+row = 2851
+[[jobs]]
+key = "bb0nu_p3_1535_-7_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1535_-7_8"
+row = 2944
+[[jobs]]
+key = "bb0nu_p3_1535_5_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1535_5_-4"
+row = 3036
+[[jobs]]
+key = "bb0nu_p3_1616_-2_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1616_-2_-2"
+row = 3094
+[[jobs]]
+key = "bb0nu_p3_1616_-2_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1616_-2_8"
+row = 3104
+[[jobs]]
+key = "bb0nu_p3_1778_-1_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1778_-1_4"
+row = 3487
+[[jobs]]
+key = "bb0nu_p3_1778_3_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1778_3_-2"
+row = 3510
+[[jobs]]
+key = "bb0nu_p3_1778_4_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1778_4_-2"
+row = 3514
+[[jobs]]
+key = "bb0nu_p3_1858_1_-5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1858_1_-5"
+row = 3614
+[[jobs]]
+key = "bb0nu_p3_1939_2_13"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_1939_2_13"
+row = 3794
+[[jobs]]
+key = "bb0nu_p3_2020_9_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2020_9_-4"
+row = 3909
+[[jobs]]
+key = "bb0nu_p3_2101_-105_90"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2101_-105_90"
+row = 3978
+[[jobs]]
+key = "bb0nu_p3_2182_-2_-8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2182_-2_-8"
+row = 4275
+[[jobs]]
+key = "bb0nu_p3_2262_-9_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2262_-9_1"
+row = 4392
+[[jobs]]
+key = "bb0nu_p3_2424_-10_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2424_-10_0"
+row = 4700
+[[jobs]]
+key = "bb0nu_p3_2424_-9_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2424_-9_0"
+row = 4705
+[[jobs]]
+key = "bb0nu_p3_2424_-8_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2424_-8_-1"
+row = 4710
+[[jobs]]
+key = "bb0nu_p3_2424_11_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2424_11_-6"
+row = 4814
+[[jobs]]
+key = "bb0nu_p3_2505_7_-7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2505_7_-7"
+row = 4970
+[[jobs]]
+key = "bb0nu_p3_2586_-3_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2586_-3_4"
+row = 5042
+[[jobs]]
+key = "bb0nu_p3_2586_0_-9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2586_0_-9"
+row = 5070
+[[jobs]]
+key = "bb0nu_p3_2586_1_-9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2586_1_-9"
+row = 5090
+[[jobs]]
+key = "bb0nu_p3_2666_-4_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2666_-4_-1"
+row = 5152
+[[jobs]]
+key = "bb0nu_p3_2666_-3_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2666_-3_-2"
+row = 5161
+[[jobs]]
+key = "bb0nu_p3_2666_-3_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2666_-3_-1"
+row = 5162
+[[jobs]]
+key = "bb0nu_p3_2666_-2_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2666_-2_-2"
+row = 5171
+[[jobs]]
+key = "bb0nu_p3_2666_2_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2666_2_-6"
+row = 5200
+[[jobs]]
+key = "bb0nu_p3_2666_2_3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2666_2_3"
+row = 5203
+[[jobs]]
+key = "bb0nu_p3_2747_-3_-13"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2747_-3_-13"
+row = 5220
+[[jobs]]
+key = "bb0nu_p3_2747_0_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2747_0_-6"
+row = 5289
+[[jobs]]
+key = "bb0nu_p3_2747_0_11"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2747_0_11"
+row = 5303
+[[jobs]]
+key = "bb0nu_p3_2828_-7_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2828_-7_-6"
+row = 5344
+[[jobs]]
+key = "bb0nu_p3_2909_-1_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2909_-1_-6"
+row = 5554
+[[jobs]]
+key = "bb0nu_p3_2909_-1_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2909_-1_-2"
+row = 5558
+[[jobs]]
+key = "bb0nu_p3_2909_0_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2909_0_-2"
+row = 5568
+[[jobs]]
+key = "bb0nu_p3_2990_5_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2990_5_-2"
+row = 5707
+[[jobs]]
+key = "bb0nu_p3_2990_5_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2990_5_-1"
+row = 5708
+[[jobs]]
+key = "bb0nu_p3_2990_5_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_2990_5_0"
+row = 5709
+[[jobs]]
+key = "bb0nu_p3_3070_-4_-8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3070_-4_-8"
+row = 5748
+[[jobs]]
+key = "bb0nu_p3_3070_8_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3070_8_8"
+row = 5839
+[[jobs]]
+key = "bb0nu_p3_3151_-9_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3151_-9_-2"
+row = 5847
+[[jobs]]
+key = "bb0nu_p3_3151_-3_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3151_-3_-3"
+row = 5870
+[[jobs]]
+key = "bb0nu_p3_3313_-5_-7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3313_-5_-7"
+row = 6058
+[[jobs]]
+key = "bb0nu_p3_3313_-2_6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3313_-2_6"
+row = 6098
+[[jobs]]
+key = "bb0nu_p3_3313_0_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3313_0_0"
+row = 6115
+[[jobs]]
+key = "bb0nu_p3_3394_38_-50"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3394_38_-50"
+row = 6218
+[[jobs]]
+key = "bb0nu_p3_3394_47_-53"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3394_47_-53"
+row = 6283
+[[jobs]]
+key = "bb0nu_p3_3555_-1_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3555_-1_8"
+row = 6540
+[[jobs]]
+key = "bb0nu_p3_3555_0_-15"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3555_0_-15"
+row = 6545
+[[jobs]]
+key = "bb0nu_p3_3717_-9_-7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3717_-9_-7"
+row = 6776
+[[jobs]]
+key = "bb0nu_p3_3798_-15_-14"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3798_-15_-14"
+row = 6949
+[[jobs]]
+key = "bb0nu_p3_3878_-13_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3878_-13_-2"
+row = 7161
+[[jobs]]
+key = "bb0nu_p3_3959_2_-10"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3959_2_-10"
+row = 7443
+[[jobs]]
+key = "bb0nu_p3_3959_2_-9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_3959_2_-9"
+row = 7444
+[[jobs]]
+key = "bb0nu_p3_4040_2_-8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4040_2_-8"
+row = 7590
+[[jobs]]
+key = "bb0nu_p3_4040_2_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4040_2_-3"
+row = 7595
+[[jobs]]
+key = "bb0nu_p3_4040_3_-8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4040_3_-8"
+row = 7601
+[[jobs]]
+key = "bb0nu_p3_4121_-4_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4121_-4_-6"
+row = 7633
+[[jobs]]
+key = "bb0nu_p3_4121_-3_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4121_-3_-6"
+row = 7644
+[[jobs]]
+key = "bb0nu_p3_4282_2_-5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4282_2_-5"
+row = 8086
+[[jobs]]
+key = "bb0nu_p3_4363_0_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4363_0_1"
+row = 8212
+[[jobs]]
+key = "bb0nu_p3_4444_-9_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4444_-9_-3"
+row = 8260
+[[jobs]]
+key = "bb0nu_p3_4605_-5_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4605_-5_1"
+row = 8594
+[[jobs]]
+key = "bb0nu_p3_4605_-4_2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4605_-4_2"
+row = 8603
+[[jobs]]
+key = "bb0nu_p3_4605_2_-5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4605_2_-5"
+row = 8651
+[[jobs]]
+key = "bb0nu_p3_4686_-7_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4686_-7_-2"
+row = 8704
+[[jobs]]
+key = "bb0nu_p3_4929_-6_5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4929_-6_5"
+row = 9270
+[[jobs]]
+key = "bb0nu_p3_4929_-1_-10"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4929_-1_-10"
+row = 9297
+[[jobs]]
+key = "bb0nu_p3_4929_0_-12"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4929_0_-12"
+row = 9302
+[[jobs]]
+key = "bb0nu_p3_4929_3_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_4929_3_1"
+row = 9341
+[[jobs]]
+key = "bb0nu_p3_5009_-7_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5009_-7_4"
+row = 9370
+[[jobs]]
+key = "bb0nu_p3_5009_4_-10"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5009_4_-10"
+row = 9504
+[[jobs]]
+key = "bb0nu_p3_5090_-12_-16"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5090_-12_-16"
+row = 9527
+[[jobs]]
+key = "bb0nu_p3_5090_-12_-15"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5090_-12_-15"
+row = 9528
+[[jobs]]
+key = "bb0nu_p3_5090_-11_-16"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5090_-11_-16"
+row = 9534
+[[jobs]]
+key = "bb0nu_p3_5090_21_126"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5090_21_126"
+row = 9661
+[[jobs]]
+key = "bb0nu_p3_5090_22_126"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5090_22_126"
+row = 9665
+[[jobs]]
+key = "bb0nu_p3_5171_0_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5171_0_0"
+row = 9720
+[[jobs]]
+key = "bb0nu_p3_5252_-1_-13"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5252_-1_-13"
+row = 9832
+[[jobs]]
+key = "bb0nu_p3_5252_0_6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5252_0_6"
+row = 9869
+[[jobs]]
+key = "bb0nu_p3_5333_-7_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5333_-7_8"
+row = 9969
+[[jobs]]
+key = "bb0nu_p3_5333_6_-7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5333_6_-7"
+row = 10072
+[[jobs]]
+key = "bb0nu_p3_5333_6_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5333_6_-6"
+row = 10073
+[[jobs]]
+key = "bb0nu_p3_5494_-3_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5494_-3_1"
+row = 10283
+[[jobs]]
+key = "bb0nu_p3_5494_1_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5494_1_-3"
+row = 10336
+[[jobs]]
+key = "bb0nu_p3_5575_-7_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5575_-7_1"
+row = 10375
+[[jobs]]
+key = "bb0nu_p3_5575_-6_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5575_-6_0"
+row = 10382
+[[jobs]]
+key = "bb0nu_p3_5575_-6_2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5575_-6_2"
+row = 10384
+[[jobs]]
+key = "bb0nu_p3_5656_-3_-7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5656_-3_-7"
+row = 10557
+[[jobs]]
+key = "bb0nu_p3_5656_-3_9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5656_-3_9"
+row = 10572
+[[jobs]]
+key = "bb0nu_p3_5817_-1_7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5817_-1_7"
+row = 10997
+[[jobs]]
+key = "bb0nu_p3_5817_5_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5817_5_-3"
+row = 11052
+[[jobs]]
+key = "bb0nu_p3_5898_-11_3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5898_-11_3"
+row = 11072
+[[jobs]]
+key = "bb0nu_p3_5898_31_-15"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5898_31_-15"
+row = 11186
+[[jobs]]
+key = "bb0nu_p3_5979_-6_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_5979_-6_1"
+row = 11205
+[[jobs]]
+key = "bb0nu_p3_6221_-11_8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6221_-11_8"
+row = 11714
+[[jobs]]
+key = "bb0nu_p3_6221_-1_-8"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6221_-1_-8"
+row = 11785
+[[jobs]]
+key = "bb0nu_p3_6221_0_-7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6221_0_-7"
+row = 11790
+[[jobs]]
+key = "bb0nu_p3_6302_-1_-5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6302_-1_-5"
+row = 11850
+[[jobs]]
+key = "bb0nu_p3_6383_-8_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6383_-8_-3"
+row = 11933
+[[jobs]]
+key = "bb0nu_p3_6464_-5_5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6464_-5_5"
+row = 12096
+[[jobs]]
+key = "bb0nu_p3_6625_-56_295"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6625_-56_295"
+row = 12381
+[[jobs]]
+key = "bb0nu_p3_6625_-3_-33"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6625_-3_-33"
+row = 12393
+[[jobs]]
+key = "bb0nu_p3_6625_3_-29"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6625_3_-29"
+row = 12418
+[[jobs]]
+key = "bb0nu_p3_6625_4_-27"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6625_4_-27"
+row = 12426
+[[jobs]]
+key = "bb0nu_p3_6625_10_-30"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6625_10_-30"
+row = 12440
+[[jobs]]
+key = "bb0nu_p3_6625_12_-33"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6625_12_-33"
+row = 12446
+[[jobs]]
+key = "bb0nu_p3_6625_12_-32"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6625_12_-32"
+row = 12447
+[[jobs]]
+key = "bb0nu_p3_6706_-9_-5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6706_-9_-5"
+row = 12461
+[[jobs]]
+key = "bb0nu_p3_6706_5_2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6706_5_2"
+row = 12553
+[[jobs]]
+key = "bb0nu_p3_6706_5_3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6706_5_3"
+row = 12554
+[[jobs]]
+key = "bb0nu_p3_6787_6_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6787_6_4"
+row = 12728
+[[jobs]]
+key = "bb0nu_p3_6868_-8_5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6868_-8_5"
+row = 12771
+[[jobs]]
+key = "bb0nu_p3_6949_-6_5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_6949_-6_5"
+row = 12929
+[[jobs]]
+key = "bb0nu_p3_7029_-5_-2"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7029_-5_-2"
+row = 13105
+[[jobs]]
+key = "bb0nu_p3_7029_4_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7029_4_4"
+row = 13186
+[[jobs]]
+key = "bb0nu_p3_7110_-12_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7110_-12_-1"
+row = 13222
+[[jobs]]
+key = "bb0nu_p3_7110_-12_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7110_-12_0"
+row = 13223
+[[jobs]]
+key = "bb0nu_p3_7110_-11_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7110_-11_0"
+row = 13228
+[[jobs]]
+key = "bb0nu_p3_7191_-9_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7191_-9_-4"
+row = 13372
+[[jobs]]
+key = "bb0nu_p3_7353_-2_-4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7353_-2_-4"
+row = 13812
+[[jobs]]
+key = "bb0nu_p3_7353_-2_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7353_-2_-3"
+row = 13813
+[[jobs]]
+key = "bb0nu_p3_7353_1_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7353_1_0"
+row = 13872
+[[jobs]]
+key = "bb0nu_p3_7433_6_6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7433_6_6"
+row = 14046
+[[jobs]]
+key = "bb0nu_p3_7514_-3_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7514_-3_1"
+row = 14107
+[[jobs]]
+key = "bb0nu_p3_7514_8_-6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7514_8_-6"
+row = 14173
+[[jobs]]
+key = "bb0nu_p3_7595_-3_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7595_-3_4"
+row = 14215
+[[jobs]]
+key = "bb0nu_p3_7595_-2_4"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7595_-2_4"
+row = 14230
+[[jobs]]
+key = "bb0nu_p3_7595_1_-5"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7595_1_-5"
+row = 14261
+[[jobs]]
+key = "bb0nu_p3_7595_3_-7"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7595_3_-7"
+row = 14272
+[[jobs]]
+key = "bb0nu_p3_7676_-2_-9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7676_-2_-9"
+row = 14308
+[[jobs]]
+key = "bb0nu_p3_7676_-1_-9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7676_-1_-9"
+row = 14317
+[[jobs]]
+key = "bb0nu_p3_7676_-1_9"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7676_-1_9"
+row = 14323
+[[jobs]]
+key = "bb0nu_p3_7676_0_6"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7676_0_6"
+row = 14330
+[[jobs]]
+key = "bb0nu_p3_7757_-7_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7757_-7_0"
+row = 14398
+[[jobs]]
+key = "bb0nu_p3_7757_0_-1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7757_0_-1"
+row = 14430
+[[jobs]]
+key = "bb0nu_p3_7757_3_0"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7757_3_0"
+row = 14445
+[[jobs]]
+key = "bb0nu_p3_7757_9_1"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7757_9_1"
+row = 14465
+[[jobs]]
+key = "bb0nu_p3_7999_8_-3"
+folder = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/spice_cases/bb0nu_p3_7999_8_-3"
+row = 15011

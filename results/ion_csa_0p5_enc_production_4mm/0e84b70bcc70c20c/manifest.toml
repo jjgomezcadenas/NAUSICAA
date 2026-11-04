@@ -1,0 +1,8 @@
+code_hash = "6350af88be34185eb3786078f17c0af6f4767e7558e6603292c2ca231d7fdcc6"
+run_card = "/Users/jjgomezcadenas/Projects/NAUSICAA/config/specs/runs/ion_csa_0p5_enc_production_4mm_guard063.toml"
+source_hashes = ["295ead117d4bf0b9a5525d4038d55b8209bb0ed89814fea7514c07f1557f6245"]
+source_paths = ["/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/ions/14d59c9436d9cdfa37465d0e788feefa4b84f153c118c1bc1ed5c937e3cd06ac/ions.h5"]
+calibration_sha256 = "f6f691ab2087ef39f1dc77a76fbc2ce78b09c777dda0a0f4e4e9539e3509563b"
+response_card = "config/specs/response/ion_csa/csa_0p5_enc_4mm.toml"
+study_id = "0e84b70bcc70c20c"
+model_id = "e97a0f594fb884f63a99b9c01e962db0d76c37ecafa7c7c670a1cf0f949e2936"

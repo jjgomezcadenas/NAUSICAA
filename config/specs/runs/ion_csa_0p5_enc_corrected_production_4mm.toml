@@ -1,0 +1,5 @@
+schema = "nausicaa.ion_csa_reconstruction_run.v1"
+parent_study = "results/ion_csa_0p5_enc_production_4mm/0e84b70bcc70c20c"
+reconstruction_card = "config/specs/response/ion_csa/reconstruction_v1.toml"
+results_directory = "results/ion_csa_0p5_enc_corrected_production_4mm"
+report_directory = "latex_generated/ion_csa_0p5_enc_corrected_production_4mm"

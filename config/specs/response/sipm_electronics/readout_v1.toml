@@ -1,0 +1,14 @@
+schema = "nausicaa.sipm_electronics_spec.v1"
+seed = 2027
+bucket_width_s = 250.0e-9
+noise_rms_pe = 0.5
+current_limit_A = 1.0e-3
+transfer = "bucket_average_current"
+noise = "independent_gaussian_pe"
+baseline_pe = 0.0
+lower_clipping = false
+
+[provenance]
+noise = "User design input for the NAUSICAA ASIC; 0.5 PE RMS per channel and bucket"
+range = "User design input: upper clipping at 1 mA; supersedes the provisional 300 PE limit"
+timing = "User 0.25 us buckets; integrated charge divided by bucket duration"

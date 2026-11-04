@@ -4,7 +4,7 @@
 \hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
 \title{Detector-production formulas and default operating point}
 \author{NAUSICAA design note}
-\date{30 October 2026}
+\date{4 November 2026}
 
 % The displayed default evaluations are calculated from these inputs at build time.
 \newcommand{\TPCcm}{150}
@@ -19,7 +19,7 @@
 \newcommand{\HoleRadiusMM}{2.5}
 \newcommand{\HoleDepthMM}{5}
 \newcommand{\IonFrameMS}{30}
-\newcommand{\ElectronFrameUS}{2}
+\newcommand{\ElectronFrameUS}{0.25}
 \pgfmathsetmacro{\electronMaxDriftMS}{10*\TPCcm/(1000*\ElectronSpeedMMus)}
 \pgfmathsetmacro{\ionMaxDriftS}{10*\TPCcm/(1000*\IonSpeedMps)}
 \pgfmathsetmacro{\minimumSurvival}{exp(-\electronMaxDriftMS/\LifetimeMS)}
@@ -147,14 +147,16 @@ approximate readings of the pure-Xe curve in Figure~6 of that paper:
 \begin{center}
 \begin{tabular}{cc}\toprule
 $E/P$ (kV/cm/bar) & $J$\\\midrule
-1.5 & 0.10\\
-2.0 & 0.05\\
-3.0 & 0.01\\
+2.0 & 0.030\\
+2.5 & 0.015\\
+2.8 & 0.010\\
+3.0 & 0.025\\
 \bottomrule\end{tabular}
 \end{center}
-The default operating point uses $J=0.01$. At fields between these three
-anchors, the production form requires an explicit $J$ value; it does not
-interpolate or extrapolate the plotted curve.
+These are the corrected user readings supplied on 2026-11-04. The new
+comparison uses $J=0.015$ at $E/P=2.5$ and $J=0.025$ at $E/P=3$.
+Historical runs retain their recorded $J=0.01$ at $E/P=3$. Each new run
+specifies its adopted $J$ explicitly.
 
 For isotropic VUV emission uniformly along the axis of a cylindrical hole,
 absorbing walls and a SiPM covering its exit, the direct geometric acceptance

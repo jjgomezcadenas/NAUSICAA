@@ -1,0 +1,594 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=23mm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,array,longtable}
+\usepackage{xurl}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+\newcommand{\PE}{\mathrm{PE}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\code}[1]{\path{#1}}
+\providecommand{\SiPMGeneratedParameters}{}
+\InputIfFileExists{latex_generated/sipm_response/parameters.tex}{}{}
+\title{SiPM charge response and provisional ASIC readout\\for NAUSICAA electroluminescence}
+\author{NAUSICAA model and implementation note}
+\date{4 November 2026}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The response begins with incident VUV photon counts at each SiPM in
+250~ns buckets. A stochastic microcell model samples photodetection and dark
+pulses, follows the charge recovery of each microcell, and saves the sensor
+charge before applying electronics. The provisional ASIC reads bucket-average
+current, adds independent Gaussian noise of 0.5~photoelectron equivalents per
+bucket, and clips the output above 1~mA. This note states the adopted inputs,
+physical approximations and output contract, and derives the relation to
+AXEL's subsequent correction for SiPM nonlinearity. Numerical validation and a
+small pilot precede a full-sample response calculation.
+\end{abstract}
+
+\section{Input, terminology and provenance}
+The input is the number $N_{\gamma,cb}$ of photons incident on SiPM channel
+$c$ in bucket $b$ of width $\Delta t$. The existing four HDF5 inputs represent
+\code{bb0nu} and \code{single_electrons}, each with pure-Xe and Xe--15\% He
+transport and electroluminescence models. The gas files are alternative
+realizations of the detector response for the same underlying event sample.
+The current production uses $\Delta t=0.25~\mu\mathrm{s}=250$~ns, as recorded
+in the embedded detector card. The input index and exact source paths are
+specified in \code{docs/sipm_electronics_handoff.md}. Each source has its own
+content identity, event identifiers and provenance.
+
+The upstream calculation includes electron diffusion, attachment,
+electroluminescence production and geometrical photon collection. Its adopted
+EL channel is 5~mm in diameter and depth, at 15~bar and
+$E/P=3~\mathrm{kV\,cm^{-1}\,bar^{-1}}$. The adopted uniform emission along the
+electron path motivates a uniform conditional photon arrival time within each
+bucket. This is a timing approximation at the response interface. It cannot
+restore sub-bucket timing that was not saved by the producer. The response
+preserves the producer's signed bucket index and geometrical reference.
+
+A \emph{primary photodetection} is the successful conversion of an incident
+photon into an avalanche trigger. A \emph{dark pulse} is an avalanche initiated
+without an incident signal photon. The integer number of triggers differs
+from charge expressed in \emph{photoelectron equivalents} (PE): one PE denotes
+the calibrated charge $q_0$ of a fully recovered avalanche. A partially
+recovered avalanche contributes a fraction of one PE. We use \emph{microcell}
+for an avalanche element inside a SiPM and \emph{channel} for a complete SiPM.
+
+\section{Sensor reference and adopted operating point}
+Hamamatsu's AXEL presentation describes a custom VUV-sensitive device based on
+the S13370 family, with 50~$\mu$m microcell pitch, TSV connections and a
+64-channel assembly on a flexible polyimide substrate with a PEEK
+stiffener~\cite{Ghassemi2024MPPC}. The displayed PDE curve was taken at
+$-25\,^{\circ}\mathrm{C}$ and 4~V overvoltage; it is not a calibration of our
+room-temperature design. The AXEL prototype analysis names the standard
+S13370-3050CN~\cite{Akiyama:2025dia}. That standard device has a
+$3\times3~\mathrm{mm^2}$ active area and 3600 microcells. Our 5~mm diameter
+active disk follows the optical geometry already used in photon production.
+Its effective microcell count is a geometrical design approximation.
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{p{0.30\linewidth}p{0.23\linewidth}p{0.37\linewidth}}
+\toprule
+Parameter & Adopted input & Status or origin\\
+\midrule
+Bucket width $\Delta t$ & 250 ns & User design input; detector card\\
+Photon detection efficiency $p$ & 0.30 & User design input\\
+Active disk diameter $d$ & 5 mm & Existing optical geometry\\
+Microcell pitch $a$ & 50 $\mu$m & AXEL device family reference\\
+Microcell count $M$ & $\operatorname{round}[\pi(d/2)^2/a^2]$ & Effective uniform-cell geometry\\
+Fully recovered gain $G$ & $2.55\times10^6$ & Standard-device reference\\
+Recovery time $\tau$ & 73.4 ns & User adopts AXEL measured mean\\
+Reference dark rate $R_0$ & $10^6~\mathrm{s^{-1}}$ per 9 mm$^2$ & Typical reference at $25\,^{\circ}$C, 4 V\\
+ASIC noise $\sigma_{\PE}$ & 0.5 PE RMS/bucket & User provisional input\\
+ASIC upper range $I_{\max}$ & 1 mA & User provisional input\\
+\bottomrule
+\end{tabular}
+\caption{Baseline inputs. Runtime choices reside in versioned TOML cards.
+Gain and dark-rate references are provisional standard-device values;
+they do not characterize a fabricated 5~mm circular device.}
+\label{tab:inputs}
+\end{table}
+
+The gain and dark-rate reference comes from the search-indexed manufacturer
+specification KSX-I50133-E~\cite{Hamamatsu2017VUV4Indexed}. The original PDF
+remains to be recovered; this source limitation is recorded in the
+bibliography and specification note. The table gives a typical dark rate of
+1~MHz and a maximum of 3~MHz for the standard device at $25\,^{\circ}$C and
+4~V overvoltage. The baseline takes the typical value as an independent
+primary-dark-avalanche rate. Its measurement definition must be checked
+before introducing separately sampled correlated avalanches. The same source
+lists 3\% crosstalk; the baseline probability is nevertheless set to zero as an
+explicit modeling approximation. A suitable room-temperature afterpulse
+probability and delay distribution has not been established.
+
+The PDE includes optical fill factor and avalanche initiation probability in
+its calibrated definition. The reference dark rate also already reflects the
+reference device's geometry. Neither receives an additional fill-factor
+multiplier. Temperature and overvoltage are recorded as reference operating
+conditions; a transfer law for these parameters is not assumed.
+
+\subsection{Parameters exported from the saved calculation}
+The following values are generated from the pilot HDF5 output. In particular,
+the dark-rate scaling, one-PE charge, noise-current conversion and equivalent
+current range are evaluated by the Julia calculation using the selected cards.
+\begin{center}\small
+\SiPMGeneratedParameters
+\end{center}
+
+\section{Stochastic microcell response}
+\subsection{Detection, arrival times and illumination}
+At fixed incident count, sample the number of primary photodetections as
+\begin{equation}
+ N_{s,cb}\mid N_{\gamma,cb}\sim
+ \operatorname{Binomial}(N_{\gamma,cb},p).
+ \label{eq:detection}
+\end{equation}
+Conditional on $N_{s,cb}$, draw each time independently and uniformly over
+$[t_b,t_b+\Delta t)$, and assign each detection independently to one of the
+$M$ microcells with probability $1/M$. This is equivalent to sampling times
+and microcell labels for every incident photon and retaining independent
+Bernoulli detections, while avoiding work for undetected photons. Uniform
+illumination is an additional sensor approximation: the saved input resolves
+SiPM channels, not the illumination pattern inside one sensor.
+
+The baseline holds $p$ fixed during microcell recovery. Consequently a
+successful trigger at short delay still initiates an avalanche, whose charge
+is reduced by the law below. A model in which the initiation probability also
+depends on recovered overvoltage would need an additional calibrated function
+$p(r)$; the AXEL mean correction alone does not determine that function.
+
+\subsection{Recovery and avalanche charge}
+Let $t_{\mathrm{last},j}$ be the time of the previous avalanche in microcell
+$j$. Just before a trigger at $t_k$, its recovered fraction and charge are
+\begin{align}
+ r_j(t_k^-)&=1-\exp[-(t_k-t_{\mathrm{last},j})/\tau],\\
+ q_k&=q_0 r_j(t_k^-),\qquad q_0=eG.
+ \label{eq:recovery}
+\end{align}
+After the avalanche set $t_{\mathrm{last},j}=t_k$. An explicitly fully recovered
+microcell has $t_{\mathrm{last},j}=-\infty$. The default dark-equilibrium
+initial state is specified below. The state is carried continuously
+between buckets; a bucket boundary does not recharge the sensor.
+Equation~\eqref{eq:recovery} follows the exponential gain-recovery model used
+by AXEL~\cite{Ban2020AXELPrototype}. Charge accumulation and exponentials use
+SI units and Float64 arithmetic in the implementation.
+
+The time constant is not a fixed dead interval. At a delay $\tau$, the
+recovered charge is $(1-e^{-1})q_0$; after $2\tau$ and $3\tau$ the fractions
+are $1-e^{-2}$ and $1-e^{-3}$. Full recovery is approached asymptotically.
+The probability to initiate a second avalanche and its available charge are
+distinct quantities; this baseline specifies the former by a constant PDE
+and the latter by equation~\eqref{eq:recovery}.
+
+For all avalanches assigned to channel $c$ and bucket $b$,
+\begin{align}
+ Q_{s,cb}&=\sum_{k\in\mathrm{signal}}q_k,&
+ Q_{d,cb}&=\sum_{k\in\mathrm{dark}}q_k,\\
+ Q_{cb}&=Q_{s,cb}+Q_{d,cb},&
+ m_{cb}&=Q_{cb}/q_0,&
+ \overline I_{cb}&=Q_{cb}/\Delta t.
+ \label{eq:bucket-charge}
+\end{align}
+The signal and dark sums label the cause of each avalanche. Because both
+populations change the same microcell state, $Q_s$ is affected by preceding
+dark avalanches and $Q_d$ by preceding signal avalanches. These saved
+components provide charge accounting, rather than independent responses that
+could be added after simulating two isolated sensors.
+
+\subsection{Where the fluctuations enter}
+For known microcell labels and arrival times, equation~\eqref{eq:recovery}
+is deterministic. In an ensemble, the labels, times, primary photodetections
+and dark counts vary. Two detected photons may strike different cells and
+both produce full charge, or strike the same cell and produce
+$q_0+q_0[1-\exp(-\delta t/\tau)]$ if it was initially recovered. Their charge
+therefore fluctuates even at fixed detected-photon count. Additional
+intrinsic single-avalanche gain dispersion is set to zero in the baseline.
+
+At low occupancy and in the absence of dark pulses, the recovered-cell limit
+provides a useful check:
+\begin{equation}
+ \E[Q\mid N_\gamma]=q_0pN_\gamma,\qquad
+ \Var(Q\mid N_\gamma)=q_0^2p(1-p)N_\gamma.
+ \label{eq:low-occupancy}
+\end{equation}
+This is the variance conditional on the supplied photon count. Upstream
+photon-production and collection fluctuations are already represented by the
+input event ensemble. They must not be resampled as an extra Poisson input.
+
+\section{Dark pulses and the sensor's dark current}
+The adopted area scaling at fixed temperature, overvoltage and technology is
+\begin{equation}
+ A=\pi(d/2)^2,\qquad
+ R_d=R_0\frac{A}{A_0},\qquad A_0=9~\mathrm{mm^2}.
+ \label{eq:dark-area}
+\end{equation}
+For each selected channel and acquisition bucket draw
+$N_{d,cb}\sim\operatorname{Poisson}(R_d\Delta t)$, with uniform times and
+uniform microcell labels. Merge these triggers with photodetections in time
+order before updating the cell states. Equivalently one can generate a
+homogeneous Poisson process over the acquisition interval. The time-window
+and initial-state choices are part of the response card and provenance.
+Dark pulses occur in buckets with zero incident photons as well as signal
+buckets.
+
+The default acquisition uses every channel illuminated anywhere in the event.
+All selected channels are simulated over the same interval: the global first
+to last occupied photon bucket, with four additional buckets on each side
+(1~$\mu$s at the default sampling). This defines the channel set for the
+pilot; it does not include the unilluminated remainder of the detector.
+The sensor card can add explicitly listed channels. For an empty photon
+history it defines the first and last acquisition bucket, supporting a
+dark-only acquisition. No threshold is applied to the output samples.
+
+At acquisition start $t_0$, initialize each microcell with an independent age
+$U_j\sim\operatorname{Exponential}(\text{mean}=M/R_d)$ and set
+$t_{\mathrm{last},j}=t_0-U_j$. This is the stationary backward-recurrence
+age for the assumed Poisson dark triggers. It represents the dark activity
+before the recorded window without storing those earlier pulses. At zero
+dark rate the cells start fully recovered. This initialization assumes the
+signal begins within the recorded photon interval, with only dark activity
+preceding it.
+
+In the dilute, recovered-cell limit, a dark-only exposure of duration $T$
+has
+\begin{equation}
+ \E[Q_d]=q_0R_dT,\qquad \Var(Q_d)=q_0^2R_dT,
+ \qquad \E[I_d]=q_0R_d.
+ \label{eq:dark-current}
+\end{equation}
+Thus dark current is the time-averaged charge carried by random dark pulses,
+and the pulse fluctuations survive subtraction of its expectation. At finite
+occupancy recovery reduces both pulse amplitudes and the average dark
+current; the stationary result is derived below. A continuous leakage current
+would be a separate baseline term, currently taken as zero. Independent
+dark-count processes across channels and times are an approximation to the
+primary thermal avalanche population. Optical crosstalk and afterpulsing
+would add correlated triggers and require separate calibrated parameters.
+
+\section{Current readout and the provisional ASIC}
+The SiPM supplies avalanche current pulses; a voltage signal arises only
+through the attached electrical network. For the current bucket model, each
+avalanche contributes its integrated charge to its bucket, so the observable
+is $\overline I=Q/\Delta t$. This convention preserves
+\begin{equation}
+ \sum_b \overline I_{cb}\Delta t=\sum_k q_k
+ \label{eq:charge-preservation}
+\end{equation}
+for avalanches inside the acquisition interval. The model specifies neither
+an instantaneous peak current nor a shaped voltage waveform. A finite pulse
+shape and front-end transfer function would redistribute charge across
+buckets and require a revised readout calculation with explicit boundary
+losses.
+
+With known zero baseline, the adopted ASIC model is
+\begin{align}
+ \epsilon_{cb}&\sim\mathcal N(0,\sigma_{\PE}^2),\\
+ I^{\mathrm{raw}}_{cb}&=\overline I_{cb}
+       +\epsilon_{cb}\frac{q_0}{\Delta t},\\
+ I^{\mathrm{out}}_{cb}&=\min(I^{\mathrm{raw}}_{cb},I_{\max}),\\
+ s_{cb}&=\boldsymbol{1}\{I^{\mathrm{raw}}_{cb}>I_{\max}\}.
+ \label{eq:asic}
+\end{align}
+Noise is independent between channels and buckets. It is added before the
+upper range limit. Negative baseline-subtracted samples are retained; the
+model has no lower clipping threshold. Save the sampled noise, current before
+clipping, output current and saturation flag. The independent sensor output
+remains available for changing or diagnosing the electronics model.
+
+The conversion and range in PE units follow from the selected gain:
+\begin{equation}
+ I_{1\PE}=\frac{q_0}{\Delta t},\quad
+ \sigma_I=\sigma_{\PE}\frac{q_0}{\Delta t},\quad
+ m_{\max}^{\mathrm{ASIC}}=\frac{I_{\max}\Delta t}{q_0}.
+ \label{eq:range}
+\end{equation}
+The fixed hardware input is 1~mA. Its PE equivalent changes with $G$ and
+$\Delta t$. This specification supersedes the earlier approximate 300-PE
+range discussed before the ASIC current limit was adopted. It always applies
+to the sensor's measured charge/current response, after photon detection,
+with the Gaussian term added as in equation~\eqref{eq:asic}.
+
+\subsection{Relation to AXEL readout and noise measurements}
+AXEL's front-end electronics use a 5~MS/s physics readout, with a 17~ns
+first-order stage followed by an approximately 400~ns second-order
+Sallen--Key stage. A 40~MS/s auxiliary readout supports single-PE dark-pulse
+gain calibration~\cite{Nakamura2020AxFEB}. Its physical sampling interval is
+200~ns, whereas the adopted NAUSICAA interval is 250~ns. These transfer
+functions do not define our ASIC.
+
+The 2025 AXEL paper reports a mean baseline standard deviation of 0.46~ADC
+counts during operation and 0.45 without high voltage, with a 12-bit ADC and
+0.488~mV per ADC count~\cite{Akiyama:2025dia}. The 2024 analysis uses a
+3.5-ADC threshold, corresponding to 3.8 detected-photon units, and extends
+integration by five samples on each side of the threshold crossings. It
+also considers a baseline-offset uncertainty within one ADC count
+separately~\cite{Yoshida2024AXELResponse}. A persistent baseline offset and
+independent sample noise propagate differently when integrating an event.
+
+Combining a PE calibration from one run with baseline RMS from another only
+supplies a rough comparison. Our 0.5-PE Gaussian term is the adopted ASIC
+input, additional to explicitly generated sensor dark pulses. It is not a
+measured separation of AXEL's baseline into dark, analog and digitization
+components. Shaping-induced correlations, offset drift and ADC quantization
+remain extensions requiring ASIC information.
+
+\section{Mean linearity and subsequent signal recovery}
+\subsection{AXEL's stationary mean response}
+The AXEL correction can be derived from the same exponential charge law
+under steady uniform illumination~\cite{Ban2020AXELPrototype}. Let the
+combined successful signal and dark triggers in each microcell form a
+stationary Poisson process of rate $\lambda$. Its interval density is
+$f(u)=\lambda e^{-\lambda u}$ for $u\geq0$. Averaging the recovered fraction
+at avalanche times gives
+\begin{equation}
+ \E[r]=\int_0^\infty(1-e^{-u/\tau})\lambda e^{-\lambda u}\,du
+       =\frac{1}{1+\lambda\tau}.
+ \label{eq:mean-recovery}
+\end{equation}
+For expected primary avalanche count $n=M\lambda\Delta t$, the mean charge
+in PE units is
+\begin{equation}
+ m=\frac{n}{1+kn},\qquad k=\frac{\tau}{M\Delta t}.
+ \label{eq:forward-mean}
+\end{equation}
+The low-intensity limit is $m\simeq n-kn^2$. The large-rate stationary
+current approaches $Mq_0/\tau$. This stationary asymptote is not a bound on
+the first short bucket of an initially charged sensor, which also contains
+stored charge. Sensor nonlinearity depends on occupancy per microcell and
+recovery time; electronics clipping depends on the configured current limit.
+
+Dark-only stationary current follows by setting $\lambda=R_d/M$:
+\begin{equation}
+ \E[I_d]=\frac{q_0R_d}{1+R_d\tau/M}.
+ \label{eq:dark-stationary}
+\end{equation}
+Equations~\eqref{eq:mean-recovery}--\eqref{eq:dark-stationary} assume constant
+rate, independent triggering and fixed initiation probability. The simulation
+conditions on the supplied finite counts and follows state across time-varying
+buckets, so the stationary expression is a validation limit and a candidate
+reconstruction law, not an identity for every event.
+
+\subsection{Compact recovery-state and charge moments}
+\label{sec:compact-recovery}
+The following local derivation establishes the basis for a faster stochastic
+bucket response. It uses the implemented assumptions: uniform independent
+microcell selection, fixed initiation probability, exponential recovery, and
+reset to zero recovery after every successful trigger. The current production
+implementation follows individual avalanches; the compact model below is a
+proposed implementation strategy.
+
+\paragraph{Exact closure of the mean state.}
+Let $r_j\in[0,1]$ be the recovered fraction of microcell $j$ and define
+$R=\sum_{j=1}^M r_j$. Between avalanches,
+\begin{equation}
+ \frac{dR}{dt}=\frac{M-R}{\tau}.
+ \label{eq:total-recovery-drift}
+\end{equation}
+At an avalanche, a uniformly selected cell $J$ contributes $r_J$ PE and
+resets to zero. Conditional on the entire state $\boldsymbol r$,
+\begin{align}
+ \E[\Delta m\mid\boldsymbol r]&=\frac{R}{M},\\
+ \E[R^+\mid\boldsymbol r]&=\left(1-\frac1M\right)R^-.
+ \label{eq:mean-state-jump}
+\end{align}
+Consequently, conditional on a sequence of arrival times, the ensemble mean
+of $R$ and the expected collected charge evolve using only the mean initial
+$R$. This closure is exact for these assumptions. Averaging over arrival
+times preserves it. A distribution of recovery states is unnecessary for
+calculating the mean charge.
+
+\paragraph{The specific stochastic contribution.}
+Random microcell selection contributes the conditional avalanche-charge
+variance
+\begin{equation}
+ \Var(\Delta m\mid\boldsymbol r)
+ =\frac1M\sum_{j=1}^M r_j^2-\left(\frac{R}{M}\right)^2.
+ \label{eq:cell-choice-variance}
+\end{equation}
+A deterministic charge assignment $\Delta m=R/M$ removes this contribution.
+An aggregate stochastic response can retain it through charge moments.
+The same avalanche changes the outgoing recovery state, which creates a
+correlation between collected charge and the response to subsequent light.
+
+\paragraph{Closed moment equations in the Poisson limit.}
+For independent Poisson triggers of deterministic rate $\lambda(t)$ per
+microcell, let $u_1=\E[r]$ and $u_2=\E[r^2]$. The recovery drift and reset give
+\begin{align}
+ \dot u_1&=\frac{1-u_1}{\tau}-\lambda u_1,\\
+ \dot u_2&=\frac{2(u_1-u_2)}{\tau}-\lambda u_2.
+ \label{eq:recovery-moments}
+\end{align}
+At constant rate, their stationary values are
+\begin{equation}
+ u_1=\frac{1}{1+\lambda\tau},\qquad
+ u_2=\frac{2}{(1+\lambda\tau)(2+\lambda\tau)}.
+\end{equation}
+The first reproduces equation~\eqref{eq:mean-recovery}.
+
+Let $q$ denote accumulated charge in PE units from one microcell during the
+current bucket, and write $a=\E[q]$, $b=\E[qr]$ and $c=\E[q^2]$.
+At a trigger $(q,r)\mapsto(q+r,0)$, yielding
+\begin{align}
+ \dot a&=\lambda u_1,\\
+ \dot b&=\frac{a-b}{\tau}-\lambda b,\\
+ \dot c&=\lambda(2b+u_2).
+ \label{eq:charge-state-moments}
+\end{align}
+Start each bucket with $a=b=c=0$ and the incoming recovery moments.
+At its end, the single-cell charge variance is $c-a^2$ and the covariance
+of collected charge with final recovery is $b-a u_1$. For independent
+microcells, the total mean and variance are $Ma$ and $M(c-a^2)$, and the
+covariance with total outgoing recovery is $M(b-a u_1)$.
+Thus a finite set of moment equations determines these observables in the
+Poisson model, including the effect of collection throughout the bucket.
+
+\paragraph{Production interpretation.}
+The implemented optical counts are binomial conditional on saved photons;
+arrival times are uniform conditional on those counts. A Poisson replacement
+would change the prescribed count fluctuations. The compact production model
+should preserve those count draws and derive or calibrate its conditional
+charge and outgoing-state moments accordingly. The equations above provide
+an exact analytical limit and a practical starting point for that calculation.
+Its stochastic sampler must reproduce the charge variance and its covariance
+with outgoing recovery. Validation observables are bucket means and variances,
+neighbouring-bucket covariance, and the total-event charge distribution.
+A detailed recovery-state distribution should be introduced only if these
+observables demonstrate a consequential failure of the compact model.
+
+\subsection{Inverse correction and what it recovers}
+Solving equation~\eqref{eq:forward-mean} for $n$ gives AXEL's correction
+\begin{equation}
+ \widehat n=F(m)=\frac{m}{1-km},\qquad km<1.
+ \label{eq:inverse}
+\end{equation}
+AXEL measured device recovery with an LED and a low-intensity reference,
+then used individual recovery times in the nonlinearity correction. The
+2024 study reports a mean of 73.4~ns for its devices, with 3600 microcells
+and 200~ns sampling~\cite{Yoshida2024AXELResponse}. It also adjusts the
+effective recovery calibration using photopeaks and a corrected squared-sum
+observable; the 2025 analysis develops this fine-tuning alongside EL-gain,
+time and drift-distance corrections~\cite{Akiyama:2025dia}. Our initial
+forward-model $\tau$ is the adopted mean; a later reconstruction calibration
+may fit an effective value to the simulated pulse population.
+
+The correction maps measured charge to an estimate of the primary avalanche
+count under its rate assumptions. It cannot identify which photons were
+missed, recover the random microcell collision history, or remove its event
+fluctuations. Even with exact mean calibration,
+$\E[F(m_{\mathrm{event}})]$ need not equal $F(\E[m_{\mathrm{event}}])$.
+For small fluctuations around $m_0$, its local noise amplification is
+\begin{equation}
+ F'(m_0)=\frac{1}{(1-km_0)^2},\qquad
+ \Var(\widehat n)\simeq\frac{\Var(m)}{(1-km_0)^4}.
+ \label{eq:inverse-noise}
+\end{equation}
+The positive curvature produces a leading mean shift
+$k\Var(m)/(1-km_0)^3$ in this small-fluctuation approximation. Both
+expressions fail near the pole, where the full response distribution must be
+used. Correcting a clipped output cannot determine the lost current. Those
+samples retain their saturation flag and require an explicitly justified
+censored-data or event-selection treatment in a later analysis.
+
+\subsection{Dark subtraction, PDE and energy analysis}
+With stationary signal plus dark counts, equation~\eqref{eq:inverse}
+estimates their \emph{total} primary count. In that limit a possible signal
+estimator is
+\begin{equation}
+ \widehat n_s=F(m)-R_d\Delta t.
+ \label{eq:dark-subtraction}
+\end{equation}
+Subtracting a full-charge mean dark signal before the nonlinear inversion is
+generally inequivalent, because signal and dark avalanches compete for the
+same recovering cells. For a time-varying event, dark-only calibration and
+joint forward simulations should establish the subtraction and inversion
+bias. Subtracting a known mean dark contribution leaves its statistical
+variance. The saved signal/dark charge components permit direct checks of
+these effects in simulation, while a real acquisition measures their sum.
+
+After validating the correction, dividing $\widehat n_s$ by the calibrated
+PDE estimates incident photons. The division changes the scale and preserves
+the detection fluctuation. Converting incident light to EL electrons and
+deposited energy adds the separate optical collection, EL gain and
+attachment calibrations already associated with the upstream gas model.
+These stages should be tested against saved truth quantities in order:
+sensor charge, primary detected count, incident photons and event energy.
+The inverse model is a subsequent analysis stage; it does not alter the
+saved forward sensor or ASIC histories.
+
+\section{Implementation, persisted stages and validation}
+The photon reader is \code{read_photon_history} in
+\code{src/event_analysis/production_readout.jl}, exported through
+\code{EventAnalysis.jl}. It returns owned arrays with signed SiPM and bucket
+indices. The \code{Sensor} type in
+\code{src/ion_signal/sipm_response.jl} stores PDE, microcell count, gain,
+recovery time and dark rate. Its \code{simulate_channel} function samples
+successive photon buckets and returns owned count and charge arrays.
+The \code{Electronics} type in \code{src/ion_signal/sipm_electronics.jl}
+stores sampling interval, noise and range; \code{apply_electronics} returns
+owned noise/current/flag arrays while preserving its input charge.
+The diagnostic \code{axel_mean} and \code{axel_inverse} functions evaluate
+the stationary formulas; the inverse reports a validity flag and rejects
+clipped samples or a nonpositive denominator.
+
+The sensor and electronics cards are independently versioned at
+\code{config/specs/response/sipm/sipm_v1.toml} and
+\code{config/specs/response/sipm_electronics/readout_v1.toml}.
+The acquisition adapter and persisted stages are implemented in
+\code{scripts/production/sipm_pipeline.jl}, with
+\code{scripts/production/run_sipm_pilot.jl} as the Julia pilot entry point.
+A production run card selects the inputs and stages. Canonical card hashing and event-keyed seeds follow
+\code{scripts/production/specs.jl}. The sensor file schema is \code{nausicaa.sipm_file.v1}, with event schema
+\code{nausicaa.sipm_history.v1}; the ASIC file uses
+\code{nausicaa.electron_response_file.v1}, with event schema
+\code{nausicaa.electron_response_history.v1}. Metadata identify the model,
+algorithm, units and initialization convention explicitly.
+
+For each saved channel--bucket cell, the sensor stage records incident
+photons, primary signal and dark avalanche counts, signal and dark charge,
+and total charge. The saved $q_0$ and $\Delta t$ determine PE-equivalent
+response and bucket-average current exactly from the charge arrays. The output
+must also describe the acquisition channel set and window so that absent
+photon input cells can be represented with dark and electronics noise.
+The electronics stage references the saved sensor identity and stores its
+noise draw, current before and after clipping, and saturation flag. This
+separation permits ASIC changes while preserving the identical sampled
+sensor realization.
+
+Source-content hashes, event and gas identifiers, parent-pair checksum,
+geometry/time conventions, exact TOML text and canonical hashes, RNG seeds,
+and code identities accompany the outputs. Output files are marked complete
+only after successful writing. Physical calculations use Julia and save
+results to HDF5; Python presentation code reads those results to generate
+parameter tables and this report's numerical additions. The four source
+files are preserved, and the response is first evaluated on a small pilot.
+
+The validation program tests physical limits and persisted behavior:
+\begin{enumerate}
+\item Check the binomial mean and variance at negligible occupancy, and
+one- and two-avalanche charge against equation~\eqref{eq:recovery}.
+\item Check recovery through empty buckets and a signal at a bucket
+boundary; changing bucket labels must not reset the microcells.
+\item Check Poisson dark-count mean, variance and area scaling, with
+charge approaching equation~\eqref{eq:dark-current} in the dilute limit.
+\item Compare a constant-rate simulation after equilibration with the
+stationary mean in equation~\eqref{eq:forward-mean}; then quantify deviations
+for finite pulses and changing illumination.
+\item Check equation~\eqref{eq:charge-preservation} and verify that saved
+signal and dark components sum to the sensor response.
+\item Check the Gaussian noise distribution, independence prescription,
+upper clipping and retained negative samples, including zero illumination.
+\item Round-trip both HDF5 stages, verify identities and event seeds, and
+confirm that changing only ASIC parameters preserves the sensor realization.
+\item On the four-input pilot, report channel/bucket occupancy, charge loss
+from recovery, dark contribution, clipped fraction and resource use before
+scaling to all events. Later inversion tests report bias and resolution as
+functions of intensity, pulse shape and distance from clipping.
+\end{enumerate}
+
+The active approximations are uniform sub-bucket timing and illumination,
+fixed PDE during recovery, common microcell gain and recovery time,
+independent primary dark pulses, zero correlated avalanches, and a charge
+bucket ASIC with independent Gaussian noise. They define a reproducible
+baseline. Sensor measurements and ASIC information can replace each input
+through the versioned cards while keeping the saved stage boundaries and
+truth comparisons explicit.
+
+\InputIfFileExists{latex_generated/sipm_response/pilot_results.tex}{}{}
+
+The pilot demonstrates substantial clipping under the adopted 1~mA
+bucket-average-current limit. The saved sensor stage retains the charge that
+precedes this loss, allowing the current range and reconstruction strategy to
+be reviewed independently. A recovery correction alone cannot restore the
+clipped samples. The stationary and transient tests also show why the inverse
+requires calibration for the time structure of the actual light pulses.
+The completed 8,000-event bb0nu response and the operating-point comparison
+are documented in \code{docs/response_overview.md}.
+
+\bibliographystyle{unsrt}
+\bibliography{notes/physics/references}
+\end{document}

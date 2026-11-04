@@ -1,0 +1,5 @@
+study_id = "bfe6dd3720d0e9b9"
+results = "results/ion_csa_v3_corrected/bfe6dd3720d0e9b9"
+html = "results/ion_csa_v3_corrected/bfe6dd3720d0e9b9/ion_csa.html"
+outputs = "results/ion_csa_v3_corrected/bfe6dd3720d0e9b9/outputs.json"
+parent_study = "results/ion_csa_v3_pilot/fe44c7ae68e2df1f"

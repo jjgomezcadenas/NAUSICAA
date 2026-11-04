@@ -1,0 +1,30 @@
+{
+  "summary": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_response_pilot/a237f33cb4c7a933/summary.h5",
+  "validation": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_response_validation/validation.h5",
+  "inputs": [
+    {
+      "source_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/photons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/photons_pure_xe.h5",
+      "source_sha256": "7d997fc54bb700ee760aaa3312e9bab1a5eb1c8159eac534381968625e234397",
+      "sensor_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/7f51e20cfe1cb3918892b05dfcf8a0a7405a2e44257a50f729e3c727629c00ae/sipm_response.h5",
+      "electronics_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/f0dc8b57ac9ac74acbf1c0cb3653b016f74daf5cc0463dc24f43bc791319a8e2/electron_response.h5"
+    },
+    {
+      "source_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/photons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/photons_xe_he15.h5",
+      "source_sha256": "ddebbf9dd70bff1348c2c47fee58cbd8eaf4fe2a1b7d01a781b190f8c3fc3ceb",
+      "sensor_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/9aabcd86ec217479361bd0f26c2bde6144fa85d58508b9a5e38a8ddf748cbd02/sipm_response.h5",
+      "electronics_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/56c68bc327d71dccc426312f4c157054d3b3bf368ad05be966ee93b1ee1777fe/4c0f0828df94e7e3c6d8806a0c2b385868931e4e09fb92fa5aa771eaee29aad5/electron_response.h5"
+    },
+    {
+      "source_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/detector/photons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/photons_pure_xe.h5",
+      "source_sha256": "bedbe5249fc92f1c5051d221dec6cc2610911ba78a4b163979b6eb38baa4903a",
+      "sensor_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/5bfa54fea5c1a2bf00d6ae40170139bad5a0b2e355a9dce4ec357b300d20880b/sipm_response.h5",
+      "electronics_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/d156eab7e5a037cf80ad68c61b0e51b213277356152f02acbd7d9af76018cb61/electron_response.h5"
+    },
+    {
+      "source_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/detector/photons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/photons_xe_he15.h5",
+      "source_sha256": "e04ce90b0fd66d3d305f9215419b6991f9395d34e449eaa3415571c36a5d946a",
+      "sensor_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/69a538b6653c5cb671c95838873367c4c6c06c39e5f5cafba5c3ceb9303957b5/sipm_response.h5",
+      "electronics_path": "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/single_electrons/a82036783cb95a9651bf8ca7bc87056fa74f54cd8869d9a236614d41b6f590c7/response/electrons/a9db39ffb9369e26c005d1de51dbbdc76159b07860ca835700e6f7c87d318a41/87297909b7c1ca384c8cc8df68e34d9ede24e6739336136ff93cd96dd4f453ba/electron_response.h5"
+    }
+  ]
+}

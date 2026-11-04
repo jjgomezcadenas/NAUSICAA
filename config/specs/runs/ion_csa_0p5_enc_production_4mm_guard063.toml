@@ -1,0 +1,9 @@
+schema = "nausicaa.ion_csa_run.v1"
+response_card = "config/specs/response/ion_csa/csa_0p5_enc_4mm.toml"
+ion_index = "results/simulations/production_pilot/grid_scan_summary_238ddc5a75e0fd9b.h5"
+samples = ["bb0nu"]
+pitches_mm = [4]
+events_per_sample = 8000
+selection = "evenly_spaced_sorted_event_ids"
+results_directory = "results/ion_csa_0p5_enc_production_4mm"
+report_directory = "latex_generated/ion_csa_0p5_enc_production_4mm"

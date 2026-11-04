@@ -27,11 +27,12 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   speed). SiPM PDE is TOML-configurable, initially 0.30 (user input).
   These are user design inputs;
   record the adopted gas-dependent EL yield and optical boundary conditions.
-- For EL variance, use the user's approximate readings of Oliveira et al.,
-  Figure 6: J ≈ 0.10 at E/P = 1.5, J ≈ 0.05 at 2.0 and J ≈ 0.01 at 3.0
-  kV/cm/bar. The current operating point is E/P = 3.0 and J = 0.01. Treat
-  these as approximate readings, not a fitted interpolation; require an
-  explicit J for a field between the recorded points.
+- For EL variance, use the user's corrected approximate readings of Oliveira
+  et al., Figure 6 (2026-11-04): J ≈ 0.030 at E/P = 2.0,
+  J ≈ 0.015 at 2.5, and J ≈ 0.025 at 3.0 kV/cm/bar. The minimum
+  is near E/P = 2.8, J ≈ 0.01. Use the same J prescription for both gases.
+  Preserve historical J = 0.01 at E/P = 3 productions with their original cards;
+  new comparison cards explicitly specify the corrected values.
 - Use SI internally for transport, fields and electronics. Preserve particle-
   physics units in NEXUS event tables and hit DataFrames: positions in mm and
   deposited energy in MeV, with the original Float32 precision. Do not convert
@@ -65,6 +66,10 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   only if that minimum > n_min. This display selection causes no charge loss.
   Current pixel-charge cards set n_min = 0, so all four distributions have no
   charge cut and the minimum histogram includes every event with pulses.
+- Response mean/max comparisons select positive input channel–bucket cells and
+  use the same cells at every response stage. Keep signed reconstructed values
+  and apply no amplitude or signal-to-noise cut. Each event contributes one
+  mean and one maximum.
 - The active readout replays source hits and deterministic diffusion seeds when
   pitch or bucket width changes; it does not save individual carrier coordinates.
   Histogram cell centres are valid for display and historical comparison, not

@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "checks": 1609,
+  "events": 200,
+  "negative_estimates_retained": 1104587,
+  "distinct_pad_seeds": 20730
+}

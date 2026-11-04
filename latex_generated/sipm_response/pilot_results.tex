@@ -1,0 +1,57 @@
+\section{Saved pilot and validation results}
+The pilot uses event 0 in each of the four existing 250 ns photon histories.
+Channels illuminated anywhere in the event are acquired through the global
+photon-bucket span with four quiet buckets at either end. Zero-photon buckets
+contain dark pulses and ASIC noise. Recovery loss includes optical and dark
+charge. Clipping counts include every acquired channel--bucket cell.
+These four events establish operation of the pipeline; they do not estimate
+the full-sample saturation fraction.
+
+\begin{center}\small
+\begin{tabular}{llrrrr}\toprule Sample & Gas & Event & Detected PE & Recovery loss & Clipped buckets \\\midrule
+bb0nu & pure\_xe & 0 & 13,782,681 & 0.12357 & 5,038 / 44,652 \\
+bb0nu & xe\_he15 & 0 & 13,558,437 & 0.28869 & 2,360 / 18,550 \\
+single\_electrons & pure\_xe & 0 & 14,493,517 & 0.23641 & 3,151 / 18,850 \\
+single\_electrons & xe\_he15 & 0 & 14,255,194 & 0.39132 & 1,552 / 9,088 \\
+\bottomrule\end{tabular}
+\end{center}
+
+bb0nu, pure\_xe: maximum sensor charge 11697.641 PE; dark pulses 24,713; ASIC noise RMS 0.49769 PE.
+
+bb0nu, xe\_he15: maximum sensor charge 19665.466 PE; dark pulses 10,135; ASIC noise RMS 0.50167 PE.
+
+single\_electrons, pure\_xe: maximum sensor charge 16097.155 PE; dark pulses 10,425; ASIC noise RMS 0.50524 PE.
+
+single\_electrons, xe\_he15: maximum sensor charge 20557.517 PE; dark pulses 5,039; ASIC noise RMS 0.49691 PE.
+
+\subsection{Independent numerical checks}
+The two-trigger expectation is independent midpoint quadrature of the
+uniform-arrival separation density. The stationary test uses independent
+Poisson photon counts, 40 microcells and 80 detected triggers per bucket;
+the transient test begins with recovered cells. The inverse means demonstrate
+finite-bin bias and the difference between stationary and transient illumination.
+Dark-count tests use the 5 mm effective sensor; binomial tests use 100 incident
+photons at PDE 0.30. ASIC tests include variance, lag-one covariance, charge/current
+units and exact range boundaries. Interface checks include signed gaps, empty
+events, HDF5 round trips, seed replay and reuse of the sensor output.
+
+\begin{center}\small
+\begin{tabular}{lr}\toprule Validation quantity & Saved value \\\midrule
+axel\_mean\_pe & 50.40323 \\
+binomial\_mean & 30.0355 \\
+binomial\_variance & 21.1201 \\
+dark\_mean & 0.54458 \\
+dark\_variance & 0.5446029 \\
+electronics\_noise\_mean\_pe & -0.0009798307 \\
+electronics\_noise\_rms\_pe & 0.5003612 \\
+float32\_charge\_storage\_relative\_error & 8.516565e-11 \\
+stationary\_inverse\_mean\_pe & 80.57573 \\
+stationary\_inverse\_rms\_pe & 11.31597 \\
+stationary\_mean\_pe & 50.39924 \\
+transient\_inverse\_mean\_pe & 95.3881 \\
+transient\_mean\_pe & 56.05311 \\
+two\_trigger\_mean & 1.577185 \\
+two\_trigger\_quadrature & 1.579483 \\
+two\_trigger\_variance & 0.07313562 \\
+\bottomrule\end{tabular}
+\end{center}

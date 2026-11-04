@@ -1,0 +1,104 @@
+{
+  "sources": [
+    {
+      "path": "config/specs/runs/csa_design_note.toml",
+      "sha256": "f761a386434d23b8bb09e4ce73945b91c003620d0b5e37e6fb7281555ef017f4"
+    },
+    {
+      "path": "config/csa_design_v3.toml",
+      "sha256": "4f601e81ec0205970e119e20591962409aeb3e0827205cd22dee332367c862c2"
+    },
+    {
+      "path": "config/specs/response/ion_csa/csa_v1.toml",
+      "sha256": "fae8481329b3b87e388c080a564a5d5f005cf07bf572db0e4ed4116106f6a514"
+    },
+    {
+      "path": "config/specs/response/ion_csa/reconstruction_v1.toml",
+      "sha256": "0c37ab3b374ac75cf0706fd1ee1ed9a6ee74fae334f12e4a90d7b7d44492ec8c"
+    },
+    {
+      "path": "LTSpice/v3/parameters.json",
+      "sha256": "476439d417914e5dfcd4771b7d4304fa014503d4eccecc7e142e7bed91866040"
+    },
+    {
+      "path": "results/ltspice/retention_scan/analysis.h5",
+      "sha256": "73d1f44fbae6ea591e1d516ab367dd4dc25f8a2429d878c0fb1f566a6be4902b"
+    },
+    {
+      "path": "results/ltspice/csa_v3_response_calibration/analysis.h5",
+      "sha256": "5703eaec4005d68067885fd066a2d3a99c32a5ba0ae552826dc9a8fb16043ef3"
+    },
+    {
+      "path": "scripts/production/reduce_csa_design.jl",
+      "sha256": "b28743afbc6100da4314411104a965b302ece18c7b1979523aba0fe09ab59acc"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_2mm/latest.toml",
+      "sha256": "9af202c2d026dabaf43df65875cf8ec5e3685c3c50e88214e9599cfe22c20b2b"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_2mm/621ee0d8943bf79c/summary.h5",
+      "sha256": "e894324ac8f15d39c2678031640951ab93e993c50fc26931cb299305c2f25e34"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_2mm/621ee0d8943bf79c/manifest.toml",
+      "sha256": "ee216955b1bb2b9529c43423c9ccc7610b6062d6059c0790863465e038afbfc8"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_2mm/621ee0d8943bf79c/independent_validation.json",
+      "sha256": "45af75beb2d3ba3c41d8618672ce894f05c30576a08d631da9502fcb3f8ed65e"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected/latest.toml",
+      "sha256": "0ca1f473e5b5264f766bf8db08b5aad44cc5774bde049f3db0197382cd56639a"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected/bfe6dd3720d0e9b9/summary.h5",
+      "sha256": "92c2cd3c89458fa61d5ebb7f3b6d210b916b59bf5d6aa7aab7a2c4e8cc3217f0"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected/bfe6dd3720d0e9b9/manifest.toml",
+      "sha256": "4e1c955945e3826ce8686dd3d126474d689362998a9c7eb672a23c74d8f5329f"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected/bfe6dd3720d0e9b9/independent_validation.json",
+      "sha256": "5e1cdb3bbb6eb582b801121365443aef6e9eda66e0b916a8eb55401fbfa76adf"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_4mm/latest.toml",
+      "sha256": "ef5753ec688295a54bdce2a5e73782ff8c73dff88c71316cb93cf2099eed23a1"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_4mm/1a907c5dff36993d/summary.h5",
+      "sha256": "289b07306bb4a257cc54b1cf2d8a2a2bc27a8d15a8a979ad51dbacd497a708f4"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_4mm/1a907c5dff36993d/manifest.toml",
+      "sha256": "fc504c8a4f982211d40654867d5c47d90ffa839391332decb232604aaff372b5"
+    },
+    {
+      "path": "results/ion_csa_v3_corrected_4mm/1a907c5dff36993d/independent_validation.json",
+      "sha256": "0369a73511b176512eebe80d800f997f446dfb27744fa1046cbcd1f31644003e"
+    },
+    {
+      "path": "notes/physics/csa_design.tex",
+      "sha256": "3bb8261bd00e26e81501482a872f1a95191eeb5e77aa6475f8f664da34844193"
+    },
+    {
+      "path": "notes/physics/figures/Nausica_Image.jpg",
+      "sha256": "68273a42aeb85713d8e40ef8bebc19d7ff7a476459108ceb67bf9bc0a7b0f514"
+    },
+    {
+      "path": "notes/physics/references.bib",
+      "sha256": "b6437fb3c0a3c0c5b5b07f96206a0c3a68ae719903fa55c968d6fc2e90b5a3a2"
+    },
+    {
+      "path": "results/csa_design/summary.h5",
+      "sha256": "60b296e7f1f96f365bb14c41ef43c9863e0b78da9c7962a4cc62c42ba6585498"
+    },
+    {
+      "path": "scripts/production/present_csa_design.py",
+      "sha256": "d72f3d2be60c24ef4f9745f0f1e298437a748495067fccd1758338c57e594d92"
+    }
+  ]
+}
