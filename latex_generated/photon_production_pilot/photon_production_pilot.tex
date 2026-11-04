@@ -1,0 +1,32 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm]{geometry}
+\usepackage{booktabs,hyperref,xurl}
+\begin{document}\title{Photon production pilot}\author{NAUSICAA}\date{}\maketitle
+Fresh pilot: 500 bb0nu events per operating point, each propagated through pure Xe and Xe--15\% He. Every reported time covers BOTH gases together, processed sequentially. Julia warm-up was measured separately (3.20 s); times exclude process startup and report generation. Full-run estimates scale the measured pilot time to 8,000 events. The pilot checks all event identities, primary-pair replay checksums and photon/electron ledgers. Existing matching 8,000-event files are complete and available.
+\begin{center}\begin{tabular}{rrrrrr}\toprule
+$E/P$ & $J$ & Events & Pilot (s) & 8,000 estimate (s) & Existing full run (s)\\\midrule
+2.5 & 0.015 & 500 & 5.45 & 87.3 & 89.7 \\
+3 & 0.025 & 500 & 5.23 & 83.8 & 88.9 \\
+\bottomrule\end{tabular}\end{center}
+$E/P$ is in kV/cm/bar. All times include both gases.
+
+Pressure 15 bar; chamber length 150 cm; EL pitch 10 mm; hole diameter/depth 5/5 mm; time bucket 0.25 microseconds; electron lifetime 15 ms. The saved counts are VUV photons incident on each SiPM per bucket. PDE, SiPM recovery and electronics are subsequent stages. The model assigns photons to the parent electron arrival bucket, uses the recorded gas diffusion and EL laws, and applies analytical direct optical acceptance with absorbing hole walls.
+\section*{Saved file sizes}
+\begin{center}\begin{tabular}{rlrr}\toprule
+$E/P$ & Gas & Pilot (bytes) & Full 8,000 (bytes)\\\midrule
+2.5 & Xe & 14,335,065 & 226,013,410 \\
+2.5 & Xe--15\% He & 10,475,185 & 166,396,758 \\
+3 & Xe & 14,377,633 & 226,682,497 \\
+3 & Xe--15\% He & 10,499,449 & 166,781,543 \\
+\bottomrule\end{tabular}\end{center}
+Numerical timing and provenance: \path{results/photon_production_pilot/timing.h5}.
+The photon files are indexed in \path{results/photon_production_pilot/files.toml}.
+The HTML report in that directory links directly to the pilot and full photon files.
+
+The production implementation is \path{scripts/production/run_electron_250ns.jl};
+the timing driver is \path{scripts/production/benchmark_photon_production.jl}.
+The driver rejects cached pilot outputs so a timing measurement always performs
+fresh diffusion, collection, EL sampling and HDF5 writing. A subsequent measurement
+can select another event limit. Presentation is regenerated from the saved summary
+with \path{scripts/production/present_photon_production_pilot.py}.
+\end{document}

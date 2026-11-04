@@ -1,0 +1,10 @@
+electronics_card = "config/specs/response/sipm_electronics/readout_s14160_1315ps.toml"
+event_ids = [0]
+gases = ["pure_xe", "xe_he15"]
+photon_index = "results/sipm_tpb_pilot/photons_ep2.h5"
+pilot_only = true
+report_directory = "latex_generated/sipm_tpb_pilot"
+results_directory = "results/sipm_tpb_pilot"
+samples = ["bb0nu"]
+schema = "nausicaa.sipm_run.v1"
+sipm_card = "config/specs/response/sipm/s14160_1315ps_tpb_tau12p5_n512.toml"

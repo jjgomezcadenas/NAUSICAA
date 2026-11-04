@@ -1,0 +1,40 @@
+schema = "nausicaa.sipm_spec.v1"
+seed = 2026
+response_model = "statistical"
+statistical_substeps = 128
+sparse_trigger_limit = 16
+pde = 0.30
+diameter_m = 0.005
+microcell_pitch_m = 0.000050
+microcell_count = 7854
+gain = 2.55e6
+recovery_s = 73.4e-9
+dark_reference_rate_Hz = 1.0e6
+dark_reference_area_m2 = 9.0e-6
+reference_temperature_K = 298.15
+reference_overvoltage_V = 4.0
+arrival_model = "uniform_in_bucket"
+illumination = "uniform_microcells"
+recovery_pde = "constant"
+initial_state = "stationary_dark"
+charge_assignment = "avalanche_bucket"
+crosstalk = false
+afterpulsing = false
+gain_spread = false
+
+[acquisition]
+channels = "illuminated_in_event"
+quiet_before_buckets = 4
+quiet_after_buckets = 4
+empty_first_bucket = 0
+empty_last_bucket = 7
+# Additional physical SiPM grid indices, e.g. [[0, 0]], for dark-only controls.
+additional_channels = []
+
+[provenance]
+pde = "User design input; independent of recovery in this approximation"
+geometry = "User 5 mm exit-covering disk; effective cell count rounded from area / pitch^2"
+gain_dark = "Hamamatsu2017VUV4Indexed; typical 3x3 mm2 reference, 25 C, +4 V; dark rate scaled by area"
+recovery = "User adoption of Yoshida2024AXELResponse 73.4 ns"
+omitted_effects = "User-approved first model; crosstalk, afterpulsing and gain spread deferred"
+acquisition = "Pilot window spans all photon buckets plus 1 us each side; channels illuminated anywhere in the event"

@@ -37,6 +37,26 @@ function axial_light_acceptance(radius_mm::Float32, depth_mm::Float32)::Float32
 end
 
 """
+    axial_square_acceptance(side_mm, depth_mm, hole_radius_mm; steps=16384)
+
+Fraction of isotropic light incident on a centred square at the hole exit,
+averaged over uniform emission along the hole axis. All lengths are mm.
+Integrate the exact rectangle solid angle with midpoint quadrature in depth.
+Require positive finite lengths, a positive interval count, and square corners
+inside the circular aperture. Absorbing walls then impose no further loss on
+rays reaching the square. Return a Float32 probability.
+"""
+function axial_square_acceptance(side_mm::Real, depth_mm::Real,
+                                 hole_radius_mm::Real; steps::Int=16384)::Float32
+    all(x->isfinite(x)&&x>0,(side_mm,depth_mm,hole_radius_mm)) && steps>0 ||
+        throw(ArgumentError("Positive finite geometry and interval count required"))
+    side_mm/sqrt(2)<=hole_radius_mm || throw(ArgumentError("Square exceeds hole aperture"))
+    a=Float64(side_mm)/2;h=Float64(depth_mm)
+    Float32(sum(atan(a*a,u*sqrt(u*u+2a*a)) for u in
+        ((i-.5)*h/steps for i in 1:steps))/(pi*steps))
+end
+
+"""
     sample_detected_pe(rng, electrons, photons_per_electron, acceptance, pde)::Int64
 
 Draw an integer PE count from a binomial distribution. The trial count is

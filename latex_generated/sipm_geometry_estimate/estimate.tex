@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage[margin=18mm]{geometry}
+\usepackage{amsmath,amssymb,booktabs}
+\begin{document}
+\section*{SiPM size and distance: direct optical acceptance}
+Uniform isotropic emission along the axis of a 5 mm deep hole, 5 mm hole diameter, absorbing walls, and a centred sensor parallel to the exit plane. Values describe light from one hole reaching its aligned sensor. Array totals additionally include neighbouring sensors. PDE and microcell pitch are held fixed.
+
+For a square of half-side $a$, gap $g$, and hole depth $h$, the accepted
+fraction of all emitted photons is
+\[
+A_\square=\frac{1}{\pi h}\int_0^h
+\arctan\!\left[\frac{a^2}{(g+u)\sqrt{(g+u)^2+2a^2}}\right]du.
+\]
+The square corners lie within the hole aperture for all sizes tabulated.
+For the circular reference with radius $r$ equal to the hole radius,
+\[
+A_\circ=\frac{h+\sqrt{g^2+r^2}-\sqrt{(g+h)^2+r^2}}{2h}.
+\]
+\begin{center}\small
+\begin{tabular}{rlrrr}\toprule
+Gap (mm)&Sensor&Acceptance (\%)&Relative light (\%)&Occupancy ratio\\\midrule
+0 & Circle, diameter 5 mm & 19.0983 & 100.00 & 1.00 \\
+0 & Square, 3 x 3 mm & 14.0491 & 73.56 & 1.60 \\
+0 & Square, 2 x 2 mm & 9.9653 & 52.18 & 2.56 \\
+0 & Square, 1 x 1 mm & 5.2937 & 27.72 & 5.44 \\
+10 & Circle, diameter 5 mm & 1.0086 & 100.00 & 1.00 \\
+10 & Square, 3 x 3 mm & 0.4700 & 46.61 & 1.02 \\
+10 & Square, 2 x 2 mm & 0.2107 & 20.89 & 1.03 \\
+10 & Square, 1 x 1 mm & 0.0530 & 5.25 & 1.03 \\
+\bottomrule\end{tabular}\end{center}
+The occupancy ratio is incident light per microcell relative to the circular sensor at the same gap. At zero gap, reducing sensor size reduces total light but increases illumination per microcell. At 10 mm gap, light approximately scales with sensor area. These optical ratios precede SiPM recovery and electronics clipping.
+
+Depth quadrature at 50,000 and 100,000 intervals agreed within $10^{-9}$
+in absolute acceptance. Numerical results and card/source provenance are
+saved in \texttt{results/sipm\_geometry\_estimate/estimate.h5}.
+\end{document}

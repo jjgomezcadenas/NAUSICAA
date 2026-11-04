@@ -440,6 +440,90 @@ neighbouring-bucket covariance, and the total-event charge distribution.
 A detailed recovery-state distribution should be introduced only if these
 observables demonstrate a consequential failure of the compact model.
 
+\subsection{Conditional-count statistical implementation}
+\label{sec:statistical-implementation}
+The prototype in \code{src/ion_signal/sipm_statistical.jl} implements a
+count-preserving discretization of the moment model. It retains the binomial
+photodetection and Poisson dark-count draws. The state carried between buckets
+is $(R,S)$, with $S=\sum_j r_j^2$. Dark-equilibrium initialization samples the
+cell recoveries once and reduces them to these two totals.
+
+\paragraph{Exact conditional occupancy moments.}
+For $k$ simultaneous triggers assigned independently to $M$ cells, write
+\begin{equation}
+ a=(1-1/M)^k,\qquad b=(1-2/M)^k,\qquad p=1-a.
+\end{equation}
+Each occupied cell contributes its available charge once. For interval charge
+$Q$ in PE equivalents,
+\begin{align}
+ \E[Q\mid R,S,k]&=pR,\\
+ \Var(Q\mid R,S,k)&=(a-b)S+(b-a^2)R^2,\\
+ \E\!\left[\sum_{j\,\mathrm{hit}}r_j^2\mid R,S,k\right]&=pS.
+ \label{eq:conditional-occupancy}
+\end{align}
+These expressions follow from the single-cell occupancy probability $p$ and
+the two-cell occupancy covariance $b-a^2$. They condition on the actual
+trigger count. The implementation uses a numerically stable equivalent of
+the variance expression and handles zero and one trigger explicitly.
+
+\paragraph{Charge and outgoing state.}
+The interval charge uses a bounded beta draw matching the first two moments
+in equation~\eqref{eq:conditional-occupancy}. Its support respects the total
+available charge, trigger count and the maximum cell recovery allowed by
+$(R,S)$. Zero variance gives a deterministic draw; maximal bounded variance
+uses a two-point distribution. The outgoing first moment is $R^+=R^--Q$,
+so output charge and recovery loss are correlated by construction.
+For a single trigger the second-moment loss is exactly $Q^2$. For a batch,
+the closure uses $W=QS/R$ for $R>0$, giving $\E[W]=pS$ and $S^+=S^--W$.
+This preserves the conditional mean loss of $S$. Its higher joint moments
+are an approximation. Feasibility repairs enforcing $R^2/M\leq S\leq R$
+and bounded-variance limiting are recorded as numerical diagnostics.
+
+For fixed interval counts, the first two moments of cumulative charge close
+in $\E[R]$, $\E[S]$, $\E[R^2]$, $\E[Q_{\rm tot}]$,
+$\E[Q_{\rm tot}R]$ and $\E[Q_{\rm tot}^2]$. Indeed, the charge mean is
+linear in $R$, its second moment is linear in $S$ and $R^2$, and recovery
+is affine in the individual cell recoveries. Preserving the conditional
+charge moments and $\E[W]=pS$ therefore preserves those aggregate moments
+for the discretized process, provided no feasibility repair or variance
+limiting modifies the update. The beta distribution approximates the shape
+and higher moments of that process; it does not introduce an additional
+approximation to these closed first and second moments.
+
+For mixed optical and dark triggers, labels are exchangeable. Conditional
+on the interval charge and squared-charge sum, random assignment of $k_s$
+signal labels among $k=k_s+k_d$ triggers gives
+\begin{align}
+ \E[Q_s\mid Q,W]&=\alpha Q,\qquad \alpha=k_s/k,\\
+ \Var(Q_s\mid Q,W)&=\frac{\alpha(1-\alpha)}{k-1}(kW-Q^2),\quad k>1.
+\end{align}
+The prototype substitutes the closed estimate of $W$, constrained to its
+conditional bounds for this label allocation, and samples bounded $Q_s$;
+$Q_d=Q-Q_s$. This preserves the total sampled charge and both population
+charge bounds. For $k$ trigger amplitudes in $[0,1]$ summing to $Q$, these
+conditional bounds are $Q^2/k\leq W\leq\lfloor Q\rfloor+
+(Q-\lfloor Q\rfloor)^2$. Optical/dark partition moments inherit this
+approximation to $W$; the saved production signal uses their sum $Q$.
+
+\paragraph{Arrival-time discretization.}
+Dense buckets are split into $K$ equal intervals. Successive binomial
+partitions give the exact multinomial allocation of the fixed optical and
+dark counts to these intervals. Half an interval of exponential recovery
+precedes the occupancy draw and half follows it. Collapsing arrivals within
+an interval to its midpoint is the time-discretization approximation;
+comparison of $K=32,64,128$ quantifies it. Buckets with at most 16 triggers
+instead sample their individual uniform arrival times and apply successive
+single-trigger moment draws. They retain the same compact state.
+
+The TOML selector \code{response_model = "statistical"} chooses this path;
+\code{statistical_substeps} and \code{sparse_trigger_limit} specify its
+resolution. The prototype card uses 128 intervals per 250~ns bucket and a
+sparse limit of 16 triggers. The microscopic path remains the reference. Model cards and code
+hashes distinguish the saved responses. The validation script
+\code{scripts/production/benchmark_sipm_statistical.jl} compares transient
+means, variances, adjacent-bucket covariance, total event charge and runtime
+for synthetic histories and the saved photons from both operating points.
+
 \subsection{Inverse correction and what it recovers}
 Solving equation~\eqref{eq:forward-mean} for $n$ gives AXEL's correction
 \begin{equation}
@@ -588,6 +672,15 @@ clipped samples. The stationary and transient tests also show why the inverse
 requires calibration for the time structure of the actual light pulses.
 The completed 8,000-event bb0nu response and the operating-point comparison
 are documented in \code{docs/response_overview.md}.
+
+The statistical implementation uses the same production PE-per-bucket schemas:
+\code{nausicaa.sipm_pe_file.v1} for sensor charge and
+\code{nausicaa.sipm_readout_pe_file.v1} for ASIC response. Its card is
+\code{config/specs/response/sipm/sipm_statistical_v1.toml}. The source,
+interfaces, validation commands and two-event integration pilot are described
+in \code{docs/sipm_statistical_implementation.md}. The generated comparison is
+\code{latex_generated/sipm_statistical_validation/validation.pdf}, with an
+HTML counterpart at \code{results/sipm_statistical_validation/validation.html}.
 
 \bibliographystyle{unsrt}
 \bibliography{notes/physics/references}

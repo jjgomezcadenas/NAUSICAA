@@ -13,6 +13,28 @@ sha(path)=open(io->bytes2hex(sha256(io)),path)
 str(g,k)=String(read(g[k]))
 schema(g)=String(read(attributes(g)["schema"]))
 
+"""Active sensor area in m² from the card's circle or square geometry."""
+function sensor_area_m2(c)
+    shape=get(c,"shape","circle")
+    shape in ("circle","square") || throw(ArgumentError("Unknown sensor shape"))
+    size=c[shape=="circle" ? "diameter_m" : "side_m"]
+    isfinite(size)&&size>0 || throw(ArgumentError("Positive finite sensor size required"))
+    shape=="circle" ? pi*size^2/4 : size^2
+end
+
+"""Detection probability per incident VUV photon for an optional TPB coating.
+
+The card's pde is the blue detection probability. Multiply independent TPB
+conversion and forward collection probabilities when a tpb table is present.
+All three probabilities must lie in [0,1].
+"""
+function effective_pde(c)
+    factors=haskey(c,"tpb") ? (c["pde"],c["tpb"]["conversion_efficiency"],
+        c["tpb"]["forward_fraction"]) : (c["pde"],)
+    all(x->isfinite(x)&&0<=x<=1,factors) || throw(ArgumentError("Invalid detection probability"))
+    prod(factors)
+end
+
 function settings(root,runpath)
     runfile=joinpath(root,runpath); run=TOML.parsefile(runfile)
     run["schema"]=="nausicaa.sipm_run.v1" && run["pilot_only"] || error("Pilot run card required")
@@ -29,18 +51,24 @@ function settings(root,runpath)
     !any(c[k] for k in ("crosstalk","afterpulsing","gain_spread")) || error("Additional sensor effects require a model")
     e["transfer"]=="bucket_average_current" && e["noise"]=="independent_gaussian_pe" &&
         e["baseline_pe"]==0 && !e["lower_clipping"] || error("Unsupported ASIC policy")
-    all(x->isfinite(x)&&x>0,(c["diameter_m"],c["microcell_pitch_m"],c["dark_reference_area_m2"])) || error("Sensor geometry")
+    area=sensor_area_m2(c)
+    all(x->isfinite(x)&&x>0,(c["microcell_pitch_m"],c["dark_reference_area_m2"])) || error("Sensor geometry")
     c["seed"]>=0 && e["seed"]>=0 || error("Seeds must be nonnegative")
+    model=get(c,"response_model","microscopic")
+    model in ("microscopic","statistical") || error("Unknown SiPM response_model")
+    if model=="statistical"
+        P.StatisticalOptions(c["statistical_substeps"],get(c,"sparse_trigger_limit",16))
+    end
     a=c["acquisition"]
     a["channels"]=="illuminated_in_event" && a["quiet_before_buckets"]>=0 &&
         a["quiet_after_buckets"]>=0 && a["empty_last_bucket"]>=a["empty_first_bucket"] || error("Acquisition policy")
     all(x->length(x)==2 && all(v->v isa Integer,x),a["additional_channels"]) || error("Additional channel indices")
-    sensor=P.Sensor(c["pde"],c["microcell_count"],c["gain"],c["recovery_s"],
-        P.dark_rate_Hz(c["dark_reference_rate_Hz"],c["dark_reference_area_m2"],c["diameter_m"]))
+    sensor=P.Sensor(effective_pde(c),c["microcell_count"],c["gain"],c["recovery_s"],
+        c["dark_reference_rate_Hz"]*area/c["dark_reference_area_m2"])
     electronics=E.Electronics(e["bucket_width_s"],e["noise_rms_pe"],e["current_limit_A"])
     common=[@__FILE__,joinpath(@__DIR__,"specs.jl"),joinpath(root,"src/event_analysis/production_readout.jl"),
         joinpath(root,"src/event_analysis/EventAnalysis.jl"),joinpath(root,"Manifest.toml")]
-    sensor_files=vcat(common,[joinpath(root,"src/ion_signal/sipm_response.jl")])
+    sensor_files=vcat(common,[joinpath(root,"src/ion_signal/sipm_response.jl"),joinpath(root,"src/ion_signal/sipm_statistical.jl")])
     electronics_files=vcat(common,[joinpath(root,"src/ion_signal/sipm_electronics.jl")])
     sensor_code=S.content_hash(join(sha.(sensor_files),"|")*string(VERSION))
     electronics_code=S.content_hash(join(sha.(electronics_files),"|")*string(VERSION))
@@ -48,6 +76,19 @@ function settings(root,runpath)
     electronics_model=S.content_hash(S.canonical(e)*electronics_code)
     (;root,run,runfile,ids,cp,ep,c,e,sensor,electronics,sensor_code,electronics_code,sensor_model,electronics_model,
       sensor_files,electronics_files)
+end
+
+"""Dispatch the card-selected microscopic or statistical sensor response.
+
+The statistical card owns its time discretization and sparse-trigger settings;
+its output count and charge arrays obey the same saved-history interface.
+"""
+function simulate_sensor_channel(rng,counts,dt,s)
+    if get(s.c,"response_model","microscopic")=="statistical"
+        options=P.StatisticalOptions(s.c["statistical_substeps"],get(s.c,"sparse_trigger_limit",16))
+        return P.simulate_channel_statistical(rng,counts,dt,s.sensor;options)
+    end
+    P.simulate_channel(rng,counts,dt,s.sensor)
 end
 
 """Owned dense counts on the selected channels and full signed acquisition interval."""
@@ -78,7 +119,10 @@ function sources(s)
                 str(m,"signal_unit")=="incident_photons" && str(m,"time_unit")=="us" || error("Photon input units")
                 card=TOML.parse(str(m,"branch_card_toml")); dt=card["bucket_width_us"]*1e-6
                 isapprox(dt,s.electronics.bucket_width_s;rtol=1e-12) || error("Photon and ASIC buckets differ")
-                isapprox(card["sipm_diameter_mm"]*1e-3,s.c["diameter_m"];rtol=1e-12) || error("Sensor must match photon collection aperture")
+                shape=get(card,"sipm_shape","circle")
+                shape==get(s.c,"shape","circle") || error("Photon and sensor shapes differ")
+                pk,sk=shape=="square" ? ("sipm_side_mm","side_m") : ("sipm_diameter_mm","diameter_m")
+                isapprox(card[pk]*1e-3,s.c[sk];rtol=1e-12) || error("Sensor must match photon collection aperture")
                 n=read(m["event_count"])
                 n==length(keys(h["events"])) && all(id->haskey(h["events"],string(id)),s.ids) || error("Input event count/selection")
                 stream=S.content_hash(s.sensor_model*sourcehash) # independent of event selection
@@ -147,9 +191,15 @@ function sensor_file(s,src)
                 grid=acquisition(history,s.c["acquisition"]); nb=length(grid.buckets); nc=length(grid.channels)
                 data=Dict(k=>zeros(T,nb*nc) for (k,T) in (("detected_pe",Int64),("dark_pulses",Int64),
                     ("optical_charge_C",Float64),("dark_charge_C",Float64),("charge_C",Float64)))
+                repairs=0;charge_limits=0;label_limits=0;maxrepair=0.;batches=0
                 seeds=UInt64[]; elapsed=@elapsed for (j,ch) in enumerate(grid.channels)
                     seed=S.event_seed(src.stream,id,"sensor:$(ch[1]):$(ch[2]):$(s.c["seed"])");push!(seeds,seed)
-                    trace=P.simulate_channel(Xoshiro(seed),view(grid.counts,:,j),src.dt,s.sensor)
+                    trace=simulate_sensor_channel(Xoshiro(seed),view(grid.counts,:,j),src.dt,s)
+                    if hasproperty(trace,:state_repairs)
+                        repairs+=trace.state_repairs;charge_limits+=trace.charge_variance_limits
+                        label_limits+=trace.label_variance_limits
+                        maxrepair=max(maxrepair,trace.maximum_state_repair);batches+=trace.batches
+                    end
                     rows=(j-1)*nb+1:j*nb
                     for k in keys(data); data[k][rows]=getproperty(trace,Symbol(k)); end
                 end
@@ -162,7 +212,10 @@ function sensor_file(s,src)
                     pixel_ix=repeat(first.(grid.channels);inner=nb),pixel_iy=repeat(last.(grid.channels);inner=nb),
                     bucket=repeat(grid.buckets,nc),incident_photons=vec(grid.counts),
                     channel_ix=first.(grid.channels),channel_iy=last.(grid.channels),channel_seed=seeds,
-                    first_bucket=first(grid.buckets),last_bucket=last(grid.buckets),simulation_elapsed_s=elapsed))
+                    first_bucket=first(grid.buckets),last_bucket=last(grid.buckets),simulation_elapsed_s=elapsed,
+                    response_model=get(s.c,"response_model","microscopic"),statistical_state_repairs=repairs,
+                    statistical_charge_variance_limits=charge_limits,statistical_label_variance_limits=label_limits,
+                    maximum_statistical_state_repair=maxrepair,statistical_batches=batches))
                 put(g,data)
                 println("SiPM $(src.sample)/$(src.gas) event $id: $(sum(data["detected_pe"])) PE, $(round(elapsed;digits=2)) s")
             end

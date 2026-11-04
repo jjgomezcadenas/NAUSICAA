@@ -38,8 +38,67 @@ note: physics readout spice-paper
 check: test readout note
 
 .PHONY: sipm-test sipm-pilot sipm-report
+PHOTON_PILOT_EVENTS ?= 500
+.PHONY: photon-production-pilot photon-production-report
+photon-production-pilot:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/benchmark_photon_production.jl $(PHOTON_PILOT_EVENTS)
+	$(MAKE) photon-production-report
+
+photon-production-report:
+	$(PYTHON) scripts/production/present_photon_production_pilot.py
+
 sipm-test:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_sipm_response.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_sipm_statistical.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_sipm_statistical_pipeline.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_sipm_tpb.jl
+
+.PHONY: sipm-tpb-pilot sipm-tpb-report
+sipm-tpb-pilot:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_sipm_tpb_pilot.jl 12.5 512
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_sipm_tpb_pilot.jl 25.0 512
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_sipm_tpb_pilot.jl 12.5 1024
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_sipm_tpb_pilot.jl
+	$(MAKE) sipm-tpb-report
+
+sipm-tpb-report:
+	$(PYTHON) scripts/production/present_sipm_tpb_pilot.py
+
+.PHONY: sipm-statistical-validation sipm-statistical-report sipm-statistical-pilot
+sipm-statistical-validation: sipm-test
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/benchmark_sipm_statistical.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/benchmark_sipm_statistical_followup.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_sipm_statistical_comparison.jl
+	$(MAKE) sipm-statistical-report
+
+sipm-statistical-report:
+	$(PYTHON) scripts/production/present_sipm_statistical.py
+	latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=work/sipm_model_build docs/sipm_electronics_model.tex
+	cp work/sipm_model_build/sipm_electronics_model.pdf latex_generated/sipm_response/sipm_electronics_model.pdf
+
+sipm-statistical-pilot:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_sipm_production.jl config/specs/runs/sipm_bb0nu_statistical_pilot.toml
+
+.PHONY: sipm-production-pilot sipm-production-pilot-report
+sipm-production-pilot:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/benchmark_sipm_production.jl
+	$(MAKE) sipm-production-pilot-report
+
+sipm-production-pilot-report:
+	$(PYTHON) scripts/production/present_sipm_production_pilot.py
+
+.PHONY: electron-ep2-pilot sipm-clipping-pilot-analysis sipm-clipping-pilot-report
+electron-ep2-pilot:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_electron_ep2_pilot.jl
+	$(MAKE) sipm-clipping-pilot-analysis
+	$(MAKE) sipm-clipping-pilot-report
+
+sipm-clipping-pilot-analysis:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_sipm_clipping_pilots.jl
+
+sipm-clipping-pilot-report:
+	$(PYTHON) scripts/production/present_sipm_clipping_pilots.py
+	$(PYTHON) scripts/production/present_sipm_production_pilot.py
 
 sipm-pilot: sipm-test
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_sipm_pilot.jl

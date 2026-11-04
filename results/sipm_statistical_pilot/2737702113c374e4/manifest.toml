@@ -1,0 +1,23 @@
+summary = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_statistical_pilot/2737702113c374e4/summary.h5"
+run_card = "/Users/jjgomezcadenas/Projects/NAUSICAA/config/specs/runs/sipm_bb0nu_statistical_pilot.toml"
+summary_sha256 = "d6c95caedec57cc5e42ac5944e7e984bef26c69f1afed1586b34f0818d9ebd13"
+run_id = "2737702113c374e4"
+complete = true
+schema = "nausicaa.sipm_production_manifest.v1"
+
+[[shards]]
+sensor_sha256 = "8f656f3816ede6e0e133351aec82ad79bc904d95fcfbbf2307a236035e6afae9"
+event_ids = [0, 1]
+sensor = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/52275e26a40463406b72d414229109384ba9ee4c7b22bbebacda0b82a38d9dc0/sensor_pe/2643adbcd9467d72e7e77360aafe82f88794e29a4700e5fe9563654cc120f4f1/shard_0001.h5"
+sample = "bb0nu"
+gas = "pure_xe"
+asic = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/52275e26a40463406b72d414229109384ba9ee4c7b22bbebacda0b82a38d9dc0/asic_pe/39b41bab743c849a02f686e87bde4ec9d87646b492d1e0f3dca9c136d236c919/shard_0001.h5"
+asic_sha256 = "3335bed9d5476ac12ee5db43486a3fb17cd8666ea1f75fda8fd42652ba91f6d6"
+[[shards]]
+sensor_sha256 = "62a2c893245f239236917b434e75f2c7cc8a551acf2c5df453891469f1590787"
+event_ids = [0, 1]
+sensor = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/52275e26a40463406b72d414229109384ba9ee4c7b22bbebacda0b82a38d9dc0/sensor_pe/8064a75d0c101bf59e8e85095a72d2c088259f47b625923b0d1a334d3a465404/shard_0001.h5"
+sample = "bb0nu"
+gas = "xe_he15"
+asic = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/52275e26a40463406b72d414229109384ba9ee4c7b22bbebacda0b82a38d9dc0/asic_pe/882672951281b405075413728eef1f5c49797a91735e704c4f414a078fc56dd0/shard_0001.h5"
+asic_sha256 = "7a6ed7db09875c90980d99d39348f555bb9f4ff85f0e87de35091876ae5999a4"

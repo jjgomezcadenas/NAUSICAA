@@ -1,0 +1,39 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm]{geometry}\usepackage{booktabs,graphicx,hyperref,xurl}
+\begin{document}\title{Statistical SiPM and ASIC production pilot}\author{NAUSICAA}\date{}\maketitle
+100-event pilots with fixed SiPM and ASIC settings; production estimates cover both gas models at each E/P.
+
+100 bb0nu events at each operating point, propagated through both gas models. The statistical SiPM model uses 128 intervals per 250 ns bucket. SiPM PDE is 0.3, recovery time 73.4 ns, with 7,854 microcells. The ASIC adds 0.5 PE RMS noise and clips at 1 mA. Julia warm-up was measured separately for each invocation. Full 8,000-event response production has not been started.
+\begin{center}\resizebox{\textwidth}{!}{\begin{tabular}{lll}\toprule
+E/P & Pilot total: both gases (s) & 8,000: both gases (min) \\ \midrule
+2 & 16.79 & 21.6 \\
+2.5 & 20.62 & 24.6 \\
+3 & 18.27 & 23.4 \\
+\bottomrule\end{tabular}}\end{center}
+\section*{Timing by gas}
+\begin{center}\resizebox{\textwidth}{!}{\begin{tabular}{llllllll}\toprule
+E/P & Gas & Events & SiPM + write (s) & ASIC + write (s) & 8,000 estimate (min) & SiPM MiB & ASIC MiB \\ \midrule
+2 & Xe & 100 & 9.68 & 1.04 & 14.3 & 16.6 & 33.7 \\
+2 & Xe--15\% He & 100 & 4.40 & 0.49 & 6.5 & 8.7 & 15.4 \\
+2.5 & Xe & 100 & 10.19 & 1.42 & 15.5 & 16.7 & 33.4 \\
+2.5 & Xe--15\% He & 100 & 4.88 & 0.56 & 7.2 & 8.7 & 15.3 \\
+3 & Xe & 100 & 10.31 & 1.05 & 15.2 & 16.8 & 33.2 \\
+3 & Xe--15\% He & 100 & 4.64 & 0.57 & 7.0 & 8.7 & 15.2 \\
+\bottomrule\end{tabular}}\end{center}
+Each SiPM/ASIC timing includes computation and compressed HDF5 writing. The estimate scales processing and manifest/summary finalization from 100 to 8,000 events; input resolution is counted once. Each measurement used one Julia process with sequential gas branches. Warm-up, independent saved-file validation, process startup and report rendering are outside the projection. The estimate uses the first 100 source events; event complexity and storage throughput can change the full-run rate.\section*{Saved-response checks}
+All saved-history checks passed: event IDs and pair checksums, pixel and signed bucket correspondence, parent-file hashes, detected/dark/sensor/readout charge ledgers and the ASIC current limit. Quiet-cell noise is measured where the sensor input charge is zero. Clipped fraction uses every acquired cell. Charge retention is the summed ASIC output divided by summed SiPM input charge. Recovery-state repairs and variance limiting are recorded below.\begin{center}\resizebox{\textwidth}{!}{\begin{tabular}{llllllll}\toprule
+E/P & Gas & Quiet mean (PE) & Quiet RMS (PE) & Clipped cells \% & Charge retained \% & State repairs & Variance limits \\ \midrule
+2 & Xe & 0.00010 & 0.50068 & 5.70 & 32.59 & 6 & 0 \\
+2 & Xe--15\% He & -0.00039 & 0.50044 & 7.38 & 19.26 & 5 & 0 \\
+2.5 & Xe & -0.00027 & 0.50007 & 6.63 & 27.32 & 3 & 0 \\
+2.5 & Xe--15\% He & 0.00084 & 0.50010 & 8.14 & 16.12 & 6 & 0 \\
+3 & Xe & -0.00086 & 0.50015 & 7.40 & 23.93 & 3 & 0 \\
+3 & Xe--15\% He & 0.00069 & 0.50049 & 8.84 & 14.21 & 3 & 0 \\
+\bottomrule\end{tabular}}\end{center}
+
+The numerical source is \path{results/sipm_statistical_production_pilot/timing.h5}.
+The independent sensor and ASIC files are linked through the complete manifests
+in \path{results/sipm_statistical_production_pilot/files.toml}.
+Settings, source hashes and event/channel seeds accompany every response shard.
+The photon histories are reused from their completed production.
+\end{document}

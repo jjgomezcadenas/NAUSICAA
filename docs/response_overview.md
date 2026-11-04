@@ -76,3 +76,33 @@ It gives RMS/mean and Gaussian-equivalent FWHM, with the latter defined as
 Refresh the viewer to discover completed operating points in the EL selector.
 “Produce PNG” downloads both panels and all eight current views, including zoom
 and 3D camera settings, with event identity, operating point and drift labels.
+
+## Statistical SiPM pilot
+
+The compact statistical sensor response is selected by
+`config/specs/response/sipm/sipm_statistical_v1.toml`. It uses the same saved
+PE-per-bucket sensor and ASIC formats. The implementation, commands and
+assumptions are described in [sipm_statistical_implementation.md](sipm_statistical_implementation.md).
+
+`make sipm-statistical-validation` compares it with microscopic simulation and
+generates [the HTML report](../results/sipm_statistical_validation/validation.html)
+and [PDF](../latex_generated/sipm_statistical_validation/validation.pdf).
+`make sipm-statistical-pilot` runs two bb0nu events for each gas through the
+sensor and ASIC stages. Full production remains stopped; the existing viewer
+continues to use its saved production sources.
+
+## Small blue SiPM with TPB
+
+The S14160-1315PS pilot compares 100 matched bb0nu events at E/P = 2.0 and
+2.5 for both gases, with a centred 1.3 mm square sensor at zero gap.
+The [model and source notes](sipm_tpb_pilot.md) define square-aperture photon
+collection, TPB conversion, the 12.5/25 ns recovery comparison and fixed-charge
+electronics noise. [HTML results](../results/sipm_tpb_pilot/sipm_tpb_pilot.html)
+and [PDF](../latex_generated/sipm_tpb_pilot/sipm_tpb_pilot.pdf) separate optical
+statistics, sensor recovery and electronics clipping.
+
+`make sipm-tpb-pilot` runs fresh timing pilots and the complete report workflow.
+The runner preserves completed photon and response histories. Fresh timing
+rejects an existing response cache; use `make sipm-tpb-report` to regenerate
+presentation from saved reductions. `scripts/production/reduce_sipm_tpb_pilot.jl`
+refreshes the numerical comparisons independently of simulation.

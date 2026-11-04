@@ -1,0 +1,30 @@
+bucket_width_us = 0.25
+drift_speed_mm_us = 1.0
+helium_fraction = 0.15
+hole_depth_mm = 5.0
+hole_diameter_mm = 5.0
+hole_pitch_mm = 10.0
+j_reference = "Oliveira Figure 6; corrected approximate user reading, 2026-11-04"
+j_status = "user_specified"
+j_variance_ratio = 0.015
+lifetime_ms = 15.0
+light_acceptance = 0.06759349256753922
+optical_model = "uniform_axial_emission_absorbing_walls"
+pressure_bar = 15.0
+reduced_field_kV_cm_bar = 2.5
+schema = "nausicaa.electron_detector_spec.v1"
+sipm_plane_gap_mm = 0.0
+sipm_shape = "square"
+sipm_side_mm = 1.3
+
+[pure_xe]
+d_L_mm_sqrtbar_per_sqrtcm = 0.9
+d_T_mm_sqrtbar_per_sqrtcm = 3.5
+yield_gain_photons_per_electron_kV = 137.0
+yield_threshold_kV_cm_bar = 0.73
+
+[xe_he15]
+d_L_mm_sqrtbar_per_sqrtcm = 0.75
+d_T_mm_sqrtbar_per_sqrtcm = 1.6
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.8

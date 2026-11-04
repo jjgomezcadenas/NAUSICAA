@@ -1,0 +1,10 @@
+event_selection = "first_n_sorted_source_ids"
+gases = ["pure_xe", "xe_he15"]
+max_events = 100
+photon_index = "results/sipm_tpb_pilot/photons_ep2p5.h5"
+pilot_card = "config/specs/runs/sipm_response_tpb_ep2p5_tau25p0_n512.toml"
+report_directory = "latex_generated/sipm_tpb_pilot"
+results_directory = "results/sipm_tpb_pilot/tpb_ep2p5_tau25p0_n512"
+sample = "bb0nu"
+schema = "nausicaa.sipm_production_run.v1"
+shard_events = 100

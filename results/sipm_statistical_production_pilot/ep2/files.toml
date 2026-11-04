@@ -1,0 +1,6 @@
+summary = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_statistical_production_pilot/ep2/timing.h5"
+
+[operating_points.ep2]
+events = 100
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_statistical_production_pilot/ep2/da46b87f5cf8c014/manifest.toml"
+photon_index = "results/simulations/production_pilot/electron_250ns_ep2_pilot100.h5"

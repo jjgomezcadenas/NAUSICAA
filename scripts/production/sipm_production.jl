@@ -122,10 +122,16 @@ function sensor_shard(s,branch,ids,number)
                 nb=length(grid.buckets);nc=length(grid.channels);rows=nb*nc
                 detected=zeros(Int64,rows);dark=zeros(Int64,rows);sensor_pe=zeros(Float64,rows)
                 seeds=zeros(UInt64,nc)
+                repairs=0;limits=0;charge_limits=0;label_limits=0;maxrepair=0.;batches=0
                 for (j,ch) in enumerate(grid.channels)
                     seed=S.event_seed(src.stream,id,"sensor:$(ch[1]):$(ch[2]):$(pilot.c["seed"])")
                     seeds[j]=seed
-                    trace=P.simulate_channel(Xoshiro(seed),view(grid.counts,:,j),src.dt,pilot.sensor)
+                    trace=Pilot.simulate_sensor_channel(Xoshiro(seed),view(grid.counts,:,j),src.dt,pilot)
+                    if hasproperty(trace,:state_repairs)
+                        repairs+=trace.state_repairs;limits+=trace.variance_limits
+                        charge_limits+=trace.charge_variance_limits;label_limits+=trace.label_variance_limits
+                        maxrepair=max(maxrepair,trace.maximum_state_repair);batches+=trace.batches
+                    end
                     selection=(j-1)*nb+1:j*nb
                     detected[selection]=trace.detected_pe
                     dark[selection]=trace.dark_pulses
@@ -140,7 +146,11 @@ function sensor_shard(s,branch,ids,number)
                     electron_drift_cm=history.placement.electron_drift_cm,
                     incident_photons_total=sum(grid.counts),detected_pe_total=sum(detected),
                     dark_pulses_total=sum(dark),sensor_pe_total=sum(sensor_pe),
-                    acquired_cells=rows,channel_ix=first.(grid.channels),
+                    acquired_cells=rows,response_model=get(pilot.c,"response_model","microscopic"),
+                    statistical_state_repairs=repairs,statistical_variance_limits=limits,
+                    statistical_charge_variance_limits=charge_limits,statistical_label_variance_limits=label_limits,
+                    maximum_statistical_state_repair=maxrepair,statistical_batches=batches,
+                    channel_ix=first.(grid.channels),
                     channel_iy=last.(grid.channels),channel_seed=seeds))
                 vector(g,"pixel_ix",repeat(first.(grid.channels);inner=nb))
                 vector(g,"pixel_iy",repeat(last.(grid.channels);inner=nb))

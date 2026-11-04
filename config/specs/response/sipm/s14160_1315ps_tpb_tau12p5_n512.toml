@@ -1,0 +1,45 @@
+afterpulsing = false
+arrival_model = "uniform_in_bucket"
+charge_assignment = "avalanche_bucket"
+crosstalk = false
+dark_reference_area_m2 = 1.69e-6
+dark_reference_rate_Hz = 120000.0
+gain = 360000.0
+gain_spread = false
+illumination = "uniform_microcells"
+initial_state = "stationary_dark"
+microcell_count = 7284
+microcell_pitch_m = 1.5e-5
+pde = 0.32
+recovery_pde = "constant"
+recovery_s = 1.2500000000000001e-8
+reference_overvoltage_V = 4.0
+reference_temperature_K = 298.15
+response_model = "statistical"
+schema = "nausicaa.sipm_spec.v1"
+seed = 2026
+shape = "square"
+side_m = 0.0013
+sparse_trigger_limit = 16
+statistical_substeps = 512
+
+[acquisition]
+additional_channels = []
+channels = "illuminated_in_event"
+empty_first_bucket = 0
+empty_last_bucket = 7
+quiet_after_buckets = 4
+quiet_before_buckets = 4
+
+[provenance]
+datasheet = "https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/ssd/s14160-1310ps_etc_kapd1070e.pdf"
+device = "Hamamatsu S14160-1315PS, 25 C, +4 V"
+illumination = "Uniform microcells, constant PDE during recovery; prompt TPB; absorbing surroundings"
+pde = "0.32 peak blue PDE used as pilot approximation to TPB-spectrum average"
+recovery = "Provisional recharge proxy: 12.5 ns measured pulse decay; 25 ns sensitivity; not a direct recharge measurement"
+tpb = "Benson et al. 2018, Fig.19: approximate interpolation of intrinsic QE to 175 nm; complete absorption; user forward factor 0.5"
+tpb_source = "https://doi.org/10.1140/epjc/s10052-018-5807-z"
+
+[tpb]
+conversion_efficiency = 0.62
+forward_fraction = 0.5

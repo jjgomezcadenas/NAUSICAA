@@ -1,0 +1,37 @@
+summary = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/photon_production_pilot/timing.h5"
+sample = "bb0nu"
+schema = "nausicaa.photon_production_pilot_index.v1"
+
+[operating_points.ep2p5]
+events = 500
+bucket_width_us = 0.25
+reduced_field_kV_cm_bar = 2.5
+
+    [operating_points.ep2p5.pure_xe]
+    pilot = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/photon_production_pilot/ep2p5/photons_pure_xe_500.h5"
+    full = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/photons/80539e89129ec35b6340edf9314f287a1eb5c0dc75919df8cdc12c4a0b94c0f7/photons_pure_xe.h5"
+    full_events = 8000
+    pilot_sha256 = "4174ad069dcd19acf1abeca153d1b7e1ecd29c6422de74e5c0da7ceeaad4fc88"
+
+    [operating_points.ep2p5.xe_he15]
+    pilot = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/photon_production_pilot/ep2p5/photons_xe_he15_500.h5"
+    full = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/photons/80539e89129ec35b6340edf9314f287a1eb5c0dc75919df8cdc12c4a0b94c0f7/photons_xe_he15.h5"
+    full_events = 8000
+    pilot_sha256 = "f15a098518dd6fb55193274a330c02059ad60c4cd37f8dbe564b21c22afa8b81"
+
+[operating_points.ep3]
+events = 500
+bucket_width_us = 0.25
+reduced_field_kV_cm_bar = 3.0
+
+    [operating_points.ep3.pure_xe]
+    pilot = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/photon_production_pilot/ep3/photons_pure_xe_500.h5"
+    full = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/photons/52275e26a40463406b72d414229109384ba9ee4c7b22bbebacda0b82a38d9dc0/photons_pure_xe.h5"
+    full_events = 8000
+    pilot_sha256 = "f2c7cce2f51d2555a73238323eb6c0c72d8e190fc706bed1bd6e5516f4f1d069"
+
+    [operating_points.ep3.xe_he15]
+    pilot = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/photon_production_pilot/ep3/photons_xe_he15_500.h5"
+    full = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/detector/photons/52275e26a40463406b72d414229109384ba9ee4c7b22bbebacda0b82a38d9dc0/photons_xe_he15.h5"
+    full_events = 8000
+    pilot_sha256 = "5f092baeb1b67e96b9d616b0236ee3b93556932277197535386874316eb4e811"

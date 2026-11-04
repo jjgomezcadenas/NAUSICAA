@@ -1,0 +1,10 @@
+gases = ["pure_xe", "xe_he15"]
+pilot_only = true
+report_directory = "latex_generated/sipm_statistical_production_pilot"
+photon_index = "results/simulations/production_pilot/electron_250ns_ep2_pilot100.h5"
+samples = ["bb0nu"]
+event_ids = [0]
+electronics_card = "config/specs/response/sipm_electronics/readout_v1.toml"
+results_directory = "results/sipm_statistical_production_pilot/ep2"
+schema = "nausicaa.sipm_run.v1"
+sipm_card = "config/specs/response/sipm/sipm_statistical_v1.toml"

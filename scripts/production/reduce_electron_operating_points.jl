@@ -12,7 +12,8 @@ this operational baseline correction uses the independently measurable dark-only
 Drift distance is cm, velocity mm/us, lifetime ms, and returned charge is PE-equivalent.
 """
 function corrected_total(total,cells,dt,sensor,electron,L_cm)
-    rate=sensor["dark_reference_rate_Hz"]*(pi*sensor["diameter_m"]^2/4)/sensor["dark_reference_area_m2"]
+    area=get(sensor,"shape","circle")=="square" ? sensor["side_m"]^2 : pi*sensor["diameter_m"]^2/4
+    rate=sensor["dark_reference_rate_Hz"]*area/sensor["dark_reference_area_m2"]
     dark=cells*rate*dt/(1+rate*sensor["recovery_s"]/sensor["microcell_count"])
     drift_ms=L_cm*10/electron["drift_speed_mm_us"]/1000
     ((total-dark)*exp(drift_ms/electron["lifetime_ms"]),dark)

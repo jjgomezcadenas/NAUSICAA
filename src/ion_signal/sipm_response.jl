@@ -88,4 +88,7 @@ function axel_inverse(m::Real,s::Sensor,dt::Real;clipped::Bool=false)
     valid = !clipped && isfinite(m) && denominator > 0
     (; pe=valid ? m/denominator : NaN, valid)
 end
+include("sipm_statistical.jl")
+export StatisticalOptions, simulate_channel_statistical, occupancy_moments, recover_totals
+
 end

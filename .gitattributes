@@ -1,0 +1,2 @@
+# Preserve reference papers and generated reports as binary files.
+*.pdf binary

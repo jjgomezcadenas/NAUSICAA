@@ -1,0 +1,11 @@
+summary = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_statistical_production_pilot/timing.h5"
+
+[operating_points.ep2p5]
+events = 100
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_statistical_production_pilot/ep2p5/808c77c0d2e33002/manifest.toml"
+photon_index = "results/simulations/production_pilot/electron_250ns_summary_ea65f602bf417abb.h5"
+
+[operating_points.ep3]
+events = 100
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_statistical_production_pilot/ep3/d14425ef833acee9/manifest.toml"
+photon_index = "results/simulations/production_pilot/electron_250ns_summary_3c12a84f1fdbc522.h5"

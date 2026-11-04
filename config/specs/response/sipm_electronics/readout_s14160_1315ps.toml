@@ -1,0 +1,14 @@
+baseline_pe = 0.0
+bucket_width_s = 2.5e-7
+current_limit_A = 0.001
+lower_clipping = false
+noise = "independent_gaussian_pe"
+noise_rms_pe = 3.5416666666666665
+schema = "nausicaa.sipm_electronics_spec.v1"
+seed = 2027
+transfer = "bucket_average_current"
+
+[provenance]
+noise = "Same input charge RMS as 0.5 PE at gain 2.55e6; rescaled to gain 3.6e5"
+range = "User design input: upper clipping at 1 mA; supersedes the provisional 300 PE limit"
+timing = "User 0.25 us buckets; integrated charge divided by bucket duration"

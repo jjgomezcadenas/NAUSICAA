@@ -1,0 +1,11 @@
+summary = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_tpb_pilot/tau12p5_n512/timing.h5"
+
+[operating_points.tpb_ep2_tau12p5_n512]
+events = 100
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_tpb_pilot/tpb_ep2_tau12p5_n512/10fcd1bb84aa11b9/manifest.toml"
+photon_index = "results/sipm_tpb_pilot/photons_ep2.h5"
+
+[operating_points.tpb_ep2p5_tau12p5_n512]
+events = 100
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/sipm_tpb_pilot/tpb_ep2p5_tau12p5_n512/c89172ac6f6b0bcd/manifest.toml"
+photon_index = "results/sipm_tpb_pilot/photons_ep2p5.h5"
