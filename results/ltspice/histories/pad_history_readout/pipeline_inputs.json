@@ -1,0 +1,12 @@
+{
+  "config/pad_history_readout.toml": "d24165139b703942c7ffddbdd8350df6807e0b4e8af8dc3ccedaaa2b22ef8e3b",
+  "src/ion_signal/pad_history_readout.jl": "a0e344e82ae4a66d6e29ee043371b4e5cf8bb5518753ee858cfc1349e98e48e6",
+  "results/ltspice/feedback_optimization/length_400um_gate0_rounded.h5": "afbb2770a4b32a90246e11a40336c6eed07c3f4fa8b7757a5226b42cb9603258",
+  "results/ltspice/feedback_optimization/analysis.h5": "007cdf5fe43eb73dcd46e686d55c662d28e374e2ef2861eb2689071ab94b8d93",
+  "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+  "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N400_r2.cir": "120033283068546101cdf686f60574ae35a13c176eebd043ccd605372b68d145",
+  "results/pixel_charge_1mm/bb0nu.h5": "3910574475c17cc60799b024de1e3667a1932c2c78abde6cbbb0da04048628b6",
+  "results/pixel_charge_1mm/electrons.h5": "713bf6b1a3e36b7fa203ad5ec983fbf40234429a9e3788db2c376963089f9c26",
+  "results/pixel_charge_1mm_4mm/bb0nu.h5": "1842843aa937fb5fe2edbcec2e88964d81a1c374cc919bf8dcf10052ca12e40f",
+  "results/pixel_charge_1mm_4mm/electrons.h5": "19304b922a7ba942453517793483a4f31ff1ebbd7719f66f8e69eb9aac05808a"
+}

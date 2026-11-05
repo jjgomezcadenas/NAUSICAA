@@ -1,0 +1,31 @@
+production_code_hash = "6b47ca878a3c9963429f4e17d7f985ce4984b9559570b07e6f684fe197fb8180"
+matrix_axes_hdf5 = "pad,frame"
+graph_id = "e8206670adc872b962fbf8571906b7271abd65aca89bc04518949946a409f5b7"
+run_identity = "5ffcdd154aad0d9cde8cf8d3223c475bc4b1a0f0db12edfd662ff657e29fe129"
+channel_selection = "pixels_with_positive_input_charge"
+run_card_toml = """schema = \"nausicaa.ion_csa_pipeline_run.v1\"\nresponse_card = \"config/specs/response/ion_csa/csa_0p5_enc_4mm.toml\"\nreconstruction_card = \"config/specs/response/ion_csa/reconstruction_v1.toml\"\nion_index = \"results/elm_matched_smoke/detector_index.h5\"\nsamples = [\"bb0nu\"]\nselection = \"evenly_spaced_sorted_event_ids\"\nchannel_selection = \"pixels_with_positive_input_charge\"\nabsent_channel_policy = \"no_input_charge_noise_not_simulated\"\nmeasured_zero_suppression = false\nnegative_estimate_clipping = false\nevents_per_sample = 10\nresults_directory = \"results/elm_matched_smoke/ion_csa\"\n\n[[branches]]\npitch_mm = 4\n"""
+absent_channel_policy = "no_input_charge_noise_not_simulated"
+run_card = "config/specs/runs/elm_matched_csa_smoke.toml"
+matrix_axes_julia = "frame,pad"
+schema = "nausicaa.ion_response_run.v1"
+calibration_sha256 = "5703eaec4005d68067885fd066a2d3a99c32a5ba0ae552826dc9a8fb16043ef3"
+complete = true
+calibration_file = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/csa_v3_response_calibration/analysis.h5"
+
+[[responses]]
+pads = 715
+event_count = 10
+source_sha256 = "84f1958db6104938741eb332c24690460d961b5beaf86766747efe07d9d62cd7"
+path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/524b3afb83f7b048e4df935f576aee11f3b77d439608e319ca0786b5ab038c29/response/ions/8a8a766ffd20532c345064585da7f0b146aea4d5ce75cadb97f19abbd6c9ff2a/284314771c002147ec479e3b6df3010ba41250134b27276f28fab92bc8b82c05/ion_response.h5"
+pitch_mm = 4
+input_ion_total = 1122377
+source_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/524b3afb83f7b048e4df935f576aee11f3b77d439608e319ca0786b5ab038c29/detector/ions/8a8a766ffd20532c345064585da7f0b146aea4d5ce75cadb97f19abbd6c9ff2a/ions.h5"
+parent_corrected_response = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/524b3afb83f7b048e4df935f576aee11f3b77d439608e319ca0786b5ab038c29/response/ions/8a8a766ffd20532c345064585da7f0b146aea4d5ce75cadb97f19abbd6c9ff2a/db0f022df349b7916e0a367d4395afc62a31880b02e86cccc99da350207ef97f/ion_response.h5"
+pair_identity = "ab68e8ba7eac87cae2478d0f9cc3e3fd77e5cf3671fb81c0c243586730b967fd"
+frame_s = 0.04
+zero_input_buckets = 80697
+sha256 = "074ceb07f37fce06f2b1b18beeb149cdfc9d6a9a720bf4720ef03a4659cbac22"
+sample = "bb0nu"
+negative_estimates = 40814
+response_id = "284314771c002147ec479e3b6df3010ba41250134b27276f28fab92bc8b82c05"
+selected_event_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

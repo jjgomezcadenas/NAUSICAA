@@ -1,0 +1,45 @@
+{
+  "selected_case": "length_400um_gate0_rounded",
+  "Mf_width_m": 3.6e-07,
+  "Mf_length_m": 0.0004,
+  "Mf_gate_V": 0.0,
+  "M4_gate_V": 0.6164,
+  "supply_V": 1.8,
+  "temperature_K": 293.15,
+  "external_input_capacitance_F": 1.25e-12,
+  "feedback_capacitance_F": 3e-15,
+  "selected_averaging_s": 0.005,
+  "noise_low_Hz": 0.1,
+  "noise_high_Hz": 1000000.0,
+  "model_sha256": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+  "analysis_source": "results/ltspice/feedback_optimization/analysis.h5",
+  "analysis_source_sha256": "007cdf5fe43eb73dcd46e686d55c662d28e374e2ef2861eb2689071ab94b8d93",
+  "cases": {
+    "20ms": {
+      "frame_s": 0.02,
+      "mean_ions": 120,
+      "discharge_time_s": 8.568735724708594,
+      "alpha": 0.9976686551990165,
+      "gain_V_per_ion": 3.6796473620824313e-05,
+      "noise_rms_V": 0.0022546267469190605,
+      "ENC_e_rms": 61.27290267410555,
+      "mean_signal_V": 0.0044155074953848815,
+      "mean_snr": 1.95842061282146,
+      "previous_frame_fraction": 0.031101781942515346,
+      "following_frame_fraction": 0.03582484992552391
+    },
+    "40ms": {
+      "frame_s": 0.04,
+      "mean_ions": 400,
+      "discharge_time_s": 8.568726502123695,
+      "alpha": 0.9953427405656669,
+      "gain_V_per_ion": 3.798340247837022e-05,
+      "noise_rms_V": 0.002880661068559642,
+      "ENC_e_rms": 75.83999538219476,
+      "mean_signal_V": 0.015189486595739347,
+      "mean_snr": 5.272916956986625,
+      "previous_frame_fraction": 0.015029247148051922,
+      "following_frame_fraction": 0.017353037600945375
+    }
+  }
+}

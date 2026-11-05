@@ -11,7 +11,7 @@ import hashlib,json
 import h5py
 ROOT=Path(__file__).resolve().parents[3]
 def main():
- source=ROOT/'results/ltspice/bucket_noise_covariance/analysis.h5';out=ROOT/'latex_generated/bucket_noise_covariance';out.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'results/ltspice/design/bucket_noise_covariance/analysis.h5';out=ROOT/'latex_generated/ion_readout/bucket_noise_covariance';out.mkdir(parents=True,exist_ok=True)
  with h5py.File(source) as h:
   x=h['20ms/correlation'][:];y=h['40ms/correlation'][:]
  rows='\n'.join(f'{lag} & {left:.5f} & {right:.5f}'+r' \\' for lag,(left,right) in enumerate(zip(x,y)))

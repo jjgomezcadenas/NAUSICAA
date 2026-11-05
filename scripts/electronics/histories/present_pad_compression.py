@@ -12,11 +12,14 @@ import h5py,numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 LABELS={'p2_bb0nu':r'2 mm / 20 ms, $0\nu\beta\beta$','p2_electrons':'2 mm / 20 ms, electrons','p4_bb0nu':r'4 mm / 40 ms, $0\nu\beta\beta$','p4_electrons':'4 mm / 40 ms, electrons'}
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--results',type=Path,required=True);p.add_argument('--config',type=Path,default=ROOT/'config/pad_history_viewer_direct.toml');args=p.parse_args()
- data=args.results.resolve();c=tomllib.loads(args.config.read_text());out=ROOT/c['report']/data.name;out.mkdir(parents=True,exist_ok=True)
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--results',type=Path,required=True);p.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/histories/pad_history_viewer_direct.toml');args=p.parse_args()
+ data=args.results.resolve();c=resolve_config_paths(tomllib.loads(args.config.read_text()));out=ROOT/c['report']/data.name;out.mkdir(parents=True,exist_ok=True)
  with h5py.File(data/'presentation.h5') as h:
   names=[k for k in LABELS if k in h];cuts=list(zip(h['criterion_loss_fraction'][:],h['criterion_noise_multiple'][:]))
   rows=[];coverage=[];controlrows=[];chargerows=[];controlflags=[]

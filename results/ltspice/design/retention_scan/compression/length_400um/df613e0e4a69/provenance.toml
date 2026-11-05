@@ -1,0 +1,18 @@
+identity = "df613e0e4a6998fb65e75b8b5a41235c9ae84936a5e6a1a9818f0d885c2a9105"
+
+[sha256]
+"results/ltspice/retention_scan/cards/length_400um_readout.toml" = "fb59c2623dce590b327dcc5995d74831a35e22a9381d1328bdfb201a7a3543e7"
+"src/ion_signal/bucket_study.jl" = "862f686463e014e3e73652112aab361370e84e05f5d27bdc1f1746a2863cffc9"
+"results/ltspice/retention_scan/analysis.h5" = "73d1f44fbae6ea591e1d516ab367dd4dc25f8a2429d878c0fb1f566a6be4902b"
+"results/ltspice/retention_scan/cards/length_400um_viewer.toml" = "abfcc901c63511d52b7cc2e3a55639d1ed6a5dd41180b87e9b2f75cb16d4eff3"
+"results/ltspice/retention_scan/decks/length_400um/40ms_single_N400_r2.cir" = "51a5a6eb378c437d1a7aed9bc2c6dbdf8c11aecdb53cd8d8a88e182c900f2f2c"
+"results/ltspice/retention_scan/screens/length_400um/p4_electrons.h5" = "4ba8641e96bcfea2b9a9273c1a02da492e5060d896d7d66395d0ccb32719d811"
+"results/ltspice/retention_scan/screens/length_400um/p4_bb0nu.h5" = "12aa41505c3bdeb9be3efd167ad417be3c0dc99dded97714c9e0622095f12277"
+"results/ltspice/retention_scan/variants/length_400um.h5" = "9bee7debeca4afbd32c18552d3922100661288b76f39249bc8070eed93f1377a"
+"results/ltspice/retention_scan/decks/length_400um/corrected.inc" = "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608"
+"results/ltspice/retention_scan/screens/length_400um/p2_electrons.h5" = "00bb0cbce6307ce91e30eab3eb2c85e7e0dc7c677534de65ea133999dcf1c592"
+"src/ion_signal/pad_compression.jl" = "4770e1dfee52c20bc248484bf9227e81ee38a6e40c10446b3b558f08913510e7"
+"src/ion_signal/pad_history_readout.jl" = "1865b012509dbca52d6add19e664984b51368c6cf6497dcaa4e73724d207bc4b"
+"src/ion_signal/discharge_calibration.jl" = "355e202de7f6a0560789d2691eb9fefe2a3225737fe982a8488b8094af639071"
+"results/ltspice/retention_scan/screens/length_400um/p2_bb0nu.h5" = "ea27e99b255427807ac57fd0785d8bd13373eaf7d9d7c8edb2abf9cc115a6fe0"
+"src/ion_signal/averaging_scan.jl" = "59d2910425a319723df58477b87f524ea089c0ce01f83d554df1623da20a74fc"

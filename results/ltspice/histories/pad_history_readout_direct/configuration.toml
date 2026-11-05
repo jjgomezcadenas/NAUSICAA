@@ -1,0 +1,33 @@
+output = "results/ltspice/pad_history_readout_direct"
+report = "latex_generated/pad_history_readout_direct"
+circuit_results = "results/ltspice/feedback_optimization/length_400um_gate0_rounded.h5"
+circuit_analysis = "results/ltspice/feedback_optimization/analysis.h5"
+circuit_name = "length_400um_gate0_rounded"
+source_decks = "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded"
+averaging_s = 0.005
+prehistory_s = 0.002
+range_guard_low_V = 0.2
+supply_V = 1.8
+recovery_tail_s = 20.0
+max_steps_s = [0.000005, 0.0000025]
+tail_max_steps_s = [0.0005, 0.00025]
+[[samples]]
+name = "p2_bb0nu"
+path = "results/pixel_charge_1mm_direct/bb0nu.h5"
+frame_s = 0.02
+pitch_m = 0.002
+[[samples]]
+name = "p2_electrons"
+path = "results/pixel_charge_1mm_direct/electrons.h5"
+frame_s = 0.02
+pitch_m = 0.002
+[[samples]]
+name = "p4_bb0nu"
+path = "results/pixel_charge_1mm_4mm_direct/bb0nu.h5"
+frame_s = 0.04
+pitch_m = 0.004
+[[samples]]
+name = "p4_electrons"
+path = "results/pixel_charge_1mm_4mm_direct/electrons.h5"
+frame_s = 0.04
+pitch_m = 0.004

@@ -17,6 +17,7 @@ import json
 import os
 import re
 import tomllib
+from ion_signal.project_paths import resolve_config_paths
 import numpy as np
 import h5py
 
@@ -28,11 +29,11 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 
 OUT=ROOT/'notes/physics/generated'
-PREVIEW=ROOT/'notes/physics/work/spice-paper'
+PREVIEW=ROOT/'work/spice-paper'
 
 
 def selected_circuit():
-    config = tomllib.loads((ROOT / "config/bucket_study.toml").read_text())
+    config = resolve_config_paths(tomllib.loads((ROOT / "config/studies/electronics/readout/bucket_study.toml").read_text()))
     return ROOT / config["circuit"]
 
 
@@ -143,7 +144,7 @@ Device & Type & $W$ ($\mu$m) & $L$ ($\mu$m) & $m$ \\
     fig.savefig(OUT/'spice_circuit.pdf',metadata={'CreationDate':None,'ModDate':None})
     fig.savefig(PREVIEW/'spice_circuit.png',dpi=170)
     plt.close(fig)
-    config=tomllib.loads((ROOT/'config/bucket_study.toml').read_text())
+    config=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/readout/bucket_study.toml').read_text()))
     analysis=(ROOT/config['noise_source']).with_name('analysis.h5')
     with h5py.File(analysis) as h:
         operating=h[config['noise_group']].attrs
@@ -153,7 +154,7 @@ Device & Type & $W$ ($\mu$m) & $L$ ($\mu$m) & $m$ \\
         f'% Generated from {analysis.relative_to(ROOT)}, {config["noise_group"]}.\n'
         +r'\newcommand{\SpiceBaselineV}{'+f'{output_V:.3f}'+"}\n"
         +r'\newcommand{\SpicePowerUw}{'+f'{power_W*1e6:.0f}'+"}\n")
-    sources=[deck,deck.parent/'corrected.inc',ROOT/'config/bucket_study.toml',analysis,Path(__file__).resolve()]
+    sources=[deck,deck.parent/'corrected.inc',ROOT/'config/studies/electronics/readout/bucket_study.toml',analysis,Path(__file__).resolve()]
     provenance={
         'source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
         'biases_V':biases,'devices':devices,
@@ -166,8 +167,8 @@ Device & Type & $W$ ($\mu$m) & $L$ ($\mu$m) & $m$ \\
 
 def discharge_value():
     """Update the correction time from the fitted circuit tail, preserving other macros."""
-    config_path=ROOT/'config/discharge_calibration.toml'
-    config=tomllib.loads(config_path.read_text())
+    config_path=ROOT/'config/studies/electronics/readout/discharge_calibration.toml'
+    config=resolve_config_paths(tomllib.loads(config_path.read_text()))
     source=ROOT/config['output']/'analysis.h5'
     with h5py.File(source) as h:
         tau=float(h.attrs['tau_s'])
@@ -185,7 +186,7 @@ def discharge_value():
     return value
 
 def paper_data_path():
-    config=tomllib.loads((ROOT/'config/discharge_calibration.toml').read_text())
+    config=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/readout/discharge_calibration.toml').read_text()))
     return ROOT/config['output']/'paper_readout.h5'
 
 
@@ -223,7 +224,7 @@ def plot_averaging():
         fig.savefig(PREVIEW/'spice_averaging.png',dpi=170);plt.close(fig)
     write_macros(OUT/'spice_averaging_values.tex',
                  {'SpiceScanFirstEnc':display(enc[0],1),'SpiceScanLastEnc':display(enc[-1],1)},source.relative_to(ROOT))
-    reportdir=ROOT/'latex_generated/calibrated_spice_averaging';reportdir.mkdir(parents=True,exist_ok=True)
+    reportdir=ROOT/'latex_generated/ion_readout/calibrated_spice_averaging';reportdir.mkdir(parents=True,exist_ok=True)
     import shutil
     shutil.copyfile(OUT/'spice_averaging.pdf',reportdir/'spice_averaging.pdf')
     rows='\n'.join(f'{w:g} & {display(g*1e6,3)} & {display(n*1e3,3)} & {display(e,2)} '+r'\\' for w,g,n,e in zip(widths,gains,noises,enc))
@@ -304,7 +305,7 @@ def main():
         t=h['time_s'][:];i=h['current_A_per_ion'][:];v=h['voltage_V_per_ion'][:]
         sample_times=h['sample_time_s'][:];samples=h['sample_voltage_V_per_ion'][:]
         counts=h['counts'][:];snrs=h['snr'][:]
-    cfgpath=ROOT/'config/discharge_calibration.toml';cfg=tomllib.loads(cfgpath.read_text())
+    cfgpath=ROOT/'config/studies/electronics/readout/discharge_calibration.toml';cfg=resolve_config_paths(tomllib.loads(cfgpath.read_text()))
     assert a['config_sha256'].decode()==hashlib.sha256(cfgpath.read_bytes()).hexdigest()
     calibration=ROOT/cfg['output']/'analysis.h5'
     assert a['calibration_sha256'].decode()==hashlib.sha256(calibration.read_bytes()).hexdigest()

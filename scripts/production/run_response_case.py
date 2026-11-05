@@ -28,7 +28,7 @@ def main() -> None:
     p.add_argument("--sipm-manifest", type=Path)
     p.add_argument("--present-only", action="store_true")
     p.add_argument("--result-dir", type=Path, default=ROOT / "results/response_bb0nu_3mm")
-    p.add_argument("--latex-dir", type=Path, default=ROOT / "latex_generated/response_bb0nu_3mm")
+    p.add_argument("--latex-dir", type=Path, default=ROOT / "latex_generated/production/response_bb0nu_3mm")
     a = p.parse_args()
     julia = os.environ.get("JULIA", "julia")
     a.result_dir.mkdir(parents=True, exist_ok=True)

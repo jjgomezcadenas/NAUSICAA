@@ -6,10 +6,13 @@ import h5py
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 LABELS={'p2_bb0nu':r'2 mm / 20 ms, $0\nu\beta\beta$','p2_electrons':'2 mm / 20 ms, electrons','p4_bb0nu':r'4 mm / 40 ms, $0\nu\beta\beta$','p4_electrons':'4 mm / 40 ms, electrons'}
 def main():
- c=tomllib.loads((ROOT/'config/pad_history_direct_comparison.toml').read_text());source=ROOT/c['output']/'comparison.h5';out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
+ c=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/histories/pad_history_direct_comparison.toml').read_text()));source=ROOT/c['output']/'comparison.h5';out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
  with h5py.File(source) as h:
   rates=[];pulses=[];coverage=[];eventrows=[]
   for name,label in LABELS.items():
@@ -118,10 +121,10 @@ slice; the reference shifts slightly when the binned approximation is removed.
 From the repository root:
 \begin{verbatim}
 python scripts/electronics/histories/run_pad_history_pipeline.py \
-  --config config/pad_history_readout_direct.toml \
+  --config config/studies/electronics/histories/pad_history_readout_direct.toml \
   --simulator /path/to/LTspice
 python scripts/electronics/histories/run_pad_compression.py \
-  --config config/pad_history_viewer_direct.toml --workers 4
+  --config config/studies/electronics/histories/pad_history_viewer_direct.toml --workers 4
 julia --project=. scripts/electronics/histories/compare_inputs.jl
 python scripts/electronics/histories/present_input_comparison.py
 python scripts/viewers/view_pad_histories.py

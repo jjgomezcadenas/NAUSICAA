@@ -8,7 +8,7 @@ from pad_history_viewer.engine import Engine
 
 def main():
  parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--url');args=parser.parse_args()
- engine=Engine(card=ROOT/'config/pad_history_viewer_direct.toml',work=ROOT/'notes/physics/work/direct_history_test')
+ engine=Engine(card=ROOT/'config/pad_history_viewer_direct.toml',work=ROOT/'work/direct_history_test')
  checks=0
  try:
   for sample,event in (('p2_electrons',3790),('p4_bb0nu',3340)):

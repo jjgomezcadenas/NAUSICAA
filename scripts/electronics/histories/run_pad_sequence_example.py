@@ -11,6 +11,9 @@ import argparse, hashlib, os, subprocess, sys, tomllib
 import h5py
 import numpy as np
 from ion_signal.spice_acquisition import run
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def sha(p): return hashlib.file_digest(p.open('rb'),'sha256').hexdigest()
 def preserve(p,content):
@@ -22,8 +25,8 @@ def main():
     parser.add_argument('--simulator',type=Path,required=True)
     parser.add_argument('--julia',default='julia')
     args=parser.parse_args();sim=args.simulator.resolve()
-    cp=ROOT/'config/pad_sequence_example.toml';c=tomllib.loads(cp.read_text());out=ROOT/c['output']
-    env=os.environ.copy();env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
+    cp=ROOT/'config/studies/electronics/histories/pad_sequence_example.toml';c=resolve_config_paths(tomllib.loads(cp.read_text()));out=ROOT/c['output']
+    env=os.environ.copy();env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'))
     if not (out/'inputs.h5').exists():
         subprocess.run([args.julia,'--project=.','scripts/electronics/histories/pad_sequence_example.jl','--build'],cwd=ROOT,env=env,check=True)
     preserve(out/'configuration.toml',cp.read_bytes())

@@ -2,12 +2,14 @@
 # Check matched inputs and copy the saved summaries for presentation.
 
 using HDF5,SHA,TOML,Statistics,Test
+include(joinpath(@__DIR__, "../../src/ion_signal/project_paths.jl"))
+using .ProjectPaths
 const ROOT=normpath(joinpath(@__DIR__,"../.."))
 sha(p)=open(io->bytes2hex(sha256(io)),p)
 attrs(g)=Dict(k=>read(attributes(g)[k]) for k in keys(attributes(g)))
 function run(card=joinpath(ROOT,"config/specs/runs/csa_design_note.toml"))
  c=TOML.parsefile(card);@assert c["schema"]=="nausicaa.csa_design_note.v1"
- sources=String[card,joinpath(ROOT,c["design_card"]),joinpath(ROOT,c["response_card"]),joinpath(ROOT,c["reconstruction_card"]),joinpath(ROOT,c["parameters"]),joinpath(ROOT,c["retention"]),joinpath(ROOT,c["calibration"]),@__FILE__]
+ sources=String[card,joinpath(ROOT,c["design_card"]),joinpath(ROOT,c["response_card"]),joinpath(ROOT,c["reconstruction_card"]),resolve_recorded_path(ROOT,c["parameters"]),joinpath(ROOT,c["retention"]),joinpath(ROOT,c["calibration"]),@__FILE__]
  studies=Dict{Int,String}()
  for p in c["pilots"]
   index=joinpath(ROOT,p["index"]);push!(sources,index)
@@ -23,7 +25,7 @@ function run(card=joinpath(ROOT,"config/specs/runs/csa_design_note.toml"))
    out[name*"_card_toml"]=read(joinpath(ROOT,c[key]),String)
   end
   # Preserve the simulation package values; derive supply power in Julia.
-  params=read(joinpath(ROOT,c["parameters"]),String)
+  params=read(resolve_recorded_path(ROOT,c["parameters"]),String)
   out["parameters_json"]=params
   idd=parse(Float64,match(r"\"I\(Vdd\)\"\s*:\s*([-+0-9.eE]+)",params).captures[1])
   supply=parse(Float64,match(r"\"V\(vdda\)\"\s*:\s*([-+0-9.eE]+)",params).captures[1])

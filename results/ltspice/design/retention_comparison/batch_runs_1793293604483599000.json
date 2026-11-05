@@ -1,0 +1,15 @@
+{
+  "results": [
+    {
+      "name": "length_1600um",
+      "returncode": 0,
+      "log": "results/ltspice/retention_comparison/batch_logs/length_1600um.stdout"
+    },
+    {
+      "name": "length_4000um",
+      "returncode": 0,
+      "log": "results/ltspice/retention_comparison/batch_logs/length_4000um.stdout"
+    }
+  ],
+  "elapsed_s": 1788.0321341671515
+}

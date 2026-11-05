@@ -10,17 +10,17 @@ from pathlib import Path
 import os,json,hashlib
 import h5py
 ROOT=Path(__file__).resolve().parents[4]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/matplotlib-cache'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def main():
- source=ROOT/'results/ltspice/rogelio_v2/analysis.h5';diagnostic=source.parent/'diagnostic_analysis.h5'
- out=ROOT/'latex_generated/rogelio_v2';out.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'results/ltspice/reproduction/rogelio_v2/analysis.h5';diagnostic=source.parent/'diagnostic_analysis.h5'
+ out=ROOT/'latex_generated/ion_readout/rogelio_v2';out.mkdir(parents=True,exist_ok=True)
  labels={'paper_reference':'Paper circuit','v2_native_corrected':'v2, native conditions',
          'v2_matched':'v2, matched conditions','v2_m3_large':'v2 with enlarged M3'}
- tuned=ROOT/'results/ltspice/rogelio_v2_retuned/analysis.h5'
+ tuned=ROOT/'results/ltspice/design/rogelio_v2_retuned/analysis.h5'
  with h5py.File(source) as h,h5py.File(diagnostic) as diag,h5py.File(tuned) as ht:
   rows=[]
   for name,label in labels.items():

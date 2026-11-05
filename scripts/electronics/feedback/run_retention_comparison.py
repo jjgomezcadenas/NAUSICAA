@@ -2,6 +2,9 @@
 """Reproduce both preserved retention scans and their combined report source."""
 from pathlib import Path
 import argparse,os,subprocess,sys,tomllib
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 
 def main():
@@ -9,10 +12,10 @@ def main():
     p.add_argument('--simulator',required=True,type=Path)
     p.add_argument('--julia',default=str(Path.home()/'.juliaup/bin/julia'))
     p.add_argument('--workers',type=int,default=4)
-    p.add_argument('--config',type=Path,default=ROOT/'config/retention_comparison.toml')
-    a=p.parse_args();cp=a.config.resolve();c=tomllib.loads(cp.read_text())
+    p.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/feedback/retention_comparison.toml')
+    a=p.parse_args();cp=a.config.resolve();c=resolve_config_paths(tomllib.loads(cp.read_text()))
     env=os.environ.copy()
-    env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
+    env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'))
     env['PYTHONPATH']=str(ROOT/'src')
     def run(*parts):subprocess.run(list(map(str,parts)),cwd=ROOT,env=env,check=True)
     for card in c['study_cards']:

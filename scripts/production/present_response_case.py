@@ -184,6 +184,6 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("analysis", type=Path)
     p.add_argument("--result-dir", type=Path, default=ROOT / "results/response_bb0nu_3mm")
-    p.add_argument("--latex-dir", type=Path, default=ROOT / "latex_generated/response_bb0nu_3mm")
+    p.add_argument("--latex-dir", type=Path, default=ROOT / "latex_generated/production/response_bb0nu_3mm")
     a = p.parse_args()
     print(present(a.analysis, a.result_dir, a.latex_dir))

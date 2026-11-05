@@ -3,5 +3,5 @@ root=normpath(joinpath(@__DIR__,"../../../.."))
 if "--diagnostics" in ARGS
     RogelioV2.diagnostics(root)
 else
-    RogelioV2.analyze(root;config=isempty(ARGS) ? "config/rogelio_v2.toml" : first(ARGS))
+    RogelioV2.analyze(root;config=isempty(ARGS) ? "config/studies/electronics/reproduction/rogelio_v2.toml" : first(ARGS))
 end

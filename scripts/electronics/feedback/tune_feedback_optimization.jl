@@ -1,6 +1,6 @@
 using HDF5,TOML,SHA
 root=normpath(joinpath(@__DIR__,"../../.."));python,sim=ARGS
-cp=joinpath(root,"config/feedback_optimization.toml");c=TOML.parsefile(cp);dir=joinpath(root,c["output"])
+cp=joinpath(root,"config/studies/electronics/feedback/feedback_optimization.toml");c=TOML.parsefile(cp);dir=joinpath(root,c["output"])
 target=h5open(h->read(attributes(h)["baseline_V"]),joinpath(dir,"reference.h5"),"r")
 function acquire(name,gate;full=false)
  args=[python,joinpath(root,"scripts/electronics/feedback/run_feedback_retuned.py"),"--simulator",sim,"--variant",name,"--m4-gate",string(gate)]

@@ -18,7 +18,7 @@ notes/physics/*.fdb_latexmk
 notes/physics/nausica.pdf
 notes/physics/*.synctex.gz
 
-# LTspice binary scratch; decks, readable logs and reduced results are tracked.
+# LTspice binary scratch; source decks are tracked.
 results/ltspice/decks/*.raw
 results/ltspice/decks/*.log
 results/ltspice/decks/*.db
@@ -126,3 +126,35 @@ results/ltspice/noise_audit/decks/*.db
 /results/elm_sipm_pitch4mm_production/**/*.h5
 /results/elm_sipm_pitch4mm_production/*.h5
 /results/elm_sipm_pitch4mm_production/worker_*.log
+
+# Machine-specific runtime paths; use config/tools.example.toml as the template.
+/config/local/
+/results/elm_matched_smoke/**/*.h5
+/results/elm_matched_smoke/*.h5
+/results/elm_matched_production/**/*.h5
+/results/elm_matched_production/*.h5
+
+# Retain exclusions for large datasets after scientific-task relocation.
+/results/ltspice/design/m3_scan/decks/scale_8_gate_0.5265441373_injection_precise_N0_r1.raw
+/results/ltspice/histories/pad_history_readout/p2_bb0nu.h5
+/results/ltspice/histories/pad_history_readout/p2_electrons.h5
+/results/ltspice/histories/pad_history_readout_direct/p2_bb0nu.h5
+/results/ltspice/histories/pad_history_readout_direct/p2_electrons.h5
+
+# Simulator logs and build auxiliaries remain local after directory migrations.
+*.log
+*.run.txt
+*.stdout
+*.aux
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+/LTSpice/**/*.db
+/LTSpice/**/*.raw
+
+# Generated LTspice numerical results and current waveforms stay local.
+# Frozen portable release inputs under LTSpice/releases remain tracked.
+/results/ltspice/**/*.h5
+/results/ltspice/**/*.pwl
+/results/ltspice/**/*.csv.gz

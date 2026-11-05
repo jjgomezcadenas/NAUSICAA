@@ -20,7 +20,7 @@ requires `pilot_only = true` and at most 16 explicit event IDs.
 1. `AGENTS.md` and `docs/sipm_electronics_handoff.md` for upstream input paths,
    units, photon-production assumptions and interfaces.
 2. `docs/sipm_electronics_model.tex` and its compiled report
-   `latex_generated/sipm_response/sipm_electronics_model.pdf` for the physics,
+   `latex_generated/electron_readout/sipm_response/sipm_electronics_model.pdf` for the physics,
    sources, adopted approximations and later AXEL correction.
 3. `docs/sipm_response.md` for output schemas and reproduction commands.
    `docs/mpcc_axel.md` records sensor specifications and the discussion.
@@ -119,7 +119,7 @@ It points to study `a237f33cb4c7a933`, whose `manifest.toml` identifies the
 four independent sensor and four ASIC files. The pilot uses event 0 in each
 input. Numerical results are `summary.h5`; focused statistical validation is
 `results/sipm_response_validation/validation.h5`. The generated tables in
-`latex_generated/sipm_response/pilot_results.tex` contain the reported
+`latex_generated/electron_readout/sipm_response/pilot_results.tex` contain the reported
 clipping counts and fractions. Their denominator is **all acquired
 SiPM–bucket cells**, including quiet buckets; these are not charge-loss
 fractions or ensemble estimates.

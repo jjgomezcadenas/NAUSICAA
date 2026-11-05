@@ -1,0 +1,18 @@
+identity = "133df735fe3a95b4ec3a4e62bf160733bf23cce2474f05a903ffa4803310f406"
+
+[sha256]
+"src/ion_signal/bucket_study.jl" = "862f686463e014e3e73652112aab361370e84e05f5d27bdc1f1746a2863cffc9"
+"results/ltspice/retention_scan/screens/length_1600um/p2_bb0nu.h5" = "d25e690541c588e75dd1bd604e4a5b8aaf080c769a0a3cbd9a9643819173b812"
+"results/ltspice/retention_scan/analysis.h5" = "73d1f44fbae6ea591e1d516ab367dd4dc25f8a2429d878c0fb1f566a6be4902b"
+"results/ltspice/retention_scan/decks/length_1600um/corrected.inc" = "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608"
+"results/ltspice/retention_scan/variants/length_1600um.h5" = "bfc3168212fa137c9a91a3c4957a5ca7333ab5204ccf6fc4eda594f64ad38a46"
+"results/ltspice/retention_scan/screens/length_1600um/p2_electrons.h5" = "3a9fa7b97f10dc6317ed670eea4305e90b2f24cebe8f9e4f43ab1b81fbda6984"
+"results/ltspice/retention_scan/decks/length_1600um/40ms_single_N400_r2.cir" = "f8352202062f4d23a8899fcc8d420868405d3de9f9b0f1d42319202c7c5f6cee"
+"results/ltspice/retention_scan/screens/length_1600um/p4_bb0nu.h5" = "74aa0da7524bc54b0fe053d2d2492ac4038441971cd072cd251a31792aa7eeb6"
+"results/ltspice/retention_scan/screens/length_1600um/p4_electrons.h5" = "53fff5b6b1157dbec0e9eee71bd4c92c73bbfa94710d2bcbffacc131e2edee9f"
+"results/ltspice/retention_scan/cards/length_1600um_readout.toml" = "8240870fdc1e5e1efd9ce04e1a25dd239225ab4d23ef85dd7eaf9fe36160cc64"
+"src/ion_signal/pad_compression.jl" = "4770e1dfee52c20bc248484bf9227e81ee38a6e40c10446b3b558f08913510e7"
+"src/ion_signal/pad_history_readout.jl" = "1865b012509dbca52d6add19e664984b51368c6cf6497dcaa4e73724d207bc4b"
+"src/ion_signal/discharge_calibration.jl" = "355e202de7f6a0560789d2691eb9fefe2a3225737fe982a8488b8094af639071"
+"results/ltspice/retention_scan/cards/length_1600um_validated_worker_viewer.toml" = "f3ddb32b57f08b6feddd9e92414abcdef88390104f03b6d900144a2fd18a0d62"
+"src/ion_signal/averaging_scan.jl" = "59d2910425a319723df58477b87f524ea089c0ce01f83d554df1623da20a74fc"

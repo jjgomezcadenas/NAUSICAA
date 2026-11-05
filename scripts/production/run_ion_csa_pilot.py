@@ -6,18 +6,19 @@ import h5py,numpy as np
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'src'))
 from ion_signal.spice_acquisition import run as acquire
+from ion_signal.spice_runtime import resolve_simulator, simulator_identity
 LOADED_SHA=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--config',type=Path,default=ROOT/'config/specs/runs/ion_csa_v3_pilot.toml')
- p.add_argument('--simulator',type=Path,default=ROOT/'notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app/Contents/MacOS/LTspice')
+ p.add_argument('--simulator',type=Path,default=None)
  p.add_argument('--workers',type=int,default=4);p.add_argument('--julia',default=str(Path.home()/'.juliaup/bin/julia'))
  p.add_argument('--reuse-cases',type=Path,help='Reuse acquisitions only after current and model content checks')
  p.add_argument('--prepared',type=Path);p.add_argument('--present-only',action='store_true')
- a=p.parse_args();a.config=a.config.resolve();run=tomllib.loads(a.config.read_text());c=tomllib.loads((ROOT/run['response_card']).read_text())
- env=os.environ.copy();env['JULIA_DEPOT_PATH']=':'.join(map(str,(ROOT/'work/julia-depot',ROOT/'notes/physics/work/julia-depot',Path.home()/'.julia')))
+ a=p.parse_args();a.simulator=resolve_simulator(a.simulator, root=ROOT);a.config=a.config.resolve();run=tomllib.loads(a.config.read_text());c=tomllib.loads((ROOT/run['response_card']).read_text())
+ env=os.environ.copy();env['JULIA_DEPOT_PATH']=':'.join(map(str,(ROOT/'work/julia-depot',Path.home()/'.julia')))
  def julia(stage,directory=None):
   cmd=[a.julia,'--startup-file=no','--project=.',str(ROOT/'scripts/production/ion_csa_pilot.jl'),stage,str(a.config)]
   if directory:cmd.append(str(directory))
@@ -38,7 +39,7 @@ def main():
   subprocess.run([sys.executable,str(ROOT/'scripts/electronics/feedback/run_retention_scan.py'),'--config',str(ROOT/c['calibration_card']),'--simulator',str(a.simulator),'--julia',a.julia,'--stage','calibrate'],cwd=ROOT,env=env,check=True)
  if not a.prepared:julia('prepare')
  directory=a.prepared.resolve() if a.prepared else max((ROOT/run['results_directory']).glob('*/plan.h5'),key=lambda p:p.stat().st_mtime).parent
- started=time.monotonic();summary={'started_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'runner_sha256':LOADED_SHA,'iterations':[],'charge_resolution_retries':[]}
+ started=time.monotonic();summary={'started_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'runner_sha256':LOADED_SHA,'simulator':simulator_identity(a.simulator),'iterations':[],'charge_resolution_retries':[]}
  model=ROOT/c['calibration_directory']/'decks'/c['variant']/'corrected.inc'
  source=ROOT/c['calibration_directory']/'decks'/c['variant']/'30ms_single_N100_r2.cir'
  model_sha=sha(model);simulator_sha=sha(a.simulator)

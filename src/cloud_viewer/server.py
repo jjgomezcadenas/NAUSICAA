@@ -196,8 +196,9 @@ def serve(readout_directory, host="127.0.0.1", port=8767, open_browser=False, pr
         from .production import ProductionSource
         readout = ProductionSource(production)
         from .production import resolve
-        operating_points = [{"id": "legacy", "label": "E/P 3.0 · J 0.010 (previous)"}]
-        readouts = {"legacy": readout}
+        default_point = readout.card.get('id', 'legacy')
+        operating_points = [{"id": default_point, "label": readout.label}]
+        readouts = {default_point: readout}
         def update_operating_points():
             """Discover completed production indices when the browser refreshes."""
             for entry in readout.card.get("operating_points", []):
@@ -228,23 +229,31 @@ def serve(readout_directory, host="127.0.0.1", port=8767, open_browser=False, pr
                     query = parse_qs(route.query)
                     event = int(query.get("event", ["1"])[0])
                     sample = query.get("sample", ["bb0nu"])[0]
-                    gas = query.get("gas", ["pure_xe"])[0]
-                    options = {k: query.get(k, [default])[0] for k, default in
-                               (("pitch", "3"), ("stage", "response"), ("electron_stage", "readout"))}
                     if production:
                         update_operating_points()
-                        point = query.get("operating_point", ["legacy"])[0]
-                        payload = readouts[point].event_payload(event, sample, gas, **options)
+                        point = query.get("operating_point", [default_point])[0]
+                        selected = readouts[point]
+                        gas = query.get("gas", [selected.default_gas])[0]
+                        options = {k: query.get(k, [default])[0] for k, default in
+                                   (("pitch", selected.default_pitch), ("stage", "response"),
+                                    ("electron_stage", "readout"))}
+                        payload = selected.event_payload(event, sample, gas, **options)
                         payload = dict(payload, operating_point=point)
                     else:
+                        gas = query.get("gas", ["pure_xe"])[0]
                         payload = readout.event_payload(event, sample, gas)
                     payload = json.dumps(payload, separators=(",", ":")).encode()
                     self.send_data(payload, "application/json", compress=True)
                 elif route.path == "/api/info":
-                    if production: update_operating_points()
-                    self.send_data(json.dumps(dict(event_counts=readout.event_counts,
-                                                   samples=list(readout.event_counts), operating_points=operating_points if production else [], production=bool(production), gases=("pure_xe", "xe_he"))).encode(),
-                                   "application/json")
+                    if production:
+                        update_operating_points()
+                        info = dict(readout.info(), production=True, default_operating_point=default_point,
+                                    operating_points=[dict(p, **readouts[p['id']].info())
+                                                      for p in operating_points])
+                    else:
+                        info = dict(event_counts=readout.event_counts, samples=list(readout.event_counts),
+                                    operating_points=[], production=False, gases=['pure_xe', 'xe_he'])
+                    self.send_data(json.dumps(info).encode(), "application/json")
                 elif route.path == "/plotly.js":
                     self.send_data(bundle, "application/javascript", compress=True)
                 elif route.path in ("/", "/index.html", "/app.js", "/style.css"):

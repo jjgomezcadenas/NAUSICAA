@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "latex_generated/event_analysis_step2"
+OUT = ROOT / "latex_generated/reconstruction/event_analysis_step2"
 
 
 def render():

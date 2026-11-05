@@ -1,0 +1,1596 @@
+{
+  "schema": 1,
+  "version": "17.2.4",
+  "executable": "/Users/jjgomezcadenas/Applications/NAUSICAA/17.2.4/LTspice.app/Contents/MacOS/LTspice",
+  "sha256": "4036f0d4a9a94471481d498cf4e06531c74f95bf4d29dd5010e1e7888c74b209",
+  "copies": [
+    {
+      "source": "notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app",
+      "destination": "/Users/jjgomezcadenas/Applications/NAUSICAA/17.2.4/LTspice.app",
+      "contents": {
+        "Contents/CodeResources": {
+          "sha256": "0e687883d2f909eec03a5d797ab8c852adcc7b9ea136a179129d64738824357e",
+          "bytes": 1779
+        },
+        "Contents/Frameworks/IPWorks.framework/IPWorks": {
+          "symlink": "Versions/Current/IPWorks"
+        },
+        "Contents/Frameworks/IPWorks.framework/Resources": {
+          "symlink": "Versions/Current/Resources"
+        },
+        "Contents/Frameworks/IPWorks.framework/Versions/A/IPWorks": {
+          "sha256": "e51c7bdee2c2643225da9b60b46965120d042626728e0c022354bbd413f10f4c",
+          "bytes": 21960096
+        },
+        "Contents/Frameworks/IPWorks.framework/Versions/A/Resources/Info.plist": {
+          "sha256": "cb5501884f55fe0f9f9ec667e77d8ef08f18251855ee0bf1b05b6c61100b598b",
+          "bytes": 1214
+        },
+        "Contents/Frameworks/IPWorks.framework/Versions/A/_CodeSignature/CodeResources": {
+          "sha256": "e6f2f504250d569efc3bcee00b78a0487fdee3580119a4c033f3faa0d7036615",
+          "bytes": 2514
+        },
+        "Contents/Frameworks/IPWorks.framework/Versions/Current": {
+          "symlink": "A"
+        },
+        "Contents/Frameworks/IPWorksZip.framework/IPWorksZip": {
+          "symlink": "Versions/Current/IPWorksZip"
+        },
+        "Contents/Frameworks/IPWorksZip.framework/Resources": {
+          "symlink": "Versions/Current/Resources"
+        },
+        "Contents/Frameworks/IPWorksZip.framework/Versions/A/IPWorksZip": {
+          "sha256": "c1cb5e15309f662593bc08e9f8703e3d14a6d304e0a99eee62e0fbd1ddb736e3",
+          "bytes": 4517072
+        },
+        "Contents/Frameworks/IPWorksZip.framework/Versions/A/Resources/Info.plist": {
+          "sha256": "f95494e928a2d74069a31b59d49b5102d3f8b6e7165d5a23bb6fe55c13ebd241",
+          "bytes": 1223
+        },
+        "Contents/Frameworks/IPWorksZip.framework/Versions/A/_CodeSignature/CodeResources": {
+          "sha256": "084d7eb1ff0a8ae9eccc9e99fdad35c6733671804df9c6c0ebf37a9956ed0cd2",
+          "bytes": 2514
+        },
+        "Contents/Frameworks/IPWorksZip.framework/Versions/Current": {
+          "symlink": "A"
+        },
+        "Contents/Info.plist": {
+          "sha256": "ddd6f3f5fe777a98f7c4d720e785b053e685032ceecde96bb24e40a97425d4ba",
+          "bytes": 7745
+        },
+        "Contents/MacOS/LTspice": {
+          "sha256": "4036f0d4a9a94471481d498cf4e06531c74f95bf4d29dd5010e1e7888c74b209",
+          "bytes": 15360496
+        },
+        "Contents/PkgInfo": {
+          "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0",
+          "bytes": 8
+        },
+        "Contents/Resources/ASC.icns": {
+          "sha256": "8b1e5f4b0aff5cb86f1162d674183f53257c76c9274b6277a5a61d1b19b246ac",
+          "bytes": 1804
+        },
+        "Contents/Resources/ASCdocument.nib": {
+          "sha256": "34d4ff52d0936148f1b2ddd6d69cb2178af1a37edb8e13ab705040a40b1540e8",
+          "bytes": 19679
+        },
+        "Contents/Resources/ASY.icns": {
+          "sha256": "fa765bbd4ed8714c072d66a82fb4604b71dadae561259c38e3908d0145035c10",
+          "bytes": 21990
+        },
+        "Contents/Resources/ASYdocument.nib": {
+          "sha256": "bf3f00f7eb75e40f0d78a6f25a630cc70c598e01b456cd7685495c3809dbd22c",
+          "bytes": 6781
+        },
+        "Contents/Resources/ActiveReference.ico": {
+          "sha256": "c23805bf1b03a8ae06a74a431dcf5f1e7fded55297e031f7c44df90a4019bfac",
+          "bytes": 766
+        },
+        "Contents/Resources/AddPane.icns": {
+          "sha256": "f711ddcd878f52aad738e70d9fc7c15c3be91e79469cb7891ff65881c49e944f",
+          "bytes": 216
+        },
+        "Contents/Resources/AddTrace.icns": {
+          "sha256": "7087d22f69a92cd2d6ec06a6e5b85e09c16577c5a1790225c7b757b7bc67c51b",
+          "bytes": 331
+        },
+        "Contents/Resources/AddTrace.nib": {
+          "sha256": "df2a46a601108947cee420c743e5875d8472e0255c7bf13e7a5ed98b95c73d5c",
+          "bytes": 17127
+        },
+        "Contents/Resources/AdditionalPWLpointsEditor.nib": {
+          "sha256": "e71d4e10a96e551a3d517c1ebbf3cc54711437386e1da97d1aa52c9154592f79",
+          "bytes": 14059
+        },
+        "Contents/Resources/AdvancedIndepSourceEditor.nib": {
+          "sha256": "425d62ced81802e65d93f64a1f1bb3af15fa2b3f14eeb337e8a65dc8733db4fa",
+          "bytes": 30886
+        },
+        "Contents/Resources/AnnoGraphicEditor.nib": {
+          "sha256": "4ac268ef57ed55f7ce21c4ff7d93264efc4e243f4abd09f02d126edf536ebb21",
+          "bytes": 15752
+        },
+        "Contents/Resources/AnnoTextEditor.nib": {
+          "sha256": "2f4fefb76d805ac9efeb7e47dd18f2a4f35e96ab9dddf5ef4c8b45e2e7af7860",
+          "bytes": 16679
+        },
+        "Contents/Resources/Arc.icns": {
+          "sha256": "d21ed643940f820e12a813ece8c32f94c43563bf6d77d83ee4d6a5ad5e21f459",
+          "bytes": 80
+        },
+        "Contents/Resources/Arrow.icns": {
+          "sha256": "13ed06b5edc85ccb4f08e42ee8c8825cb21ef338990bcef4914976cd427d697f",
+          "bytes": 80
+        },
+        "Contents/Resources/AskIfCombineComplexData.nib": {
+          "sha256": "af4e8d63ca884f7d04051af64cc5c35268cb5d00aadb336a97c7274ede951196",
+          "bytes": 9478
+        },
+        "Contents/Resources/AskToMakeSymbol.nib": {
+          "sha256": "2420d0286a6fd268495afb03a9099a34d501555f8c964e130d4b186fcfda2d6f",
+          "bytes": 9991
+        },
+        "Contents/Resources/Autorange.icns": {
+          "sha256": "b68a196eb4d93cbcfdecc97ce3def1ad45cc4576438fa03d39dad016ddca872c",
+          "bytes": 348
+        },
+        "Contents/Resources/AxisBottom.ico": {
+          "sha256": "136d81cbf62df4eb38f44194b207cf704b1913543d1f47fe363563982519a8e9",
+          "bytes": 766
+        },
+        "Contents/Resources/AxisLeft.ico": {
+          "sha256": "73f80ed84f5fc0d4c9bd4e99ea4d590fe74246ae8752dd3cbc7186b35d5a814c",
+          "bytes": 766
+        },
+        "Contents/Resources/AxisRight.ico": {
+          "sha256": "77a809a25f3576d67f74ea2f36a3b6e533f68301c35670475f417008a6cd3e8c",
+          "bytes": 766
+        },
+        "Contents/Resources/B2.cir": {
+          "sha256": "ff9d204765a210f91bab44fd6b07094369aa44655a41bf9200bce2683d00510e",
+          "bytes": 177
+        },
+        "Contents/Resources/B2.txt": {
+          "sha256": "73ae02c79cb53163d3b099ba0be56aa0661a9c30867a9032c0d40f21ced37837",
+          "bytes": 385
+        },
+        "Contents/Resources/B3.cir": {
+          "sha256": "f711232d376abb92d4825b0862760462a24c6efc3068b394febedc536cf33947",
+          "bytes": 248
+        },
+        "Contents/Resources/B3.txt": {
+          "sha256": "49a4ca7f8686b80c2a3f25e10c4c47cab407608425a6a29aba6078ee894a842a",
+          "bytes": 619
+        },
+        "Contents/Resources/B4.cir": {
+          "sha256": "bbead745430ce571f489984a588f30248fecb1863386f37e28b4eb3479ba5f4c",
+          "bytes": 1841
+        },
+        "Contents/Resources/B4.txt": {
+          "sha256": "8d2521736f8a8eb382f8b23dea6c8b44b8120c38057628d42ab36a34bc4c4435",
+          "bytes": 1915
+        },
+        "Contents/Resources/B6.cir": {
+          "sha256": "e749867724fdac13a9dea366a9575db1c3fb28714d9da524b89897fc4b864b50",
+          "bytes": 1717
+        },
+        "Contents/Resources/B6.txt": {
+          "sha256": "5e021c533ce51ea20dd09982d4b10e7c1c749bd7b30fa79ea969e7b727823e36",
+          "bytes": 3105
+        },
+        "Contents/Resources/BIBSS.cir": {
+          "sha256": "c56b0dc2b2045460e7c9214bafcce491695fc52b06dea9279262b15aa9f7a9f7",
+          "bytes": 700
+        },
+        "Contents/Resources/BIBSS.txt": {
+          "sha256": "98f16388aaa87d1508b4a4b39d1fec9d4220c4769402e964a85455e4ae61ff96",
+          "bytes": 1149
+        },
+        "Contents/Resources/BICCER.cir": {
+          "sha256": "2f794a80a2d877d5776a96a43e771248a5261792a3afdfbe640de960687a3364",
+          "bytes": 557
+        },
+        "Contents/Resources/BICCER.txt": {
+          "sha256": "9823a21cd396f879fcd80eba314decd0ee74b2fc554d79db691e9a5b30f8adc3",
+          "bytes": 1912
+        },
+        "Contents/Resources/BICSS.cir": {
+          "sha256": "e2ce5e2845f8d8a093cb814445bfe098618fd4002f29b6055f76b1d24c3a1f77",
+          "bytes": 503
+        },
+        "Contents/Resources/BICSS.txt": {
+          "sha256": "bcd0c4c2a6b35fe1943d996d164a99cafaed058d43acf13113941a5351a3c64b",
+          "bytes": 1046
+        },
+        "Contents/Resources/BIMULT.cir": {
+          "sha256": "9d67d696bf0a2b392a854562763150b8e7f15c6e65af164558f40bdb0b5b502a",
+          "bytes": 1339
+        },
+        "Contents/Resources/BIMULT.txt": {
+          "sha256": "58f60150fbd9c7a2fa1732ca888af2b5320ed74750833dd34835dad415ce5e39",
+          "bytes": 4927
+        },
+        "Contents/Resources/BIMULT2.txt": {
+          "sha256": "4d8023468fc5370b9cac75b871f1bb1c1c200c11b920355df80159edd525292d",
+          "bytes": 3837
+        },
+        "Contents/Resources/BJT.icns": {
+          "sha256": "e386d48110eb5b3601fadf85843ead53e53078676dfc92ba339956842486926b",
+          "bytes": 30986
+        },
+        "Contents/Resources/BJTeditor.nib": {
+          "sha256": "f404039f73a36573dbbc182817f1c51e3098660ceb390c95919388f1691eeeee",
+          "bytes": 14845
+        },
+        "Contents/Resources/BVF.cir": {
+          "sha256": "04ce8c9a4edf3102176e982e23dc7f0de6d36b864a1b6e5a556a05ca73352d29",
+          "bytes": 145
+        },
+        "Contents/Resources/BVF.txt": {
+          "sha256": "d65c6d2e4d11efe2d156047f98882c643b0a85a7e120c7131fcbc760d4c5b745",
+          "bytes": 306
+        },
+        "Contents/Resources/BandwidthIntegrationDisplay.nib": {
+          "sha256": "7be8a4f33c24763bf874463edd13b3c84effbeee55b33eb66b7758b2e44f442d",
+          "bytes": 13879
+        },
+        "Contents/Resources/Base.lproj/MainMenu.nib": {
+          "sha256": "d59bd021aca85b1178f8d3c37857837932d6b27830eda3dc628926fe5ccf9bf0",
+          "bytes": 10279
+        },
+        "Contents/Resources/BeadEditor.nib": {
+          "sha256": "b709d310e223e228d88a71e57522905745883622aa48f43b2cfdd57f0af77bf2",
+          "bytes": 19448
+        },
+        "Contents/Resources/BlockNavigator.nib": {
+          "sha256": "a14dcf32aa119181709eb8bb652d42f26d387266c6d5ba56321d19f0bbb5d5b9",
+          "bytes": 14489
+        },
+        "Contents/Resources/BobIGBT.asc": {
+          "sha256": "2c8db4b47a067f2b032a8b6dbb0295ea15f73d7f1fc339403e1f2b7d23dc44da",
+          "bytes": 9964
+        },
+        "Contents/Resources/BogusFocus.nib": {
+          "sha256": "b16f3a61df61d4e51dbb8104a6062a27a5771087686a07e52498b34570558694",
+          "bytes": 1751
+        },
+        "Contents/Resources/BusTap.icns": {
+          "sha256": "71d8e4c27d375407d24d4f5bead57de6a988458b930b078bb673bf22fbd567bd",
+          "bytes": 395
+        },
+        "Contents/Resources/CAP.icns": {
+          "sha256": "84859bfb13b2ab73209d5353dab67a5c17234899771c6d2ac804984ff34de071",
+          "bytes": 28488
+        },
+        "Contents/Resources/CAPdocument.nib/keyedobjects-101500.nib": {
+          "sha256": "9572d5d5481db85d640a4cd74d650dabd1753c752ec26aa3c5d5b37e3100b18a",
+          "bytes": 15313
+        },
+        "Contents/Resources/CAPdocument.nib/keyedobjects-110000.nib": {
+          "sha256": "893a2a2e5ebfe7a852db01f16fcf9d15a96a0967562779c5bade801542523afb",
+          "bytes": 15288
+        },
+        "Contents/Resources/CIR.icns": {
+          "sha256": "dc10d5cc85a9ec60a956010883a38a8831e2cbc26c0a301b5db709daa8fe470e",
+          "bytes": 32610
+        },
+        "Contents/Resources/CIRdocument.nib": {
+          "sha256": "7fed77db97209aa678e0fc0470470460f7206fdd6635f2560c103626a815f16d",
+          "bytes": 22000
+        },
+        "Contents/Resources/CPLv2.txt": {
+          "sha256": "e84fd49cc0a803f760ede6f8513de7df7ab12c9daf44b1d0a1d349ad2814b28e",
+          "bytes": 2311
+        },
+        "Contents/Resources/CapacitorEditor.nib": {
+          "sha256": "1eb1b4ff6aea7d84ec4ceeb51a710a9424d11ed55fc1b3f83f9f332c8e45bb24",
+          "bytes": 17793
+        },
+        "Contents/Resources/Circle.icns": {
+          "sha256": "0a929249b8088082b36a39bd3c171e93e2ecfdce1969eec70d938423aeebb017",
+          "bytes": 80
+        },
+        "Contents/Resources/ColorPaletteEditor.nib": {
+          "sha256": "67a777679b2ac7c630ad4de98109a4971e153299938a4414953e32127c1afd4b",
+          "bytes": 20874
+        },
+        "Contents/Resources/ConfirmEditsSheet.nib": {
+          "sha256": "6305b60622471038d5f9f4c640eed40f3eaececa91ab729a1fd4ca597c860d88",
+          "bytes": 9429
+        },
+        "Contents/Resources/ControlPanel.nib": {
+          "sha256": "a7b4a08148297cedf1af265cfe083445014e4912018d133b6594652895d67675",
+          "bytes": 63794
+        },
+        "Contents/Resources/CplxCursorReadout.nib": {
+          "sha256": "9e69e610c34307d2f91b63231abe4b4c16a979dcda02056972dbf6a5f8dd463d",
+          "bytes": 28028
+        },
+        "Contents/Resources/CrossHair.ico": {
+          "sha256": "fd44b082897725a9ecf77fa7a591362b880189851c3ab5b6769c56568dfe02a9",
+          "bytes": 766
+        },
+        "Contents/Resources/Current.ico": {
+          "sha256": "6fa8544bbd7d055e5003bc5ec211d5b5f5bcd61975b8405a2c21cbe06be77d81",
+          "bytes": 766
+        },
+        "Contents/Resources/CurrentDown.ico": {
+          "sha256": "fc718d7a46d13b0ef5b8c45b3817a71095b6778e6cbbda24988098027f84e91a",
+          "bytes": 766
+        },
+        "Contents/Resources/CurrentLeft.ico": {
+          "sha256": "30e917ff82bbfc198cd3aad0e2277815c3e5203eb23c2946080efbc2755a8780",
+          "bytes": 766
+        },
+        "Contents/Resources/CurrentPin.ico": {
+          "sha256": "092b3c11b0d1f37139e7e1f103c315a216b6523f5a37db7868911ff6b9ae7bbc",
+          "bytes": 766
+        },
+        "Contents/Resources/CurrentRight.ico": {
+          "sha256": "65172683e962cb3a218c1fbfc3e2b7888b8b6cf08427cc4bd36f218229812a15",
+          "bytes": 766
+        },
+        "Contents/Resources/CurrentUp.ico": {
+          "sha256": "7c4b0d97f5a601205e6c4cdc3a0f7dbf0237dd679832f467007423845335b89c",
+          "bytes": 766
+        },
+        "Contents/Resources/CursorPosition.icns": {
+          "sha256": "07dc2dbdfd545ba0ab5c4c2fe676dbdc2f7bd41676fa2ae6406850522b2459bb",
+          "bytes": 329
+        },
+        "Contents/Resources/DIO.icns": {
+          "sha256": "612242c29dc05e9c132aa12eec84ca91d13c94f246b77cc539b3f9149c7d4388",
+          "bytes": 29738
+        },
+        "Contents/Resources/DataExportTool.nib": {
+          "sha256": "4fd38af147298d3b738546564f8336a7110c0cc28fa227d6220230fe04dbb5b5",
+          "bytes": 16493
+        },
+        "Contents/Resources/DataPoints.icns": {
+          "sha256": "81aaf8f590de003670a45aa5b72aad517494d343524a362af881af65c3c0b217",
+          "bytes": 344
+        },
+        "Contents/Resources/DeletePane.icns": {
+          "sha256": "e075170c3dc5d03605154d25315833901b1a26cf5aa20dc84171395869ea32bb",
+          "bytes": 493
+        },
+        "Contents/Resources/DiodeEditor.nib": {
+          "sha256": "bae87d86a304b1f76481d597f0d2af6b8d6fedafef121113da97990550e6c1c9",
+          "bytes": 14922
+        },
+        "Contents/Resources/Directive.icns": {
+          "sha256": "b569f31ec4c8cfa5bfc438bd1403c8a50bc700720429b247d7e230a5515307ce",
+          "bytes": 216
+        },
+        "Contents/Resources/Disk.icns": {
+          "sha256": "3be866c67adad83e62200d2cb8acea5e3c61651da87e1680b677c0994a0347c6",
+          "bytes": 595
+        },
+        "Contents/Resources/DismissibleAlert.nib": {
+          "sha256": "282e20a3ed1f9d2e096756afb21d1c706be1741068c3de781b5ceba30b27ec17",
+          "bytes": 8124
+        },
+        "Contents/Resources/DotOpData.icns": {
+          "sha256": "bc03c83195afb988d3764b24544800c2d134f6534159f46d9835b4824d307422",
+          "bytes": 487
+        },
+        "Contents/Resources/DotStepEditor.nib": {
+          "sha256": "68ee69a8ec07301c88ca71332804762a45894dc02843afab8073e13a0cd4a87e",
+          "bytes": 16903
+        },
+        "Contents/Resources/Draft1.asc": {
+          "sha256": "a7e0b60fd839ffdabe75224737b5b8e9b2fdfc7817e46005a037401056d3236c",
+          "bytes": 447
+        },
+        "Contents/Resources/Drag.icns": {
+          "sha256": "b9064aa10463ca5adba6d6f725239c818b65848f05a64ada2af3c07d24f43515",
+          "bytes": 497
+        },
+        "Contents/Resources/Draw.icns": {
+          "sha256": "7d2cbc65af21b5394725a362858fd369ab9a59629ae264c8e14c6020a99b49eb",
+          "bytes": 468
+        },
+        "Contents/Resources/Duplicate.icns": {
+          "sha256": "6101ef670590585fcfc5af45287cbe494656a0e447c07cbaa55705e9084a37c6",
+          "bytes": 524
+        },
+        "Contents/Resources/EyeDiagram.nib": {
+          "sha256": "05c770ea87b6c60a2adb72fee3fe8d2bd954175da97e132b863773fd06e32127",
+          "bytes": 14942
+        },
+        "Contents/Resources/FB.icns": {
+          "sha256": "7860f5a6206da2a38e2b0a5b2bfa8c491d688da5c9a702e20ecaa245f9a15cc1",
+          "bytes": 30434
+        },
+        "Contents/Resources/FFT.icns": {
+          "sha256": "c3c9910161db912865833c7414367954bbd8106f047c36e17240e719624c981e",
+          "bytes": 399
+        },
+        "Contents/Resources/FraEditor.nib": {
+          "sha256": "2b49d636cbc12bb2eb3363decb8015081b68d7bf604e8c200c92ee4739bde0b9",
+          "bytes": 26613
+        },
+        "Contents/Resources/FraWizard.nib": {
+          "sha256": "4343a4a468d3e04abd00c0f38cef450a44ae68996d98bf75c871529882a817ee",
+          "bytes": 13941
+        },
+        "Contents/Resources/Gate.icns": {
+          "sha256": "e9bfa5e6e6bb991d3b972093efc3da9768fefaf047da1411d31d6a1b50903ddd",
+          "bytes": 519
+        },
+        "Contents/Resources/GenericComponentEditor.nib/keyedobjects-101500.nib": {
+          "sha256": "bd46f8f384fb81d9376d81fd785d6564b2a6939bd2291a943557946af7a30cc9",
+          "bytes": 17091
+        },
+        "Contents/Resources/GenericComponentEditor.nib/keyedobjects-110000.nib": {
+          "sha256": "5d6d69033404391f6e4a0a8ff391ab16cd13ebc375850b6d18fe787ff50906b2",
+          "bytes": 17055
+        },
+        "Contents/Resources/Hierarchy.icns": {
+          "sha256": "3ec35bd05c0b949d1febda1146185274f8d99bee9013df393b7446d1e224f909",
+          "bytes": 721
+        },
+        "Contents/Resources/HorizontalPlotLimits.nib": {
+          "sha256": "b796643127c2fb8ac5b91490ded473c517e93b8c51ec47dfa45f66accfcf81a9",
+          "bytes": 14757
+        },
+        "Contents/Resources/IBeam.ico": {
+          "sha256": "11a030d066ccaece6c2aa462f64cfd1d6a4ffeb5ee8a55b7282d970854bbe4f5",
+          "bytes": 766
+        },
+        "Contents/Resources/IBeam2.ico": {
+          "sha256": "8ee7b2c8a6f450434ba1839b19cb4261e397d8616b0994af3d2b1ea44df5e621",
+          "bytes": 766
+        },
+        "Contents/Resources/IGBT.asc": {
+          "sha256": "1d1bdf63cf77b780ea4a0aa21187d35a387cd8267b75e3b9da21947286aae1f8",
+          "bytes": 3406
+        },
+        "Contents/Resources/IGBTeq.asc": {
+          "sha256": "1128a3d98f9e01eed02ecfac9b2eb3ef1877311b8c5eed6f8372f67377a59a85",
+          "bytes": 742
+        },
+        "Contents/Resources/IGBTfunctions.txt": {
+          "sha256": "c4b77da4cb3f14d8e3aaecf4b3b1a9ef28908a5c9759ebcb6be3439ee85c0cbf",
+          "bytes": 586
+        },
+        "Contents/Resources/IND.icns": {
+          "sha256": "dfb0074eb12e751b2ee6a7835ff678f165d82bad60dadd0b26bcc3be05cb3663",
+          "bytes": 26264
+        },
+        "Contents/Resources/INDdocument.nib": {
+          "sha256": "012cf0411479e81a5267443bff99fbf666ce0fd39327ee29565ffad96d8d4206",
+          "bytes": 14901
+        },
+        "Contents/Resources/IndepSourceEditor.nib": {
+          "sha256": "851fa80e68da1846254f352554972b4815709217fb2c814c1e15ef71f04bc8db",
+          "bytes": 11959
+        },
+        "Contents/Resources/InductorEditor.nib": {
+          "sha256": "3a4a64fcbe9ff57398f0d92cc4434ad7c587618460650a091d525a49a8745078",
+          "bytes": 17492
+        },
+        "Contents/Resources/InstancePicker.nib": {
+          "sha256": "380bcbd696d3e0cfbd31e189b0ca1c143ac8e0ce180ceb98e146e624e3b12879",
+          "bytes": 9916
+        },
+        "Contents/Resources/IntegratedNoiseDisplay.nib": {
+          "sha256": "c16e2b80aae4821666d846a1fe01f2e72a4303cf7c1de25cbfd70d362229b298",
+          "bytes": 11776
+        },
+        "Contents/Resources/JFETeditor.nib": {
+          "sha256": "10d3bc13d413ff8b525bec689d1ee69785d44a51f9534582b466e798e628d166",
+          "bytes": 12891
+        },
+        "Contents/Resources/JFT.icns": {
+          "sha256": "a8c99a4eb004037e093343256d8c705f1f53911a01db1e23816c48652f460462",
+          "bytes": 27430
+        },
+        "Contents/Resources/LOGdocument.nib": {
+          "sha256": "bbfa962ff11dedd78fdff958144afe127f76d95337b27757fc4bf47815e17d71",
+          "bytes": 16610
+        },
+        "Contents/Resources/LT.icns": {
+          "sha256": "405ea3119045ee70f6d958197b221c954902f803f5a89c78699ccde4bc8e6a1b",
+          "bytes": 27893
+        },
+        "Contents/Resources/LTabout.nib": {
+          "sha256": "ab22f6f8beadf0de79424487d07bb038c6ed9b826f0661fd4fadda0fd7ce2ec0",
+          "bytes": 11686
+        },
+        "Contents/Resources/LTnoEditDialog.nib": {
+          "sha256": "76d6d72766f7b7fcb26acbf69b752ee62b0965abf7c2fc986b49416e9af0840a",
+          "bytes": 10274
+        },
+        "Contents/Resources/LTspice.help/Contents/Info.plist": {
+          "sha256": "36e8c7f6d98be4833d41d4b6961b40837372750a8a4b664777ad77dbb1f14609",
+          "bytes": 982
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/A-device.html": {
+          "sha256": "7aae3b429cf14d34896199e18fd7ed908593a8ef1d01639b5c71ed064327cca4",
+          "bytes": 10273
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ACanalysis.html": {
+          "sha256": "6d661dd6bb18716bda4409dd8817f05a0da002da96f3fa13ce187f8d37f5344a",
+          "bytes": 2781
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ACstep.asc": {
+          "sha256": "238e3f7ad25fbc0015d06a0476b86841d2c379fe0ee11952afe37f9817f639e1",
+          "bytes": 755
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/AttachedCursors.html": {
+          "sha256": "99a0648dc3939f587d2b15bc5706b7125c90a7600870c24653c7316db489936a",
+          "bytes": 2179
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/AutomaticSymbolGeneration.html": {
+          "sha256": "201e3dbcd66cf68bc146ab87e88baeb829ba632e4721748a2ef7f93d261f9f10",
+          "bytes": 1487
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/AxisControl.html": {
+          "sha256": "65afefc077d1fe7eb1837f517bb27d6e6c6141646aed1d220e00043b43a2de2c",
+          "bytes": 1250
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/B-device.html": {
+          "sha256": "8e606a8ea4444d0b4e9697a3e752f43836de11fe1261ce1af723678260d0d237",
+          "bytes": 15979
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/BackannoSubcircuitPins.html": {
+          "sha256": "8aaafb1b407f74b72cf9542ec07408c1d729b20ccf9d5cb525c957541b4a06ad",
+          "bytes": 954
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/BasicSchematicEditing.html": {
+          "sha256": "0692621ea5217300b838b924a87f27204ed425df7215b8e799d9302d2546248c",
+          "bytes": 9236
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Bode.html": {
+          "sha256": "ab253a5f9321869d2996885378c6a38d6460f8033b32e96e2a1e65d8ea1a5216",
+          "bytes": 14726
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Butterworth.asc": {
+          "sha256": "f6aecf12ff160ff60c6725639e23c71c855c9cb004cb67a8e0c188f27715eeab",
+          "bytes": 2146
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/C-device.html": {
+          "sha256": "3681226c3f233bcb7d3c96645aaf564b39856bd895cb38b2054b62877477e8a4",
+          "bytes": 3874
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/CircuitElements.html": {
+          "sha256": "2c129988102e5f278231bb08cdc915be1aa0eedad8efe74471bde78dafc7e021",
+          "bytes": 5254
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ControlPanel.html": {
+          "sha256": "75dcf10136cedfccd0369b76f557e7134961396faadb2df299403287e94b7035",
+          "bytes": 1087
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/CustomSymbols.html": {
+          "sha256": "8699cbee678bab027bb7e7103e44c4e4bddf19a49cc3980f7f757216546e3904",
+          "bytes": 1394
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/D-device.html": {
+          "sha256": "d35eca6ed038476f562cb663183f229257a87fd5c1a64bade6fc8e7459a31d84",
+          "bytes": 14362
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/DCanalysis.html": {
+          "sha256": "9cdc5df31edb91ba5a92209a512f8cf2428c3ce6fc5b209abdc5d376b68ecdfc",
+          "bytes": 1445
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/DataTraceSelection.html": {
+          "sha256": "c670d5fcc4a39bc7d0c83bb0f939249e15d9eb47d189b28a29df4e8329e159d5",
+          "bytes": 4400
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/DotStep.html": {
+          "sha256": "5e027cb5cf46f1427a0bec6f4298251b3c20cd8b7244c61be6b0f7aaa2c60da8",
+          "bytes": 1753
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Drafting.html": {
+          "sha256": "73bb855b06327374819c33d64663b7ab329b0dc4a76cf5be6523bba77eaff4d3",
+          "bytes": 1170
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/E-device.html": {
+          "sha256": "4c94c3aa1cb78416edb483c3b27f7fb9f834b2a57808f8e32314a631a64e758e",
+          "bytes": 3414
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/END.html": {
+          "sha256": "134bacb1880f2dd415cadd151e5e6d9d005af98bd539f0135e232c21f15b070f",
+          "bytes": 700
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ENDS.html": {
+          "sha256": "e82cfe1fe9f060eb09a6a601451845598b184791d7d93fa0fabb1f1712b6b0d5",
+          "bytes": 655
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/EfficiencyCalculation.html": {
+          "sha256": "b61c0ad02ecc431be4c4d9a2b3923bbabf500690f9194b430a9534c80a617bac",
+          "bytes": 1791
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ExportingWaveformData.html": {
+          "sha256": "6d8efa7db16b7f7a1b99743cb41132e2090ed13d2919d8775a67de7f3d03259b",
+          "bytes": 3448
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/F-device.html": {
+          "sha256": "9efec7debca5d359251a417828e5e68d70c96c64989b5f35ec48c544cedc12cd",
+          "bytes": 1244
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/FAQ.html": {
+          "sha256": "3ff250c90406d15d9b54a9978260fecd1fc3c4f93ce4fa1bef6fabcda50f1e33",
+          "bytes": 2058
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/FERRETcommand.html": {
+          "sha256": "15bb8c4e5204f8158e39a6c126aaeaa4b41706457d17dc732e7e4ce6f29c9f43",
+          "bytes": 933
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/FOURcommand.html": {
+          "sha256": "17e06777147e62aec56fce18b6fb3848ef212b90f80fe474c975ad880efd0db0",
+          "bytes": 1497
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/FUNCcommand.html": {
+          "sha256": "8a31ac05a487a9b88ffeec9055af82531392fabba90f5127e2981d0046594cfd",
+          "bytes": 1774
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/G-device.html": {
+          "sha256": "c42bd65644a25c0992a8bcc3a5b3e539db5e650ed633706e28112efcf936d3ef",
+          "bytes": 3173
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/GLOBALcommand.html": {
+          "sha256": "99bd91cd802c381df119c99c0aafa96416a2af93bc3614c4b82a39178255fd63",
+          "bytes": 1034
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/H-device.html": {
+          "sha256": "53601f31b2aa9bfc2425e9389ee39867833f5d2ddfbd400dee1aca9a1fa0138e",
+          "bytes": 1277
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Hacks.html": {
+          "sha256": "50b1cc0ac67d41cc74fb500acc4d78a097c90cdfc4b59e1780a8fe88c1c0b579",
+          "bytes": 658
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/I-device.html": {
+          "sha256": "aa03e08bbefb61400148aadbb212baee46663974b2ff3e5a28674ce956db40f3",
+          "bytes": 10127
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ICcommand.html": {
+          "sha256": "1e4c5c1f2c6940183e3f833c06d78ad5af20aefc6a691546fb251af32105915a",
+          "bytes": 1135
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/INCLUDEcommand.html": {
+          "sha256": "52bd9942238845da9dd71f7b4f98909e4803d462af83c23bffb2cb35cfc5b3fb",
+          "bytes": 2022
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/InductorModel.html": {
+          "sha256": "6bed887e7eceddfec01f1a5da7e1daddc157bc4f40488267ccdad1167475d2d9",
+          "bytes": 2020
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/IntegrationMethods.html": {
+          "sha256": "2acca0bb7a413df48ea4a205c47609792c9a49a3609d87a9052fae66439418b2",
+          "bytes": 2976
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Introduction.html": {
+          "sha256": "bf5154a7b4e55edbb05e3dcb31e612a199e9e9f62081b25e2f24f4fc570f7d0d",
+          "bytes": 3081
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/J-device.html": {
+          "sha256": "7cf06fccbad1a038f7a7219ee6fb5eb60e157ad7e162e793dbea364c7ab92e62",
+          "bytes": 8281
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/K-device.html": {
+          "sha256": "75a2b8bd5da307b01152a57ea4f51e07e8bd7ef96a2265a79c49309592ddf361",
+          "bytes": 1301
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/L-device.html": {
+          "sha256": "364048ad51364c3dad06db3f9b810c8eb3280cbe84634c97a7583b1b0cb95c1a",
+          "bytes": 8658
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/LIBcommand.html": {
+          "sha256": "acc9c07951da56bb341f42961849032f98e8ee6016b0171119df322f28b167ce",
+          "bytes": 5036
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/LOADBIAScommand.html": {
+          "sha256": "e996376bd8d2db4ef7d44465df627c90a31436302f5a2713c77ed8da52fddd29",
+          "bytes": 818
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/LTspiceIntroduction.html": {
+          "sha256": "cdcde307a3919cfbf3ba017d363a8ea3bdbe07cd3570c97860be58526b73e1b5",
+          "bytes": 10960
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/LTspiceSimulator.html": {
+          "sha256": "4246ede2d94a9bd4bb2d647bc9193346cbdd69178960bb51e2929a9f4fcc12c2",
+          "bytes": 832
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/LabelNode.html": {
+          "sha256": "cced1053172b7aa493258731f62680f5c0a6985a75c56ef3a0ac9807a52da4df",
+          "bytes": 2286
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/LicenseAgreement.html": {
+          "sha256": "98c9e15a89d823b28ccd7dd54f516e4b6880b6058e6dc79df107174feb5d3b37",
+          "bytes": 3497
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/LicenseAndDistribution.html": {
+          "sha256": "8192715db461870ec344fbcf563250d8e7d9577676bb91f4cda1715f24c9c923",
+          "bytes": 2007
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/M-device.html": {
+          "sha256": "099a8bef09732024f62cff0af45825fba8ade68d197a99d2bb26f7a3264812ca",
+          "bytes": 31023
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/MEASUREcommand.html": {
+          "sha256": "65e1f4b1107d1d3331fa8e47b31d86b2c73d22eed4ef40863b400c187dcee388",
+          "bytes": 9476
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/MODELcommand.html": {
+          "sha256": "027e251fe437b92949b386cd895a22de9da7e48ec867ad8f4c367fc9abddc38e",
+          "bytes": 3687
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/MOSFETmodels.html": {
+          "sha256": "665baa071acd3da600e6be61b537692cd276f12a73ba420e95e28be97fc211e2",
+          "bytes": 2565
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ModelCompatibility.html": {
+          "sha256": "ae8db9150b4b8240df977a7c8f0eb290eec908379774d7ac23cacfa5945bc469",
+          "bytes": 1176
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/NETcommand.html": {
+          "sha256": "0bfdf880cb1f3f5b9db1fbb9d204537bb014af2f5e5df3ba8060330737557a33",
+          "bytes": 2538
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/NODESETcommand.html": {
+          "sha256": "c4871092f497a7a5f1afa179a1baecd10269cc31dc7bba74af07b1a0ad137d09",
+          "bytes": 1121
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/NOISEanalysis.html": {
+          "sha256": "ea7de8b489a4080d38cf9a01d0b7bda7a2c1e2cfe89187bd5e4d3fbeddc2b382",
+          "bytes": 2621
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/NoiseStep.asc": {
+          "sha256": "92f2ef4f64a5d94caba07c7278d1a5ad4463c4a202650b11cd6a91d4cceb33ed",
+          "bytes": 2142
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/O-device.html": {
+          "sha256": "93776220822ef62d0939af162fac851fb5da36efa3b6289fe2c266d133dba59b",
+          "bytes": 3998
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/OPTIONScommand.html": {
+          "sha256": "0c91c1ea1779a52d4a59715f1134ce23f819190325a409c02ecd7a68127cd59e",
+          "bytes": 11671
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/OPanalysis.html": {
+          "sha256": "0c04ed21799f3aaa400c68527c44b3f0a2a68702c176a9ca1859003d77950e6f",
+          "bytes": 2268
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Operation.html": {
+          "sha256": "e2402074154a3a6fb9af4dc5675a79c02ab5a058f179b6aced673e6c29dc2804",
+          "bytes": 1565
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/PARAMcommand.html": {
+          "sha256": "3d433558117cca326dd4f0770bd3a9e58d30f20364fbdd5879e9d70fa2b0f2bc",
+          "bytes": 10200
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/PaperManual.html": {
+          "sha256": "ddefd886c5b9fbfae36c0c333d64398b00e00c6054361aa5d1610d5332f4d49b",
+          "bytes": 1125
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/PlotPanes.html": {
+          "sha256": "562f9a2ef2ff1a021ffa9100a129c8e9a1851571333ae960b5e422cc91ce4b19",
+          "bytes": 993
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ProgramUpdates.html": {
+          "sha256": "307eb4480887cd05da9dc2a8a931a0116916c4941dfd7670802533cfaeed6028",
+          "bytes": 1114
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Q-device.html": {
+          "sha256": "464ac527279b2a53c2e170087d6544364458a541c7c3b90ba29c6f15b47341a1",
+          "bytes": 43328
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/R-device.html": {
+          "sha256": "1bca87b95f0c2bf3ed428f946203fcc2d05164d3f30b6d8b3f96fb34f0642813",
+          "bytes": 1085
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/S-device.html": {
+          "sha256": "001884da35bcff3a83be64caae13f1bc3726eb7a0c98355710eb9d5a3535c801",
+          "bytes": 4673
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SAVEBIAScommand.html": {
+          "sha256": "ef91a5695f45bb96069942c72e5d0223ea10a17d5a624cf5774ce27f6a788e1b",
+          "bytes": 2447
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SAVEcommand.html": {
+          "sha256": "24ff5498be605c20b7e5a6ca868adf4284490fac8f301cc6b1990c97254b804d",
+          "bytes": 1225
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SPICE.html": {
+          "sha256": "9da929a666db16dbecf0320b1ef2ff3a8b8850942e32fb2cf9848dd5d8c019d2",
+          "bytes": 3975
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SPICEnetlist.html": {
+          "sha256": "2b55d4b3da1b662e51b0236c3de6a85a2db81195051d1f371af4f9ae936c9fd0",
+          "bytes": 1134
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/STEPcommand.html": {
+          "sha256": "ff94fb7bc13014e6e7356fc82839b75966611a01720299f02cd7fa117aa3ac85",
+          "bytes": 1753
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SUBCKTcommand.html": {
+          "sha256": "c2ce7f8974c45445564d0076fdebf107f2ffc08d772563142fd47dee3e3e4442",
+          "bytes": 1742
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SaveDefaults.html": {
+          "sha256": "6c6b89c92771b75d37c431d397e4405623a295b7cb4812acc62c792a8211a480",
+          "bytes": 2174
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SavePlotConfigurations.html": {
+          "sha256": "d25f3175f5831d2a283032cb626761d268c0e19462e6df700ab2429b4cdf317f",
+          "bytes": 1307
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SchematicCapture.html": {
+          "sha256": "65ad6b279169459b3ca323cb543144799ab34d0653a11b5429e1a29c52f36e1b",
+          "bytes": 843
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SchematicColors.html": {
+          "sha256": "64c3b0e149bbc86812120c7cd740e28bb3c47da996096118a10e576d1af1e55f",
+          "bytes": 1040
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/SimulatorDirectives.html": {
+          "sha256": "6eb8b3673e087f42604768b32f2f73946bb7448e3c8a1b8e62a946d92f1adda3",
+          "bytes": 3112
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Status.txt": {
+          "sha256": "ba939fd8818cbf3f6cd4cc64a3be7520d35a5871f008503a729a7eb189c485f8",
+          "bytes": 7548
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/T-device.html": {
+          "sha256": "5f3deae7109656252dd03b7ed960f98fbfe28d7d0a4ffa925af196fe2681e73d",
+          "bytes": 1206
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/TEMPcommand.html": {
+          "sha256": "5a96fd505254a78cb014ec874d6f966afc658709fd35ab8aa317dcda24ae38b2",
+          "bytes": 888
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/TFanalysis.html": {
+          "sha256": "5c832a94df264e61c3c8ec62fea87a1f2554cbfad4e8081bb46e2f2a9c916921",
+          "bytes": 1037
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/TRANanalysis.html": {
+          "sha256": "69bcdcec5982d0ad8e7d762ccf789869aeb48af6db0d2ca584dcc5eae694f0fd",
+          "bytes": 3042
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/ThirdPartyModels.html": {
+          "sha256": "a2598d8252ea8f5bb40b935c045eded03bfd202a4618eef8551c83d3b326b9b4",
+          "bytes": 7089
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/TransformerModeling.html": {
+          "sha256": "76c4c6303bc000dd0ec34c697365470e3fc63074767c4b586841a04e0929ec30",
+          "bytes": 2684
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Tutorials.html": {
+          "sha256": "8f18bdebe299142297bdb10d0693f7ef1964d3d513476c1455c9622072b32a19",
+          "bytes": 1330
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/U-device.html": {
+          "sha256": "669de9cb1488203c7b726205af46f6e7c7be97dcc8872ff980fced33edcbc418",
+          "bytes": 3265
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/UserDefinedFunctions.html": {
+          "sha256": "a3d5656a0c59bc5900256412824c4a18b5d608f8c81a694de9ce281082089e64",
+          "bytes": 1263
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/UsersGroup.html": {
+          "sha256": "7522725626a4947f0dff26fdfaa8528276625306ed289341874f60439bfb016b",
+          "bytes": 852
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/V-device.html": {
+          "sha256": "805d10b65e9a640feac06d1831b0dd9ae20ba7fad02a13a14031a279650c48b0",
+          "bytes": 9263
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/W-device.html": {
+          "sha256": "ceefb7bb90459a45d43aebd6e3e3065f12cdd006d08d340ca9dcd85f5fe50da4",
+          "bytes": 2737
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/WAVEcommand.html": {
+          "sha256": "4e6155c578736a8aa7d1acfb9c4e5795f24d9b8f8ead6aed9f82f1fa8f03ba14",
+          "bytes": 2431
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/WaveformArithmetic.html": {
+          "sha256": "c221d9c05deb0c01f85c59e58ae07657a16cbfae563a45c137bcf8e59a3ded3d",
+          "bytes": 13236
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/WaveformColorControl.html": {
+          "sha256": "f365c4f2d0a6c628d98dda65c5e13bc19dea24925010082aaf9c9839e8079116",
+          "bytes": 867
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/WaveformViewer.html": {
+          "sha256": "53d5e061dc3fab15a8de2f96909cf30a9cf13a3e944c03cb0af97450e697083d",
+          "bytes": 1285
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Waveforms.html": {
+          "sha256": "449bb5086890377a3521e1c0f6979defdf6273559444182d5dbaabe09ab25c79",
+          "bytes": 2530
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/X-device.html": {
+          "sha256": "00a9007f679ad9b21d0304219026299263c27c28c484915e18bee2c9e7e42414",
+          "bytes": 1086
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Z-device.html": {
+          "sha256": "e21ed7d5c568d57e6c11a668a9d0522629d53c70c86c0f4be53e7cada30bfb56",
+          "bytes": 9331
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/Zooming.html": {
+          "sha256": "9a9f15f1cd738bd09a17339385aba2728ebe2dc78a0d1d20c857ddf3fc47ec10",
+          "bytes": 1055
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/dotfra.html": {
+          "sha256": "4cc650fa896d0562c60c5e96520a79bbd245d833ee42c53329f573e48b3cb0b6",
+          "bytes": 9267
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/fra_device.html": {
+          "sha256": "dd520ecb2fb18c41cbf593c4a14b211d93121d1d55a89ae47262f92e567b2217",
+          "bytes": 61710
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/howtogetabodeplotfromasmps.htm": {
+          "sha256": "d33e779d46302d45fb57c274bc492cedd886451e29dd7f040fb5aac29f44c96e",
+          "bytes": 6965
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/htmlpath.cpp": {
+          "sha256": "e35e1134ebb5074f4e95c8e4133ef5e8cadaaa3d1981a6feb9b3476107b7a8a0",
+          "bytes": 698
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/htmlpath.exe": {
+          "sha256": "ada502f020be76c47acd7eda6cdf6b5b83a68128dfe3ef2d995ff5ea18815626",
+          "bytes": 34332
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/index.html": {
+          "sha256": "f1d5b72abf16f5da8d18c4bad6eb9830ecf28806e25fba7869db020a01599c37",
+          "bytes": 1399
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/modified_trap_principle.png": {
+          "sha256": "91c4507aab2e6b0a2ec3fd098730edb1f8be56462e50add139c6b42fc895a483",
+          "bytes": 19430
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/modified_trap_problem.png": {
+          "sha256": "a65f81cb3d398853b8eb2739108664bb4fada875ffb204eebb1f0102d8efe820",
+          "bytes": 10752
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/modified_trap_problem_asc.png": {
+          "sha256": "62c319c93860bba1903a7a824f62063d45670bbcd6d42cba1bb023d6aecd0617",
+          "bytes": 7179
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/modified_trap_problem_wave.png": {
+          "sha256": "781fb16e359b53727dde72b480c32f652c3086977ca8cc97a3ca219fba4285b0",
+          "bytes": 32247
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/English.lproj/search.helpindex": {
+          "sha256": "b731bf331e74020569a088c89ae5bcdc70a41ac566a4ec14d586c7f498409972",
+          "bytes": 188703
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/LTC.png": {
+          "sha256": "7bacdddf6a288de42ecfea7b27091c75d07dbccc15c1716b0fa14136ad785110",
+          "bytes": 2859
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/AddTrace.png": {
+          "sha256": "1d0e075ad839c6864e4806a2fc468270ce0e571931053bb6ac00638b5f44cfcd",
+          "bytes": 99158
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/BH.gif": {
+          "sha256": "19bf5e0508fd75dc4addd864dcd7099bcf7bc1cec198046a4139177fae13975a",
+          "bytes": 2077
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Capacitor.gif": {
+          "sha256": "0b294f24d887e307b08faddf8fc614cf035f09a50ef176dccabff7a041f9c57f",
+          "bytes": 3360
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/ControlPanel.png": {
+          "sha256": "c486a72de4bb1a607b765080af7da7793eaae61f6e466797d8c1c3190a8b90b0",
+          "bytes": 26485
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/CursorReadout.png": {
+          "sha256": "d57c4cb1fc097bbb06078db8ebd888edad28183a3325f83b8e1465469c7adfff",
+          "bytes": 93783
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/CursorStep.png": {
+          "sha256": "06d8cc42263fe6482418685e1026d82f1bedb0a04c58a28911da8bea6d5b639d",
+          "bytes": 71764
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Ddnform.gif": {
+          "sha256": "65ab81308619db3e6c83daef976554910c3fc4b5be01ec90ff4d79e6195dbecb",
+          "bytes": 1076
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/DraftingTab.png": {
+          "sha256": "258f6e2ea651997838a35ae4e82c8dce60ae0639efe3dbabf695790caa08dd25",
+          "bytes": 81644
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Dupform.gif": {
+          "sha256": "871fcdb8281e31595957a9d7da26472945bb023bf9c114261946c8ecbbde9e8a",
+          "bytes": 1118
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/EnterExpression.png": {
+          "sha256": "4baf3b98e8deeaa7a0aad918478f3d691b8e8cf434687bd44126c8f5b67800b6",
+          "bytes": 103568
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/FFT.png": {
+          "sha256": "ee326f954111642b4726df367ff03062163c69765a658bc8afd141930adf4a97",
+          "bytes": 139566
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/HacksTab.png": {
+          "sha256": "ff8f845aff7f7e10fb7b84627aaf7d17065778ae98eee9615894c33a25d1e9fa",
+          "bytes": 91475
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Inductor.gif": {
+          "sha256": "666b625d658087c5e5638b1f9fd989400c2e35621f01ef38e6b6c6b98e523b25",
+          "bytes": 3415
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Library.jpg": {
+          "sha256": "587bae0acef6147f0a1587bd8d569912dba1e9837b9bd2ce76167d664931134c",
+          "bytes": 118398
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/MouseCursor.png": {
+          "sha256": "bc34c6b4cbe545b8a4e53e5863d377fab9cb874464bbbeff934f0d63090665cc",
+          "bytes": 63859
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Munich.gif": {
+          "sha256": "91f4d6807e7f151f326755f07b30228a3d2ba74e7d3035019bcacaf9c82b1a7f",
+          "bytes": 119897
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/OperationTab.png": {
+          "sha256": "0ebf459f824133a56a713e2fb907e3996feefe0f89421fd1c44a82069d7d6442",
+          "bytes": 79491
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Paris.gif": {
+          "sha256": "b7931a55f3c4fb98485936307f05f686936d8c4d88271c745be8a296842fa665",
+          "bytes": 176503
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/PlotPanes.png": {
+          "sha256": "8d8546c462862e3fe55f67064749f75a1c0ef06dafdc8f94123369ec010fe842",
+          "bytes": 88987
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/RMS.png": {
+          "sha256": "3a5849f90866e11537b2533a0471f6c6039e8ac7c5ba75b7f789f098269764ff",
+          "bytes": 66444
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/RunningMan.png": {
+          "sha256": "fdd1cb753ea0c5cc3ed950ca42b4ff2768c7aeebd8ec22843c391c568288a274",
+          "bytes": 3479
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/SPICEtab.png": {
+          "sha256": "d27d2dc6d131871ae499794ad2f65da94ad21045e337888a6221880c610c147c",
+          "bytes": 118257
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/SaveDefaultsTab.png": {
+          "sha256": "7a210af086163dae9866fc6bb975f8d0b703f2df1b7ad670c690dac20b6f0f70",
+          "bytes": 95729
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/SchematicColors.png": {
+          "sha256": "909a56f88b88e5c6d76fa55aa7f3adc457d054ba90005f4ebce2d404d2a0e49e",
+          "bytes": 100259
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/SchematicMenu.png": {
+          "sha256": "b3db0e3223e1a8345498d19c4a0ddbf187882cea1b40e3def22dc5dc5c2e3db1",
+          "bytes": 84558
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/Voltage.gif": {
+          "sha256": "464c4aa18576e00df3eb53fdcd9180647c62b2f1e2944666cd6f34de1f05514b",
+          "bytes": 2989
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/WaveformColors.png": {
+          "sha256": "3b3e8b73d3ce3207afdabe98e2756d4dbd3162370c364fa0db4e9e4b4d6b5f43",
+          "bytes": 124393
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/WaveformsTab.png": {
+          "sha256": "9a426120a777ea32e4c46e798a4dc6c21ac62acf1af42a2caf59edc7ecdba92d",
+          "bytes": 118802
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/XprobeCurrent.png": {
+          "sha256": "c37ae59844aca1e603ac138272af6d22cae6e1dcf2f9842b8008b47de5c5fc3a",
+          "bytes": 92494
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/XprobeDiff.png": {
+          "sha256": "d12054038452b6915838ca31b37a74d067bcad5cad6a92451bcb6718b3c20317",
+          "bytes": 78459
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/XprobePower.png": {
+          "sha256": "4495dd103eaebeea83f7529809b725c29f8c442b3bf451a8625512a78b3e0d79",
+          "bytes": 72882
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/XprobeVoltage.png": {
+          "sha256": "d89d0749056a55873ed96f9fca9785bef46c85ffd7eca916c92e7f7f8ba8830c",
+          "bytes": 73611
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/XprobeWire.png": {
+          "sha256": "f385bdc15f8bd23ec0364761868e0fe16b78a28a5f4a7cf1a92b8b7f3033c104",
+          "bytes": 74452
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/ZoomWaveform.png": {
+          "sha256": "f0e2ff5ebad102bf3e195e7b77ccffb58c30aac8b1407c748594fbdff4d08800",
+          "bytes": 43329
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/asymminor.gif": {
+          "sha256": "ad5773059bd9cf0ebd1f63897222191352531ea1feb37ac4e9d323c46ce44f9b",
+          "bytes": 3841
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/labelnet.png": {
+          "sha256": "25164f5887bcf97b62f6bcc44df05652cf355ddc1b7235c1b9902aad65be7ee9",
+          "bytes": 73954
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/porttype.png": {
+          "sha256": "50610a16746069518d47d547379b3edbd3edaf713238eb18fc9ce0690da14985",
+          "bytes": 26192
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/vbic.gif": {
+          "sha256": "76aa0e4a5e462aacc123b70b2a70ccabe84ca72627689b99a4d5f250cbeca019",
+          "bytes": 10562
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/vdmos.gif": {
+          "sha256": "294f9c2267d1cea75525fffb96b01ec1265d8797dc3edf883e736d92f206c773",
+          "bytes": 1954
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/vdmoscap.gif": {
+          "sha256": "765cfd6477e767fecb9f4ee99b84b5744811d95ce995d0e29fa97b16cbe6e257",
+          "bytes": 4766
+        },
+        "Contents/Resources/LTspice.help/Contents/Resources/shrd/xformer.png": {
+          "sha256": "fa4c491371a893bd13cd3282d720c55dc27832e5e1ff9d20fe650bc68c838774",
+          "bytes": 53141
+        },
+        "Contents/Resources/LTspice.json": {
+          "sha256": "b795d710c6a3c675a0efc5133af7f5a5745530e048c6b92c43c3267ce4ad2ca1",
+          "bytes": 537
+        },
+        "Contents/Resources/LabelNet.icns": {
+          "sha256": "849d1953936d823060072a39e6885ee691a80aad734855384048a64f80edbd69",
+          "bytes": 566
+        },
+        "Contents/Resources/LabelTrace.icns": {
+          "sha256": "65c58b2de78e00dba2976b5227856a9a2738b008681185e98829649ed33887c1",
+          "bytes": 344
+        },
+        "Contents/Resources/LeftCplxPlotLimits.nib": {
+          "sha256": "21fdae7c909affa945ee27da3671dbd9e1e76e00fd1371799acb767b04e97a1f",
+          "bytes": 18640
+        },
+        "Contents/Resources/LibIncEditor.nib": {
+          "sha256": "7a3fdd6ebf719d6c500fdd756c5910f979f892b0f4087b274c22487259ebff39",
+          "bytes": 13001
+        },
+        "Contents/Resources/License.txt": {
+          "sha256": "b7b3396ebfa2da69ef8a83e3823b92409fb57712cf087e34f6b85a3cad924b81",
+          "bytes": 1275
+        },
+        "Contents/Resources/Light.icns": {
+          "sha256": "5aa7b90bd2f3e0e0d9771a07762bee275b7deb73d19c483a03cf2afc2af16f73",
+          "bytes": 430
+        },
+        "Contents/Resources/Line.icns": {
+          "sha256": "69ae8a5387ae138232365d3302d4dfe2530f96e7ae3fe035618c7faf85a7a78d",
+          "bytes": 80
+        },
+        "Contents/Resources/LineStyleEditor.nib": {
+          "sha256": "e5e52f4e802792e41638d00e2a92e315da4db774466d71067167a6b220496bfa",
+          "bytes": 11842
+        },
+        "Contents/Resources/MOS.icns": {
+          "sha256": "2d9a88e384b58df594908c6c4e4c776a9639d6466613c6d8ed5e09e1824a4d8c",
+          "bytes": 32136
+        },
+        "Contents/Resources/MOS4editor.nib": {
+          "sha256": "bc8d16c2ef1438a50e8eb8c865407f002b316dd5ee8c393864c82f7b1919243b",
+          "bytes": 17924
+        },
+        "Contents/Resources/MOSeditor.nib": {
+          "sha256": "1a953d749e8efe04a93fbc19e9279ecbf7786e77da7bddd8022c9bbae9ff9789",
+          "bytes": 15782
+        },
+        "Contents/Resources/Magnify.ico": {
+          "sha256": "32f8474e601189885559174a6a861afa09b141d75aad51cb0a4e786402a14831",
+          "bytes": 766
+        },
+        "Contents/Resources/Manicule.ico": {
+          "sha256": "f8f6cbcd40124c0c65c4dff5868778508f7715aa5e1138d1629b834b501abed2",
+          "bytes": 766
+        },
+        "Contents/Resources/MicroCode.asc": {
+          "sha256": "e8393442d25a195afada3d7bc19e4c9839ceebb80f649d854b0ec772f687fe0c",
+          "bytes": 2331
+        },
+        "Contents/Resources/MoreStartChoices.nib": {
+          "sha256": "98668aaa3666e346f39ed954712807612aad78429f8ebf18ecbeb7e633229736",
+          "bytes": 10817
+        },
+        "Contents/Resources/Move.icns": {
+          "sha256": "48475bb0253c27c34be8a1a383b423fd0739024fa9c4a257946d65d3091cc532",
+          "bytes": 622
+        },
+        "Contents/Resources/NetNameEditor.nib": {
+          "sha256": "79f7425fcad25f6cf497a4093be42e023e463d654b2bc97041ac1d1cadb007b7",
+          "bytes": 14443
+        },
+        "Contents/Resources/NewDeck.icns": {
+          "sha256": "b315c24b74886728b3fad1784dc3c5d3aea0042d0b63f5945e1efd8c8a182fc5",
+          "bytes": 344
+        },
+        "Contents/Resources/NewSchematic.icns": {
+          "sha256": "4fdddc38308962ffa28274bdb766ffa3f279b68500246e069bec52e2740110f8",
+          "bytes": 496
+        },
+        "Contents/Resources/NewSymbol.icns": {
+          "sha256": "6449653714c6dd5657533936437c757d6b547334951796460e032f9d96790da7",
+          "bytes": 630
+        },
+        "Contents/Resources/NoZoom.icns": {
+          "sha256": "5113f3a16a6925822cb25a67024117f125cd8905b152335c075b2872170e11de",
+          "bytes": 649
+        },
+        "Contents/Resources/OKorNewLine.nib": {
+          "sha256": "32d2d3a1d16453119c8f122ce0069bdfa8380ce676db930ded9c041ffc682d66",
+          "bytes": 9709
+        },
+        "Contents/Resources/PassiveReference.ico": {
+          "sha256": "88f83ab7e911698844c1fe0c82898f80e7f5f865aa7286fc07114d0fe000c956",
+          "bytes": 766
+        },
+        "Contents/Resources/Pencil.ico": {
+          "sha256": "bc273c35c0776f6c863a0142bef47fb5c89cb0071701382d631d6daa50b89654",
+          "bytes": 766
+        },
+        "Contents/Resources/PencilArc.ico": {
+          "sha256": "a3e7d57e9de21fa65b21bad763bc04c66f7c2c5527a60a701bd7f8ad7272947e",
+          "bytes": 766
+        },
+        "Contents/Resources/PencilCircle.ico": {
+          "sha256": "e2694bc16338869e413dc9f6dadb7e4e045e9fce722b54d3f44bbbaea6194d54",
+          "bytes": 766
+        },
+        "Contents/Resources/PencilRectangle.ico": {
+          "sha256": "fb5361076fa97f8acd9e8367839b0eee3f770e01d80641adf863ecd3a7e93894",
+          "bytes": 766
+        },
+        "Contents/Resources/PinEditor.nib": {
+          "sha256": "da2b7a43e8dfbfabd801d0d5eedb8f35b021c51c2b12159b145aaccbc5ff3230",
+          "bytes": 17655
+        },
+        "Contents/Resources/PinTableEditor.nib": {
+          "sha256": "8757e270680229326a979717901397154e608c792ca674a52b6b770133e81ba6",
+          "bytes": 13392
+        },
+        "Contents/Resources/PlotExpressionEditor.nib": {
+          "sha256": "5884180cb42a29224e234ca9ee31b0472ed6bc10300ae3e268acdb4c3fb93753",
+          "bytes": 19135
+        },
+        "Contents/Resources/RAW.icns": {
+          "sha256": "d573b8f8af60785dc625807548a865d4de1c2cb75e5709c33a47101cb8cf4525",
+          "bytes": 39961
+        },
+        "Contents/Resources/RAWdocument.nib": {
+          "sha256": "72c0123eb9d9ca88977f650b74af2a5eb5e6faaf7736fb62efaef0865bb723b4",
+          "bytes": 16143
+        },
+        "Contents/Resources/RES.icns": {
+          "sha256": "d6104d83c57b367b66d6ed74ddbba02e9b247cb9fc7b96f7b69c5e8df0b8cdb0",
+          "bytes": 29520
+        },
+        "Contents/Resources/RESdocument.nib": {
+          "sha256": "ae95efefddbf973a34b16e54d8f8c8188779946459d4f5f8061e8b6701d897dd",
+          "bytes": 14210
+        },
+        "Contents/Resources/RIGEN.cir": {
+          "sha256": "cf12a877d5c958125a438802d685a6809ff33e3cefed364920869a48ab3d63bc",
+          "bytes": 385
+        },
+        "Contents/Resources/RIGEN.txt": {
+          "sha256": "aeeaa020639c91f39900536415f206c534cd31b6b62c91b75379b5464253c777",
+          "bytes": 1308
+        },
+        "Contents/Resources/RIT.cir": {
+          "sha256": "76af7a63298693cf089c332bbdea14de780810bb4f9d57cf2232b9cc174bedd7",
+          "bytes": 195
+        },
+        "Contents/Resources/RIT.txt": {
+          "sha256": "5415847f1345513eaa83c6616ad22edb060da0c6dfc2f61f2f54c757db6d5791",
+          "bytes": 359
+        },
+        "Contents/Resources/ReDo.icns": {
+          "sha256": "7c22b52a8ab327495df0288ba202a1ad15bd3511e29fa1434846089cee069124",
+          "bytes": 334
+        },
+        "Contents/Resources/RealCursorReadout.nib": {
+          "sha256": "aaee633e21eda78d87dbcb599193e7106035c8c9bf1ee878cea461a4ce43e88c",
+          "bytes": 18996
+        },
+        "Contents/Resources/Rectangle.icns": {
+          "sha256": "abbfebbd1daa1241259de773b659f230a3a56daa967fe49e9d98b36124cf8d01",
+          "bytes": 80
+        },
+        "Contents/Resources/Ref.icns": {
+          "sha256": "52c65d09847d79a1838b61d82937a0eb8a9bda85a00e3c1016f9ef51a0ecc3c2",
+          "bytes": 80
+        },
+        "Contents/Resources/ResistorEditor.nib": {
+          "sha256": "73b59a64d83f24984f4ce5503df74cbe189ad96db976eacf203b9b4a8e27ab42",
+          "bytes": 10917
+        },
+        "Contents/Resources/RightCplxPlotLimits.nib": {
+          "sha256": "7888edf609dab1d9633be3816fa578853f75ac6cb8d33638a8f2533fd37cc4c2",
+          "bytes": 17159
+        },
+        "Contents/Resources/Run.icns": {
+          "sha256": "919aac7524f7dead60e58f9a3f7dc61af4d9808877df3c8d3a654bcc8f8b6916",
+          "bytes": 505
+        },
+        "Contents/Resources/SLR.icns": {
+          "sha256": "dd9010f42c628335ada7532c8cdbaafdf7c56a9d9faa2546acedada005acd5f9",
+          "bytes": 578
+        },
+        "Contents/Resources/SaveEdits.nib": {
+          "sha256": "0eadbf4b332b965ed7aba53bd53288bd5cb63b09651f32938e2e44803488e12d",
+          "bytes": 9558
+        },
+        "Contents/Resources/SchAttributeEditor.nib": {
+          "sha256": "7264106fa49fb8a2b69d829c8bcd66be09d3106b188f8d2494981cbee49fbd92",
+          "bytes": 16256
+        },
+        "Contents/Resources/SchTextEditor.nib": {
+          "sha256": "b51d9182ec022d7e87f2a0aa9d82b47fc765c75703adba681505bd25a2de5a64",
+          "bytes": 25898
+        },
+        "Contents/Resources/Schematic.icns": {
+          "sha256": "1383d3d90d16b5e11dee06a6d6e591dba18869d54079d74e21d922439ff348dc",
+          "bytes": 371
+        },
+        "Contents/Resources/Scissors.icns": {
+          "sha256": "a31284bdb2efeddea525786388bb8a5d1411557ae2a2a45be4e1b16cfb30e9f7",
+          "bytes": 355
+        },
+        "Contents/Resources/Scissors.ico": {
+          "sha256": "c656624f89cb7b660b26470180b3dbca675a406b92f96417cf969bf214e15ee1",
+          "bytes": 766
+        },
+        "Contents/Resources/SelectBJT.nib": {
+          "sha256": "fb4660955deccb3a1a4028845d82c7c9f00a6172258579dce2ff7fef1aff1b65",
+          "bytes": 15031
+        },
+        "Contents/Resources/SelectBead.nib/keyedobjects-101500.nib": {
+          "sha256": "4488aca4b63829d687813c6d00994613d35680b890619142274c2e4dc6883cd7",
+          "bytes": 15804
+        },
+        "Contents/Resources/SelectBead.nib/keyedobjects-110000.nib": {
+          "sha256": "898abc77845cb131c7a3996f376ef00899ecd403cd9d9118a698497b4c4df26c",
+          "bytes": 15778
+        },
+        "Contents/Resources/SelectCapacitor.nib": {
+          "sha256": "82ee3e46e4bbf6bf5b7947844843bcf2de58d63eda796796506d2046698ea888",
+          "bytes": 16465
+        },
+        "Contents/Resources/SelectComponent.nib/keyedobjects-101500.nib": {
+          "sha256": "fe4714fef81612ea1e0c8bb4be9dd94ac366a3d2735aa8e1647664efa31efe20",
+          "bytes": 17895
+        },
+        "Contents/Resources/SelectComponent.nib/keyedobjects-110000.nib": {
+          "sha256": "36f8661c1d7842e85072c263ecc5374bc8b093ef796473019a09d5e860800868",
+          "bytes": 17917
+        },
+        "Contents/Resources/SelectCplxDFFT.nib": {
+          "sha256": "5b40330a64cd02e6be0b7d47e08c7523a6d77b176b94416dff55ee87bd961df2",
+          "bytes": 18104
+        },
+        "Contents/Resources/SelectDFFT.nib": {
+          "sha256": "b68e845dffda0c05b2f12c29cb033d9ef28be3bf4f12003601b645d2ae20c856",
+          "bytes": 30252
+        },
+        "Contents/Resources/SelectDiode.nib": {
+          "sha256": "ac7c8365518e7aa63b4311e3106e32917a591cdd2a15f2fabb2111a1604ebbe7",
+          "bytes": 15024
+        },
+        "Contents/Resources/SelectInductor.nib/keyedobjects-101500.nib": {
+          "sha256": "e00def54c8b2ab04d004d8f88bea40809d56b064b5eeb8f9d39abe17b7a33758",
+          "bytes": 16078
+        },
+        "Contents/Resources/SelectInductor.nib/keyedobjects-110000.nib": {
+          "sha256": "03ca2b164bcaabee6555858f6f43501bfd9956bc7b1723a568aa70c3ef3ebecf",
+          "bytes": 16057
+        },
+        "Contents/Resources/SelectJFET.nib/keyedobjects-101500.nib": {
+          "sha256": "510b6b197fe689fc7c89a2f40fca503cc111e488c04a8901708ba9ea979749f4",
+          "bytes": 14380
+        },
+        "Contents/Resources/SelectJFET.nib/keyedobjects-110000.nib": {
+          "sha256": "30fbf98ca7b0d25f26a2e383a9bee71b4d5d213958cdedc19830cacdf13f9819",
+          "bytes": 14354
+        },
+        "Contents/Resources/SelectMOS.nib/keyedobjects-101500.nib": {
+          "sha256": "51cf0651b48753d00c6712b86818c58cd81b7fa99f2f8849917abbfba015d6ed",
+          "bytes": 15414
+        },
+        "Contents/Resources/SelectMOS.nib/keyedobjects-110000.nib": {
+          "sha256": "c46075489743bc8957d4ef3fc4c8c61e79f7c87392433e6d828d4ba74717f83b",
+          "bytes": 15388
+        },
+        "Contents/Resources/SelectRecentFile.nib/keyedobjects-101500.nib": {
+          "sha256": "cac273b9682930b94c05a4a277f7c5d364896871d9c630e4c140f5a5a629ad59",
+          "bytes": 12333
+        },
+        "Contents/Resources/SelectRecentFile.nib/keyedobjects-110000.nib": {
+          "sha256": "56920bbade9cb07a5be63bbd260d99d3417f2320360c08b4941bb5b0a58e8cd6",
+          "bytes": 12310
+        },
+        "Contents/Resources/SelectResistor.nib/keyedobjects-101500.nib": {
+          "sha256": "3c2976d30c6267a6726fd2158c39edf597332b4c20eb165b6127af51e72d251e",
+          "bytes": 13986
+        },
+        "Contents/Resources/SelectResistor.nib/keyedobjects-110000.nib": {
+          "sha256": "6802a88ef68b6ebebc5f4aec9a1aa7edafb5434de2e0f484c76d3b33099a1586",
+          "bytes": 13965
+        },
+        "Contents/Resources/SelectSteps.nib": {
+          "sha256": "546e35451396afddafce05f5b1e18c57bb9ef90ae9a9f83a0374c687bde5dcf8",
+          "bytes": 16678
+        },
+        "Contents/Resources/SelectTraces.icns": {
+          "sha256": "dcecd22858e08a9d72176cc14e00aad3c9dcbcd119ec85720722e85928725b44",
+          "bytes": 382
+        },
+        "Contents/Resources/SimulationCmdEditor.nib": {
+          "sha256": "01041b9c7e1da3b432abfc9687854ee12c2f9c40ad16696c698ae0a5f7f159a9",
+          "bytes": 63387
+        },
+        "Contents/Resources/StartLTspice.nib": {
+          "sha256": "33e139849dcaa5e1d19c2ac9d77cb0882aaf3c57ae2484bb3e15e02539ad9910",
+          "bytes": 13034
+        },
+        "Contents/Resources/Steps.icns": {
+          "sha256": "bf93444c2fbab6ad0f2cac0ef47bb06bba6115c37c4af83fe1f69c4b6502c293",
+          "bytes": 368
+        },
+        "Contents/Resources/Stop.icns": {
+          "sha256": "bc8ea08a6f7205359abde3bd1b20b32ca3f8a3bdc83b3c6883458e12a1d5d637",
+          "bytes": 580
+        },
+        "Contents/Resources/SymbolAttributeEditor.nib": {
+          "sha256": "25eb7f4af8326d33dd025c70645004f8e4eb794a380c58fb46cb6fa399c4e42d",
+          "bytes": 16963
+        },
+        "Contents/Resources/SymbolAttributeTable.nib/keyedobjects-101500.nib": {
+          "sha256": "9440d82d44a7b52bcd5f8f12ff74a7e6359978cf338e8087969cc0e06fce897a",
+          "bytes": 14598
+        },
+        "Contents/Resources/SymbolAttributeTable.nib/keyedobjects-110000.nib": {
+          "sha256": "6f18e3369cb7b216d1b2d596862b78d39eec7ca59f0c9de56d92d0e214826a91",
+          "bytes": 14577
+        },
+        "Contents/Resources/SymbolLineStyleEditor.nib": {
+          "sha256": "e88f363994fa7da1b3ffc369a06fc3e414cac8d3f458c9f7a8bcb631c6679920",
+          "bytes": 11778
+        },
+        "Contents/Resources/SymbolTextEditor.nib": {
+          "sha256": "baef58c38bee45e8808810d28b008a7efd187e1baaa62de9cf2f12dae9f8c492",
+          "bytes": 16055
+        },
+        "Contents/Resources/Text.icns": {
+          "sha256": "45bd7e34e7c6a5e27e11ef25a7f7d8f319c726324db7ba2ba9f139c900bf5181",
+          "bytes": 502
+        },
+        "Contents/Resources/Thermometer.ico": {
+          "sha256": "e20c437b4602ad4ea71ccfbfa49b9a775799d68686a5ca6c4810cd8ddb7be374",
+          "bytes": 766
+        },
+        "Contents/Resources/Tools.icns": {
+          "sha256": "01b5f727c13167c709af3ca58e79acca5c331c0448bbf501603a97f9cd3b58d8",
+          "bytes": 501
+        },
+        "Contents/Resources/Tsquare.icns": {
+          "sha256": "fdf0aa51def8e5598fc986741d9268f08e3feba306dba4e0088395b85614dd32",
+          "bytes": 484
+        },
+        "Contents/Resources/UnDo.icns": {
+          "sha256": "efd32fa2846206706df8ba5091aa784f3a952a8f801618005dea3bdd022f5196",
+          "bytes": 346
+        },
+        "Contents/Resources/VerifyWantBUSed.nib": {
+          "sha256": "8a2a84cc1e6367d0722355b8c2402a551c5f45f556d68057fb27a628c02afb5a",
+          "bytes": 10474
+        },
+        "Contents/Resources/VerticalPlotLimits.nib": {
+          "sha256": "57a814ed19d77c7e6d6778dad9d05852e1b6cca2f0b6d7f3c38b4e250a227cac",
+          "bytes": 13547
+        },
+        "Contents/Resources/WarnMissingModel.nib": {
+          "sha256": "2e0ddc5bfe05c40f034a26a9ec3d68531b7944cf163135a38a5e780bbefc2836",
+          "bytes": 9417
+        },
+        "Contents/Resources/WarnUsingTempVar.nib": {
+          "sha256": "c9216707cd6cc50505e326f7dbc172d18907048301b3b270cb6c0cc004d03f88",
+          "bytes": 10296
+        },
+        "Contents/Resources/Waveform.icns": {
+          "sha256": "ee4a200e01c647ab1a9966014d6320f74d641a5e8fc7e6a2c0f764bb08cf18be",
+          "bytes": 382
+        },
+        "Contents/Resources/WaveformIntegrationDisplay.nib": {
+          "sha256": "d9c8eff9d40be6b496323e7a9502305006d024fa1ac5023b7c8302fa19b0b922",
+          "bytes": 12800
+        },
+        "Contents/Resources/Wire.icns": {
+          "sha256": "e69f83699fe1a0631619c4b5d3f560c5a5d19398703f8c744ade8004db88efe8",
+          "bytes": 344
+        },
+        "Contents/Resources/Xprobe.ico": {
+          "sha256": "5c7aac3cd1d06236ff79c770297abc646e2d582b0c69765fe5c466fb1cf79110",
+          "bytes": 766
+        },
+        "Contents/Resources/YellowScissors.ico": {
+          "sha256": "b7d8320c46d4df62011a202d98c3768d9e5d4cd94780f3df3fab0a579e7d27c4",
+          "bytes": 766
+        },
+        "Contents/Resources/deck.cir": {
+          "sha256": "5204c3d038ce7037940079065072bc325ab8a995009b343f576f4a135cc66e95",
+          "bytes": 4474
+        },
+        "Contents/Resources/divide2.asc": {
+          "sha256": "c78533b191cb97acee57a2c1c03acb655294cbf26ad9297fa4cb6707a626f257",
+          "bytes": 1094
+        },
+        "Contents/Resources/en.lproj/Credits.rtf": {
+          "sha256": "d79d73fb58b5175f45913556366123c718202c3b3a5b6e4b1b54fff3ea7a2d75",
+          "bytes": 670
+        },
+        "Contents/Resources/en.lproj/InfoPlist.strings": {
+          "sha256": "39cf2ee07b7b333e7c179d0bf4d798a5b72af6a4e584f51e642703bbfa4fc828",
+          "bytes": 92
+        },
+        "Contents/Resources/examples.zip": {
+          "sha256": "04d980e560c9aa0d351a9488a227cfe09e3d78125ddc060103dd91a04970d38d",
+          "bytes": 3555347
+        },
+        "Contents/Resources/inverter.asc": {
+          "sha256": "c2b41acb91df7bdd4ddd0424d6aad5369954884229837daf7143853bcfd1fdde",
+          "bytes": 446
+        },
+        "Contents/Resources/lib.zip": {
+          "sha256": "32b36e75463b84045003ece983c4907dbf65967625076a5b6f91f2e2c3482033",
+          "bytes": 39499544
+        },
+        "Contents/Resources/mextram.asc": {
+          "sha256": "1260cba97c8271067d57478b868e06c10d188988144dee487db65e3f55f624be",
+          "bytes": 5350
+        },
+        "Contents/Resources/mos.cir": {
+          "sha256": "97e068468206e791a7727d33a3a800170303b386f028c5e58ead3967351457fb",
+          "bytes": 180
+        },
+        "Contents/Resources/sinh.asc": {
+          "sha256": "5a2564a25979bd16717ebb557522523a625d7777464c064f3ee3cdd64142f17f",
+          "bytes": 594
+        },
+        "Contents/Resources/sinh.plt": {
+          "sha256": "ff3e2a7ee971ebcdcdbc49f83587a312941fffca243e24818063b71a0ac84ed1",
+          "bytes": 522
+        },
+        "Contents/Resources/solver_explicit_instantiation": {
+          "sha256": "4e1f9cb8e504f29f28f7afb09103442b184d490aa3c41965fa05bfc04b83cdee",
+          "bytes": 237
+        },
+        "Contents/Resources/spect_vpp.icns": {
+          "sha256": "b3482002fef2ae23b38b389eb10c11d832d8531e1c47fbe76cea82daa70362a6",
+          "bytes": 4395
+        },
+        "Contents/_CodeSignature/CodeResources": {
+          "sha256": "bea8161c27d051a485ce95eaf76a274f1f8c95962a79e29ca83ff7c927c2be5c",
+          "bytes": 118645
+        }
+      }
+    },
+    {
+      "source": "notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Library",
+      "destination": "/Users/jjgomezcadenas/Library/Application Support/NAUSICAA/ltspice/17.2.4/support/Library",
+      "contents": {
+        "Application Support/LTspice/examples.zip": {
+          "sha256": "04d980e560c9aa0d351a9488a227cfe09e3d78125ddc060103dd91a04970d38d",
+          "bytes": 3555347
+        },
+        "Application Support/LTspice/lib.zip": {
+          "sha256": "32b36e75463b84045003ece983c4907dbf65967625076a5b6f91f2e2c3482033",
+          "bytes": 39499544
+        }
+      }
+    },
+    {
+      "source": "notes/physics/work/ltspice-review/LTspice_legacy.pkg",
+      "destination": "/Users/jjgomezcadenas/Library/Application Support/NAUSICAA/ltspice/17.2.4/LTspice_legacy.pkg",
+      "contents": "187995e92965db1595ffdb1b712d90c157b9ecf01d12b24c4b5259f92f94258d"
+    }
+  ],
+  "bundle_name_requirement": "LTspice.app; version retained in parent directory"
+}

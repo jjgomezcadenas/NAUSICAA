@@ -1,0 +1,18 @@
+identity = "caac67eddc10b22f6c672ae70589d1af7d74006e895b9c815ab49bbcd2457865"
+
+[sha256]
+"src/ion_signal/bucket_study.jl" = "862f686463e014e3e73652112aab361370e84e05f5d27bdc1f1746a2863cffc9"
+"results/ltspice/retention_scan/analysis.h5" = "73d1f44fbae6ea591e1d516ab367dd4dc25f8a2429d878c0fb1f566a6be4902b"
+"results/ltspice/retention_scan/variants/length_800um.h5" = "863fb57d8d3ad4c6bc739bff28ce4a2df95105ebaa882041a9562be8e56e9c30"
+"results/ltspice/retention_scan/decks/length_800um/40ms_single_N400_r2.cir" = "f67f252dba4c67377fa57e786279685cf319d8b98a02e0d7f52c145ec7e9be3d"
+"results/ltspice/retention_scan/screens/length_800um/p2_bb0nu.h5" = "6fd5e3a18547f5813596ba3d200e512da3e0b29042abd977353f9127b9912c7c"
+"results/ltspice/retention_scan/screens/length_800um/p2_electrons.h5" = "b509cf0157779caaca36315cd2992144352159e2d87f1cead23075deb75641d7"
+"results/ltspice/retention_scan/cards/length_800um_viewer.toml" = "50ae28e8b8f0b1cb70e58a361abb5880f108eed340b349a127547b7383d36d74"
+"results/ltspice/retention_scan/decks/length_800um/corrected.inc" = "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608"
+"results/ltspice/retention_scan/screens/length_800um/p4_electrons.h5" = "e2db5b46e04ef493e13dde1157dbb6b379901bbf6f862ed832faf15cf74c06e0"
+"results/ltspice/retention_scan/screens/length_800um/p4_bb0nu.h5" = "635eaba7f443d8dcbb8180b8a6a225c37cc94668013f9b80eb05225e2d8a2d5c"
+"src/ion_signal/pad_compression.jl" = "4770e1dfee52c20bc248484bf9227e81ee38a6e40c10446b3b558f08913510e7"
+"src/ion_signal/pad_history_readout.jl" = "1865b012509dbca52d6add19e664984b51368c6cf6497dcaa4e73724d207bc4b"
+"results/ltspice/retention_scan/cards/length_800um_readout.toml" = "648eda5321d5c90b1aaac8507ae14a7a239419672b231dd5b79ca22afc9d45a5"
+"src/ion_signal/discharge_calibration.jl" = "355e202de7f6a0560789d2691eb9fefe2a3225737fe982a8488b8094af639071"
+"src/ion_signal/averaging_scan.jl" = "59d2910425a319723df58477b87f524ea089c0ce01f83d554df1623da20a74fc"

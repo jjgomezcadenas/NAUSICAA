@@ -1,0 +1,6 @@
+historical_readout_card = "config/pad_history_readout.toml"
+direct_readout_card = "config/pad_history_readout_direct.toml"
+historical_statistics = "results/ltspice/pad_compression/297cfaf80cec/statistics.h5"
+direct_statistics = "results/ltspice/pad_compression_direct/8b0d8b859f56/statistics.h5"
+output = "results/ltspice/pad_history_direct_comparison"
+report = "latex_generated/pad_history_direct_comparison"

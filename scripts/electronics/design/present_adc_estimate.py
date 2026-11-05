@@ -11,7 +11,7 @@ import hashlib,json
 import h5py
 ROOT=Path(__file__).resolve().parents[3]
 def main():
- source=ROOT/'results/ltspice/adc_estimate/analysis.h5';out=ROOT/'latex_generated/adc_estimate';out.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'results/ltspice/design/adc_estimate/analysis.h5';out=ROOT/'latex_generated/ion_readout/adc_estimate';out.mkdir(parents=True,exist_ok=True)
  with h5py.File(source) as h:
   a=dict(h.attrs);p=h['populations'];rows=[];adcrows=[]
   for label,n,v,snr in zip(p['labels'].asstr()[:],p['ions_per_frame'][:],p['estimated_frame_signal_V'][:],p['analog_snr'][:]):

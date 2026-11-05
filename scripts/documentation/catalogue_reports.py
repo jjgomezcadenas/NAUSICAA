@@ -4,7 +4,7 @@
 The registry records scientific subjects and verified workflow commands. Document
 discovery requires a TeX documentclass, so figure PDFs and included tables are
 not counted as reports. Existing provenance files are read but never rewritten.
-Legacy directory links preserve bookmarks and recorded report paths.
+Recorded report paths are resolved through the registry at read boundaries.
 """
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ INTERMEDIATES = {".aux", ".log", ".out", ".fls", ".fdb_latexmk", ".blg", ".bbl",
 
 
 def relocate(registry):
-    """Move output directories with byte-for-byte preservation and legacy links."""
+    """Move output directories with byte-for-byte preservation."""
     moved = []
     for slug, spec in registry.items():
         old = OUT / slug
@@ -42,6 +42,7 @@ def relocate(registry):
         if old.is_symlink():
             if old.resolve() != new.resolve():
                 raise ValueError(f"Unexpected compatibility link: {old}")
+            old.unlink()
             continue
         if not old.exists():
             continue
@@ -51,7 +52,6 @@ def relocate(registry):
                   for p in old.rglob("*") if p.is_file()}
         new.parent.mkdir(parents=True, exist_ok=True)
         old.rename(new)
-        old.symlink_to(Path(spec["group"]) / slug, target_is_directory=True)
         after = {str(p.relative_to(new)): hashlib.sha256(p.read_bytes()).hexdigest()
                  for p in new.rglob("*") if p.is_file()}
         if before != after:
@@ -127,8 +127,8 @@ def generate(registry):
             documents.append({"title": title, "tex": str(tex.relative_to(ROOT)),
                               "pdf": str(tex.with_suffix(".pdf").relative_to(ROOT)) if tex.with_suffix(".pdf").exists() else None})
             texts.append(text)
-        if spec.get("source"):
-            source = ROOT / spec["source"]
+        for source_name in ([spec["source"]] if spec.get("source") else []) + spec.get("additional_sources", []):
+            source = ROOT / source_name
             pdf = directory / source.with_suffix(".pdf").name
             if source.exists() and pdf.exists() and not any(d["pdf"] == str(pdf.relative_to(ROOT)) for d in documents):
                 text = source.read_text(errors="replace")
@@ -164,6 +164,7 @@ def generate(registry):
                 parts.append('<div class="doc">'+html.escape(document['title'])+' · '+link(document['tex'],'TeX')+' '+(link(document['pdf'],'PDF') if document['pdf'] else '<small>TeX available</small>')+'</div>')
             if row.get("html"): parts.append(link(row["html"],"Interactive HTML report"))
             extra = [link(row[k], k.capitalize()) for k in ("source", "result") if row.get(k)]
+            extra += [link(p, Path(p).name) for p in row.get("additional_sources", [])]
             extra += [link(p,"Card: "+Path(p).name) for p in row.get("cards",[])]
             parts.append('<p>'+" ".join(extra)+'</p>')
             for key,label2 in (("presentation","Presentation only"),("workflow","Complete workflow")):
@@ -172,12 +173,24 @@ def generate(registry):
             details = row['generators'] + row['provenance'] + row['references']
             parts.append('<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul>'+''.join('<li>'+link(p,p)+'</li>' for p in dict.fromkeys(details))+'</ul></details></article>')
         parts.append('</section>')
-    parts.append('<footer>Regenerate: <code>make report-catalogue</code>. Registry: '+link(REGISTRY,"generated_reports.json")+'. Directory aliases preserve existing bookmarks.</footer><script>document.querySelector("#search").addEventListener("input",e=>{let q=e.target.value.toLowerCase();document.querySelectorAll("article").forEach(a=>a.hidden=!a.textContent.toLowerCase().includes(q));document.querySelectorAll("section").forEach(s=>s.hidden=![...s.querySelectorAll("article")].some(a=>!a.hidden));});</script></main></html>')
+    parts.append('<footer>Regenerate: <code>make report-catalogue</code>. Registry: '+link(REGISTRY,"generated_reports.json")+'. Recorded paths are resolved through the migration registry.</footer><script>document.querySelector("#search").addEventListener("input",e=>{let q=e.target.value.toLowerCase();document.querySelectorAll("article").forEach(a=>a.hidden=!a.textContent.toLowerCase().includes(q));document.querySelectorAll("section").forEach(s=>s.hidden=![...s.querySelectorAll("article")].some(a=>!a.hidden));});</script></main></html>')
     (OUT/"index.html").write_text("\n".join(parts)+"\n")
     (OUT/"catalogue.json").write_text(json.dumps({"schema":1,"reports":entries},indent=2)+"\n")
     for path in links:
         if not path.exists(): raise FileNotFoundError(path)
     return {"collections":len(entries),"documents":sum(len(r['documents']) for r in entries),"checked_links":len(links)}
+
+
+def write_julia_path_map(registry):
+    """Export the shared mapping as stdlib-readable TOML for Julia callers."""
+    moves = json.loads((ROOT / "docs/ltspice_paths.json").read_text())["moves"]
+    pairs = [(r["old"], r["new"]) for r in moves]
+    pairs.extend(("latex_generated/" + slug, "latex_generated/" + spec["group"] + "/" + slug)
+                 for slug, spec in registry.items())
+    text = "# Generated by make report-catalogue from the two JSON path registries.\n"
+    for old, new in pairs:
+        text += "\n[[moves]]\nold = " + json.dumps(old) + "\nnew = " + json.dumps(new) + "\n"
+    (ROOT / "docs/path_migrations.toml").write_text(text)
 
 
 def main():
@@ -186,6 +199,7 @@ def main():
     parser.add_argument("--clean-intermediates", action="store_true")
     args = parser.parse_args()
     registry = json.loads(REGISTRY.read_text())["reports"]
+    write_julia_path_map(registry)
     if args.organize: print("Moved collections:", len(relocate(registry)))
     if args.clean_intermediates: print("Relocated build intermediates:", clean_intermediates(registry))
     print(json.dumps(generate(registry),indent=2))

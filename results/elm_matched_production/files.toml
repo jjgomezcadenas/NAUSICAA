@@ -1,0 +1,10 @@
+total_wall_s = 603.7600538730621
+photon_index = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_matched_production/detector_index.h5"
+response_wall_s = 480.64503288269043
+complete = true
+photon_wall_s = 123.1150209903717
+
+[responses.12p5]
+elapsed_s = 480.64503288269043
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_matched_production/response/77ed411cb39be020/manifest.toml"
+card = "config/specs/runs/elm_matched_sipm_full.toml"

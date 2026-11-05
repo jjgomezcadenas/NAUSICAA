@@ -1,6 +1,6 @@
 using HDF5,SHA
 include(joinpath(@__DIR__,"../../../src/ion_signal/m4_scan.jl"))
-root=normpath(joinpath(@__DIR__,"../../.."));dir=joinpath(root,"results/ltspice/m3_scan")
+root=normpath(joinpath(@__DIR__,"../../.."));dir=joinpath(root,"results/ltspice/design/m3_scan")
 h5open(joinpath(dir,"raw.h5"),"r") do h
  h5open(joinpath(dir,"injection_diagnostics.h5"),"w") do o
   attributes(o)["raw_sha256"]=bytes2hex(sha256(read(joinpath(dir,"raw.h5"))))

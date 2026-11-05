@@ -12,9 +12,12 @@ import h5py
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def main():
- c=tomllib.loads((ROOT/'config/pad_sequence_example.toml').read_text());out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
+ c=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/histories/pad_sequence_example.toml').read_text()));out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
  with h5py.File(ROOT/c['output']/'analysis.h5') as h:
   g=h['requested'];a=h.attrs;edges=g['edges_s'][:];counts=g['counts'][:]
   rows=[]

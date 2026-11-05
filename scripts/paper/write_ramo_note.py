@@ -78,7 +78,7 @@ a $10^4$ cargas elementales (\SI{\ExampleCharge}{fC}) y debería corregirse
 a «$100\,\mathrm{ke}$».
 \end{document}
 """
-(ROOT/'LTSpice/ramo_para_rogelio.tex').write_text(text)
-out=ROOT/'latex_generated/ramo_check';out.mkdir(parents=True,exist_ok=True)
+(ROOT/'LTSpice/notes/ramo_para_rogelio.tex').write_text(text)
+out=ROOT/'latex_generated/ion_readout/ramo_check';out.mkdir(parents=True,exist_ok=True)
 (out/'report.tex').write_text(text)
 print(macros)

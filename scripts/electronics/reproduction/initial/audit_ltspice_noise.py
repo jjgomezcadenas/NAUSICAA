@@ -25,14 +25,14 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--simulator',required=True,type=Path)
     args=ap.parse_args()
-    out=ROOT/'results/ltspice/noise_audit'
+    out=ROOT/'results/ltspice/reproduction/noise_audit'
     decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
-    model=ROOT/'LTSpice/180nm_professional.inc'
-    asc=ROOT/'LTSpice/CSAfolded180nm.asc'
+    model=ROOT/'LTSpice/reference/rogelio/initial/180nm_professional.inc'
+    asc=ROOT/'LTSpice/reference/rogelio/initial/CSAfolded180nm.asc'
     elements,directives=schematic_netlist(asc)
     directives=[d for d in directives if not d.lower().startswith(('.tran','.meas'))]
     report={'simulator':str(args.simulator.resolve()),'version':'LTspice 17.2.4 native macOS',
-        'source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (asc,model,Path(__file__).resolve(),ROOT/'LTSpice/Noise Analysis CSA 180 nm.pdf')},
+        'source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (asc,model,Path(__file__).resolve(),ROOT/'LTSpice/reference/rogelio/initial/Noise Analysis CSA 180 nm.pdf')},
         'conditions':'Original 250 fF external load, original sources and transistor dimensions, default 27 C; PDF noise sweep 1 Hz–1 GHz, 1000 points/decade.',
         'control':'KF=1e-25 added to both models only in positive-control copy; arbitrary diagnostic, not a physical noise calibration.',
         'cases':{}}

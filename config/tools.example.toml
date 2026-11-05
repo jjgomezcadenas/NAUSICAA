@@ -1,0 +1,5 @@
+# Copy to config/local/tools.toml and set this machine's executable path.
+# config/local/ is ignored by Git. Physics/study settings stay in their cards.
+[ltspice]
+executable = "~/Applications/NAUSICAA/17.2.4/LTspice.app/Contents/MacOS/LTspice"
+expected_sha256 = "4036f0d4a9a94471481d498cf4e06531c74f95bf4d29dd5010e1e7888c74b209"

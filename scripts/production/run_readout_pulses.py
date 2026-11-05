@@ -23,7 +23,7 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path,
                         default=ROOT / "results/readout_pulses_8000")
     parser.add_argument("--latex-dir", type=Path,
-                        default=ROOT / "latex_generated/readout_pulses_8000")
+                        default=ROOT / "latex_generated/production/readout_pulses_8000")
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     reduction = args.output_dir / "readout_pulses.h5"

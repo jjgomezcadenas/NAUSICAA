@@ -14,8 +14,8 @@ ROOT = _REPO_ROOT
 from ion_signal.spice_acquisition import run
 def main():
  p=argparse.ArgumentParser();p.add_argument('--gate',type=float,required=True);p.add_argument('--simulator',type=Path,required=True);a=p.parse_args()
- folder=ROOT/'results/ltspice/rogelio_v2_retuned/decks/tuning';folder.mkdir(parents=True,exist_ok=True)
- source=ROOT/'results/ltspice/rogelio_v2/decks/v2_matched/op.cir'
+ folder=ROOT/'results/ltspice/design/rogelio_v2_retuned/decks/tuning';folder.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'results/ltspice/reproduction/rogelio_v2/decks/v2_matched/op.cir'
  preserve(folder/'corrected.inc',(source.parent/'corrected.inc').read_text())
  name=f'gate_{a.gate:.14f}'
  deck=folder/f'{name}.cir';preserve(deck,source.read_text().replace('Vp1 Vncasc 0 0.64',f'Vp1 Vncasc 0 {a.gate:.17e}'))

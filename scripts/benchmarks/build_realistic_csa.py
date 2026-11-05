@@ -70,7 +70,7 @@ def configured_arrivals(case):
 
 
 def main():
-    path=ROOT/'config/realistic_csa.toml'
+    path=ROOT/'config/studies/electronics/reproduction/realistic_csa.toml'
     config=tomllib.loads(path.read_text())
     model=CSA(**config['electronics']); noise=Noise(**config['noise'])
     d=Detector.from_toml(ROOT/'config/detector.toml')

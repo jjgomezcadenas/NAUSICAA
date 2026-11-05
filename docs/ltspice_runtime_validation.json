@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "case": "30ms_single_N100_r2",
+  "source": "results/ltspice/csa_v3_response_calibration",
+  "legacy": {
+    "executable": "/Users/jjgomezcadenas/Projects/NAUSICAA/notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app/Contents/MacOS/LTspice",
+    "version": "17.2.4",
+    "sha256": "4036f0d4a9a94471481d498cf4e06531c74f95bf4d29dd5010e1e7888c74b209"
+  },
+  "installed": {
+    "executable": "/Users/jjgomezcadenas/Applications/NAUSICAA/17.2.4/LTspice.app/Contents/MacOS/LTspice",
+    "version": "17.2.4",
+    "sha256": "4036f0d4a9a94471481d498cf4e06531c74f95bf4d29dd5010e1e7888c74b209"
+  },
+  "all_waveform_arrays_bit_identical": true,
+  "variables": [
+    "time",
+    "V(in)",
+    "V(out)",
+    "I(Is1)"
+  ],
+  "points": 60156
+}

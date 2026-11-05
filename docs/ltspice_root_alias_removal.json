@@ -1,0 +1,52 @@
+{
+  "removed": [
+    {
+      "old": "LTSpice/variants",
+      "new": "LTSpice/designs/variants"
+    },
+    {
+      "old": "LTSpice/180nm_professional.inc",
+      "new": "LTSpice/reference/rogelio/initial/180nm_professional.inc"
+    },
+    {
+      "old": "LTSpice/CSAfolded180nm.asc",
+      "new": "LTSpice/reference/rogelio/initial/CSAfolded180nm.asc"
+    },
+    {
+      "old": "LTSpice/AC Analysis CSA 180 nm.pdf",
+      "new": "LTSpice/reference/rogelio/initial/AC Analysis CSA 180 nm.pdf"
+    },
+    {
+      "old": "LTSpice/paper_2026-10-28",
+      "new": "LTSpice/releases/paper_2026-10-28"
+    },
+    {
+      "old": "LTSpice/Spice2",
+      "new": "LTSpice/reference/rogelio/spice2"
+    },
+    {
+      "old": "LTSpice/optimized_2026-10-29",
+      "new": "LTSpice/releases/optimized_2026-10-29"
+    },
+    {
+      "old": "LTSpice/v3",
+      "new": "LTSpice/releases/csa_v3"
+    },
+    {
+      "old": "LTSpice/CSAfolded180nm.plt",
+      "new": "LTSpice/reference/rogelio/initial/CSAfolded180nm.plt"
+    },
+    {
+      "old": "LTSpice/CSAfolded180nm.db",
+      "new": "LTSpice/reference/rogelio/initial/CSAfolded180nm.db"
+    },
+    {
+      "old": "LTSpice/Tran Analysis CSA 180 nm.pdf",
+      "new": "LTSpice/reference/rogelio/initial/Tran Analysis CSA 180 nm.pdf"
+    },
+    {
+      "old": "LTSpice/Noise Analysis CSA 180 nm.pdf",
+      "new": "LTSpice/reference/rogelio/initial/Noise Analysis CSA 180 nm.pdf"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 using TOML,HDF5,SHA
-root=normpath(joinpath(@__DIR__,"../../.."));cp=joinpath(root,"config/bias_sensitivity.toml");c=TOML.parsefile(cp)
+root=normpath(joinpath(@__DIR__,"../../.."));cp=joinpath(root,"config/studies/electronics/bias/bias_sensitivity.toml");c=TOML.parsefile(cp)
 out=joinpath(root,c["output"]);mkpath(out)
 points=NamedTuple[]
 for family in ("paper","v2")

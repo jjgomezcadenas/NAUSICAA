@@ -432,6 +432,37 @@
         "config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml"
       ],
       "configuration": "8,000 bb0nu events; Xe\u201315% He only; E/P=2; 4 mm pitch / 2.5 mm holes; 250 ns; 12.5 ns recovery."
+    },
+    "rogelio_notes": {
+      "group": "ion_readout",
+      "status": "historical",
+      "title": "Notes to Rogelio: CSA and induced current",
+      "description": "Preserved correspondence on the early CSA benchmark and pad-current derivation.",
+      "source": "LTSpice/notes/calculos_para_rogelio.tex",
+      "additional_sources": [
+        "LTSpice/notes/ramo_para_rogelio.tex",
+        "LTSpice/notes/calculos_para_rogelio.md",
+        "LTSpice/notes/topmetal_parameters.md"
+      ],
+      "presentation": "make rogelio-notes"
+    },
+    "elm_matched_production": {
+      "group": "electron_readout",
+      "status": "production",
+      "title": "ELM: matched ion and Xe\u2013He response",
+      "description": "8,000 paired bb0nu events with shared 5\u2013145 cm placement, 4 mm ion/EL pitch, corrected CSA and statistical SiPM/ASIC response.",
+      "result": "results/elm_matched_production/matched_analysis.h5",
+      "html": "results/elm_matched_production/elm_matched_production.html",
+      "presentation": "make elm-matched-report",
+      "workflow": "make elm-matched-production",
+      "cards": [
+        "config/specs/realisations/elm_matched_full.toml",
+        "config/specs/runs/elm_matched_detector_full.toml",
+        "config/specs/runs/elm_matched_csa_full.toml",
+        "config/specs/runs/elm_matched_sipm_response_full.toml",
+        "config/specs/runs/elm_matched_response_viewer.toml"
+      ],
+      "configuration": "8,000 bb0nu events; shared 5\u2013145 cm complementary placement; 4 mm ions / 40 ms; Xe\u201315% He at E/P 2, 4 mm pitch / 2.5 mm holes, 250 ns; 12.5 ns SiPM recovery."
     }
   }
 }

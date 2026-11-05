@@ -35,7 +35,7 @@ const C=IonCSACorrection
  @test any(corrected.<0)
  @test_throws ArgumentError C.response_matrix([.7,1.,.7],n)
  @test_throws ArgumentError C.operator(taps,cv,30)
- mktempdir(joinpath(root,"notes/physics/work")) do dir
+ mktempdir(joinpath(root,"work")) do dir
   h5open(joinpath(dir,"replace.h5"),"w") do h
    h["x"]=[1.,2.];C.replace(h,"x",[3.,4.]);@test read(h["x"])==[3.,4.]
   end

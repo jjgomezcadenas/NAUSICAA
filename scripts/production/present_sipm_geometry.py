@@ -6,7 +6,7 @@ import h5py
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "results/sipm_geometry_estimate"
-TEX = ROOT / "latex_generated/sipm_geometry_estimate"
+TEX = ROOT / "latex_generated/electron_readout/sipm_geometry_estimate"
 TEX.mkdir(parents=True, exist_ok=True)
 with h5py.File(OUT / "estimate.h5", "r") as f:
     assert f["metadata/complete"][()]

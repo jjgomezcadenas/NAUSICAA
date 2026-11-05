@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main():
-    config_path = ROOT/'config/realistic_csa.toml'
+    config_path = ROOT/'config/studies/electronics/reproduction/realistic_csa.toml'
     signal_path = ROOT/'results/realistic_csa/arrival_cases_point_samples.json'
     cfg = tomllib.loads(config_path.read_text())
     signal = json.loads(signal_path.read_text())

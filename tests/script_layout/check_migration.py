@@ -36,7 +36,19 @@ def main():
         old = ast.parse(subprocess.check_output(['git','show',manifest['source_commit']+':'+original],cwd=ROOT).decode())
         new = ast.parse((ROOT/current).read_text())
         for name in names:
-            assert ast.dump(function(old,name)) == ast.dump(function(new,name)), name
+            expected, actual = function(old,name), function(new,name)
+            if name == 'run':
+                # The current runner exposes the historical 120 s timeout as
+                # a keyword so long CSA histories can request a longer limit.
+                assert [a.arg for a in actual.args.kwonlyargs] == ['timeout_s']
+                assert ast.literal_eval(actual.args.kw_defaults[0]) == 120
+                actual.args.kwonlyargs = []
+                actual.args.kw_defaults = []
+                class HistoricalTimeout(ast.NodeTransformer):
+                    def visit_Name(self, node):
+                        return ast.Constant(value=120) if node.id == 'timeout_s' else node
+                actual = HistoricalTimeout().visit(actual)
+            assert ast.dump(expected) == ast.dump(actual), name
     print('Shared acquisition and storage functions preserve their original syntax trees')
 
     commands = list((ROOT/'scripts').rglob('*.py'))

@@ -10,14 +10,17 @@ from pathlib import Path
 import hashlib,json,os,tomllib
 import h5py
 import numpy as np
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/matplotlib-cache'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def main():
-    c=tomllib.loads((ROOT/'config/pitch_4mm_40ms.toml').read_text());source=ROOT/c['output']/'analysis.h5';out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
+    c=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/readout/pitch_4mm_40ms.toml').read_text()));source=ROOT/c['output']/'analysis.h5';out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
     with h5py.File(source) as h:
         a=dict(h.attrs);old=dict(h['reference_20ms'].attrs)
         t=h['time_s'][:];v=h['voltage_V'][:];i=h['current_A'][:]
@@ -156,7 +159,7 @@ HDF5 inputs, raw acquisitions and analysis retain hashes and configuration.
 The existing noise spectrum is reused only after its circuit/model hashes match.
 Both transient resolutions, current PWLs, netlists and readable logs are saved.
 Native LTspice raw/log scratch is ignored; raw HDF5 retains the numerical data.
-Report source and figure: latex_generated/pitch_4mm_40ms/.
+Report source and figure: latex_generated/ion_readout/pitch_4mm_40ms/.
 No manuscript values or previous 20 ms results are changed.
 ''')
     print('Report:',out/'report.tex')

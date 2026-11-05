@@ -14,9 +14,9 @@ ROOT = _REPO_ROOT
 from ion_signal.spice_acquisition import run
 def main():
     p=argparse.ArgumentParser();p.add_argument('--simulator',type=Path,required=True);a=p.parse_args()
-    source=ROOT/'LTSpice/Spice2/v3/CSAfolded180nm-2_Astronio.asc'
+    source=ROOT/'LTSpice/reference/rogelio/v3/CSAfolded180nm-2_Astronio.asc'
     model=source.parent/'180nm_professional.inc'
-    folder=ROOT/'results/ltspice/noise_measurement';decks=folder/'decks';decks.mkdir(parents=True,exist_ok=True)
+    folder=ROOT/'results/ltspice/reproduction/noise_measurement';decks=folder/'decks';decks.mkdir(parents=True,exist_ok=True)
     preserve(decks/source.name,source.read_text(encoding='latin1'))
     preserve(decks/model.name,model.read_text())
     elements,directives=schematic_netlist(source)

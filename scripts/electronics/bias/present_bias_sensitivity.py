@@ -10,13 +10,13 @@ from pathlib import Path
 import os,hashlib,json
 import h5py
 ROOT=Path(__file__).resolve().parents[3]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/matplotlib-cache'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 def main():
- source=ROOT/'results/ltspice/bias_sensitivity/analysis.h5'
- out=ROOT/'latex_generated/bias_sensitivity';out.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'results/ltspice/design/bias_sensitivity/analysis.h5'
+ out=ROOT/'latex_generated/ion_readout/bias_sensitivity';out.mkdir(parents=True,exist_ok=True)
  with h5py.File(source) as h:
   data={name:dict(h[name].attrs) for name in h if name!='ranges'}
   def label(a):

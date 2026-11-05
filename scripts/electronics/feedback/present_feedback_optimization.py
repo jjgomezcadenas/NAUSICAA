@@ -9,14 +9,17 @@ _sys.path[:0] = [str(_REPO_ROOT), str(_REPO_ROOT / "src")]
 from pathlib import Path
 import hashlib,json,os,tomllib
 import h5py,numpy as np
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/matplotlib-cache'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def main():
- c=tomllib.loads((ROOT/'config/feedback_optimization.toml').read_text());source=ROOT/c['output']/'analysis.h5';out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
+ c=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/feedback/feedback_optimization.toml').read_text()));source=ROOT/c['output']/'analysis.h5';out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
  selected='length_400um_gate0_rounded';rows=[];params=[];scans=[];rejections=[]
  with h5py.File(source) as h:
   assert selected in h

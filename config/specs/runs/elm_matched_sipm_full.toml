@@ -1,0 +1,10 @@
+schema = "nausicaa.sipm_production_run.v1"
+sample = "bb0nu"
+gases = ["xe_he15"]
+event_selection = "all_sorted_source_ids"
+max_events = 8000
+shard_events = 100
+photon_index = "results/elm_matched_production/detector_index.h5"
+pilot_card = "config/specs/runs/elm_matched_sipm_response_full.toml"
+results_directory = "results/elm_matched_production/response"
+report_directory = "latex_generated/electron_readout/elm_matched_production"

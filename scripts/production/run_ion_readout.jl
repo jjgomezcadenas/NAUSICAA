@@ -18,10 +18,8 @@ function ion_paths(spec,sample::String,code_hash::String)
     r=spec.realisation.data;i=spec.ions.data
     source=spec.sample_paths[sample]
     source_sha=content_hash(source;file=true)
-    realisation_values=Dict(k=>v for (k,v) in r if k!="samples")
-    stream_values=Dict(k=>v for (k,v) in realisation_values if k!="max_events_per_sample")
-    stream_identity=content_hash(join((sample,source_sha,canonical(stream_values)),"|"))
-    realisation_id=content_hash(join((stream_identity,canonical(realisation_values)),"|"))
+    identities=realisation_identities(ROOT,sample,source_sha,r)
+    stream_identity=identities.stream_identity;realisation_id=identities.realisation_id
     ion_id=content_hash(join((realisation_id,canonical(i),code_hash),"|"))
     base=joinpath(spec.results_dir,sample,realisation_id)
     return (;source,source_sha,stream_identity,realisation_id,ion_id,

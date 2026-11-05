@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def render():
-    output = ROOT / "latex_generated/event_analysis_step1"
+    output = ROOT / "latex_generated/reconstruction/event_analysis_step1"
     output.mkdir(parents=True, exist_ok=True)
     with h5py.File(ROOT / "results/event_analysis/step1_validation.h5") as f:
         tests = "\n".join(

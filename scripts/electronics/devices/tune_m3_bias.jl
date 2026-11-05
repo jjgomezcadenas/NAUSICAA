@@ -1,7 +1,7 @@
 using HDF5
 root=normpath(joinpath(@__DIR__,"../../.."))
 python,simulator=ARGS
-raw=joinpath(root,"results/ltspice/m3_scan/raw.h5")
+raw=joinpath(root,"results/ltspice/design/m3_scan/raw.h5")
 getoutput(g)=only(read(g["op/V(out)"]))
 target=h5open(h->getoutput(h["scale_1"]),raw,"r")
 function acquire(scale,gate;full=false)

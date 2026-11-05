@@ -43,7 +43,7 @@ remains an explicit upstream approximation.
 
 The complete model and source discussion are in
 [`sipm_electronics_model.tex`](sipm_electronics_model.tex), with the generated
-[model and pilot PDF](../latex_generated/sipm_response/sipm_electronics_model.pdf).
+[model and pilot PDF](../latex_generated/electron_readout/sipm_response/sipm_electronics_model.pdf).
 The configurable defaults are in
 [`sipm_v1.toml`](../config/specs/response/sipm/sipm_v1.toml) and
 [`readout_v1.toml`](../config/specs/response/sipm_electronics/readout_v1.toml).

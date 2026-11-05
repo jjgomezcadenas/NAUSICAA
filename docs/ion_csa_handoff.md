@@ -106,7 +106,7 @@ the exact reconstructed covariance for the saved frame count.
 
 The technical note is `notes/physics/csa_design.tex`. Its standalone source,
 local bibliography, circuit image, generated values/tables and four scientific
-figure pairs are in `latex_generated/csa_design/`. Numerical reduction is
+figure pairs are in `latex_generated/ion_readout/csa_design/`. Numerical reduction is
 `scripts/production/reduce_csa_design.jl`; presentation is
 `scripts/production/present_csa_design.py`; the card is
 `config/specs/runs/csa_design_note.toml`; saved numerical results and hashes are
@@ -181,7 +181,7 @@ Relevant small fixes made while integrating:
 Run from the repository root. The known local environments are:
 
 ```sh
-export JULIA_DEPOT_PATH="$PWD/work/julia-depot:$PWD/notes/physics/work/julia-depot:$HOME/.julia"
+export JULIA_DEPOT_PATH="$PWD/work/julia-depot:$PWD/work/julia-depot:$HOME/.julia"
 TASK_JULIA=/Users/jjgomezcadenas/.juliaup/bin/julia
 TASK_PYTHON=/Users/jjgomezcadenas/miniconda3/bin/python3
 

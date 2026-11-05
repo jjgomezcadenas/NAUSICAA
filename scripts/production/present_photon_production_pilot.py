@@ -5,7 +5,7 @@ import html, os, subprocess, tomllib
 import h5py
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'results/photon_production_pilot'
-LATEX=ROOT/'latex_generated/photon_production_pilot'
+LATEX=ROOT/'latex_generated/electron_readout/photon_production_pilot'
 
 def text(group,key):
     """Decode a saved HDF5 scalar string."""
@@ -51,7 +51,7 @@ def main():
         'The model assigns photons to the parent electron arrival bucket, uses the recorded gas diffusion and EL laws, '
         'and applies analytical direct optical acceptance with absorbing hole walls.')
     heads=['E/P (kV/cm/bar)','J','Events','Pilot (s)','Estimate: 8,000 (s)','Existing full run (s)']
-    page='<!doctype html><meta charset="utf-8"><title>Photon production pilot</title><style>body{max-width:1100px;margin:40px auto;padding:0 20px;font:17px system-ui;color:#17334a;line-height:1.6}td,th{padding:10px;border-bottom:1px solid #ddd;text-align:right}</style><h1>Photon production pilot</h1><p>'+description+'</p><table><tr>'+''.join(f'<th>{v}</th>' for v in heads)+'</tr>'+''.join(rows)+'</table><p>'+conditions+'</p><h2>Photon files</h2><ul>'+''.join(links)+'</ul><p><a href="files.toml">File index (TOML)</a> · <a href="../../latex_generated/photon_production_pilot/photon_production_pilot.pdf">PDF report</a></p>'
+    page='<!doctype html><meta charset="utf-8"><title>Photon production pilot</title><style>body{max-width:1100px;margin:40px auto;padding:0 20px;font:17px system-ui;color:#17334a;line-height:1.6}td,th{padding:10px;border-bottom:1px solid #ddd;text-align:right}</style><h1>Photon production pilot</h1><p>'+description+'</p><table><tr>'+''.join(f'<th>{v}</th>' for v in heads)+'</tr>'+''.join(rows)+'</table><p>'+conditions+'</p><h2>Photon files</h2><ul>'+''.join(links)+'</ul><p><a href="files.toml">File index (TOML)</a> · <a href="../../latex_generated/electron_readout/photon_production_pilot/photon_production_pilot.pdf">PDF report</a></p>'
     (OUT/'photon_production_pilot.html').write_text(page)
     def latex(s):return s.replace('–','--').replace('%',r'\%')
     tex=r'''\documentclass[10pt,a4paper]{article}

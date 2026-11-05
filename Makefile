@@ -1,5 +1,7 @@
 PYTHON ?= python3
 JULIA ?= julia
+# Resolved lazily by simulator targets; an explicit LTSPICE assignment takes precedence.
+LTSPICE ?= $(shell PYTHONPATH="$(CURDIR)/src" $(PYTHON) -m ion_signal.spice_runtime --path)
 EVENT_JULIA_DEPOT ?= $(CURDIR)/work/julia-depot:$(HOME)/.julia
 export PYTHONPATH := $(CURDIR)/src
 export MPLCONFIGDIR := $(CURDIR)/work/matplotlib-cache
@@ -276,7 +278,7 @@ pixel-charge:
 	$(MAKE) present-pixel-charge
 
 present-pixel-charge:
-	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_pixel_charge.py --results-dir results/pixel_charge_direct --latex-dir latex_generated/pixel_charge_direct
+	MPLCONFIGDIR="$(CURDIR)/work/matplotlib" $(PYTHON) scripts/collection/present_pixel_charge.py --results-dir results/pixel_charge_direct --latex-dir latex_generated/ion_readout/pixel_charge_direct
 
 .PHONY: pixel-charge-1mm
 pixel-charge-1mm:
@@ -358,8 +360,9 @@ response-overview:
 response-overview-present:
 	$(VIEWER_PYTHON) scripts/production/present_response_overview.py
 
+RESPONSE_VIEWER_CARD ?= config/specs/runs/elm_matched_response_viewer.toml
 response-viewer:
-	$(VIEWER_PYTHON) scripts/viewers/serve_cloud_viewer.py --production config/specs/runs/response_overview.toml --port 8769
+	$(VIEWER_PYTHON) scripts/viewers/serve_cloud_viewer.py --production $(RESPONSE_VIEWER_CARD) --port 8769
 
 response-overview-test:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_response_overview.jl
@@ -442,3 +445,21 @@ elm-pitch4-production-report:
 	$(PYTHON) scripts/production/present_elm_pitch4mm_production.py
 elm-streaming-test:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_elm_streaming_reduction.jl
+
+.PHONY: elm-matched-production elm-matched-analysis elm-matched-report elm-matched-test
+elm-matched-production:
+	$(PYTHON) scripts/production/run_elm_matched_production.py --kind full --julia "$(JULIA)"
+	$(MAKE) elm-matched-analysis
+elm-matched-analysis:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_matched_analysis.jl
+	$(MAKE) elm-matched-report
+elm-matched-report:
+	$(PYTHON) scripts/production/present_matched_analysis.py
+elm-matched-test:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_matched_realisation.jl
+
+.PHONY: rogelio-notes
+rogelio-notes:
+	$(PYTHON) scripts/documentation/build_report.py LTSpice/notes/calculos_para_rogelio.tex --destination latex_generated/ion_readout/rogelio_notes/calculos_para_rogelio.pdf
+	$(PYTHON) scripts/documentation/build_report.py LTSpice/notes/ramo_para_rogelio.tex --destination latex_generated/ion_readout/rogelio_notes/ramo_para_rogelio.pdf
+	$(MAKE) report-catalogue

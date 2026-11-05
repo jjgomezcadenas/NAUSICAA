@@ -485,8 +485,11 @@ bucket, with signed output retained and no lower clipping. This is the same
 input charge noise as 0.5 PE at gain $2.55\times10^6$, expressed at the
 selected gain. The limit and noise are design inputs.
 
-The electron reference drift distance is sampled uniformly from 10 to 150 cm;
-ion and electron reference distances sum to the 150 cm chamber length.
+The matched ion--electron production samples one ion reference drift distance
+uniformly from 5 to 145 cm and sets the electron distance to its complement
+within the 150 cm chamber (user design input). Both arms read the same saved
+placement and primary-pair realization. The ion grid has 4 mm pitch and
+40 ms buckets; the electron grid has 4 mm pitch and 250 ns buckets.
 Electron speed is 1 mm/$\mu$s and lifetime is 15 ms. Photons retain the parent
 electron arrival bucket. Event-energy comparisons correct known attachment
 survival before evaluating the remaining fluctuations.
@@ -532,8 +535,11 @@ and finer spatial sampling. These small pilots establish the comparison;
 their numerical results are simulated estimates for the stated model.
 
 \section{Configuration parameters}
-The detector card is
-\code{config/specs/detector/electrons/elm_4mm_250ns_ep2_drift10cm.toml};
+The matched detector configuration is
+\code{config/specs/detector/configurations/elm_matched_full.toml},
+with shared placement in
+\code{config/specs/realisations/elm_matched_full.toml} and electron settings in
+\code{config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml};
 the baseline sensor card is
 \code{config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml}.
 The electronics card is
@@ -570,7 +576,7 @@ Parameter & Adopted value or role\\
 \code{sensor_plane_potential_V} & 0\\
 \code{sipm_shape}, \code{sipm_side_mm} & Square; 3\\
 \code{bucket_width_us} & 0.25 initially\\
-\code{placement.minimum_electron_drift_cm}, \code{placement.maximum_electron_drift_cm} & 10; 150\\
+\code{min_ion_drift_cm}, \code{max_ion_drift_cm} & 5; 145 in the common realization; electron drift is the complement\\
 \code{lifetime_ms}, \code{drift_speed_mm_us} & 15; 1\\
 \code{microcell_count}, \code{illuminated_microcell_count} & \num[0]{\elmMicrocells}; \num[0]{\elmIlluminatedMicrocells}\\
 \code{pde}, \code{gain} & \num[2]{\elmPDE}; $3.6\times10^5$\\

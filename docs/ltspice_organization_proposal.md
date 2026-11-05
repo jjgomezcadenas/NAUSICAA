@@ -1,5 +1,11 @@
 # LTspice installation, circuits and study outputs: organization proposal
 
+Implementation status and validated current paths: [ltspice_setup.md](ltspice_setup.md).
+This document preserves the original audit and migration proposal.
+
+Implementation status and commands: [ltspice_setup.md](ltspice_setup.md).
+The audit below records the state before migration.
+
 Read-only audit, 5 November 2026. This document proposes changes; no application,
 run directory, model, card or manuscript was moved or deleted. The running
 production job and its `notes/physics/work/julia-depot` remain untouched.

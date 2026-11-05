@@ -11,19 +11,20 @@ import argparse, hashlib, re
 import h5py
 import numpy as np
 from ion_signal.spice_acquisition import run
+from ion_signal.spice_runtime import source_path
 ROOT=Path(__file__).resolve().parents[4]
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--simulator',required=True,type=Path)
     a=p.parse_args(); sim=a.simulator.resolve()
-    out=ROOT/'results/ltspice/spice2_diagnostics'; decks=out/'decks'
+    out=ROOT/'results/ltspice/reproduction/spice2_diagnostics'; decks=out/'decks'
     decks.mkdir(parents=True,exist_ok=True)
-    base=ROOT/'results/ltspice/spice2_enc/decks'
+    base=ROOT/'results/ltspice/reproduction/spice2_enc/decks'
     source=base/'noise_400.cir'
     body='\n'.join(x for x in source.read_text().splitlines() if not x.lower().startswith(('is1 ','.noise','.end')))+'\n'
     model=base/'corrected.inc'; (decks/'corrected.inc').write_bytes(model.read_bytes())
-    pwl=ROOT/'results/ltspice/decks/uniform_r2.pwl'
+    pwl=ROOT/'results/ltspice/reproduction/initial/decks/uniform_r2.pwl'
     data=np.loadtxt(pwl)
     raw=out/'raw.h5'
     with h5py.File(raw,'w') as h:
@@ -31,7 +32,7 @@ def main():
           frequency_low_Hz=.1,frequency_high_Hz=1e6,simulator=str(sim),
           assumptions='External capacitance scan; intrinsic MOS capacitances retained. Original device dimensions and biases. Stationary NOIMOD=2 noise. Uniform finite-gap ion current, no renormalization. Short injection 1 us plateau, 10 ns edges, one elementary charge. Trapezoid rise T, flat G=T, no pole-zero correction.')
         files=[source,model,pwl,Path(__file__).resolve(),sim]
-        h['source_paths']=np.array([str(x.relative_to(ROOT)) for x in files],dtype=h5py.string_dtype())
+        h['source_paths']=np.array([source_path(x, root=ROOT) for x in files],dtype=h5py.string_dtype())
         h['source_sha256']=np.array([hashlib.sha256(x.read_bytes()).hexdigest() for x in files],dtype=h5py.string_dtype())
     def acquire(cap,name,tail):
         tag=f'cap_{cap:g}pF'; path=decks/f'{tag}_{name}.cir'

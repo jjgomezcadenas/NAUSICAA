@@ -10,8 +10,8 @@ from pathlib import Path
 import h5py
 ROOT=Path(__file__).resolve().parents[4]
 def main():
-    result=ROOT/'results/ltspice/spice2_diagnostics'
-    report=ROOT/'latex_generated/spice2_diagnostics'; report.mkdir(parents=True,exist_ok=True)
+    result=ROOT/'results/ltspice/reproduction/spice2_diagnostics'
+    report=ROOT/'latex_generated/ion_readout/spice2_diagnostics'; report.mkdir(parents=True,exist_ok=True)
     with h5py.File(result/'analysis.h5') as h:
         rows=[]; markdown=[]
         for tag in ('cap_0.75pF','cap_1.25pF','cap_3pF'):
@@ -123,7 +123,7 @@ python scripts/electronics/reproduction/spice2/present_spice2_diagnostics.py
 ```
 
 Raw data and provenance: raw.h5. Numerical reduction: analysis.h5.
-Generated standalone report: latex_generated/spice2_diagnostics/report.tex.
+Generated standalone report: latex_generated/ion_readout/spice2_diagnostics/report.tex.
 The report source is generated without compiling or changing the manuscript.
 
 External capacitance plus intrinsic MOS capacitances; unchanged circuit and

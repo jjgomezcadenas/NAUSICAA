@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[2]
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('html',type=Path);a=p.parse_args()
- work=ROOT/'notes/physics/work/ion_csa_html_test';work.mkdir(parents=True,exist_ok=True)
+ work=ROOT/'work/ion_csa_html_test';work.mkdir(parents=True,exist_ok=True)
  javascript=r'''<script>
 window.addEventListener('error',e=>{document.body.dataset.testError=String(e.message)});
 (async()=>{let checks=0;const pause=()=>new Promise(r=>setTimeout(r,150));try{

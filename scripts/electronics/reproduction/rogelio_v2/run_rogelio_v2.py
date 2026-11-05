@@ -14,14 +14,17 @@ from ion_signal.spice_acquisition import run
 from ion_signal.spice import read_raw
 from ion_signal.spice_storage import sha, preserve, save
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT = Path(__file__).resolve().parents[4]
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--simulator',type=Path,required=True)
     ap.add_argument('--variants',nargs='+');ap.add_argument('--counts',nargs='+',type=int)
     ap.add_argument('--noise-only',action='store_true')
-    ap.add_argument('--config',default='config/rogelio_v2.toml')
+    ap.add_argument('--config',default='config/studies/electronics/reproduction/rogelio_v2.toml')
     a=ap.parse_args();sim=a.simulator.resolve()
-    cp=ROOT/a.config;c=tomllib.loads(cp.read_text())
+    cp=ROOT/a.config;c=resolve_config_paths(tomllib.loads(cp.read_text()))
     out=ROOT/c['output'];out.mkdir(parents=True,exist_ok=True)
     preserve(out/'configuration.toml',cp.read_text())
     original=(ROOT/c['source']).read_text()

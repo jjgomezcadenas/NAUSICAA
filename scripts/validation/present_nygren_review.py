@@ -2,7 +2,7 @@
 from pathlib import Path
 import h5py
 ROOT = Path(__file__).resolve().parents[2]
-out = ROOT / "latex_generated/nygren_review"
+out = ROOT / "latex_generated/literature/nygren_review"
 out.mkdir(parents=True, exist_ok=True)
 with h5py.File(ROOT / "results/nygren_review/budgets.h5") as h:
     # Julia matrices have reversed dimensions when read through h5py.

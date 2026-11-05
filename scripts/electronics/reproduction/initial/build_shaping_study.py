@@ -31,14 +31,14 @@ def main():
     ap.add_argument('--rise-us',type=float,nargs='+',default=[180,200,250,300,350])
     args=ap.parse_args();sim=args.simulator.resolve()
     if any(t<=0 or not np.isfinite(t) for t in args.rise_us):ap.error('Shaping durations must be finite and positive')
-    out=ROOT/'results/ltspice/shaping';decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
-    source=ROOT/'results/ltspice/decks/uniform_N1_r3.cir'
+    out=ROOT/'results/ltspice/reproduction/shaping';decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
+    source=ROOT/'results/ltspice/reproduction/initial/decks/uniform_N1_r3.cir'
     text=source.read_text();text='\n'.join(l for l in text.splitlines() if not l.lower().startswith(('.tran','.save','.end','is1 ')))+'\n'
-    model=ROOT/'LTSpice/180nm_professional.inc'
+    model=ROOT/'LTSpice/reference/rogelio/initial/180nm_professional.inc'
     (decks/model.name).write_text('\n'.join(l.rstrip() for l in model.read_text().splitlines()).strip()+'\n')
-    frames=json.loads((ROOT/'results/ltspice/study.json').read_text())
+    frames=json.loads((ROOT/'results/ltspice/reproduction/initial/study.json').read_text())
     report={'source_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in
-        (source,model,Path(__file__).resolve(),ROOT/'src/ion_signal/shaping.py',ROOT/'results/ltspice/noise_400.csv',ROOT/'results/ltspice/noise_200.csv',ROOT/'results/ltspice/study.json',ROOT/'results/ltspice/decks/uniform_r2.pwl',ROOT/'results/ltspice/uniform_N1_r1.csv.gz',ROOT/'results/ltspice/uniform_N1_r2.csv.gz')},
+        (source,model,Path(__file__).resolve(),ROOT/'src/ion_signal/shaping.py',ROOT/'results/ltspice/reproduction/initial/noise_400.csv',ROOT/'results/ltspice/reproduction/initial/noise_200.csv',ROOT/'results/ltspice/reproduction/initial/study.json',ROOT/'results/ltspice/reproduction/initial/decks/uniform_r2.pwl',ROOT/'results/ltspice/reproduction/initial/uniform_N1_r1.csv.gz',ROOT/'results/ltspice/reproduction/initial/uniform_N1_r2.csv.gz')},
       'simulator':str(sim),'simulator_version':'LTspice 17.2.4 native Mac',
       'conditions':{'external_pad_F':5e-12,'feedback_F':3e-15,'temperature_K':293.15,
        'noise_band_Hz':[.1,1e6],'frame_s':.01,'estimator_nominal_tau_s':.3,
@@ -76,7 +76,7 @@ def main():
     report['ion_frames_enabled']=args.include_ion_frames
     uniform={r:np.loadtxt(ROOT/f'results/ltspice/uniform_N1_r{r}.csv.gz',delimiter=',',skiprows=1) for r in (1,2)}
     finite_ion_waves={}
-    raw_pwl=np.loadtxt(ROOT/'results/ltspice/decks/uniform_r2.pwl')
+    raw_pwl=np.loadtxt(ROOT/'results/ltspice/reproduction/initial/decks/uniform_r2.pwl')
     def finite_ion_wave(n,refine):
         key=(n,refine)
         if key in finite_ion_waves:return finite_ion_waves[key]
@@ -187,7 +187,7 @@ def main():
             axs[2].axhline(315,color='0.5',ls='--',label='Point samples');axs[2].legend(frameon=False)
             axs[2].set(xlabel='Boundary average duration (us)',ylabel='10 ms frame ENC (ions RMS)')
         fig.savefig(out/'shaping_study.pdf',metadata={'CreationDate':None,'ModDate':None})
-        fig.savefig(ROOT/'notes/physics/work/shaping/study.png',dpi=160)
+        fig.savefig(ROOT/'work/shaping/study.png',dpi=160)
     if ion:
         table=[]
         for r in ion:
@@ -207,7 +207,7 @@ def main():
             axs[1].set(xlabel='Averaging duration T (us)',ylabel='Equal-charge neighbour response (%)')
             for ax in axs:ax.legend(frameon=False);ax.grid(alpha=.2)
             fig.savefig(out/'shaping_scan.pdf',metadata={'CreationDate':None,'ModDate':None})
-            fig.savefig(ROOT/'notes/physics/work/shaping/scan.png',dpi=150)
+            fig.savefig(ROOT/'work/shaping/scan.png',dpi=150)
     rows=[r for r in short if np.isclose(r['flat_s'],r['rise_s'])]
     summary='''# First Topmetal-style shaping study
 

@@ -81,7 +81,7 @@ The HTML includes the physical assumptions, data flow, Petit reuse map, complete
 draft contracts, configuration example, HDF5 proposal, examples, test strategy
 and open decisions. Review one type or function at a time. Extensive docstrings
 are part of each implementation increment. Step-one numerical validation is saved in results/event_analysis/step1_validation.h5
-and presented in latex_generated/event_analysis_step1/report.pdf.
+and presented in latex_generated/reconstruction/event_analysis_step1/report.pdf.
 
 Rebuild with `make event-review PYTHON=/path/to/python3.11-or-newer`.
 The builder reads `docs/event_analysis_review/content/event_design_content.py` for the design and this

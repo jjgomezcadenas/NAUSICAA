@@ -217,7 +217,9 @@
       "provenance": [],
       "references": [
         "config/electron_transport.toml",
-        "config/specs/detector/electrons/elm_4mm_250ns_ep2_drift10cm.toml",
+        "config/specs/detector/configurations/elm_matched_full.toml",
+        "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml",
+        "config/specs/realisations/elm_matched_full.toml",
         "config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml",
         "config/specs/response/sipm_electronics/readout_s14160_1315ps.toml",
         "docs/elm.tex",
@@ -348,7 +350,9 @@
           "pdf": null
         }
       ],
-      "generators": [],
+      "generators": [
+        "scripts/paper/package_optimized_ltspice.py"
+      ],
       "provenance": [
         "latex_generated/ion_readout/feedback_optimization/provenance.json"
       ],
@@ -366,9 +370,7 @@
           "pdf": "latex_generated/archive/grid_readout/grid_readout.pdf"
         }
       ],
-      "generators": [
-        "scripts/collection/present_grid_readout.py"
-      ],
+      "generators": [],
       "provenance": [],
       "references": []
     },
@@ -1204,7 +1206,9 @@
           "pdf": null
         }
       ],
-      "generators": [],
+      "generators": [
+        "scripts/paper/package_csa_v3.py"
+      ],
       "provenance": [
         "latex_generated/ion_readout/retention_comparison/sources.txt"
       ],
@@ -1676,6 +1680,74 @@
         "docs/elm.tex",
         "results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.h5",
         "results/elm_sipm_pitch4mm_production/files.toml"
+      ]
+    },
+    {
+      "slug": "rogelio_notes",
+      "group": "ion_readout",
+      "status": "historical",
+      "title": "Notes to Rogelio: CSA and induced current",
+      "description": "Preserved correspondence on the early CSA benchmark and pad-current derivation.",
+      "source": "LTSpice/notes/calculos_para_rogelio.tex",
+      "additional_sources": [
+        "LTSpice/notes/ramo_para_rogelio.tex",
+        "LTSpice/notes/calculos_para_rogelio.md",
+        "LTSpice/notes/topmetal_parameters.md"
+      ],
+      "presentation": "make rogelio-notes",
+      "documents": [
+        {
+          "title": "CSA para NAUSICA: puntos pendientes",
+          "tex": "LTSpice/notes/calculos_para_rogelio.tex",
+          "pdf": "latex_generated/ion_readout/rogelio_notes/calculos_para_rogelio.pdf"
+        },
+        {
+          "title": "Corriente inducida en un pad de NAUSICA",
+          "tex": "LTSpice/notes/ramo_para_rogelio.tex",
+          "pdf": "latex_generated/ion_readout/rogelio_notes/ramo_para_rogelio.pdf"
+        }
+      ],
+      "generators": [
+        "scripts/paper/package_rogelio_calculations.py"
+      ],
+      "provenance": [],
+      "references": []
+    },
+    {
+      "slug": "elm_matched_production",
+      "group": "electron_readout",
+      "status": "production",
+      "title": "ELM: matched ion and Xe\u2013He response",
+      "description": "8,000 paired bb0nu events with shared 5\u2013145 cm placement, 4 mm ion/EL pitch, corrected CSA and statistical SiPM/ASIC response.",
+      "result": "results/elm_matched_production/matched_analysis.h5",
+      "html": "results/elm_matched_production/elm_matched_production.html",
+      "presentation": "make elm-matched-report",
+      "workflow": "make elm-matched-production",
+      "cards": [
+        "config/specs/realisations/elm_matched_full.toml",
+        "config/specs/runs/elm_matched_detector_full.toml",
+        "config/specs/runs/elm_matched_csa_full.toml",
+        "config/specs/runs/elm_matched_sipm_response_full.toml",
+        "config/specs/runs/elm_matched_response_viewer.toml"
+      ],
+      "configuration": "8,000 bb0nu events; shared 5\u2013145 cm complementary placement; 4 mm ions / 40 ms; Xe\u201315% He at E/P 2, 4 mm pitch / 2.5 mm holes, 250 ns; 12.5 ns SiPM recovery.",
+      "documents": [
+        {
+          "title": "ELM: matched ion and Xe--He response\\\\4 mm pitch, shared 5--145 cm placement",
+          "tex": "latex_generated/electron_readout/elm_matched_production/elm_matched_production.tex",
+          "pdf": "latex_generated/electron_readout/elm_matched_production/elm_matched_production.pdf"
+        }
+      ],
+      "generators": [
+        "scripts/production/present_matched_analysis.py"
+      ],
+      "provenance": [],
+      "references": [
+        "config/csa_design_v3.toml",
+        "config/csa_v3_response_calibration.toml",
+        "config/specs/generated/df1414afcdc2/realisation.toml",
+        "docs/elm.tex",
+        "results/elm_matched_production/manifest.toml"
       ]
     }
   ]

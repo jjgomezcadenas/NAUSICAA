@@ -1,6 +1,6 @@
 # Validate spectra and reduce benchmark numbers in Julia; preserve SI units.
 using HDF5, SHA
-root=normpath(joinpath(@__DIR__,"../../../..")); dir=joinpath(root,"results/ltspice/spice2_reproduction")
+root=normpath(joinpath(@__DIR__,"../../../..")); dir=joinpath(root,"results/ltspice/reproduction/spice2_reproduction")
 raw=joinpath(dir,"raw.h5"); out=joinpath(dir,"analysis.h5")
 h5open(raw,"r") do input
     h5open(out,"w") do result

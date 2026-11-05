@@ -3,8 +3,11 @@
 from pathlib import Path
 import argparse,csv,hashlib,json,os,tomllib
 import h5py,numpy as np
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+from ion_signal.project_paths import resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[2]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/ion_csa_matplotlib'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/ion_csa_matplotlib'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -25,7 +28,7 @@ def main():
  with h5py.File(plan_directory/'plan.h5') as plan:
   tolerance=tomllib.loads(plain(plan['response_card_toml'][()]))['linear_error_tolerance_ENC']
  tolerance_label=f'{tolerance:g} ENC'
- out=ROOT/run['report_directory']/config['study_id'];out.mkdir(parents=True,exist_ok=True)
+ out=resolve_recorded_path(run['report_directory'])/config['study_id'];out.mkdir(parents=True,exist_ok=True)
  with h5py.File(directory/'summary.h5') as h:
   names=[plain(n) for n in h['groups'][:]];data={n:tree(h[n]) for n in names}
   calibration={k:tree(g) for k,g in h['calibration'].items() if isinstance(g,h5py.Group)}

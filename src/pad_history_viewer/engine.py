@@ -13,6 +13,7 @@ import tomllib
 import uuid
 import h5py
 import numpy as np
+from ion_signal.spice_runtime import resolve_simulator
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -39,7 +40,7 @@ class Worker:
         except BlockingIOError:raise RuntimeError('A Julia worker already uses this work directory')
         self.log=(self.work/'worker.log').open('a')
         env=os.environ.copy()
-        env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
+        env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'))
         executable=julia or env.get('JULIA') or shutil.which('julia') or str(Path.home()/'.juliaup/bin/julia')
         worker=ROOT/tomllib.loads(Path(card).read_text()).get('worker_script','src/pad_history_viewer/worker.jl')
         self.process=subprocess.Popen([executable,'--startup-file=no','--project='+str(ROOT),str(worker),str(self.work),str(card)],cwd=ROOT,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,text=True,bufsize=1)
@@ -75,12 +76,11 @@ class Engine:
         self.config=tomllib.loads(self.card.read_text())
         self.readout=tomllib.loads((ROOT/self.config['readout_card']).read_text())
         self.samples={s['name']:s for s in self.readout['samples']}
+        self.simulator=resolve_simulator(simulator, root=ROOT, required=False)
         self.worker=Worker(self.card,work or ROOT/'work/pad_history_viewer',julia)
         self.directory=self.worker.directory
         source=ROOT/self.readout['source_decks']
         self.model=source/'corrected.inc';self.source=source/'40ms_single_N400_r2.cir'
-        candidates=[ROOT/'notes/physics/work/ltspice-review/legacy/LTspice.pkg/Payload/Applications/LTspice.app/Contents/MacOS/LTspice',Path('/Applications/LTspice.app/Contents/MacOS/LTspice')]
-        self.simulator=Path(simulator).resolve() if simulator else next((p for p in candidates if p.exists()),None)
         self.events_cache={};self.closed=False
     def validate(self,sample,event=None,px=None,py=None):
         if sample not in self.samples:raise ValueError('Unknown sample')

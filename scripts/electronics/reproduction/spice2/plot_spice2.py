@@ -15,9 +15,9 @@ os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-DATA=ROOT/'results/ltspice/spice2_reproduction'
-OUT=ROOT/'latex_generated/spice2_reproduction';OUT.mkdir(parents=True,exist_ok=True)
-PREVIEW=ROOT/'notes/physics/work/spice2-docs'
+DATA=ROOT/'results/ltspice/reproduction/spice2_reproduction'
+OUT=ROOT/'latex_generated/ion_readout/spice2_reproduction';OUT.mkdir(parents=True,exist_ok=True)
+PREVIEW=ROOT/'work/spice2-docs'
 with h5py.File(DATA/'raw.h5') as h:
     new={k:h['updated_0p1Hz'][k][:] for k in h['updated_0p1Hz']}
     old={k:h['previous_0p1Hz'][k][:] for k in h['previous_0p1Hz']}

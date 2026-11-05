@@ -2,20 +2,23 @@
 """Run independent calibrated retention history studies with private Julia workers."""
 from pathlib import Path
 import argparse,concurrent.futures,json,os,subprocess,sys,time,tomllib
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--simulator',type=Path,required=True)
- p.add_argument('--config',type=Path,default=ROOT/'config/retention_comparison.toml')
+ p.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/feedback/retention_comparison.toml')
  p.add_argument('--parallel',type=int,default=2)
  p.add_argument('--workers',type=int,default=2)
  p.add_argument('--only',nargs='+')
- a=p.parse_args();c=tomllib.loads(a.config.read_text());jobs=[]
+ a=p.parse_args();c=resolve_config_paths(tomllib.loads(a.config.read_text()));jobs=[]
  directory=ROOT/c['output'];directory.mkdir(parents=True,exist_ok=True)
  logs=directory/'batch_logs';logs.mkdir(exist_ok=True)
  for card in c['study_cards']:
-  study=tomllib.loads((ROOT/card).read_text())
+  study=resolve_config_paths(tomllib.loads((ROOT/card).read_text()))
   for variant in study['variants']:
    name=variant['name']
    if a.only and name not in a.only:continue
@@ -26,11 +29,11 @@ def main():
  def execute(job):
   name,card=job;log=logs/(name+'.stdout')
   env=os.environ.copy();env['PYTHONPATH']=str(ROOT/'src')
-  env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
-  env.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/retention_matplotlib'))
+  env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'))
+  env.setdefault('MPLCONFIGDIR',str(ROOT/'work/retention_matplotlib'))
   command=[sys.executable,str(ROOT/'scripts/electronics/histories/run_pad_compression.py'),
            '--config',str(card),'--simulator',str(a.simulator.resolve()),'--workers',str(a.workers),
-           '--work-dir',str(ROOT/'notes/physics/work'/('retention_parallel_'+name))]
+           '--work-dir',str(ROOT/'work'/('retention_parallel_'+name))]
   with log.open('w') as stream:
    result=subprocess.run(command,cwd=ROOT,env=env,stdout=stream,stderr=subprocess.STDOUT)
   print(name,'complete' if result.returncode==0 else 'FAILED',f'{time.monotonic()-started:.1f} s',flush=True)

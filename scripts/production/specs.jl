@@ -1,8 +1,10 @@
 """Script-side TOML resolution and deterministic production identities."""
 module ProductionSpecs
 using TOML, SHA
+include(joinpath(@__DIR__, "../../src/ion_signal/project_paths.jl"))
+using .ProjectPaths
 
-export load_specs, canonical, content_hash, event_seed, pair_checksum
+export load_specs, canonical, content_hash, event_seed, pair_checksum, realisation_identities
 
 """Canonical representation of parsed TOML values, independent of key order/comments."""
 function canonical(value)
@@ -30,6 +32,27 @@ end
 pair_checksum(counts::Vector{Int64})=
     bytes2hex(sha256(Vector{UInt8}(reinterpret(UInt8,counts))))
 
+"""Resolve primary RNG and common-realization identities independently of readout.
+
+A `primary_reference` card anchors the primary-pair stream to an existing
+realization. Its seed, W and Fano factor must match the new card; placement,
+chamber and event-limit changes then alter only the common-realization identity.
+Cards without a reference preserve the original stream hashing exactly.
+"""
+function realisation_identities(root,sample,source_sha,r)
+    reference=haskey(r,"primary_reference") ? TOML.parsefile(joinpath(root,r["primary_reference"])) : r
+    if reference!==r
+        haskey(reference,"primary_reference") && error("Primary references must point to an original card")
+        all(reference[k]==r[k] for k in ("seed","w_eV","fano_factor")) || error("Primary reference physics differs")
+        reference["samples"][sample]==r["samples"][sample] || error("Primary reference sample differs")
+    end
+    stream_values=Dict(k=>v for (k,v) in reference if !(k in ("samples","max_events_per_sample")))
+    stream_identity=content_hash(join((sample,source_sha,canonical(stream_values)),"|"))
+    values=Dict(k=>v for (k,v) in r if k!="samples")
+    realisation_id=content_hash(join((stream_identity,canonical(values)),"|"))
+    (;stream_identity,realisation_id)
+end
+
 """Read the five pilot cards, check their identities and return resolved paths and values."""
 function load_specs(root::AbstractString,run_card::AbstractString)
     run_path=realpath(isabspath(run_card) ? run_card : joinpath(root,run_card))
@@ -55,7 +78,7 @@ function load_specs(root::AbstractString,run_card::AbstractString)
     ions=load("ions","nausicaa.ion_detector_spec.v1")
     electrons=load("electrons","nausicaa.electron_detector_spec.v1")
     r=realisation.data;i=ions.data;e=electrons.data
-    0<=r["min_ion_drift_cm"]<r["chamber_length_cm"] || error("Invalid drift range")
+    0<=r["min_ion_drift_cm"]<get(r,"max_ion_drift_cm",r["chamber_length_cm"])<=r["chamber_length_cm"] || error("Invalid drift range")
     0<=r["fano_factor"]<1 && r["w_eV"]>0 && r["max_events_per_sample"]>0 ||
         error("Invalid realisation card")
     all(>(0),(i["temperature_K"],i["drift_field_V_cm"],i["drift_speed_m_s"],
@@ -81,6 +104,6 @@ function load_specs(root::AbstractString,run_card::AbstractString)
     paths=Dict(name=>realpath(joinpath(root,path)) for (name,path) in r["samples"])
     return (;run_spec,run_path,configuration,config_path,realisation,ions,electrons,
             sample_paths=paths,results_dir=joinpath(root,run_spec["results_dir"]),
-            report_dir=joinpath(root,run_spec["report_dir"]))
+            report_dir=resolve_recorded_path(root,run_spec["report_dir"]))
 end
 end

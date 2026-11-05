@@ -1,0 +1,38 @@
+{
+  "identical": [
+    {
+      "path": "work/ltspice_migration/acquisition/legacy/inputs/30ms_N100_r2.pwl",
+      "same_as": "work/ltspice_migration/acquisition/installed/inputs/30ms_N100_r2.pwl",
+      "bytes": 2592096,
+      "sha256": "62cb3d0976c3b432d5582c081387dd91fd535b2cab0cfa22b8d3586daa98ce90"
+    },
+    {
+      "path": "work/ltspice_migration/acquisition/legacy/decks/length_1200um/corrected.inc",
+      "same_as": "work/ltspice_migration/acquisition/installed/decks/length_1200um/corrected.inc",
+      "bytes": 5524,
+      "sha256": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608"
+    },
+    {
+      "path": "work/ltspice_migration/acquisition/legacy/decks/length_1200um/30ms_single_N100_r2.op.raw",
+      "same_as": "work/ltspice_migration/acquisition/installed/decks/length_1200um/30ms_single_N100_r2.op.raw",
+      "bytes": 660,
+      "sha256": "535356dcdf9e239a9be3247c314baabc2ccf8c858009f73ce235cc2a2cf8e941"
+    },
+    {
+      "path": "work/ltspice_migration/acquisition/legacy/decks/length_1200um/30ms_single_N100_r2.cir",
+      "same_as": "work/ltspice_migration/acquisition/installed/decks/length_1200um/30ms_single_N100_r2.cir",
+      "bytes": 1173,
+      "sha256": "825b2ef412215a728154f0c81c8facc9a0bbecf145339a9f71287376a9029608"
+    },
+    {
+      "path": "work/ltspice_migration/acquisition/legacy/decks/length_1200um/30ms_single_N100_r2.raw",
+      "same_as": "work/ltspice_migration/acquisition/installed/decks/length_1200um/30ms_single_N100_r2.raw",
+      "bytes": 1925676,
+      "sha256": "3deb59d2e115ed94563c6cfe8025ed858c28e8bcaf474cc85c27cb31f4358c59"
+    }
+  ],
+  "different_retained": [
+    "work/ltspice_migration/acquisition/legacy/decks/length_1200um/30ms_single_N100_r2.log",
+    "work/ltspice_migration/acquisition/legacy/decks/length_1200um/30ms_single_N100_r2.run.txt"
+  ]
+}

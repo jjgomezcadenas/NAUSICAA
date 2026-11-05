@@ -24,7 +24,7 @@ const R=RetentionScan
    @test actual≈expected rtol=1e-4
   end
  end
- mktempdir(joinpath(root,"notes/physics/work")) do dir
+ mktempdir(joinpath(root,"work")) do dir
   source=joinpath(dir,"source.h5");destination=joinpath(dir,"copy.h5")
   h5open(source,"w") do h
    h["case/20ms/ENC_e_rms"]=[45.];attributes(h["case"])["tau_s"]=30.

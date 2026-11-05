@@ -10,11 +10,14 @@ from pathlib import Path
 import argparse,hashlib,re,tomllib
 import h5py,numpy as np
 from ion_signal.spice_acquisition import run
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 from scripts.electronics.feedback.run_feedback_optimization import ROOT,sha,preserve
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--simulator',required=True,type=Path);p.add_argument('--variant',required=True);p.add_argument('--m4-gate',required=True,type=float);p.add_argument('--op-only',action='store_true');a=p.parse_args()
- cp=ROOT/'config/feedback_combined.toml';c=tomllib.loads(cp.read_text());v=next(v for v in c['variants'] if v['name']==a.variant);out=ROOT/c['output'];sim=a.simulator.resolve()
+ cp=ROOT/'config/studies/electronics/feedback/feedback_combined.toml';c=resolve_config_paths(tomllib.loads(cp.read_text()));v=next(v for v in c['variants'] if v['name']==a.variant);out=ROOT/c['output'];sim=a.simulator.resolve()
  if a.op_only:
   tag=hashlib.sha256(f'{a.variant}/{a.m4_gate:.17e}'.encode()).hexdigest()[:14];name=f'{a.variant}_{tag}';folder=out/'decks/tuning'/name;raw=out/'tuning'/(name+'.h5')
  else:name=a.variant+'_rounded';folder=out/'decks'/name;raw=out/(name+'.h5')

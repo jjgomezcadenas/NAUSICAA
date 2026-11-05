@@ -12,7 +12,7 @@ import h5py
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "results/three_cloud_benchmark/benchmark.h5"
-DEST = ROOT / "latex_generated/three_cloud_benchmark"
+DEST = ROOT / "latex_generated/transport/three_cloud_benchmark"
 
 
 def main():

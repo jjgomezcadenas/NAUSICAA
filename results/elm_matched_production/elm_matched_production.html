@@ -1,0 +1,170 @@
+<!doctype html><meta charset="utf-8"><title>Matched ELM response</title><style>body{font:16px system-ui;line-height:1.6;max-width:1400px;margin:35px auto;padding:0 22px;color:#17334a}table{border-collapse:collapse;margin:18px 0;width:100%}td,th{padding:8px;text-align:right;border-bottom:1px solid #ccd6de}td:first-child,th:first-child{text-align:left}img{width:100%;margin:15px 0}pre{white-space:pre-wrap}</style><h1>ELM · matched ion and Xe–He response</h1><table><tr><th>Quantity</th><th>Value</th></tr><tr><td>Matched events</td><td>8000</td></tr><tr><td>Corrected CSA maximum fast-model error (ENC)</td><td>0.43361</td></tr><tr><td>CSA maximum solver-refinement error (ENC)</td><td>0.00002</td></tr><tr><td>Mean initial pairs/event</td><td>112,163.29</td></tr><tr><td>Mean detected optical PE/event</td><td>507,460.27</td></tr><tr><td>Ion CSA total noiseless bias (%)</td><td>-0.67844</td></tr><tr><td>Ion CSA total signed reconstructed bias (%)</td><td>-0.69802</td></tr><tr><td>Events with a 50% compressed CSA history (%)</td><td>10.175</td></tr><tr><td>SiPM optical charge loss (%)</td><td>0.07616</td></tr><tr><td>Electron ASIC charge loss (%)</td><td>0.06607</td></tr><tr><td>Electron events with clipping (%)</td><td>5.100</td></tr><tr><td>Input-positive electron pulses clipped (%)</td><td>0.00379</td></tr><tr><td>Electron events retained</td><td>7592</td></tr><tr><td>Electron retained fraction (%)</td><td>94.900</td></tr></table><h2>Per-channel/bucket pulse statistics</h2><table><tr><th>Stage</th><th>Unit</th><th>Mean average</th><th>Mean median</th><th>Maximum average</th><th>Maximum median</th></tr><tr><td>Ion input</td><td>ions</td><td>392.723</td><td>334.626</td><td>7,014.820</td><td>6,447.000</td></tr><tr><td>Noiseless CSA</td><td>ion equivalents</td><td>388.885</td><td>333.378</td><td>6,820.894</td><td>6,356.719</td></tr><tr><td>Signed CSA output</td><td>ion equivalents</td><td>388.907</td><td>333.599</td><td>6,821.760</td><td>6,353.889</td></tr><tr><td>Blue photons at SiPM</td><td>photons</td><td>256.335</td><td>190.896</td><td>4,434.382</td><td>2,734.000</td></tr><tr><td>PDE optical triggers</td><td>PE</td><td>82.028</td><td>61.093</td><td>1,425.667</td><td>884.000</td></tr><tr><td>SiPM optical charge</td><td>PE equivalents</td><td>81.927</td><td>61.064</td><td>1,416.676</td><td>881.844</td></tr><tr><td>Signed electron ASIC</td><td>PE equivalents</td><td>81.915</td><td>61.253</td><td>1,335.749</td><td>882.619</td></tr></table><h2>Electron energy widths</h2><table><tr><th>Stage</th><th>All-event RMS (%)</th><th>Retained RMS (%)</th></tr><tr><td>Detected optical PE</td><td>0.19499</td><td>0.19612</td></tr><tr><td>After SiPM</td><td>0.20781</td><td>0.20174</td></tr><tr><td>Noisy, before clipping</td><td>0.29358</td><td>0.29171</td></tr><tr><td>After electron ASIC</td><td>0.56737</td><td>0.29171</td></tr></table><h2>Events with the largest electron ASIC loss</h2><table><tr><th>Event ID</th><th>Electron drift (cm)</th><th>Maximum input PE</th><th>SiPM loss (%)</th><th>ASIC loss (%)</th></tr><tr><td>334</td><td>5.54</td><td>13,682</td><td>0.7052</td><td>10.6932</td></tr><tr><td>1277</td><td>6.61</td><td>9,206</td><td>0.5396</td><td>7.3965</td></tr><tr><td>7681</td><td>5.03</td><td>11,388</td><td>0.5445</td><td>7.3755</td></tr><tr><td>3444</td><td>6.49</td><td>11,690</td><td>0.4765</td><td>6.9584</td></tr><tr><td>2946</td><td>5.80</td><td>12,680</td><td>0.5795</td><td>6.7681</td></tr><tr><td>1689</td><td>8.27</td><td>10,122</td><td>0.5516</td><td>6.5477</td></tr><tr><td>6029</td><td>5.47</td><td>10,052</td><td>0.4992</td><td>6.3493</td></tr><tr><td>7731</td><td>5.25</td><td>11,766</td><td>0.4758</td><td>6.1554</td></tr><tr><td>2615</td><td>5.57</td><td>10,487</td><td>0.4876</td><td>6.1366</td></tr><tr><td>4264</td><td>6.01</td><td>8,809</td><td>0.4699</td><td>5.5297</td></tr></table><h2>Shared production</h2><p>8,000 bb0nu events share one saved realization. Ion reference drift is uniform over 5–145 cm in a 150 cm chamber; electron reference drift is its exact complement. Primary-pair draws are anchored to the existing reference card, so changing placement does not change the pair realization. Event IDs, primary checksums and both distances are validated across common realization, ion collection, photon collection, corrected CSA, SiPM charge and electron ASIC output. The 4 mm ion pitch and 40 ms frames correspond to 4 mm drift buckets. Electron readout uses a 4 mm hole pitch and 250 ns (0.25 mm) buckets.</p><h2>Electron optical and response model</h2><p>Xe–15% He at 15 bar, E/P = 2 kV/cm/bar, 2.5 mm diameter holes/guides and 5 mm EL depth. A 0.5 mm radial xenon gap surrounds each guide. Unit electron collection and absorbing EL walls are assumed. Analytical hole-exit acceptance, TPB conversion 0.65, forward factor 0.5 and meridional capture 1−1/1.5 give total optical probability 0.01187461. Guide propagation and NOA 87 coupling are ideal. Saved photons are blue photons at the SiPM; PDE is applied once afterward.</p><p>S14160-3015PS: 3 × 3 mm², 39,984 cells, 21,808 illuminated by the centered 2.5 mm disk, PDE 0.32, gain 360,000 and total dark rate 700 kcps. Illuminated and dark-only cell populations retain independent recovery states. The baseline uses a provisional 12.5 ns recovery constant with 128 statistical substeps per bucket. Electron electronics adds 3.5417 PE RMS and clips at 1 mA (4334.38 PE per bucket). Crosstalk, afterpulsing and gain spread remain deferred.</p><h2>Ion electronics</h2><p>The ion arm uses the calibrated CSA v3 circuit, 5 ms averaging and the 40 ms response/noise covariance. The linear fast path is validated against transistor controls at 0.5 ENC tolerance; histories below the 0.63 V guard receive direct LTspice treatment, with adaptive controls and solver refinement. The simulator binary and circuit calibration are reused only with matching content hashes. The signed three-frame inverse reconstructs ion charge, including quiet/recovery frames and temporal noise correlations. A 50% compression diagnostic identifies events containing such a pad history; it is separate from electron ASIC clipping.</p><h2>Definitions</h2><p>Pulse tables use all input-positive channel/bucket cells, preserving those same cells through electronics. Each event contributes one mean and maximum. Signed response values remain intact. Ion total charge bias sums complete stored histories relative to collected ions. Electron energy widths are full-distribution RMS/mean after correcting known attachment survival and dividing by deposited MC energy; noisy totals subtract expected dark charge. The retained electron sample rejects an event when any electron ASIC bucket clips.</p><h2>Timing</h2><p>Detector production: 128.08 s; concurrent SiPM/ASIC: 484.26 s; concurrent CSA pipeline: 1733.83 s; complete paired production and validation: 1877.37 s. Reduction and presentation are separate.</p><img src="matched_placement.png" alt="matched_placement.png"><img src="matched_pulses.png" alt="matched_pulses.png"><img src="matched_photons.png" alt="matched_photons.png"><img src="matched_electron_energy.png" alt="matched_electron_energy.png"><img src="matched_losses.png" alt="matched_losses.png"><p><a href="../../latex_generated/electron_readout/elm_matched_production/elm_matched_production.pdf">PDF report</a> · <a href="manifest.toml">Combined manifest</a> · <a href="../../config/specs/runs/elm_matched_response_viewer.toml">Viewer card</a>.</p><details><summary>Resolved cards</summary><pre>schema = &quot;nausicaa.electron_detector_spec.v1&quot;
+pressure_bar = 15.0
+helium_fraction = 0.15
+drift_speed_mm_us = 1.0
+lifetime_ms = 15.0
+hole_pitch_mm = 4.0
+hole_diameter_mm = 2.5
+hole_depth_mm = 5.0
+sipm_shape = &quot;square&quot;
+sipm_side_mm = 3.0
+bucket_width_us = 0.25
+reduced_field_kV_cm_bar = 2.0
+j_variance_ratio = 0.030
+j_status = &quot;user_specified&quot;
+j_reference = &quot;Oliveira Figure 6; corrected approximate user reading, 2026-11-04&quot;
+
+optical_model = &quot;elm_blue_meridional&quot;
+electron_collection_efficiency = 1.0
+
+[optics]
+photon_band = &quot;blue_tpb&quot;
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5
+gap_refractive_index = 1.0
+guide_length_mm = 100.0
+gas_gap_radial_mm = 0.5
+propagation_transmission = 1.0
+coupling_transmission = 1.0
+electrode_transmission = 1.0
+coupling_adhesive = &quot;Norland NOA 87&quot;
+guide_length_policy = &quot;fixed_grading_field&quot;
+grading_field_kV_cm = 4.65
+cathode_potential_V = 1200.0
+entry_potential_V = 31500.0
+exit_potential_V = 46500.0
+sensor_plane_potential_V = 0.0
+reference = &quot;docs/elm.tex; isotropic axial EL, absorbing walls, meridional isotropic-in-core capture&quot;
+
+[pure_xe]
+d_T_mm_sqrtbar_per_sqrtcm = 3.5
+d_L_mm_sqrtbar_per_sqrtcm = 0.9
+yield_gain_photons_per_electron_kV = 137.0
+yield_threshold_kV_cm_bar = 0.73
+
+[xe_he15]
+d_T_mm_sqrtbar_per_sqrtcm = 1.6
+d_L_mm_sqrtbar_per_sqrtcm = 0.75
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.80
+
+
+schema = &quot;nausicaa.sipm_spec.v1&quot;
+response_model = &quot;statistical&quot;
+statistical_substeps = 128
+sparse_trigger_limit = 16
+microcell_count = 39984
+illuminated_microcell_count = 21808
+microcell_pitch_m = 15e-6
+recovery_s = 1.25e-08
+arrival_model = &quot;uniform_in_bucket&quot;
+illumination = &quot;uniform_disk_subset&quot;
+recovery_pde = &quot;constant&quot;
+initial_state = &quot;stationary_dark&quot;
+charge_assignment = &quot;avalanche_bucket&quot;
+input_photon_band = &quot;blue_tpb&quot;
+shape = &quot;square&quot;
+side_m = 0.003
+pde = 0.32
+gain = 360000.0
+dark_reference_rate_Hz = 700000.0
+dark_reference_area_m2 = 9e-6
+crosstalk = false
+afterpulsing = false
+gain_spread = false
+seed = 2026
+
+[acquisition]
+channels = &quot;illuminated_in_event&quot;
+additional_channels = []
+quiet_before_buckets = 4
+quiet_after_buckets = 4
+empty_first_bucket = 0
+empty_last_bucket = 7
+
+[provenance]
+device = &quot;Hamamatsu S14160-3015PS, 3x3 mm2; nominal +4 V, 25 C&quot;
+pde = &quot;0.32 peak PDE at 460 nm used as provisional TPB-spectrum average; packaged PDE includes entrance window&quot;
+gain = &quot;3.6e5 nominal electrons per primary avalanche; charge per fully recovered avalanche&quot;
+dark_rate = &quot;S14160-3015PS nominal primary dark rate 700 kcps at 25 C and +4 V&quot;
+window = &quot;S14160-3015PS silicone resin, nominal n=1.57; unit external coupling used in pilot&quot;
+datasheet = &quot;papers/SiPM/Hamamatsu_S14160_small_cells.pdf&quot;
+
+recovery = &quot;Provisional 12p5 ns exponential recovery; sensitivity parameter, not a measured 3015PS recharge constant&quot;
+illumination = &quot;Uniform centered 2.5 mm disk on 3x3 mm square: round(39984*pi*1.25^2/9)=21808 lit cells; remaining 18176 dark-only; full 700 kcps dark rate split by cell count&quot;
+
+baseline_pe = 0.0
+bucket_width_s = 2.5e-7
+current_limit_A = 0.001
+lower_clipping = false
+noise = &quot;independent_gaussian_pe&quot;
+noise_rms_pe = 3.5416666666666665
+schema = &quot;nausicaa.sipm_electronics_spec.v1&quot;
+seed = 2027
+transfer = &quot;bucket_average_current&quot;
+
+[provenance]
+noise = &quot;Same input charge RMS as 0.5 PE at gain 2.55e6; rescaled to gain 3.6e5&quot;
+range = &quot;User design input: upper clipping at 1 mA; supersedes the provisional 300 PE limit&quot;
+timing = &quot;User 0.25 us buckets; integrated charge divided by bucket duration&quot;
+
+schema = &quot;nausicaa.ion_csa_spec.v1&quot;
+model_version = &quot;v3_uniform_stationary_noise_v1&quot;
+design_card = &quot;config/csa_design_v3.toml&quot;
+calibration_card = &quot;config/csa_v3_response_calibration.toml&quot;
+calibration_directory = &quot;results/ltspice/csa_v3_response_calibration&quot;
+variant = &quot;length_1200um&quot;
+nominal_discharge_time_s = 20.0
+averaging_s = 0.005
+input_timing = &quot;uniform_mean_arrivals_with_finite_gap_current&quot;
+pad_side_m = 0.0005
+gap_m = 0.005
+gap_speed_m_s = 3.0
+noise_low_Hz = 0.0001
+noise_high_Hz = 1000000.0
+noise_model = &quot;stationary_gaussian_from_one_sided_spice_output_psd&quot;
+channel_noise = &quot;independent_pads&quot;
+noise_seed = 20261030
+covariance_tail_fraction_tolerance = 0.00001
+covariance_max_frequency_Hz = 10000.0
+quiet_before_frames = 2
+recovery_tail_s = 3.0
+current_step_s = 0.000005
+solver_step_s = 0.00025
+simulation_prehistory_s = 0.01
+initial_spice_guard_V = 0.63
+control_voltage_edges_V = [0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.61, 0.62, 0.63, 0.64, 0.65, 0.675, 0.7, 0.725, 0.75, 0.775, 0.8, 0.9]
+controls_per_stratum = 30
+linear_error_tolerance_ENC = 0.5
+compression_fractions = [0.1, 0.25, 0.5, 0.75]
+compression_minimum_deficit_ENC = 1.0
+storage_float = &quot;Float32_validated_against_Float64&quot;
+
+schema = &quot;nausicaa.ion_csa_reconstruction.v1&quot;
+method = &quot;three_frame_inverse&quot;
+input = &quot;saved_mean_and_noise_realisation&quot;
+boundary_signal = &quot;zero_collected_ions_beyond_saved_quiet_frames&quot;
+noise = &quot;exact_covariance_transform&quot;
+nonnegative_constraint = false
+signal_to_noise_cut = false
+compression_fractions = [0.1, 0.25, 0.5, 0.75]
+compression_minimum_deficit_ENC = 1.0
+numerical_tolerance_ENC = 0.001
+covariance_relative_tolerance = 0.0000000001
+sampling_tolerance = 0.01
+
+chamber_length_cm = 150.0
+fano_factor = 0.15
+max_events_per_sample = 8000
+min_ion_drift_cm = 5.0
+max_ion_drift_cm = 145.0
+primary_reference = &quot;config/specs/generated/df1414afcdc2/realisation.toml&quot;
+schema = &quot;nausicaa.realisation_spec.v1&quot;
+seed = 2026
+w_eV = 21.9
+
+[samples]
+bb0nu = &quot;events/0nubb_hitdf.h5&quot;
+single_electrons = &quot;events/electron_0nubb_energy_hitdf.h5&quot;
+</pre></details>

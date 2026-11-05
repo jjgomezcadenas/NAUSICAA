@@ -150,7 +150,7 @@ def write_single_ion_note(detector, wave, cf, times, voltages):
 
 def main():
     detector_path=ROOT/'config/detector.toml'
-    config_path=ROOT/'config/readout.toml'
+    config_path=ROOT/'config/studies/electronics/readout/readout.toml'
     config=tomllib.loads(config_path.read_text())
     d=Detector.from_toml(detector_path)
     el=config['electronics']; num=config['numerics']

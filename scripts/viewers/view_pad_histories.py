@@ -15,7 +15,7 @@ def main():
  if importlib.util.find_spec("plotly") is None and fallback.exists() and Path(sys.executable).absolute()!=fallback.absolute():
   os.execv(str(fallback),[str(fallback),str(Path(__file__)),*sys.argv[1:]])
  p=argparse.ArgumentParser(description=__doc__)
- p.add_argument('--config',type=Path,default=ROOT/'config/pad_history_viewer_direct.toml')
+ p.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/histories/pad_history_viewer_direct.toml')
  p.add_argument('--port',type=int);p.add_argument('--no-browser',action='store_true')
  p.add_argument('--work-dir',type=Path);p.add_argument('--simulator',type=Path);p.add_argument('--julia')
  a=p.parse_args()

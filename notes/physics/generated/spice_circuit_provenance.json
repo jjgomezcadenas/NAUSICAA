@@ -1,10 +1,10 @@
 {
   "source_sha256": {
-    "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir": "9b23882ffaa12fe126ecd92d31ec6231b8677f3078f398efd527f2a6e1c0c350",
-    "LTSpice/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
-    "config/bucket_study.toml": "c4b4594c9cd7543ff9ac18171706922ece956e2581f4e38e57bc05a19ef45a4d",
+    "LTSpice/designs/variants/m4_x4_m3_x4/uniform_1000_ions.cir": "9b23882ffaa12fe126ecd92d31ec6231b8677f3078f398efd527f2a6e1c0c350",
+    "LTSpice/designs/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+    "config/studies/electronics/readout/bucket_study.toml": "c4b4594c9cd7543ff9ac18171706922ece956e2581f4e38e57bc05a19ef45a4d",
     "results/ltspice/m3_scan/analysis.h5": "3675039bd4976a51be356c20c15a102cfb99592855f5f91a53df4ee8e8654297",
-    "scripts/paper/build_spice_paper.py": "b326dd380b8c5de61ffc51b98586224477c3feb69eef20d037f577805e3b74d4"
+    "scripts/paper/build_spice_paper.py": "03b1806e32fc41bc3a27fb2cd8cd316df21e2d3265af481a976dca64e2917f7e"
   },
   "biases_V": {
     "Vdd": 1.8,

@@ -20,7 +20,7 @@ def finish():
         print('Waiting for completed productions; ready: '+(', '.join(ready) or 'none'),flush=True)
         time.sleep(30)
     env=os.environ.copy()
-    env['JULIA_DEPOT_PATH']=f'{ROOT}/work/julia-depot:{ROOT}/notes/physics/work/julia-depot:{Path.home()}/.julia'
+    env['JULIA_DEPOT_PATH']=f'{ROOT}/work/julia-depot:{Path.home()}/.julia'
     env['MPLCONFIGDIR']=str(ROOT/'work/matplotlib')
     subprocess.run([str(Path.home()/'.juliaup/bin/julia'),'--project=.','scripts/production/reduce_electron_operating_points.jl'],cwd=ROOT,env=env,check=True)
     subprocess.run([str(ROOT/'work/event-viewer-venv/bin/python'),'scripts/production/present_electron_operating_points.py'],cwd=ROOT,env=env,check=True)

@@ -10,6 +10,9 @@ from pathlib import Path
 import argparse,hashlib,re,tomllib
 import h5py,numpy as np
 from ion_signal.spice_acquisition import run
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def preserve(p,data):
@@ -17,8 +20,8 @@ def preserve(p,data):
  if p.exists() and p.read_bytes()!=data:raise ValueError(f'Preserving {p}')
  p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--simulator',required=True,type=Path);p.add_argument('--cases',nargs='+');p.add_argument('--config',type=Path,default=ROOT/'config/pad_history_readout_direct.toml');a=p.parse_args()
- cp=a.config.resolve();c=tomllib.loads(cp.read_text());out=ROOT/c['output'];sim=a.simulator.resolve()
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--simulator',required=True,type=Path);p.add_argument('--cases',nargs='+');p.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/histories/pad_history_readout_direct.toml');a=p.parse_args()
+ cp=a.config.resolve();c=resolve_config_paths(tomllib.loads(cp.read_text()));out=ROOT/c['output'];sim=a.simulator.resolve()
  preserve(out/'configuration.toml',cp.read_bytes());preserve(out/'.gitignore','decks/**/*.raw\ndecks/**/*.log\n')
  with h5py.File(out/'spice_inputs.h5') as inp:
   for name in inp:

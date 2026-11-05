@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    config_path=ROOT/'config/realistic_csa.toml'
+    config_path=ROOT/'config/studies/electronics/reproduction/realistic_csa.toml'
     detector_path=ROOT/'config/detector.toml'
     cfg=tomllib.loads(config_path.read_text())
     model=CSA(**cfg['electronics']); detector=Detector.from_toml(detector_path)
@@ -121,7 +121,7 @@ def main():
         handles,labels=axes[1].get_legend_handles_labels()
         fig.legend(handles,labels,loc='outside lower center',ncols=2,frameon=False)
         fig.savefig(gen/'arrival_cases.pdf',metadata={'CreationDate':None,'ModDate':None})
-        work=ROOT/'notes/physics/work';work.mkdir(parents=True,exist_ok=True)
+        work=ROOT/'work';work.mkdir(parents=True,exist_ok=True)
         fig.savefig(work/'uniform_arrivals.png',dpi=180)
         plt.close(fig)
     print('Generated uniform mean per-ion signals and simultaneous cross-check')

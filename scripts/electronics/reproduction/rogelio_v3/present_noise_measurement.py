@@ -10,8 +10,8 @@ import hashlib,json
 import h5py
 
 ROOT=Path(__file__).resolve().parents[4]
-source=ROOT/'results/ltspice/noise_measurement/analysis.h5'
-out=ROOT/'latex_generated/noise_measurement';out.mkdir(parents=True,exist_ok=True)
+source=ROOT/'results/ltspice/reproduction/noise_measurement/analysis.h5'
+out=ROOT/'latex_generated/ion_readout/noise_measurement';out.mkdir(parents=True,exist_ok=True)
 with h5py.File(source) as h:
     a=dict(h.attrs);p=dict(h['paper_rounded/400'].attrs);v=dict(h['v3/400'].attrs)
     rows=[]

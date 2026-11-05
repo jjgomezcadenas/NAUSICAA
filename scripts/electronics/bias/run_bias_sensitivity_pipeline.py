@@ -14,7 +14,7 @@ REFINED=['paper_rounded_3','paper_rounded_4','paper_rounded_5','v2_rounded_3','v
 def main():
  p=argparse.ArgumentParser();p.add_argument('--simulator',type=Path,required=True);p.add_argument('--julia',default='julia');a=p.parse_args()
  def run(*args):subprocess.run(list(map(str,args)),cwd=ROOT,check=True)
- if not (ROOT/'results/ltspice/bias_sensitivity/points.h5').exists():run(a.julia,'--project=.','scripts/electronics/bias/build_bias_sensitivity.jl')
+ if not (ROOT/'results/ltspice/design/bias_sensitivity/points.h5').exists():run(a.julia,'--project=.','scripts/electronics/bias/build_bias_sensitivity.jl')
  acquire=[sys.executable,'scripts/electronics/bias/run_bias_sensitivity.py','--simulator',a.simulator.resolve()]
  run(*acquire,'--stage','op');run(*acquire,'--stage','transient')
  run(*acquire,'--stage','transient','--refine','--names',*REFINED)

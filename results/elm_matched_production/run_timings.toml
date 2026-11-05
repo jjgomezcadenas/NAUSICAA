@@ -1,0 +1,6 @@
+complete = true
+detector_wall_s = 128.081593792
+sipm_wall_s = 484.260607792
+csa_wall_s = 1733.825806584
+total_wall_s = 1877.366193125
+runner_sha256 = "79e925972ac62fe0a6d8188fe74377dfe7aab6757180abea080775c0b5ac6aee"

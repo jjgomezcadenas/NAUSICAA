@@ -13,6 +13,9 @@ import sys
 import tomllib
 
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE = ROOT / "config/specs"
 FIGURE6_J_READINGS = {1.5: 0.1, 2.0: 0.05, 3.0: 0.01}
@@ -55,7 +58,7 @@ def templates() -> tuple[dict, dict, dict, dict]:
         TEMPLATE / "detector/electrons/elcc_pilot.toml",
         TEMPLATE / "runs/production_pilot.toml",
     )
-    return tuple(tomllib.loads(path.read_text()) for path in paths)
+    return tuple(resolve_config_paths(tomllib.loads(path.read_text())) for path in paths)
 
 
 def ask(label: str, default, cast):

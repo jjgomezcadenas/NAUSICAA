@@ -2,10 +2,10 @@
   "source_sha256": {
     "results/ltspice/discharge_calibration/20ms/paper_readout.h5": "aeceb9a248ade438637db0e15e17eb10ae5b013ceed79d6c24c542fba6eb12d4",
     "results/ltspice/discharge_calibration/20ms/analysis.h5": "03953354ffadddb8d424e0ea3e6bab83072f35fa3f43ba9e7a871e4c29ee2900",
-    "config/discharge_calibration.toml": "e7c697f2d4d2770984ebc00ffe37d906b81916082f4b5a262db0ae91f4dae29b",
-    "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir": "9b23882ffaa12fe126ecd92d31ec6231b8677f3078f398efd527f2a6e1c0c350",
-    "LTSpice/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
-    "scripts/paper/build_spice_paper.py": "b326dd380b8c5de61ffc51b98586224477c3feb69eef20d037f577805e3b74d4"
+    "config/studies/electronics/readout/discharge_calibration.toml": "e7c697f2d4d2770984ebc00ffe37d906b81916082f4b5a262db0ae91f4dae29b",
+    "LTSpice/designs/variants/m4_x4_m3_x4/uniform_1000_ions.cir": "9b23882ffaa12fe126ecd92d31ec6231b8677f3078f398efd527f2a6e1c0c350",
+    "LTSpice/designs/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+    "scripts/paper/build_spice_paper.py": "03b1806e32fc41bc3a27fb2cd8cd316df21e2d3265af481a976dca64e2917f7e"
   },
   "frame_s": 0.02,
   "averaging_s": 0.0003,

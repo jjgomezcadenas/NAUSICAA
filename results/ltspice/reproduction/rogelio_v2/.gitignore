@@ -1,0 +1,6 @@
+*.raw
+*.log
+*.db
+decks/*/single_N0_r1.cir
+decks/*/single_N0_r1_gear.cir
+decks/*/single_N0_r1_tolerance.cir

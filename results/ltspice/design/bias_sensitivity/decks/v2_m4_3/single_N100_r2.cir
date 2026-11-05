@@ -1,0 +1,44 @@
+* Derived v2 circuit; first line is the SPICE title
+M1 s in med s6 180nmP l={Lcs} w={Wcs} m={Mp}
+Vdd s6 0 1.8
+M2 s6 Vnmos s 0 180nmN l={Ln} w={Wn} m={Mn}
+Vnmos Vnmos 0 1.6
+M3 med Vnload 0 0 180nmN l={Lnload} w={Wnload} m={Mload}
+Vnload Vnload 0 5.99999999999999978e-01
+M4 med Vncasc out 0 180nmN l={Lncasc} w={Wncasc} m={Mncasc}
+M5 vd6 Vp5 out s6 180nmP l={Lcs} w={Wcs} m={Mp}
+M6 s6 Vp6 vd6 s6 180nmP l={Lp6} w={Wp6} m={Mp6}
+Vp6 Vp6 0 1.1
+Vp5 Vp5 0 0.8
+Vp1 Vncasc 0 6.50398348808288285e-01
+Cf out in 3f
+Mf out Vdis in 0 180nmN l={LMf} w={WMf} m=1
+Vf1 Vdis 0 10m
+Cd1 in 0 1.24999999999999992e-12
+.param Lcs=0.5u
+.param Wcs=220u
+.param Ln=0.5u
+.param Wn=27u
+.param Lnload=0.5u
+.param Wnload=50u
+.param Mn=3
+.param Mp=1
+.param Mload=1
+.param Lp6=6u
+.param Wp6=1u
+.param Mp6=1
+.param Lp5=40u
+.param Wp5=1.0u
+.param Mp5=1
+.param Lncasc=2.4u
+.param Wncasc=0.54u
+.param Mncasc=1
+.parameter WMf=0.36u
+.parameter LMf=100u
+.lib corrected.inc
+.temp 20.0
+.options reltol=5e-6 abstol=5e-18 vntol=5e-9 numdgt=15 plotwinsize=0
+Is1 0 in PWL FILE="single_N100_r2.pwl"
+.tran 0 2.02000000000000013e-01 0 2.50000000000000020e-06
+.save V(out) V(in) I(Is1)
+.end

@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "before_logical_bytes": {
+    "notes/physics/work": 927962356,
+    "work/julia-depot": 247539717,
+    "work/archive/failed_runs/rogelio_v2_title_error": 179955146
+  },
+  "actions": [
+    {
+      "action": "remove",
+      "path": "notes/physics/work/ltspice-review/legacy",
+      "logical_bytes": 133766684,
+      "reason": "App and support match verified external copies; remaining extraction is reproducible from retained native installer",
+      "file_count": 395
+    },
+    {
+      "action": "remove",
+      "path": "notes/physics/work/ltspice-review/LTspice_legacy.pkg",
+      "logical_bytes": 100578908,
+      "reason": "Exact installer copy retained in external versioned support archive",
+      "sha256": "187995e92965db1595ffdb1b712d90c157b9ecf01d12b24c4b5259f92f94258d"
+    },
+    {
+      "action": "remove",
+      "path": "notes/physics/work/ltspice-review/LTspice_26.pkg",
+      "logical_bytes": 386681797,
+      "reason": "Unused incompatible Wine installer; no reported calculation uses this version; executable and vendor installer hashes recorded",
+      "sha256": "f3bf528b1df1b32d2fecf8e20b92bc17fe6f1723f42b527543c6c309c9739ff2"
+    },
+    {
+      "action": "remove",
+      "path": "notes/physics/work/julia-depot",
+      "logical_bytes": 206205149,
+      "reason": "Only rebuildable compiled Julia caches; canonical depot contains packages and working compiled caches",
+      "file_count": 385
+    },
+    {
+      "action": "remove_exact_waveform_duplicates",
+      "files": 53,
+      "logical_bytes": 134155100,
+      "reason": "Every numerical array and full raw header exactly retained in HDF5; per-file hashes in ltspice_failed_raw_audit.json"
+    },
+    {
+      "action": "archive_unique_note_scratch",
+      "old": "notes/physics/work",
+      "new": "work/archive/notes_physics",
+      "files": 551,
+      "logical_bytes": 100729818
+    },
+    {
+      "action": "link_identical_migration_smoke_outputs",
+      "files": 5,
+      "logical_bytes": 4525129,
+      "audit": "docs/ltspice_migration_duplicates.json"
+    }
+  ],
+  "failed_hdf5_preserved_sha256": "20b557a0c0bb871bf83c8f8499b2f5cd9507b27b935b4b3926234d533752005e",
+  "after_logical_bytes": {
+    "work/archive/notes_physics": 100729818,
+    "work/julia-depot": 247539717,
+    "work/archive/failed_runs/rogelio_v2_title_error": 45800046
+  },
+  "logical_bytes_reclaimed": 965912767,
+  "post_checks": {
+    "old_notes_scratch_removed": true,
+    "unique_failed_hdf5_hash_unchanged": true,
+    "viewer_environment_preserved": true,
+    "python_tests": 70,
+    "julia_response_tests": 18,
+    "julia_correction_tests": 33,
+    "canonical_depot_imports_and_hdf5_roundtrip": "pass",
+    "root_compatibility_symlinks": {
+      "LTSpice": 0,
+      "latex_generated": 0
+    }
+  }
+}

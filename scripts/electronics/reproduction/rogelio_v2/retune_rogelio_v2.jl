@@ -1,7 +1,7 @@
 using HDF5,TOML,SHA
 root=normpath(joinpath(@__DIR__,"../../../.."))
 python=ARGS[1];simulator=ARGS[2]
-dir=joinpath(root,"results/ltspice/rogelio_v2_retuned");mkpath(dir)
+dir=joinpath(root,"results/ltspice/design/rogelio_v2_retuned");mkpath(dir)
 target=0.878931543
 gates=Float64[];outputs=Float64[]
 function point(gate)
@@ -28,10 +28,10 @@ h5open(joinpath(dir,"tuning.h5"),"w") do h
  attributes(h)["selected_output_V"]=outputs[best]
  attributes(h)["source_sha256"]=bytes2hex(sha256(read(joinpath(dir,"tuning_raw.h5"))))
 end
-c=TOML.parsefile(joinpath(root,"config/rogelio_v2.toml"))
-c["output"]="results/ltspice/rogelio_v2_retuned";c["retuned"]=true
+c=TOML.parsefile(joinpath(root,"config/studies/electronics/reproduction/rogelio_v2.toml"))
+c["output"]="results/ltspice/design/rogelio_v2_retuned";c["retuned"]=true
 c["variants"]=[Dict("name"=>"v2_retuned","capacitance_F"=>1.25e-12,"temperature_C"=>20.,"m4_gate_V"=>gate)]
-path=joinpath(root,"config/rogelio_v2_retuned.toml")
+path=joinpath(root,"config/studies/electronics/bias/rogelio_v2_retuned.toml")
 buffer=IOBuffer();TOML.print(buffer,c);text=String(take!(buffer))
 if isfile(path);@assert read(path,String)==text;else;write(path,text);end
 println("Selected gate=",gate," Vout=",outputs[best])

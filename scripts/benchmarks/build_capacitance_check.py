@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main():
-    circuit_path = ROOT/'config/realistic_csa.toml'
+    circuit_path = ROOT/'config/studies/electronics/reproduction/realistic_csa.toml'
     detector_path = ROOT/'config/detector.toml'
     cfg = tomllib.loads(circuit_path.read_text())
     detector = Detector.from_toml(detector_path)

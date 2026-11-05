@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 ROOT=Path(__file__).resolve().parents[3]
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('event',nargs='?',type=int,default=3790);args=p.parse_args()
- out=ROOT/'latex_generated/history_time_audit'/f'event_{args.event}';out.mkdir(parents=True,exist_ok=True)
- with h5py.File(ROOT/'results/ltspice/history_time_audit'/f'event_{args.event}.h5') as h:
+ out=ROOT/'latex_generated/ion_readout/history_time_audit'/f'event_{args.event}';out.mkdir(parents=True,exist_ok=True)
+ with h5py.File(ROOT/'results/ltspice/histories/history_time_audit'/f'event_{args.event}.h5') as h:
   g=h['electrons'];a=g.attrs
   fig,axes=plt.subplots(2,1,figsize=(8,5.8))
   axes[0].scatter(g['source_hit_z_mm'][:],g['source_hit_energy_MeV'][:]*1000,s=8)

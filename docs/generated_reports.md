@@ -17,12 +17,12 @@ source notes, run cards, saved results and presentation scripts when available.
 | `reconstruction/` | 6 |
 | `transport/` | 4 |
 
-Authored sources remain in `docs/` and `notes/physics/`. Numerical results remain
-in `results/`. Each old top-level report directory is a relative symlink to its
-new location; existing bookmarks, source inputs and recorded run-card paths
-continue to work. The production-formulas PDF in `docs/` is also a compatibility
-link. Current report names include `csa_design`, `sipm_pilot` and
-`sipm_validation`, with aliases for their previous filenames.
+Authored sources remain in `docs/`, `notes/physics/`, and `LTSpice/notes/`.
+Numerical results remain in `results/`. Report directories use their canonical
+subject locations; the top-level directory contains only those groups and the
+catalogue. Historical card paths are resolved using `docs/generated_reports.json`
+at the presentation boundary. The production-formulas PDF link in `docs/`
+provides a convenient entry point to its generated report.
 
 The catalogue distinguishes standalone documents by their TeX document class.
 A PDF plot is an asset of its report, not a separate note. It includes externally
@@ -81,9 +81,10 @@ from histogram-centre collection to direct carrier sampling in
 scientific subject; their date alone does not make them historical.
 
 Active ELM, SiPM, combined-response, pixel-charge and Makefile report paths use
-the new directories. Older workflow scripts and saved TOML report paths continue
-through the compatibility links. Their scientific cards and source manifests
-were not rewritten. Remaining older presenters may still compile in place;
+the new directories. Older TOML report paths are resolved at read boundaries
+through the explicit migration registry. Scientific cards and source manifests
+retain their recorded bytes and hashes. The 81 top-level report aliases have
+been removed. Remaining older presenters may still compile in place;
 `make report-clean` collects those intermediates. Migrating those builders to
 the shared helper can be done when that workflow is next edited.
 

@@ -1,0 +1,6 @@
+detector_wall_s = 123.1150209903717
+detector_card = "config/specs/runs/elm_matched_detector_full.toml"
+detector_index = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_matched_production/detector_index.h5"
+common_realisation = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/realisation.h5"
+complete = true
+ions = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/detector/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/ions.h5"

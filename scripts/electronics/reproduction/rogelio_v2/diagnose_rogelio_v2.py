@@ -15,12 +15,12 @@ ROOT = _REPO_ROOT
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--simulator',type=Path,required=True);a=p.parse_args()
- out=ROOT/'results/ltspice/rogelio_v2';folder=out/'decks/diagnostics';folder.mkdir(parents=True,exist_ok=True)
- preserve(folder/'corrected.inc',(ROOT/'LTSpice/variants/m4_x4_m3_x4/corrected.inc').read_text())
- cases={'paper':ROOT/'LTSpice/variants/m4_x4_m3_x4/noise.cir',
+ out=ROOT/'results/ltspice/reproduction/rogelio_v2';folder=out/'decks/diagnostics';folder.mkdir(parents=True,exist_ok=True)
+ preserve(folder/'corrected.inc',(ROOT/'LTSpice/designs/variants/m4_x4_m3_x4/corrected.inc').read_text())
+ cases={'paper':ROOT/'LTSpice/designs/variants/m4_x4_m3_x4/noise.cir',
         'v2_native':out/'decks/v2_native_corrected/op.cir',
         'v2_matched':out/'decks/v2_matched/op.cir',
-        'v2_retuned':ROOT/'results/ltspice/rogelio_v2_retuned/decks/v2_retuned/op.cir'}
+        'v2_retuned':ROOT/'results/ltspice/design/rogelio_v2_retuned/decks/v2_retuned/op.cir'}
  with h5py.File(out/'diagnostics.h5','a') as h:
   for name,source in cases.items():
    if not source.exists():continue

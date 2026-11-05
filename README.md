@@ -1,5 +1,7 @@
 # NAUSICAA: ion signal physics
 
+LTspice installation and scientific files: [setup and layout](docs/ltspice_setup.md).
+
 Generated notes: [browse the catalogue](latex_generated/index.html).
 Directory layout and regeneration: [generated reports](docs/generated_reports.md).
 
@@ -182,12 +184,34 @@ physical pads or joint pad/frame occupancy. Relative time uses a uniform speed
 and is not an absolute arrival-time prediction.
 
 `scripts/events/plot_hit_analysis.py` reads only saved analysis HDF5 files. PNG figures
-go beside each result; `latex_generated/ion_tracks/report.pdf` gathers the
+go beside each result; `latex_generated/ion_readout/ion_tracks/report.pdf` gathers the
 calculation, raw summaries, retained totals, tail diagnostics, figures,
 validation and source provenance. The central Z detail and the full Z vector
 are both plotted. All macros and tables in that directory are generated;
 the canonical physics bibliography supplies the cited reference. Build scratch
 files stay in `work/ion_tracks_latex`.
+
+## Paired production viewer
+
+The paired production viewer is launched with `make response-viewer` and opens
+at `http://127.0.0.1:8769/`. Its default card is
+`config/specs/runs/elm_matched_response_viewer.toml`, written after the matched
+4 mm ion and Xe--He production completes. It selects the completed CSA response
+and SiPM shards explicitly. To inspect another production, pass
+`RESPONSE_VIEWER_CARD=path/to/card.toml` to `make response-viewer`.
+
+Event numbers are one-based positions in the file; each panel also shows the MC
+event ID and complementary drift distances. Gas and ion-pitch choices come from
+the selected production. Electron stages are photons, detected PE, SiPM charge
+and electronics response; ion stages are input charge and corrected CSA charge.
+Every event is checked for matching primary-pair identity and placement across
+the arms. Clipping is shown alongside the electron signal. Each projection zooms
+independently, the 3D plot rotates, and **Produce PNG** exports the displayed views.
+Both arms use source x, y and z in mm. The saved grid reference, longitudinal
+bucket width and drift direction map each bucket back to its spatial interval;
+electron buckets are reversed into increasing z. Initial ranges span the combined
+occupied cells with 25% extra width (12.5% on each side), using equal spatial
+scales. Relative arrival time remains available when hovering over a 3D point.
 
 ## Interpretation
 

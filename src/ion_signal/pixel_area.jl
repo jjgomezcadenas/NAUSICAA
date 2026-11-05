@@ -1,5 +1,7 @@
 module PixelArea
 using TOML,HDF5,SHA
+include("project_paths.jl")
+using .ProjectPaths
 export read_devices, pack_devices, validate_boxes, analyze
 
 function spice_value(token,parameters)
@@ -75,7 +77,7 @@ end
 
 function analyze(root)
     configpath=joinpath(root,"config/pixel_area.toml");c=TOML.parsefile(configpath)
-    netlist=joinpath(root,c["inputs"]["netlist"]);detector=joinpath(root,c["inputs"]["detector"])
+    netlist=resolve_recorded_path(root,c["inputs"]["netlist"]);detector=joinpath(root,c["inputs"]["detector"])
     geometry=TOML.parsefile(detector)["geometry"];budget=c["budget"];refs=c["references"]
     devices=read_devices(netlist)
     pitch=geometry["pitch_m"];pad=geometry["pad_width_m"];side=budget["envelope_side_m"]

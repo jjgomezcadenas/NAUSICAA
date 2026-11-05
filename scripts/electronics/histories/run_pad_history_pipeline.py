@@ -15,7 +15,11 @@ import subprocess
 import sys
 import tomllib
 import h5py
+from ion_signal.spice_storage import source_manifest_matches
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT = Path(__file__).resolve().parents[3]
 
 def sha(path):
@@ -29,10 +33,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--simulator', required=True, type=Path)
     parser.add_argument('--julia', default='julia')
-    parser.add_argument('--config',type=Path,default=ROOT/'config/pad_history_readout_direct.toml')
+    parser.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/histories/pad_history_readout_direct.toml')
     args = parser.parse_args()
     config_path = args.config.resolve()
-    config = tomllib.loads(config_path.read_text())
+    config = resolve_config_paths(tomllib.loads(config_path.read_text()))
     out = ROOT/config['output']
     out.mkdir(parents=True, exist_ok=True)
     code = ROOT/'src/ion_signal/pad_history_readout.jl'
@@ -42,13 +46,13 @@ def main():
     sources += [ROOT/s['path'] for s in config['samples']]
     manifest = {str(p.relative_to(ROOT)):sha(p) for p in sources}
     manifest_path = out/'pipeline_inputs.json'
-    if manifest_path.exists() and json.loads(manifest_path.read_text()) != manifest:
+    if manifest_path.exists() and not source_manifest_matches(json.loads(manifest_path.read_text()), manifest, ROOT):
         raise RuntimeError('Inputs changed; select a new output directory to preserve this study.')
     env = os.environ.copy()
     env['PYTHONPATH'] = str(ROOT/'src')
     env['NAUSICAA_PAD_HISTORY_CARD'] = str(config_path)
-    env.setdefault('JULIA_DEPOT_PATH', str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
-    env.setdefault('MPLCONFIGDIR', str(ROOT/'notes/physics/work/matplotlib'))
+    env.setdefault('JULIA_DEPOT_PATH', str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'))
+    env.setdefault('MPLCONFIGDIR', str(ROOT/'work/matplotlib'))
     def run(*command):
         subprocess.run(list(map(str,command)),cwd=ROOT,env=env,check=True)
     screens = [out/(s['name']+'.h5') for s in config['samples']]
@@ -62,7 +66,8 @@ def main():
                                   'source_sha256':manifest[sample['path']]}.items():
                 if value(h.attrs[key]) != expected:
                     raise RuntimeError(f'{path}: mismatched {key}')
-    manifest_path.write_text(json.dumps(manifest,indent=2)+'\n')
+    if not manifest_path.exists():
+        manifest_path.write_text(json.dumps(manifest,indent=2)+'\n')
     inputs = out/'spice_inputs.h5'
     if not inputs.exists():
         run(args.julia,'--project=.','scripts/electronics/histories/build_pad_history_spice_inputs.jl')

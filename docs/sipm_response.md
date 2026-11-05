@@ -6,9 +6,9 @@ production-runner adaptations; the commands below still reproduce the pilot.
 
 The approved first model is implemented in Julia. The physical note is
 [`sipm_electronics_model.tex`](sipm_electronics_model.tex); the compiled
-[model and pilot report](../latex_generated/sipm_response/sipm_electronics_model.pdf)
+[model and pilot report](../latex_generated/electron_readout/sipm_response/sipm_electronics_model.pdf)
 includes parameter provenance, assumptions, signal recovery and validation.
-The [short pilot report](../latex_generated/sipm_response/report.pdf) is generated
+The [short pilot report](../latex_generated/electron_readout/sipm_response/report.pdf) is generated
 entirely from saved numerical results.
 
 ## Configuration and commands

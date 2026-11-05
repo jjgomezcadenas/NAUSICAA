@@ -1,0 +1,7 @@
+*.h5
+*.h5.tmp
+*.raw
+*.log
+tuning/
+inputs/*.pwl
+compression/**/cases/

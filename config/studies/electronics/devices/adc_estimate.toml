@@ -1,0 +1,12 @@
+# Provisional populations supplied by J. J. Gomez-Cadenas, not measurements.
+source = "results/ltspice/bias_sensitivity/analysis.h5"
+source_group = "paper_rounded_4"
+population_reference_frame_s = 0.01
+frame_s = 0.02
+population_labels = ["minimum", "average", "maximum"]
+ions_per_reference_frame = [50, 300, 2000]
+full_scale_spans_V = [1.0, 2.0]
+bits = [8, 10, 11, 12, 14, 16]
+adc_noise_fraction_budget = 0.1
+total_enc_increase_budget = 0.05
+output = "results/ltspice/adc_estimate"

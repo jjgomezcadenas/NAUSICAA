@@ -1,0 +1,7 @@
+schema = "nausicaa.detector_run.v1"
+detector_configuration = "config/specs/detector/configurations/elm_matched_full.toml"
+selected_samples = ["bb0nu"]
+selected_gases = ["xe_he15"]
+results_dir = "results/simulations/production_pilot"
+report_dir = "latex_generated/electron_readout/elm_matched_production"
+pilot_only = true

@@ -29,7 +29,7 @@ def value(obj):
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--input",type=Path,default=ROOT/"results/grid_readout_direct_8000/grid_readout_summary.h5")
-    parser.add_argument("--output",type=Path,default=ROOT/"latex_generated/grid_readout_direct")
+    parser.add_argument("--output",type=Path,default=ROOT/"latex_generated/production/grid_readout_direct")
     args=parser.parse_args()
     output=args.output.resolve();output.mkdir(parents=True,exist_ok=True)
     with h5py.File(args.input) as f:

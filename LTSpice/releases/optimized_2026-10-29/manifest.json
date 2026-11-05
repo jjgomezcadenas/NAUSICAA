@@ -1,0 +1,588 @@
+{
+  "selected": "length_400um_gate0_rounded",
+  "base_commit": "fc6fffcade80f0d587ca9d5ff5ea36388059f2ca",
+  "generator": "notes/physics/tools/package_optimized_ltspice.py",
+  "generator_sha256": "81140062b061b149fed970e7c816eab64453c851ea83378496505c3c8240ef31",
+  "files": [
+    {
+      "file": "netlists/20ms_single_N0_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N0_r1.cir",
+      "sha256": "d27acc9698edf0bc5cb5080f5a79e8aa24e55868623ab5cd554812fe6d2cac39",
+      "bytes": 1207
+    },
+    {
+      "file": "netlists/20ms_single_N0_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N0_r1.run.txt",
+      "sha256": "e528d5eed750a36d6769f23d796e0e37bf06b73810e82f2189b444ce61979a4d",
+      "bytes": 1415
+    },
+    {
+      "file": "inputs/20ms_N0_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N0_r1.pwl",
+      "sha256": "10ac1fd061033228142c493224921c0d3ff46f2767b80476c5ff12d299ce3ef5",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/20ms_single_N0_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N0_r2.cir",
+      "sha256": "88c87520af12994a29d52a4b1b6543f95561a379f77ae5521b233758b5933eb1",
+      "bytes": 1207
+    },
+    {
+      "file": "netlists/20ms_single_N0_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N0_r2.run.txt",
+      "sha256": "de33134137f1f5d986a0ea41b0b831f1f9dab9b52c1ef50ab37389d361501731",
+      "bytes": 1241
+    },
+    {
+      "file": "inputs/20ms_N0_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N0_r2.pwl",
+      "sha256": "1668920d96f7b6e44d8ea894ca2dfddf96b1f7995086cea97e2ad2b60b834b1f",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/20ms_single_N100_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N100_r1.cir",
+      "sha256": "c776dcd1a37bcec422634f3fea895790d769509593e5a56f8a7876ddf62419a1",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/20ms_single_N100_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N100_r1.run.txt",
+      "sha256": "a45729661b5015e6d9b19a82da2efbc5cb6d57b5b20b74d209d2a538369a9c3b",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/20ms_N100_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N100_r1.pwl",
+      "sha256": "7046ff19d42cf49e901608562093a16d9a74d1d0a01b115e300bee61093b3666",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/20ms_single_N100_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N100_r2.cir",
+      "sha256": "f7cb05c76a63c7153134a52d071e18350f8494051753b62a3922f545a466557a",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/20ms_single_N100_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N100_r2.run.txt",
+      "sha256": "cd314cf9003f5262e0a66812b061d54bbd3481eeca8b13d9c74a3c6fb1e005c0",
+      "bytes": 1713
+    },
+    {
+      "file": "inputs/20ms_N100_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N100_r2.pwl",
+      "sha256": "423d56367594b9b307630d8226ad7d67336ba76ef4b92a70733c2955d1ea7bed",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/20ms_single_N10_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N10_r1.cir",
+      "sha256": "947c79443170f991c937f7537573fa7918b4402865f21d3ab49bff1fb2e35dd8",
+      "bytes": 1208
+    },
+    {
+      "file": "netlists/20ms_single_N10_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N10_r1.run.txt",
+      "sha256": "df2595d42739ae5d16abd4eecc7d66cebb1616a7fd18ef75b02869ba652c4f77",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/20ms_N10_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N10_r1.pwl",
+      "sha256": "92e541539fd9c5f0d0d5689772411e6ec195be6eacd82b1d437b68076a3a9d0f",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/20ms_single_N10_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N10_r2.cir",
+      "sha256": "f5220a59eecae36895cf1e8ca8429c8617ebb7ac96ec90b7564d4bb4a3c29bd8",
+      "bytes": 1208
+    },
+    {
+      "file": "netlists/20ms_single_N10_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N10_r2.run.txt",
+      "sha256": "d827c040067049039f7d67b70457b2c93b10e06420f786b21aebc5a915b07c7b",
+      "bytes": 1328
+    },
+    {
+      "file": "inputs/20ms_N10_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N10_r2.pwl",
+      "sha256": "4a6e38cfa184e51abf67169e2b5a677f49e644117835a1416ae08d8d2ae24352",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/20ms_single_N120_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N120_r1.cir",
+      "sha256": "f577e98f7c1770f475d112096af14aa6aba7c2623ff6d240eef5b15992199dd9",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/20ms_single_N120_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N120_r1.run.txt",
+      "sha256": "28cb7b19cbcbb810bc9ccba72cd6ab5ddeb85bae166b8dd44dee57860a748f56",
+      "bytes": 1500
+    },
+    {
+      "file": "inputs/20ms_N120_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N120_r1.pwl",
+      "sha256": "3a5fe08b7b4bfd83ad9517d90aa181b92f7c8ff1f2fe3a36f1f4638e7f44ea7c",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/20ms_single_N120_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N120_r2.cir",
+      "sha256": "e741605a2c4044b23aaa8aaa948438e8bf48898e0bc49d05a3a99a3038f681dd",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/20ms_single_N120_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N120_r2.run.txt",
+      "sha256": "4901c91c1f5a2f49a06e2e77e27b97b8f3ffc7978e6a743c24f7ddec08e71faf",
+      "bytes": 1425
+    },
+    {
+      "file": "inputs/20ms_N120_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N120_r2.pwl",
+      "sha256": "9dffbcbb4afebc44942fe292a6d6706f628f106b907ba857817baad38417337b",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/20ms_single_N2000_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N2000_r1.cir",
+      "sha256": "6815e3a39993bebb4965a10b78d60dd97c14d87fd21fdc39bd04b8676fe32eec",
+      "bytes": 1210
+    },
+    {
+      "file": "netlists/20ms_single_N2000_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N2000_r1.run.txt",
+      "sha256": "51f664354bea76c3c06628a66a95aae2a97fa7f401c44baad5bc5039a1bd452c",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/20ms_N2000_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N2000_r1.pwl",
+      "sha256": "79acc55a09c4ea9ad10263fe03781537b71abf4666528c6bf23bcead510e8746",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/20ms_single_N2000_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N2000_r2.cir",
+      "sha256": "0029e5fb7e71b8d57a48902b25b8bb89dd235417e12c82cecb5acd99b37da5e5",
+      "bytes": 1210
+    },
+    {
+      "file": "netlists/20ms_single_N2000_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N2000_r2.run.txt",
+      "sha256": "1b33469695531d366dec08d61843fb8936bd5210f2acef8513b6a853e4ba55c5",
+      "bytes": 1328
+    },
+    {
+      "file": "inputs/20ms_N2000_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N2000_r2.pwl",
+      "sha256": "e1c7479f3990cc228cf73b210f78b7c7c0037f7010d94ed8ee2697e9b7cfbf09",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/20ms_single_N400_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N400_r1.cir",
+      "sha256": "9333dd001d8accb78e572ad7f4e872629839282feda4428f98a4fd4276489adc",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/20ms_single_N400_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N400_r1.run.txt",
+      "sha256": "e88f251afb18c1a18cff1a70ccb25ee7ffdb9cfc2e23aa02774c584c9a03a3bb",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/20ms_N400_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N400_r1.pwl",
+      "sha256": "a167ceae00ba9196539428800d057b3531f5831931d530905d8e14d76a2f2ad1",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/20ms_single_N400_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N400_r2.cir",
+      "sha256": "73f1792bdb2212541e8f1b7414cea1a9d04d904cb0db7806b8d9658c1f9acf2b",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/20ms_single_N400_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N400_r2.run.txt",
+      "sha256": "dba70cc960b97adc6d06d0145482c8db1845af00dc02c11c1acde7e341bc8f04",
+      "bytes": 1328
+    },
+    {
+      "file": "inputs/20ms_N400_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/20ms_N400_r2.pwl",
+      "sha256": "dd6b92c21a3753341a186f2b154713dfa397aff5a312d0997bc49378c1988c92",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/40ms_single_N0_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N0_r1.cir",
+      "sha256": "40d5db744e587b7bc99f8d817b0c917b2280414cabb4b51c15792ee632cf9597",
+      "bytes": 1207
+    },
+    {
+      "file": "netlists/40ms_single_N0_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N0_r1.run.txt",
+      "sha256": "b5122889ecc1432eae476725349a68f6e2b799b6e44d120cc6027f31371710fc",
+      "bytes": 1415
+    },
+    {
+      "file": "inputs/40ms_N0_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N0_r1.pwl",
+      "sha256": "10ac1fd061033228142c493224921c0d3ff46f2767b80476c5ff12d299ce3ef5",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/40ms_single_N0_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N0_r2.cir",
+      "sha256": "e6f67ac3207430565ccb22e5337508a1cd6e7ff83c4bbf47472de2aa96093a69",
+      "bytes": 1207
+    },
+    {
+      "file": "netlists/40ms_single_N0_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N0_r2.run.txt",
+      "sha256": "17baa57c2a1c4eee91cd3f0708ac2736cfffa205903fe118cfd8eb400d5273a9",
+      "bytes": 1241
+    },
+    {
+      "file": "inputs/40ms_N0_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N0_r2.pwl",
+      "sha256": "1668920d96f7b6e44d8ea894ca2dfddf96b1f7995086cea97e2ad2b60b834b1f",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/40ms_single_N100_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N100_r1.cir",
+      "sha256": "a62ae189958e2407760e517998c27bdf25ac7fad839b554fff62f2cff9c4e8fc",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/40ms_single_N100_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N100_r1.run.txt",
+      "sha256": "509b565771fa9b6237bcffbcb6a7e0dae64518031607921440d1d61d321a79ca",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/40ms_N100_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N100_r1.pwl",
+      "sha256": "110690733a90e997976109c09b82e24526cbe86fc9ba8568cbd688bdbce734a4",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/40ms_single_N100_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N100_r2.cir",
+      "sha256": "899fc59fcc0852cc9dc707b7f974e9b9c58884da7a84901588025444f5f38140",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/40ms_single_N100_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N100_r2.run.txt",
+      "sha256": "638f3c25cd15558e38f8be07eac5a0c690c50d0fe4440edad1d27c4dc89d68f6",
+      "bytes": 1518
+    },
+    {
+      "file": "inputs/40ms_N100_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N100_r2.pwl",
+      "sha256": "0b66603917e2adc5590f048296d4fd17d2d4bc9902dc49604a51b8940e98fb6b",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/40ms_single_N10_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N10_r1.cir",
+      "sha256": "ca622377566480915d1a4c67a2fb1a8261b58b51faf721a23c5b3bf31b6878c8",
+      "bytes": 1208
+    },
+    {
+      "file": "netlists/40ms_single_N10_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N10_r1.run.txt",
+      "sha256": "e1bd391fdf5f367ea1b4a85168fe9db962a0be3404d88219077255e991621512",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/40ms_N10_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N10_r1.pwl",
+      "sha256": "fc205b8d3604f7a5ba24054acc0fadcc5e7e94aec95c3f6455b3bbd031897f31",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/40ms_single_N10_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N10_r2.cir",
+      "sha256": "32f3b8f4ccb7c6ec98d0939b70139dd4d5eaf23148ffbd843fda38e3ced063c6",
+      "bytes": 1208
+    },
+    {
+      "file": "netlists/40ms_single_N10_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N10_r2.run.txt",
+      "sha256": "88f10f2df5d6214db2e0df7df962d16f2460f1798f6e2dfd41351dfdf7e3ed81",
+      "bytes": 1328
+    },
+    {
+      "file": "inputs/40ms_N10_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N10_r2.pwl",
+      "sha256": "3fd684d89f88fd026e075ea140637d6873c77d950ace9708d8ccabca3fda7020",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/40ms_single_N120_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N120_r1.cir",
+      "sha256": "0150e97a9472436ef81c3dc88542c3658bab93c9d2f1a71f97516ac74eda73dc",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/40ms_single_N120_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N120_r1.run.txt",
+      "sha256": "629e262c52d861d76d98b864882159ad7d848a3c76340ed4b9a7aa97b42ce85e",
+      "bytes": 1500
+    },
+    {
+      "file": "inputs/40ms_N120_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N120_r1.pwl",
+      "sha256": "e2564314c2812077a46aca953fb633ac50d6acf9698dd977d94b2d1733e57ff9",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/40ms_single_N120_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N120_r2.cir",
+      "sha256": "acd29c0dcb9e6173e7c3ada0d6cfa791c1d956a0f0291927743b84fb0cdbdf2a",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/40ms_single_N120_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N120_r2.run.txt",
+      "sha256": "466446cb5cb0c5cd619f1006f2a2b4b3cf91b857cfd958396d1af452d842729a",
+      "bytes": 1614
+    },
+    {
+      "file": "inputs/40ms_N120_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N120_r2.pwl",
+      "sha256": "374d6c93639ce0700924b26ce17a1edadc709543e8c84c23fcf3050a960fe630",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/40ms_single_N2000_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N2000_r1.cir",
+      "sha256": "0725046e60479d0e12e0793852b9e6c7ea2ada6d2e82857ebc317d6e292c44cb",
+      "bytes": 1210
+    },
+    {
+      "file": "netlists/40ms_single_N2000_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N2000_r1.run.txt",
+      "sha256": "a1360c00955b8672845ff352872e29e09816b62c26bc300e115cc0365e44ffb3",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/40ms_N2000_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N2000_r1.pwl",
+      "sha256": "3a7cd42ed95c697ee46f252944a50ec4500d69e0189ba0822a7f4d0991c8ad7a",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/40ms_single_N2000_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N2000_r2.cir",
+      "sha256": "7d7affaf69c7293574356084862c165b001dae2e7f8bcfc6be7c7fe95535685b",
+      "bytes": 1210
+    },
+    {
+      "file": "netlists/40ms_single_N2000_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N2000_r2.run.txt",
+      "sha256": "d051c50f4471d4590bc2306a7c5d90bf556bfec7de194a6dde3a475ece558a40",
+      "bytes": 1328
+    },
+    {
+      "file": "inputs/40ms_N2000_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N2000_r2.pwl",
+      "sha256": "b391aaf09fc45ec680e9bee7a1a9e25843a85eebc21762bd9d9b10a81fbc76e8",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/40ms_single_N400_r1.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N400_r1.cir",
+      "sha256": "2d7e53ec6a9091dc97d32ce9d6ecf35b6feea79bd3515c09fbbbd3f61195ec91",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/40ms_single_N400_r1.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N400_r1.run.txt",
+      "sha256": "fbec2cb9afe92ee454bd248ff5ece1a0c2d1c3f314ab3495817b34db98ca99da",
+      "bytes": 1501
+    },
+    {
+      "file": "inputs/40ms_N400_r1.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N400_r1.pwl",
+      "sha256": "a447520844733767a8ce02576fc25d971f1f7c94e47d1afae125537d352e88a4",
+      "bytes": 1939296
+    },
+    {
+      "file": "netlists/40ms_single_N400_r2.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N400_r2.cir",
+      "sha256": "120033283068546101cdf686f60574ae35a13c176eebd043ccd605372b68d145",
+      "bytes": 1209
+    },
+    {
+      "file": "netlists/40ms_single_N400_r2.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N400_r2.run.txt",
+      "sha256": "bb01b3121cca3b1acfc0449ae9eee47a704f451c1e09434c521f032a69cb00bd",
+      "bytes": 1328
+    },
+    {
+      "file": "inputs/40ms_N400_r2.pwl",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/../inputs/40ms_N400_r2.pwl",
+      "sha256": "955a1b552be16afd49e8389880b3f20055b8f0359250e054ae04e10a721804e5",
+      "bytes": 3878496
+    },
+    {
+      "file": "netlists/noise_200.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/noise_200.cir",
+      "sha256": "5af0e7cdee2402722db695c0d62a7bcc076da7622e0754ee4aacb08aad17ae46",
+      "bytes": 1128
+    },
+    {
+      "file": "netlists/noise_200.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/noise_200.run.txt",
+      "sha256": "b1a344e1e979bcd3533609d8c78c5fde48e0dec89a862f84e564bad1fc0eaba1",
+      "bytes": 1126
+    },
+    {
+      "file": "netlists/noise_400.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/noise_400.cir",
+      "sha256": "3bb2683320c82c929d9662d345ce32d5fdb12cf022153bac4fc6cda210465e61",
+      "bytes": 1128
+    },
+    {
+      "file": "netlists/noise_400.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/noise_400.run.txt",
+      "sha256": "b0ff2d56473cd1e4556dc19fac8f1b2b6f7494e9485a72cc5b8001ed1bd85756",
+      "bytes": 1126
+    },
+    {
+      "file": "netlists/op.cir",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/op.cir",
+      "sha256": "df94b6a84a9d91a7ca09613f4c4ee80d074e2fc1a4f196c65f4a08c06649481a",
+      "bytes": 1093
+    },
+    {
+      "file": "netlists/op.run.txt",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/op.run.txt",
+      "sha256": "b3d7e1dcc7bfa167150f6666a0f5263627592b9695d9e7915c7f088a3b8abfa8",
+      "bytes": 6250
+    },
+    {
+      "file": "netlists/corrected.inc",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/corrected.inc",
+      "sha256": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+      "bytes": 5524
+    },
+    {
+      "file": "schematic/180nm_professional.inc",
+      "source": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/corrected.inc",
+      "sha256": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
+      "bytes": 5524
+    },
+    {
+      "file": "schematic/NAUSICA_40ms_400ions.asc",
+      "source": "LTSpice/Spice2/v3/CSAfolded180nm-2_Astronio.asc",
+      "source_sha256": "f201034153c64e44b0cecc0750d9ea23a191f83dc6a887b200eb9437caef7a3f",
+      "electrical_reference": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N400_r2.cir",
+      "electrical_reference_sha256": "120033283068546101cdf686f60574ae35a13c176eebd043ccd605372b68d145",
+      "sha256": "5579ee1d577d2b2432ac9217ef02150fa074da536db24978eb26b847c46acc5c",
+      "bytes": 6681,
+      "validation": "Parsed elements and directives equal the archived optimized netlist; model filename localized."
+    },
+    {
+      "file": "schematic/NAUSICA_20ms_120ions.asc",
+      "source": "LTSpice/Spice2/v3/CSAfolded180nm-2_Astronio.asc",
+      "source_sha256": "f201034153c64e44b0cecc0750d9ea23a191f83dc6a887b200eb9437caef7a3f",
+      "electrical_reference": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N120_r2.cir",
+      "electrical_reference_sha256": "e741605a2c4044b23aaa8aaa948438e8bf48898e0bc49d05a3a99a3038f681dd",
+      "sha256": "7c2e5e928d9309a07bd32af1b17b3c73193e2eb600112c3b323a02014b775d8f",
+      "bytes": 6681,
+      "validation": "Parsed elements and directives equal the archived optimized netlist; model filename localized."
+    },
+    {
+      "file": "schematic/NAUSICA_40ms_baseline.asc",
+      "source": "LTSpice/Spice2/v3/CSAfolded180nm-2_Astronio.asc",
+      "source_sha256": "f201034153c64e44b0cecc0750d9ea23a191f83dc6a887b200eb9437caef7a3f",
+      "electrical_reference": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/40ms_single_N0_r2.cir",
+      "electrical_reference_sha256": "e6f67ac3207430565ccb22e5337508a1cd6e7ff83c4bbf47472de2aa96093a69",
+      "sha256": "bd467ca2e38d1ca2fbb51a9fbdcecc05e99262ec81e9fa9b055f57c5a7f05377",
+      "bytes": 6679,
+      "validation": "Parsed elements and directives equal the archived optimized netlist; model filename localized."
+    },
+    {
+      "file": "schematic/NAUSICA_20ms_baseline.asc",
+      "source": "LTSpice/Spice2/v3/CSAfolded180nm-2_Astronio.asc",
+      "source_sha256": "f201034153c64e44b0cecc0750d9ea23a191f83dc6a887b200eb9437caef7a3f",
+      "electrical_reference": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/20ms_single_N0_r2.cir",
+      "electrical_reference_sha256": "88c87520af12994a29d52a4b1b6543f95561a379f77ae5521b233758b5933eb1",
+      "sha256": "a4232e7d3d81dd5634c4683694409875c2ae2a0650e4c1844b138484eab1f0ba",
+      "bytes": 6679,
+      "validation": "Parsed elements and directives equal the archived optimized netlist; model filename localized."
+    },
+    {
+      "file": "schematic/NAUSICA_noise.asc",
+      "source": "LTSpice/Spice2/v3/CSAfolded180nm-2_Astronio.asc",
+      "source_sha256": "f201034153c64e44b0cecc0750d9ea23a191f83dc6a887b200eb9437caef7a3f",
+      "electrical_reference": "results/ltspice/feedback_optimization/decks/length_400um_gate0_rounded/noise_400.cir",
+      "electrical_reference_sha256": "3bb2683320c82c929d9662d345ce32d5fdb12cf022153bac4fc6cda210465e61",
+      "sha256": "2721249aa74d33ac09b30d3479938cc80ca94f2e416a47444f181a20e554c2c6",
+      "bytes": 6578,
+      "validation": "Parsed elements and directives equal the archived optimized netlist; model filename localized."
+    },
+    {
+      "file": "reference/feedback_optimization.toml",
+      "source": "config/feedback_optimization.toml",
+      "sha256": "c93053d51a07ccd3fe19d252f1c686d53cce567807700007e9b2936a024a2262",
+      "bytes": 1720
+    },
+    {
+      "file": "reference/feedback_combined.toml",
+      "source": "config/feedback_combined.toml",
+      "sha256": "fa05eb90e7e1f76c3da5dee8ee5b1b9801809dbd948e2ba9f5f74d1c9d5a1bb1",
+      "bytes": 880
+    },
+    {
+      "file": "reference/detector.toml",
+      "source": "config/detector.toml",
+      "sha256": "628be0c9c8b9db1e18db69743b55d3e200610b62b07e3181c54eecb2125e214c",
+      "bytes": 1203
+    },
+    {
+      "file": "report/report.tex",
+      "source": "latex_generated/feedback_optimization/report.tex",
+      "sha256": "9c30e493a247445e2ab1a723753e9e970cfcd5066e20f68c53673c782c268e31",
+      "bytes": 10489
+    },
+    {
+      "file": "report/noise_comparison.pdf",
+      "source": "latex_generated/feedback_optimization/noise_comparison.pdf",
+      "sha256": "826764eb1908ea51faf45d92c010e2c24e2253d06128bd65d11b8c4612e60a68",
+      "bytes": 20039
+    },
+    {
+      "file": "report/noise_comparison.png",
+      "source": "latex_generated/feedback_optimization/noise_comparison.png",
+      "sha256": "08136a61cd29a9bd8385c85832ee063340537cf0df84ad389bb1dbed73f2db9c",
+      "bytes": 99190
+    },
+    {
+      "file": "report/provenance.json",
+      "source": "latex_generated/feedback_optimization/provenance.json",
+      "sha256": "da7723cda8650300ef83c0e3355c420f1b443287943975e351f6861bfdca94b2",
+      "bytes": 251
+    },
+    {
+      "file": "parameters.h5",
+      "source": "results/ltspice/feedback_optimization/analysis.h5",
+      "source_sha256": "007cdf5fe43eb73dcd46e686d55c662d28e374e2ef2861eb2689071ab94b8d93",
+      "sha256": "51fd456a7afa873d35d7b732fc7e721d967d75bbc94c722077ea70a06ca80a63",
+      "bytes": 10969059,
+      "transformation": "Copy selected circuit and reference groups unchanged."
+    }
+  ]
+}

@@ -1,0 +1,1444 @@
+{
+  "matched": [
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/reproduction/corrected.raw",
+      "bytes": 1262188,
+      "sha256": "f979fe48c07745c118df9c79c24c51c0775faa47b0a6a7ff4867f64ef5c295b9",
+      "hdf5_group": "reproduction/corrected",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/reproduction/original.raw",
+      "bytes": 1262188,
+      "sha256": "a674c46b504e34fa089dd396eb27d2413d0ebddc2c0b586fa7975566cc325262",
+      "hdf5_group": "reproduction/original",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/noise_200.raw",
+      "bytes": 383162,
+      "sha256": "267ad298e41a2f5c693e68980f9e52bc9cea00bc2d7f2e06ad695a20b1e86ce7",
+      "hdf5_group": "v2_m3_large/noise_200",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/noise_400.raw",
+      "bytes": 763962,
+      "sha256": "d869ab5f5c1822c5f9040521d2d47ab979c8e9a798154889b34c8f8b1c03147f",
+      "hdf5_group": "v2_m3_large/noise_400",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/op.raw",
+      "bytes": 3160,
+      "sha256": "c5d71cda5bae48c2c3ef7937dee62eec9c8861404b360211f6d1b781d423279f",
+      "hdf5_group": "v2_m3_large/op",
+      "arrays_verified": [
+        "V(s6)",
+        "V(vnmos)",
+        "V(s)",
+        "V(med)",
+        "V(vnload)",
+        "V(vncasc)",
+        "V(out)",
+        "V(vd6)",
+        "V(vp5)",
+        "V(vp6)",
+        "V(in)",
+        "V(vdis)",
+        "Id(M2)",
+        "Ig(M2)",
+        "Ib(M2)",
+        "Is(M2)",
+        "Id(M3)",
+        "Ig(M3)",
+        "Ib(M3)",
+        "Is(M3)",
+        "Id(M4)",
+        "Ig(M4)",
+        "Ib(M4)",
+        "Is(M4)",
+        "Id(Mf)",
+        "Ig(Mf)",
+        "Ib(Mf)",
+        "Is(Mf)",
+        "Id(M5)",
+        "Ig(M5)",
+        "Ib(M5)",
+        "Is(M5)",
+        "Id(M6)",
+        "Ig(M6)",
+        "Ib(M6)",
+        "Is(M6)",
+        "I(Cf)",
+        "I(Cd1)",
+        "I(Is1)",
+        "I(Vdd)",
+        "I(Vnmos)",
+        "I(Vnload)",
+        "I(Vp6)",
+        "I(Vp5)",
+        "I(Vp1)",
+        "I(Vf1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N0_r1.raw",
+      "bytes": 1940680,
+      "sha256": "1b421cd2e42c1320032c0e2f8632fe5b1aff8fa33586e9df4c2172998f9d4194",
+      "hdf5_group": "v2_m3_large/single_N0_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N0_r2.raw",
+      "bytes": 3880024,
+      "sha256": "ad0b1ec88825ffdd9d44450c7fc8fe899b7c364f99d0164f91b74cf2642e5a74",
+      "hdf5_group": "v2_m3_large/single_N0_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1000_r1.raw",
+      "bytes": 2050744,
+      "sha256": "625dbf054bb97369af60b35505e9582c1f7001fe55c7bc1b1914339bf75fc393",
+      "hdf5_group": "v2_m3_large/single_N1000_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1000_r2.raw",
+      "bytes": 4100152,
+      "sha256": "5cbe02ac840f299da2b9561f13237f4ac04db525afce7c45671e5dfd6514e359",
+      "hdf5_group": "v2_m3_large/single_N1000_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N100_r1.raw",
+      "bytes": 2050744,
+      "sha256": "1bcd47243d20b1e59ae75a939f1ec275e7afdc1e9b210102a20a2ece8a986841",
+      "hdf5_group": "v2_m3_large/single_N100_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N100_r2.raw",
+      "bytes": 4100152,
+      "sha256": "aa2c222c57800db796e03dd2cb876dfe0d6b728a345c551bc63af421f7bcd475",
+      "hdf5_group": "v2_m3_large/single_N100_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N10_r1.raw",
+      "bytes": 2050744,
+      "sha256": "a202108765107d1b993f5e9bd8cb4259db18cacae56cadaf06c505ea5e14aa66",
+      "hdf5_group": "v2_m3_large/single_N10_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N10_r2.raw",
+      "bytes": 4100152,
+      "sha256": "a0b03448dcf3342c451c9d4de8241cc9ae2ad695882bd832931c935654d14b38",
+      "hdf5_group": "v2_m3_large/single_N10_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1_r1.raw",
+      "bytes": 2050744,
+      "sha256": "14fecf4e586576485c5e00b5d602c6237053d4087cd886ac2712ec48faa3a857",
+      "hdf5_group": "v2_m3_large/single_N1_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1_r2.raw",
+      "bytes": 4100152,
+      "sha256": "a5cdb9a5e7caf9d8a6670d5266e2739289dfd5622cebcccd146db4b072769349",
+      "hdf5_group": "v2_m3_large/single_N1_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N2000_r1.raw",
+      "bytes": 2050744,
+      "sha256": "e3a98b4b0f8cb57650f1038fe90c4d281cd70c54383c7a6fc93c5970a44e13bb",
+      "hdf5_group": "v2_m3_large/single_N2000_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N2000_r2.raw",
+      "bytes": 4100152,
+      "sha256": "122099c4776c3cd2701b417ec8bafac4bcca0149fd00a9efcde06769411ef0d5",
+      "hdf5_group": "v2_m3_large/single_N2000_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N564_r1.raw",
+      "bytes": 2050744,
+      "sha256": "3af8c93b15ba6f0beebfa3be0829d72a82f7aa4baa37ae768b287ad0de523ac9",
+      "hdf5_group": "v2_m3_large/single_N564_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N564_r2.raw",
+      "bytes": 4100152,
+      "sha256": "44541a0e7f20f4ef11e2c8b40423dd0613442c82aa687fb97695f06e0b45aa59",
+      "hdf5_group": "v2_m3_large/single_N564_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/noise_200.raw",
+      "bytes": 383162,
+      "sha256": "6ca7ff2528cd1e4ddc5e21ecafebc126e5d7c5f5d3056b252b2bfe4161b65dce",
+      "hdf5_group": "v2_matched/noise_200",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/noise_400.raw",
+      "bytes": 763962,
+      "sha256": "13a32cdc75f87b96a1795b50b141e2b7dd879557e8365705e8347ef7af43a1fe",
+      "hdf5_group": "v2_matched/noise_400",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/op.raw",
+      "bytes": 3160,
+      "sha256": "ab481cc33cbb9187ac4e7911d04048445baa99989046c4e3ae855091f4a3044a",
+      "hdf5_group": "v2_matched/op",
+      "arrays_verified": [
+        "V(s6)",
+        "V(vnmos)",
+        "V(s)",
+        "V(med)",
+        "V(vnload)",
+        "V(vncasc)",
+        "V(out)",
+        "V(vd6)",
+        "V(vp5)",
+        "V(vp6)",
+        "V(in)",
+        "V(vdis)",
+        "Id(M2)",
+        "Ig(M2)",
+        "Ib(M2)",
+        "Is(M2)",
+        "Id(M3)",
+        "Ig(M3)",
+        "Ib(M3)",
+        "Is(M3)",
+        "Id(M4)",
+        "Ig(M4)",
+        "Ib(M4)",
+        "Is(M4)",
+        "Id(Mf)",
+        "Ig(Mf)",
+        "Ib(Mf)",
+        "Is(Mf)",
+        "Id(M5)",
+        "Ig(M5)",
+        "Ib(M5)",
+        "Is(M5)",
+        "Id(M6)",
+        "Ig(M6)",
+        "Ib(M6)",
+        "Is(M6)",
+        "I(Cf)",
+        "I(Cd1)",
+        "I(Is1)",
+        "I(Vdd)",
+        "I(Vnmos)",
+        "I(Vnload)",
+        "I(Vp6)",
+        "I(Vp5)",
+        "I(Vp1)",
+        "I(Vf1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N0_r1.raw",
+      "bytes": 1940536,
+      "sha256": "fe9561a78c760fb35785f69f6a5d5c21055154d7c4cb053bb6f42212062acceb",
+      "hdf5_group": "v2_matched/single_N0_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N0_r2.raw",
+      "bytes": 3879976,
+      "sha256": "4d580cb7bebd9ca7d03dad93ac62fa344e109f050719af7b3c0cebbce8c8bcdb",
+      "hdf5_group": "v2_matched/single_N0_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1000_r1.raw",
+      "bytes": 2050648,
+      "sha256": "6684860fc8cd0eb1006c58c6f89b06485d36fc66e54792494fd3d9b54fcb3bd8",
+      "hdf5_group": "v2_matched/single_N1000_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1000_r2.raw",
+      "bytes": 4100104,
+      "sha256": "5561dcfe2b1332a64d31cfa8faadfeb0285fbbe2ded10ff15cd31e9991dde1d3",
+      "hdf5_group": "v2_matched/single_N1000_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N100_r1.raw",
+      "bytes": 2050648,
+      "sha256": "df7ea7c9e6a2839f350f16719fe428ace7406fbc17de955ffd590f755c3473e0",
+      "hdf5_group": "v2_matched/single_N100_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N100_r2.raw",
+      "bytes": 4100104,
+      "sha256": "bdbd7a3ddf38f967f4739f71473a45f82e1e9fd7d124bd3d9e41db1cecc4db0a",
+      "hdf5_group": "v2_matched/single_N100_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N10_r1.raw",
+      "bytes": 2050648,
+      "sha256": "8ed909b395444fbe706107e04d8bcc7909499ab70966c86caaa0c1beaa7916c6",
+      "hdf5_group": "v2_matched/single_N10_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N10_r2.raw",
+      "bytes": 4100104,
+      "sha256": "9d4f6b2802fbd3b0dc017665fa89a3f8e5d5eb3f0faf37d0f922024dceb107bf",
+      "hdf5_group": "v2_matched/single_N10_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1_r1.raw",
+      "bytes": 2050648,
+      "sha256": "da6e7d5ec6bab3ef226b93f58e87498fe9409f056f818fdb44172e4106cfe6a0",
+      "hdf5_group": "v2_matched/single_N1_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1_r2.raw",
+      "bytes": 4100104,
+      "sha256": "1b4667c2c66daff936a6c2e6b984f10632f82bfdf04acb3ab3675644190d155f",
+      "hdf5_group": "v2_matched/single_N1_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N2000_r1.raw",
+      "bytes": 2050648,
+      "sha256": "4f405ab1cb3f062eb008090763417b953f6dde87b799239e49311ef1f1d5caf2",
+      "hdf5_group": "v2_matched/single_N2000_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N2000_r2.raw",
+      "bytes": 4100104,
+      "sha256": "f574a114fe402cb7877044080b8bb7f42a9e199a93aef9d60e685d6b79264c6f",
+      "hdf5_group": "v2_matched/single_N2000_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N564_r1.raw",
+      "bytes": 2050648,
+      "sha256": "3dd113d4572c0df7188e45a786da32564862cd000ad604a0b42ca797d2150bfe",
+      "hdf5_group": "v2_matched/single_N564_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N564_r2.raw",
+      "bytes": 4100104,
+      "sha256": "b0113b5f0fab5a040f3badbf5c982907168aaa8da0831bf1e36637119c839a67",
+      "hdf5_group": "v2_matched/single_N564_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/noise_200.raw",
+      "bytes": 383162,
+      "sha256": "3d6f860a5d6dc3356028c0728466f1fec1a3c76cd335308fcef1aeeac5294cd0",
+      "hdf5_group": "v2_native_corrected/noise_200",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/noise_400.raw",
+      "bytes": 763962,
+      "sha256": "c6062dc36f6f412164aec165e6edd37e0679076d12396c5c4f75e0a2a1745f67",
+      "hdf5_group": "v2_native_corrected/noise_400",
+      "arrays_verified": [
+        "frequency",
+        "gain",
+        "V(m2.rd)",
+        "V(m2.rs)",
+        "V(m2.id)",
+        "V(m2.1overf)",
+        "V(m2)",
+        "V(m3.rd)",
+        "V(m3.rs)",
+        "V(m3.id)",
+        "V(m3.1overf)",
+        "V(m3)",
+        "V(m4.rd)",
+        "V(m4.rs)",
+        "V(m4.id)",
+        "V(m4.1overf)",
+        "V(m4)",
+        "V(mf.rd)",
+        "V(mf.rs)",
+        "V(mf.id)",
+        "V(mf.1overf)",
+        "V(mf)",
+        "V(m5.rd)",
+        "V(m5.rs)",
+        "V(m5.id)",
+        "V(m5.1overf)",
+        "V(m5)",
+        "V(m6.rd)",
+        "V(m6.rs)",
+        "V(m6.id)",
+        "V(m6.1overf)",
+        "V(m6)",
+        "V(onoise)",
+        "inoise"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/op.raw",
+      "bytes": 3160,
+      "sha256": "af7af5a8e7475c763a0a50fa28a2e192edb4bffbc3ad84d13a4fdd51120deda4",
+      "hdf5_group": "v2_native_corrected/op",
+      "arrays_verified": [
+        "V(s6)",
+        "V(vnmos)",
+        "V(s)",
+        "V(med)",
+        "V(vnload)",
+        "V(vncasc)",
+        "V(out)",
+        "V(vd6)",
+        "V(vp5)",
+        "V(vp6)",
+        "V(in)",
+        "V(vdis)",
+        "Id(M2)",
+        "Ig(M2)",
+        "Ib(M2)",
+        "Is(M2)",
+        "Id(M3)",
+        "Ig(M3)",
+        "Ib(M3)",
+        "Is(M3)",
+        "Id(M4)",
+        "Ig(M4)",
+        "Ib(M4)",
+        "Is(M4)",
+        "Id(Mf)",
+        "Ig(Mf)",
+        "Ib(Mf)",
+        "Is(Mf)",
+        "Id(M5)",
+        "Ig(M5)",
+        "Ib(M5)",
+        "Is(M5)",
+        "Id(M6)",
+        "Ig(M6)",
+        "Ib(M6)",
+        "Is(M6)",
+        "I(Cf)",
+        "I(Cd1)",
+        "I(Is1)",
+        "I(Vdd)",
+        "I(Vnmos)",
+        "I(Vnload)",
+        "I(Vp6)",
+        "I(Vp5)",
+        "I(Vp1)",
+        "I(Vf1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N0_r1.raw",
+      "bytes": 1940872,
+      "sha256": "01657514215868f26440be9ea8a3309a47f2c21a94b8642f065a83f6f1e36491",
+      "hdf5_group": "v2_native_corrected/single_N0_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N0_r2.raw",
+      "bytes": 3880216,
+      "sha256": "942b076096aea509844735f80023993e0b0e06513dbbb0d6529a5ba51625da33",
+      "hdf5_group": "v2_native_corrected/single_N0_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1000_r1.raw",
+      "bytes": 2050936,
+      "sha256": "4da527d8856c849019783409657c485edf7fdf08b464421110660097e83acdb0",
+      "hdf5_group": "v2_native_corrected/single_N1000_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1000_r2.raw",
+      "bytes": 4100344,
+      "sha256": "488d7d5010f3e870cc1121d5408eacb3fa2d5c164bf780d0be37559666937d00",
+      "hdf5_group": "v2_native_corrected/single_N1000_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N100_r1.raw",
+      "bytes": 2050936,
+      "sha256": "8e78e732716accd060a7b631b619c54664c86c0dd80987dc437de2a80294c8cf",
+      "hdf5_group": "v2_native_corrected/single_N100_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N100_r2.raw",
+      "bytes": 4100344,
+      "sha256": "881e87ef2561a9f54398fa71d46f1fce44da6fdb8e29bbeff6c576843662ff58",
+      "hdf5_group": "v2_native_corrected/single_N100_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N10_r1.raw",
+      "bytes": 2050936,
+      "sha256": "2ff19d4ec60702969c352d6c80badc813299ab7fe66c4ef623777f4158b74e85",
+      "hdf5_group": "v2_native_corrected/single_N10_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N10_r2.raw",
+      "bytes": 4100344,
+      "sha256": "ccd5d698975ec8423f81270fad427561176fff4e09f603e98e547ccf9e171167",
+      "hdf5_group": "v2_native_corrected/single_N10_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1_r1.raw",
+      "bytes": 2050936,
+      "sha256": "5344cb95f1229ea563f38248cbab177358c2474054031b4b02df2d6e85eb3a3d",
+      "hdf5_group": "v2_native_corrected/single_N1_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1_r2.raw",
+      "bytes": 4100344,
+      "sha256": "e2c5fcaea9d07cb220d8d10e872a96d65f23c22bd2d72952fa34a895b342e1f9",
+      "hdf5_group": "v2_native_corrected/single_N1_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N2000_r1.raw",
+      "bytes": 2050936,
+      "sha256": "f8c050709afad8ed68b2405005483be71517330c9be35204bdf4f8485c8a8a5d",
+      "hdf5_group": "v2_native_corrected/single_N2000_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N2000_r2.raw",
+      "bytes": 4100344,
+      "sha256": "eac0950eebaec7e4026aa5daf194391add79fed1a79c71ca4278b6e2db0d5968",
+      "hdf5_group": "v2_native_corrected/single_N2000_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N564_r1.raw",
+      "bytes": 2050936,
+      "sha256": "c4f206417fff9af532f3b9566f45880771b2ce5a82d02a5be207eed688d6cc33",
+      "hdf5_group": "v2_native_corrected/single_N564_r1",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N564_r2.raw",
+      "bytes": 4100344,
+      "sha256": "d0f291b6e764f8e71efa804384e1636f35a505a5ed3d9ece361d8732891054f3",
+      "hdf5_group": "v2_native_corrected/single_N564_r2",
+      "arrays_verified": [
+        "time",
+        "V(med)",
+        "V(out)",
+        "V(vd6)",
+        "V(in)",
+        "I(Is1)"
+      ]
+    }
+  ],
+  "retained": [
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/reproduction/corrected.op.raw",
+      "bytes": 2938,
+      "sha256": "ebaf5b4c40ad28db69e4489cd62ebc87584c6e07bfa34bfc6623eaf8b755a64b",
+      "hdf5_group": "reproduction/corrected.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/reproduction/original.op.raw",
+      "bytes": 2938,
+      "sha256": "7bcf66581587860d7565b448ed9ede06c5987b2a31c29d2334659fed26b0e4d3",
+      "hdf5_group": "reproduction/original.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/noise_200.op.raw",
+      "bytes": 3160,
+      "sha256": "c5d71cda5bae48c2c3ef7937dee62eec9c8861404b360211f6d1b781d423279f",
+      "hdf5_group": "v2_m3_large/noise_200.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/noise_400.op.raw",
+      "bytes": 3160,
+      "sha256": "c5d71cda5bae48c2c3ef7937dee62eec9c8861404b360211f6d1b781d423279f",
+      "hdf5_group": "v2_m3_large/noise_400.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N0_r1.op.raw",
+      "bytes": 800,
+      "sha256": "6f4dcdc46f8a7a124b12d13ab1f686f993a7ef265a7c5e76a8f45ae8e8dcdbb9",
+      "hdf5_group": "v2_m3_large/single_N0_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N0_r2.op.raw",
+      "bytes": 800,
+      "sha256": "8f5877c96bd67015b093701708e3f07a899980c750d6b7aa7c2ffac8e3ae7cd6",
+      "hdf5_group": "v2_m3_large/single_N0_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1000_r1.op.raw",
+      "bytes": 800,
+      "sha256": "92db4a1a5242eedc6b2e56465ab9660b713d5f4494049c616520327291cb2404",
+      "hdf5_group": "v2_m3_large/single_N1000_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1000_r2.op.raw",
+      "bytes": 800,
+      "sha256": "e44db1956b7bd425d20c780fff25078e4eac4e479e3f46d517723d0e95dc712c",
+      "hdf5_group": "v2_m3_large/single_N1000_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N100_r1.op.raw",
+      "bytes": 800,
+      "sha256": "92db4a1a5242eedc6b2e56465ab9660b713d5f4494049c616520327291cb2404",
+      "hdf5_group": "v2_m3_large/single_N100_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N100_r2.op.raw",
+      "bytes": 800,
+      "sha256": "6ac578d709da8fd274e8eed381ab216f39217c5d49043415129e09b9fa930db3",
+      "hdf5_group": "v2_m3_large/single_N100_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N10_r1.op.raw",
+      "bytes": 800,
+      "sha256": "92db4a1a5242eedc6b2e56465ab9660b713d5f4494049c616520327291cb2404",
+      "hdf5_group": "v2_m3_large/single_N10_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N10_r2.op.raw",
+      "bytes": 800,
+      "sha256": "6ac578d709da8fd274e8eed381ab216f39217c5d49043415129e09b9fa930db3",
+      "hdf5_group": "v2_m3_large/single_N10_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1_r1.op.raw",
+      "bytes": 800,
+      "sha256": "92db4a1a5242eedc6b2e56465ab9660b713d5f4494049c616520327291cb2404",
+      "hdf5_group": "v2_m3_large/single_N1_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N1_r2.op.raw",
+      "bytes": 800,
+      "sha256": "8f5877c96bd67015b093701708e3f07a899980c750d6b7aa7c2ffac8e3ae7cd6",
+      "hdf5_group": "v2_m3_large/single_N1_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N2000_r1.op.raw",
+      "bytes": 800,
+      "sha256": "8f5877c96bd67015b093701708e3f07a899980c750d6b7aa7c2ffac8e3ae7cd6",
+      "hdf5_group": "v2_m3_large/single_N2000_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N2000_r2.op.raw",
+      "bytes": 800,
+      "sha256": "e44db1956b7bd425d20c780fff25078e4eac4e479e3f46d517723d0e95dc712c",
+      "hdf5_group": "v2_m3_large/single_N2000_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N564_r1.op.raw",
+      "bytes": 800,
+      "sha256": "92db4a1a5242eedc6b2e56465ab9660b713d5f4494049c616520327291cb2404",
+      "hdf5_group": "v2_m3_large/single_N564_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_m3_large/single_N564_r2.op.raw",
+      "bytes": 800,
+      "sha256": "6ac578d709da8fd274e8eed381ab216f39217c5d49043415129e09b9fa930db3",
+      "hdf5_group": "v2_m3_large/single_N564_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/noise_200.op.raw",
+      "bytes": 3160,
+      "sha256": "ab481cc33cbb9187ac4e7911d04048445baa99989046c4e3ae855091f4a3044a",
+      "hdf5_group": "v2_matched/noise_200.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/noise_400.op.raw",
+      "bytes": 3160,
+      "sha256": "ab481cc33cbb9187ac4e7911d04048445baa99989046c4e3ae855091f4a3044a",
+      "hdf5_group": "v2_matched/noise_400.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N0_r1.op.raw",
+      "bytes": 800,
+      "sha256": "1c37d297386969df1979a782fa00da6f9420ca57ba92650622953d4bc8e74ffc",
+      "hdf5_group": "v2_matched/single_N0_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N0_r2.op.raw",
+      "bytes": 800,
+      "sha256": "026284f37aa28fe4859456503f882aedaf83b17847ae2564720c7395a426d239",
+      "hdf5_group": "v2_matched/single_N0_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1000_r1.op.raw",
+      "bytes": 800,
+      "sha256": "a6444d88cf4697e5b51cc3310b7565c3c6c8f4d39c8008dbea392974a13f7dbc",
+      "hdf5_group": "v2_matched/single_N1000_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1000_r2.op.raw",
+      "bytes": 800,
+      "sha256": "4c1ec0697344ed7e723a9f1a0be699e3bbbee3b21c2905b5258fe359946f3fcf",
+      "hdf5_group": "v2_matched/single_N1000_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N100_r1.op.raw",
+      "bytes": 800,
+      "sha256": "a6444d88cf4697e5b51cc3310b7565c3c6c8f4d39c8008dbea392974a13f7dbc",
+      "hdf5_group": "v2_matched/single_N100_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N100_r2.op.raw",
+      "bytes": 800,
+      "sha256": "2702545e0c5704f175252c86884c7584cde8af37aa5104090dc9ed9c879283c9",
+      "hdf5_group": "v2_matched/single_N100_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N10_r1.op.raw",
+      "bytes": 800,
+      "sha256": "1c37d297386969df1979a782fa00da6f9420ca57ba92650622953d4bc8e74ffc",
+      "hdf5_group": "v2_matched/single_N10_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N10_r2.op.raw",
+      "bytes": 800,
+      "sha256": "026284f37aa28fe4859456503f882aedaf83b17847ae2564720c7395a426d239",
+      "hdf5_group": "v2_matched/single_N10_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1_r1.op.raw",
+      "bytes": 800,
+      "sha256": "1c37d297386969df1979a782fa00da6f9420ca57ba92650622953d4bc8e74ffc",
+      "hdf5_group": "v2_matched/single_N1_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N1_r2.op.raw",
+      "bytes": 800,
+      "sha256": "026284f37aa28fe4859456503f882aedaf83b17847ae2564720c7395a426d239",
+      "hdf5_group": "v2_matched/single_N1_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N2000_r1.op.raw",
+      "bytes": 800,
+      "sha256": "a6444d88cf4697e5b51cc3310b7565c3c6c8f4d39c8008dbea392974a13f7dbc",
+      "hdf5_group": "v2_matched/single_N2000_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N2000_r2.op.raw",
+      "bytes": 800,
+      "sha256": "4c1ec0697344ed7e723a9f1a0be699e3bbbee3b21c2905b5258fe359946f3fcf",
+      "hdf5_group": "v2_matched/single_N2000_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N564_r1.op.raw",
+      "bytes": 800,
+      "sha256": "a6444d88cf4697e5b51cc3310b7565c3c6c8f4d39c8008dbea392974a13f7dbc",
+      "hdf5_group": "v2_matched/single_N564_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_matched/single_N564_r2.op.raw",
+      "bytes": 800,
+      "sha256": "2702545e0c5704f175252c86884c7584cde8af37aa5104090dc9ed9c879283c9",
+      "hdf5_group": "v2_matched/single_N564_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/noise_200.op.raw",
+      "bytes": 3160,
+      "sha256": "af7af5a8e7475c763a0a50fa28a2e192edb4bffbc3ad84d13a4fdd51120deda4",
+      "hdf5_group": "v2_native_corrected/noise_200.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/noise_400.op.raw",
+      "bytes": 3160,
+      "sha256": "af7af5a8e7475c763a0a50fa28a2e192edb4bffbc3ad84d13a4fdd51120deda4",
+      "hdf5_group": "v2_native_corrected/noise_400.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N0_r1.op.raw",
+      "bytes": 800,
+      "sha256": "3c9c2ef2f6430615e680b5350e2a4951cdaa1e19bb651f058012f283a12c0f50",
+      "hdf5_group": "v2_native_corrected/single_N0_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N0_r2.op.raw",
+      "bytes": 800,
+      "sha256": "677d7ddd2c7556f291ae0c69bbd881d9397f8daa944ea924d0d011d03ae52a5f",
+      "hdf5_group": "v2_native_corrected/single_N0_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1000_r1.op.raw",
+      "bytes": 800,
+      "sha256": "677d7ddd2c7556f291ae0c69bbd881d9397f8daa944ea924d0d011d03ae52a5f",
+      "hdf5_group": "v2_native_corrected/single_N1000_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1000_r2.op.raw",
+      "bytes": 800,
+      "sha256": "179a29070575dc77653c3efffb11701c397f504c7bdb84d292f301846e1915a6",
+      "hdf5_group": "v2_native_corrected/single_N1000_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N100_r1.op.raw",
+      "bytes": 800,
+      "sha256": "3c9c2ef2f6430615e680b5350e2a4951cdaa1e19bb651f058012f283a12c0f50",
+      "hdf5_group": "v2_native_corrected/single_N100_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N100_r2.op.raw",
+      "bytes": 800,
+      "sha256": "7d9150ecb04a14eb159030e4e8a86c442f356319dd952550c42abc72ec9e419b",
+      "hdf5_group": "v2_native_corrected/single_N100_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N10_r1.op.raw",
+      "bytes": 800,
+      "sha256": "3c9c2ef2f6430615e680b5350e2a4951cdaa1e19bb651f058012f283a12c0f50",
+      "hdf5_group": "v2_native_corrected/single_N10_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N10_r2.op.raw",
+      "bytes": 800,
+      "sha256": "7d9150ecb04a14eb159030e4e8a86c442f356319dd952550c42abc72ec9e419b",
+      "hdf5_group": "v2_native_corrected/single_N10_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1_r1.op.raw",
+      "bytes": 800,
+      "sha256": "3c9c2ef2f6430615e680b5350e2a4951cdaa1e19bb651f058012f283a12c0f50",
+      "hdf5_group": "v2_native_corrected/single_N1_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N1_r2.op.raw",
+      "bytes": 800,
+      "sha256": "7d9150ecb04a14eb159030e4e8a86c442f356319dd952550c42abc72ec9e419b",
+      "hdf5_group": "v2_native_corrected/single_N1_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N2000_r1.op.raw",
+      "bytes": 800,
+      "sha256": "677d7ddd2c7556f291ae0c69bbd881d9397f8daa944ea924d0d011d03ae52a5f",
+      "hdf5_group": "v2_native_corrected/single_N2000_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N2000_r2.op.raw",
+      "bytes": 800,
+      "sha256": "b8153ae54cc0bb3319e33b1b7321cea7de44bc8a1a5b827d0147712ec8c37658",
+      "hdf5_group": "v2_native_corrected/single_N2000_r2.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N564_r1.op.raw",
+      "bytes": 800,
+      "sha256": "677d7ddd2c7556f291ae0c69bbd881d9397f8daa944ea924d0d011d03ae52a5f",
+      "hdf5_group": "v2_native_corrected/single_N564_r1.op",
+      "reason": "No exact saved HDF5 group"
+    },
+    {
+      "path": "work/archive/failed_runs/rogelio_v2_title_error/decks/v2_native_corrected/single_N564_r2.op.raw",
+      "bytes": 800,
+      "sha256": "179a29070575dc77653c3efffb11701c397f504c7bdb84d292f301846e1915a6",
+      "hdf5_group": "v2_native_corrected/single_N564_r2.op",
+      "reason": "No exact saved HDF5 group"
+    }
+  ],
+  "matched_bytes": 134155100,
+  "retained_bytes": 58436
+}

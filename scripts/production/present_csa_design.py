@@ -4,7 +4,7 @@ from pathlib import Path
 import argparse, hashlib, json, os, re
 import h5py, numpy as np
 ROOT=Path(__file__).resolve().parents[2]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/csa_design_matplotlib'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/csa_design_matplotlib'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

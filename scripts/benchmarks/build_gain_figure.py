@@ -21,13 +21,13 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    config = tomllib.loads((ROOT/'config/realistic_csa.toml').read_text())
+    config = tomllib.loads((ROOT/'config/studies/electronics/reproduction/realistic_csa.toml').read_text())
     model = CSA(**config['electronics'])
     ratio = np.geomspace(.01, 100., 1001)
     magnitude = abs(model.amplifier_gain(ratio*model.amplifier_pole_Hz))/model.open_loop_gain
     at_pole = abs(model.amplifier_gain(model.amplifier_pole_Hz))/model.open_loop_gain
     gen = ROOT/'notes/physics/generated'
-    preview = ROOT/'notes/physics/work'
+    preview = ROOT/'work'
     gen.mkdir(parents=True, exist_ok=True)
     preview.mkdir(parents=True, exist_ok=True)
     with plt.rc_context({'font.size': 10, 'axes.spines.top': False,

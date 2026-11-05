@@ -20,7 +20,7 @@ from matplotlib.colors import LogNorm
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "latex_generated/event_analysis_step3"
+OUT = ROOT / "latex_generated/reconstruction/event_analysis_step3"
 
 
 def render():

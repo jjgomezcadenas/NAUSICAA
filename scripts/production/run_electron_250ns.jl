@@ -44,13 +44,8 @@ function electron_paths(spec, sample::String, code_hash::String, n::Int)
     r = spec.realisation.data
     source = spec.sample_paths[sample]
     source_sha = content_hash(source; file=true)
-    realisation_values = Dict(k => v for (k, v) in r if k != "samples")
-    stream_values = Dict(k => v for (k, v) in realisation_values
-                         if k != "max_events_per_sample")
-    stream_identity = content_hash(join((sample, source_sha,
-                                         canonical(stream_values)), "|"))
-    realisation_id = content_hash(join((stream_identity,
-                                        canonical(realisation_values)), "|"))
+    identities=realisation_identities(ROOT,sample,source_sha,r)
+    stream_identity=identities.stream_identity;realisation_id=identities.realisation_id
     identity_tail = n == Int(r["max_events_per_sample"]) ? "" : "|limit=$n"
     electron_id = content_hash(join((realisation_id,
                                      canonical(spec.electrons.data), code_hash), "|") *

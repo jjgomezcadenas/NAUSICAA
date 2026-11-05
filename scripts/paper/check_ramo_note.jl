@@ -47,7 +47,7 @@ h5open(joinpath(out,"values.h5"),"w") do h
         "quadrature_convergence_error"=>abs(q128-q256),"poisson_integral_error"=>abs(phi_integral-phi(a,a)),"derivative_relative_error"=>err)
         h[key]=value
     end
-    files=[cfgpath,@__FILE__,joinpath(root,"notes/physics/nausica.tex"),joinpath(root,"LTSpice/Spice2/CSAfolded180nm.asc")]
+    files=[cfgpath,@__FILE__,joinpath(root,"notes/physics/nausica.tex"),joinpath(root,"LTSpice/reference/rogelio/spice2/CSAfolded180nm.asc")]
     h["source_paths"]=[relpath(p,root) for p in files]
     h["source_sha256"]=[bytes2hex(sha256(read(p))) for p in files]
     attributes(h)["assumptions"]="Square 2a by 2a in infinite grounded plane; homogeneous upper half-space; pad weighting potential 1, rest of plane 0, zero at infinity; no IFG or surface dielectrics in weighting solution; on-axis constant-speed positive singly charged ion; finite gap trajectory without renormalization."

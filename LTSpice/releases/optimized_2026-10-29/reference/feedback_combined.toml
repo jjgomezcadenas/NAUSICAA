@@ -1,0 +1,27 @@
+# Local CSA optimization; all non-feedback device dimensions and biases fixed.
+output = "results/ltspice/feedback_optimization"
+report = "latex_generated/feedback_optimization"
+circuit = "LTSpice/variants/m4_x4_m3_x4/noise.cir"
+model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+frames_s = [0.02, 0.04]
+mean_ions = [120, 400]
+input_sources = ["results/ltspice/discharge_calibration/20ms/input.h5", "results/ltspice/pitch_4mm_40ms/input.h5"]
+averaging_s = [0.0003, 0.0005, 0.001, 0.002, 0.005]
+prehistory_s = 0.002
+max_steps_s = [0.000005, 0.0000025]
+counts = [0, 10, 100, 120, 400, 2000]
+minimum_output_V = 0.2
+maximum_output_V = 1.6
+max_gain_change = 0.01
+max_frame_leakage_fraction = 0.05
+
+[[variants]]
+name = "length_200um_gate0"
+width_m = 0.00000036
+length_m = 0.0002
+gate_V = 0.0
+[[variants]]
+name = "length_400um_gate0"
+width_m = 0.00000036
+length_m = 0.0004
+gate_V = 0.0

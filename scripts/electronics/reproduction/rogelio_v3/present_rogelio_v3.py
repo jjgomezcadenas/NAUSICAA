@@ -10,12 +10,12 @@ from pathlib import Path
 import hashlib,json,os
 import h5py
 ROOT=Path(__file__).resolve().parents[4]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/matplotlib-cache'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 def main():
- source=ROOT/'results/ltspice/rogelio_v3/analysis.h5';out=ROOT/'latex_generated/rogelio_v3';out.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'results/ltspice/reproduction/rogelio_v3/analysis.h5';out=ROOT/'latex_generated/ion_readout/rogelio_v3';out.mkdir(parents=True,exist_ok=True)
  with h5py.File(source) as h:
   a=dict(h.attrs);ex=dict(h['exp_r2'].attrs);un=dict(h['uniform_1000_r2'].attrs)
   with plt.rc_context({'font.size':10,'axes.spines.top':False,'axes.spines.right':False}):
@@ -41,7 +41,7 @@ with the paper: the supplied test injects about half as much charge.
 
 \section*{Reproduction}
 The circuit is read from
-\texttt{LTSpice/Spice2/v3/CSAfolded180nm-2\_Astronio.asc}, with its supplied
+\texttt{LTSpice/reference/rogelio/v3/CSAfolded180nm-2\_Astronio.asc}, with its supplied
 model card. It uses the paper's transistor dimensions, 3 fF feedback,
 1.25 pF external input capacitance and $20\,^{\circ}$C. Its gate voltages
 are 0.53847 V for M3 and 0.556803 V for M4. The output baseline is

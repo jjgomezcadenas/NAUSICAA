@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "actions": [
+    {
+      "action": "remove_unused_version_26_extraction",
+      "path": "notes/physics/work/ltspice-review/package",
+      "version": "26.0.2.1",
+      "files": 21769,
+      "logical_bytes": 1307832637,
+      "installer": "notes/physics/work/ltspice-review/LTspice_26.pkg",
+      "installer_sha256": "f3bf528b1df1b32d2fecf8e20b92bc17fe6f1723f42b527543c6c309c9739ff2",
+      "installer_retained": true,
+      "reason": "Unused Wine runner; failed evaluation recorded in LTSpice/README.md; no active executable callers; no Julia/LTspice production process during migration.",
+      "executable_sha256": "7b587e9d221d71f73df6388225e258c16b1d1208226ad105a530616c3c41af1c"
+    },
+    {
+      "action": "archive_failed_run_and_link_verified_duplicate_inputs",
+      "old": "notes/physics/work/rogelio_v2_incomplete_title_error",
+      "new": "work/archive/failed_runs/rogelio_v2_title_error",
+      "linked_files": 47,
+      "logical_bytes_deduplicated": 122201297,
+      "unique_data_retained": true
+    }
+  ],
+  "subsequent_scratch_cleanup": "docs/ltspice_scratch_cleanup.json"
+}

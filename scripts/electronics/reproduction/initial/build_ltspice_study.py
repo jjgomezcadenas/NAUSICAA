@@ -19,6 +19,9 @@ from ion_signal.spice_acquisition import run
 from ion_signal.physics import Detector, E_CHARGE, square_phi
 from ion_signal.realistic_csa import uniform_ion_waveform, pwl_current, CSA, response
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[4]
 
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -28,10 +31,10 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--simulator',type=Path,required=True)
     ap.add_argument('--stage',choices=['original','study','all'],default='all')
-    ap.add_argument('--out',type=Path,default=ROOT/'results/ltspice')
+    ap.add_argument('--out',type=Path,default=ROOT/'results/ltspice/reproduction/initial')
     args=ap.parse_args(); args.simulator=args.simulator.resolve()
     out=args.out.resolve(); decks=out/'decks'; decks.mkdir(parents=True,exist_ok=True)
-    inc=ROOT/'LTSpice/180nm_professional.inc'; asc=ROOT/'LTSpice/CSAfolded180nm.asc'
+    inc=ROOT/'LTSpice/reference/rogelio/initial/180nm_professional.inc'; asc=ROOT/'LTSpice/reference/rogelio/initial/CSAfolded180nm.asc'
     # Normalize only the derived library's line endings/trailing whitespace.
     (decks/inc.name).write_text('\n'.join(line.rstrip() for line in inc.read_text().splitlines()).strip()+'\n')
     elements,directives=schematic_netlist(asc)
@@ -53,7 +56,7 @@ def main():
         'Uniform mean arrivals, not a sampled random track.',
         'Paper estimator keeps Cf=3 fF and nominal tau=0.3 s; no fitted gain correction.',
         'Stationary model-default transistor noise; no added resistor noise; model provenance/flicker calibration unconfirmed.']}
-    report['code_and_config_sha256']={str(p.relative_to(ROOT)):sha(p) for p in (Path(__file__).resolve(),ROOT/'src/ion_signal/spice.py',ROOT/'src/ion_signal/realistic_csa.py',ROOT/'config/detector.toml',ROOT/'config/realistic_csa.toml')}
+    report['code_and_config_sha256']={str(p.relative_to(ROOT)):sha(p) for p in (Path(__file__).resolve(),ROOT/'src/ion_signal/spice.py',ROOT/'src/ion_signal/realistic_csa.py',ROOT/'config/detector.toml',ROOT/'config/studies/electronics/reproduction/realistic_csa.toml')}
     report['simulator_sha256']=sha(args.simulator)
     report['simulator_version']='LTspice 17.2.4 for MacOS (native batch)'
     if args.stage in ('original','all'):
@@ -69,7 +72,7 @@ def main():
         np.savetxt(out/'original_transient.csv.gz',np.c_[t,i,data['V(in)'],v][::10],delimiter=',',header='time_s,current_A,input_V,output_V',comments='')
         print(json.dumps(report['original'],indent=2))
     if args.stage in ('study','all'):
-        cfg=tomllib.loads((ROOT/'config/realistic_csa.toml').read_text()); csa=CSA(**cfg['electronics'])
+        cfg=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/reproduction/realistic_csa.toml').read_text())); csa=CSA(**cfg['electronics'])
         det=Detector.from_toml(ROOT/'config/detector.toml');dt=cfg['readout']['sample_interval_s']
         records=[]
         common=[d for d in directives if not d.lower().startswith(('.tran','.meas'))]

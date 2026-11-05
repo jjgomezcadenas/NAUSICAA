@@ -11,6 +11,7 @@ import argparse, hashlib, re
 import h5py
 import numpy as np
 from ion_signal.spice_acquisition import run
+from ion_signal.spice_runtime import source_path
 ROOT=Path(__file__).resolve().parents[3]
 
 def main():
@@ -21,20 +22,20 @@ def main():
     p.add_argument('--op-only',action='store_true')
     p.add_argument('--counts',nargs='+',type=int,default=[0,1,1000])
     a=p.parse_args();sim=a.simulator.resolve()
-    out=ROOT/'results/ltspice/m4_scan';decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
-    source=ROOT/'results/ltspice/spice2_enc/decks/noise_400.cir'
+    out=ROOT/'results/ltspice/design/m4_scan';decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
+    source=ROOT/'results/ltspice/reproduction/spice2_enc/decks/noise_400.cir'
     model=source.parent/'corrected.inc'
     body='\n'.join(x for x in source.read_text().splitlines() if not x.lower().startswith(('is1 ','.noise','.end')))+'\n'
     body=body.replace('* NAUSICA matched benchmark; supplied transistor sizes/biases unchanged','* M4 geometry scan; all other device dimensions and bias voltages unchanged')
     (decks/'corrected.inc').write_bytes(model.read_bytes())
-    pwl=ROOT/'results/ltspice/decks/uniform_r2.pwl';data=np.loadtxt(pwl)
+    pwl=ROOT/'results/ltspice/reproduction/initial/decks/uniform_r2.pwl';data=np.loadtxt(pwl)
     raw=out/'raw.h5'
     with h5py.File(raw,'a') as h:
         h.attrs.update(external_capacitance_F=1.25e-12,feedback_F=3e-15,frame_s=.01,averaging_s=300e-6,correction_tau_s=.3,temperature_K=293.15,
           frequency_low_Hz=.1,frequency_high_Hz=1e6,simulator=str(sim),
           assumptions='Scale M4 W and L together; retain W/L=2 and multiplier=1. Optional M4 gate adjustment is stored per variant. All other dimensions, biases and noise coefficients retained. External 1.25 pF plus intrinsic MOS capacitances. Uniform finite-gap current over 10 ms; no renormalization. Stationary NOIMOD=2 noise. Short injection: 1 us plateau and 10 ns edges; one elementary charge.')
         files=[source,model,pwl,Path(__file__).resolve(),ROOT/'scripts/electronics/reproduction/initial/build_ltspice_study.py',ROOT/'src/ion_signal/spice.py',sim]
-        for name,values in [('source_paths',[str(x.relative_to(ROOT)) for x in files]),('source_sha256',[hashlib.sha256(x.read_bytes()).hexdigest() for x in files])]:
+        for name,values in [('source_paths',[source_path(x, root=ROOT) for x in files]),('source_sha256',[hashlib.sha256(x.read_bytes()).hexdigest() for x in files])]:
             if name in h:del h[name]
             h[name]=np.array(values,dtype=h5py.string_dtype())
     def acquire(scale,name,tail):

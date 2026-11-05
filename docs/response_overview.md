@@ -27,7 +27,7 @@ The input card is `config/specs/runs/response_overview.toml`. It points to the
 three corrected ion responses and the complete SiPM shard manifest. Reduction
 streams one event at a time and writes `results/response_overview/response_overview.h5`.
 The HTML and PNGs are alongside it; the self-contained LaTeX/PDF report is in
-`latex_generated/response_overview/`.
+`latex_generated/production/response_overview/`.
 
 ## Interactive display
 
@@ -86,7 +86,7 @@ assumptions are described in [sipm_statistical_implementation.md](sipm_statistic
 
 `make sipm-statistical-validation` compares it with microscopic simulation and
 generates [the HTML report](../results/sipm_statistical_validation/validation.html)
-and [PDF](../latex_generated/sipm_statistical_validation/validation.pdf).
+and [PDF](../latex_generated/electron_readout/sipm_statistical_validation/validation.pdf).
 `make sipm-statistical-pilot` runs two bb0nu events for each gas through the
 sensor and ASIC stages. Full production remains stopped; the existing viewer
 continues to use its saved production sources.
@@ -98,7 +98,7 @@ The S14160-1315PS pilot compares 100 matched bb0nu events at E/P = 2.0 and
 The [model and source notes](sipm_tpb_pilot.md) define square-aperture photon
 collection, TPB conversion, the 12.5/25 ns recovery comparison and fixed-charge
 electronics noise. [HTML results](../results/sipm_tpb_pilot/sipm_tpb_pilot.html)
-and [PDF](../latex_generated/sipm_tpb_pilot/sipm_tpb_pilot.pdf) separate optical
+and [PDF](../latex_generated/electron_readout/sipm_tpb_pilot/sipm_tpb_pilot.pdf) separate optical
 statistics, sensor recovery and electronics clipping.
 
 `make sipm-tpb-pilot` runs fresh timing pilots and the complete report workflow.

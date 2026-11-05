@@ -33,7 +33,7 @@ coefficient pairs in `config/electron_transport.toml`. At this pressure the
 coefficients multiplying sqrt(L_cm) are the Petit values divided by sqrt(15).
 The formula evaluation and Float64 reference checks are saved to
 `results/electron_diffusion/electron_diffusion.h5`; the generated report is
-`latex_generated/electron_diffusion/electron_diffusion.pdf`.
+`latex_generated/transport/electron_diffusion/electron_diffusion.pdf`.
 Electron transport and readout timing need their own configuration and cache
 identity. The inspected code uses supplied diffusion coefficients for the
 electron branch rather than a field-dependent coefficient table.
@@ -126,7 +126,7 @@ on simultaneous peak resident memory, not a directly sampled total.
 
 The numerical benchmark is saved in `results/three_cloud_benchmark/benchmark.h5`;
 the cloud HDF5 files are in per-worker subdirectories. The generated PDF is
-`latex_generated/three_cloud_benchmark/three_cloud_benchmark.pdf`.
+`latex_generated/transport/three_cloud_benchmark/three_cloud_benchmark.pdf`.
 `tests/event_analysis/check_three_cloud_benchmark.py` checks that all six
 streams conserve counts, paired distances and produced carrier counts, and
 that cloud arrays match exactly across worker counts.
@@ -151,7 +151,7 @@ reading, diffusion and HDF5 writes. The six cloud files total 310.3 MB.
 Per-process peak RSS ranged from 0.819 to 0.864 GB; their 5.05 GB sum is an
 upper bound on simultaneous peak RSS. The run summary is
 `results/three_cloud_sample_500/propagation_summary.h5` and the generated
-report is `latex_generated/three_cloud_sample_500/three_cloud_sample_500.pdf`.
+report is `latex_generated/transport/three_cloud_sample_500/three_cloud_sample_500.pdf`.
 
 Validation checked all 500 events in each sample for common paired drift
 distances, carrier totals and sampled/retained/outside accounting. Every
@@ -167,7 +167,7 @@ cloud storage was 5,016.5 MB. Individual process peak RSS values were
 0.95--1.00 GB; the sum of individual peaks is 5.82 GB, a conservative
 upper bound on simultaneous peak RSS. The saved numerical summary is
 `results/three_clouds_8000/propagation_summary.h5`; the generated report is
-`latex_generated/three_clouds_8000/three_clouds_8000.pdf`.
+`latex_generated/transport/three_clouds_8000/three_clouds_8000.pdf`.
 The full event-by-event validator passed for both samples: each event's three
 clouds share the same sampled location and produced carrier count, ion and
 electron drift distances sum to 150 cm, and sampled counts equal retained
@@ -191,7 +191,7 @@ PE using the Table 1 mean EL yield, axial direct-light acceptance, PDE 0.30
 and an exact binomial draw. Each PE stays in its parent arrival bucket. The
 pure-Xe and Xe–He grids share one event phase. The direct HDF5 histories and
 numerical summary are in `results/grid_readout_direct_8000/`; the generated
-report is `latex_generated/grid_readout_direct/grid_readout.pdf`.
+report is `latex_generated/production/grid_readout_direct/grid_readout.pdf`.
 Run `make grid-readout` for the complete calculation, validation and report,
 or `make present-grid-readout` to regenerate presentation from saved HDF5.
 
@@ -220,7 +220,7 @@ through the selected sample. The URL retains the sample, gas and position.
 the configured ion drift speed. The electron EL grid retains its 10 mm pitch
 and 2 microsecond buckets. The six-stream output and numerical summary are in
 `results/grid_readout_direct_3mm_8000/`; the self-contained report is
-`latex_generated/grid_readout_direct_3mm/grid_readout.pdf`.
+`latex_generated/production/grid_readout_direct_3mm/grid_readout.pdf`.
 `make present-grid-readout-3mm` regenerates presentation from the saved HDF5.
 
 The full run processed 8,000 events per sample with the same placement and

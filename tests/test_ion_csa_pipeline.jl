@@ -77,7 +77,7 @@ function fixture(dir)
 end
 
 @testset "Compact reconstructed matrices and production nodes" begin
- mktempdir(joinpath(root,"notes/physics/work")) do dir
+ mktempdir(joinpath(root,"work")) do dir
     f=fixture(dir)
     e=C.read_event(f.parent,5)
     @test size(e.reconstructed_ions)==(4,2)

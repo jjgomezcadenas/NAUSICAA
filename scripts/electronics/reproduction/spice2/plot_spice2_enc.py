@@ -15,9 +15,9 @@ os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-DATA=ROOT/'results/ltspice/spice2_enc'
-OUT=ROOT/'latex_generated/spice2_enc';OUT.mkdir(parents=True,exist_ok=True)
-PREVIEW=ROOT/'notes/physics/work/spice2-docs'
+DATA=ROOT/'results/ltspice/reproduction/spice2_enc'
+OUT=ROOT/'latex_generated/ion_readout/spice2_enc';OUT.mkdir(parents=True,exist_ok=True)
+PREVIEW=ROOT/'work/spice2-docs'
 with h5py.File(DATA/'analysis.h5') as h:
     a=dict(h.attrs);w=h['averaging_s'][:]*1e6;enc=h['scan_enc_electrons_rms'][:]
     gain=h['scan_gain_V_per_ion'][:];noise=h['scan_noise_rms_V'][:]

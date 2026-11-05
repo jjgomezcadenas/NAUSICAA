@@ -11,7 +11,7 @@
 \newcommand{\Var}{\operatorname{Var}}
 \newcommand{\code}[1]{\path{#1}}
 \providecommand{\SiPMGeneratedParameters}{}
-\InputIfFileExists{latex_generated/sipm_response/parameters.tex}{}{}
+\InputIfFileExists{latex_generated/electron_readout/sipm_response/parameters.tex}{}{}
 \title{SiPM charge response and provisional ASIC readout\\for NAUSICAA electroluminescence}
 \author{NAUSICAA model and implementation note}
 \date{4 November 2026}
@@ -662,7 +662,7 @@ baseline. Sensor measurements and ASIC information can replace each input
 through the versioned cards while keeping the saved stage boundaries and
 truth comparisons explicit.
 
-\InputIfFileExists{latex_generated/sipm_response/pilot_results.tex}{}{}
+\InputIfFileExists{latex_generated/electron_readout/sipm_response/pilot_results.tex}{}{}
 
 The pilot demonstrates substantial clipping under the adopted 1~mA
 bucket-average-current limit. The saved sensor stage retains the charge that
@@ -679,7 +679,7 @@ The statistical implementation uses the same production PE-per-bucket schemas:
 \code{config/specs/response/sipm/sipm_statistical_v1.toml}. The source,
 interfaces, validation commands and two-event integration pilot are described
 in \code{docs/sipm_statistical_implementation.md}. The generated comparison is
-\code{latex_generated/sipm_statistical_validation/validation.pdf}, with an
+\code{latex_generated/electron_readout/sipm_statistical_validation/validation.pdf}, with an
 HTML counterpart at \code{results/sipm_statistical_validation/validation.html}.
 
 \bibliographystyle{unsrt}

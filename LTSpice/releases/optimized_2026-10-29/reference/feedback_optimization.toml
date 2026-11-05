@@ -1,0 +1,77 @@
+# Local CSA optimization; all non-feedback device dimensions and biases fixed.
+output = "results/ltspice/feedback_optimization"
+report = "latex_generated/feedback_optimization"
+circuit = "LTSpice/variants/m4_x4_m3_x4/noise.cir"
+model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+frames_s = [0.02, 0.04]
+mean_ions = [120, 400]
+input_sources = ["results/ltspice/discharge_calibration/20ms/input.h5", "results/ltspice/pitch_4mm_40ms/input.h5"]
+averaging_s = [0.0003, 0.0005, 0.001, 0.002, 0.005]
+prehistory_s = 0.002
+max_steps_s = [0.000005, 0.0000025]
+counts = [0, 10, 100, 120, 400, 2000]
+minimum_output_V = 0.2
+maximum_output_V = 1.6
+max_gain_change = 0.01
+max_frame_leakage_fraction = 0.05
+
+[[variants]]
+name = "reference"
+width_m = 0.00000036
+length_m = 0.0001
+gate_V = 0.01
+[[variants]]
+name = "gate_0mV"
+width_m = 0.00000036
+length_m = 0.0001
+gate_V = 0.0
+[[variants]]
+name = "gate_5mV"
+width_m = 0.00000036
+length_m = 0.0001
+gate_V = 0.005
+[[variants]]
+name = "gate_20mV"
+width_m = 0.00000036
+length_m = 0.0001
+gate_V = 0.02
+[[variants]]
+name = "gate_40mV"
+width_m = 0.00000036
+length_m = 0.0001
+gate_V = 0.04
+[[variants]]
+name = "gate_80mV"
+width_m = 0.00000036
+length_m = 0.0001
+gate_V = 0.08
+[[variants]]
+name = "length_50um"
+width_m = 0.00000036
+length_m = 0.00005
+gate_V = 0.01
+[[variants]]
+name = "length_200um"
+width_m = 0.00000036
+length_m = 0.0002
+gate_V = 0.01
+[[variants]]
+name = "length_400um"
+width_m = 0.00000036
+length_m = 0.0004
+gate_V = 0.01
+[[variants]]
+name = "area_x4"
+width_m = 0.00000072
+length_m = 0.0002
+gate_V = 0.01
+[[variants]]
+name = "area_x16"
+width_m = 0.00000144
+length_m = 0.0004
+gate_V = 0.01
+[[variants]]
+name = "width_720nm"
+width_m = 0.00000072
+length_m = 0.0001
+gate_V = 0.01

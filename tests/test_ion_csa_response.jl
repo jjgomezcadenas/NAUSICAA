@@ -36,7 +36,7 @@ const C=IonCSAResponse
   [Float64((1+aa^2)*av(l)-aa*(av(l-1)+av(l+1))) for l in 0:4]
  end
  @test maximum(abs.(actual.-expected))/expected[1]<1e-4
- mktempdir(joinpath(root,"notes/physics/work")) do dir
+ mktempdir(joinpath(root,"work")) do dir
   p=joinpath(dir,"scalar.h5")
   h5open(p,"w") do h;h["complete"]=false;write(h["complete"],true);end
   @test h5open(h->Bool(read(h["complete"])),p,"r")

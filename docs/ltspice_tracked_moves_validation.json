@@ -1,0 +1,43 @@
+{
+  "tracked_files_checked": 64840,
+  "bytes_checked": 3791193056,
+  "missing": [],
+  "changed_after_move": [
+    {
+      "old": "LTSpice/calculos_para_rogelio.pdf",
+      "new": "latex_generated/ion_readout/rogelio_notes/calculos_para_rogelio.pdf"
+    },
+    {
+      "old": "LTSpice/ramo_para_rogelio.pdf",
+      "new": "latex_generated/ion_readout/rogelio_notes/ramo_para_rogelio.pdf"
+    },
+    {
+      "old": "LTSpice/topmetal_parameters.md",
+      "new": "LTSpice/notes/topmetal_parameters.md"
+    },
+    {
+      "old": "notes/physics/figures/build_bias_values.py",
+      "new": "scripts/paper/build_bias_values.py"
+    },
+    {
+      "old": "notes/physics/figures/build_injection_values.py",
+      "new": "scripts/paper/build_injection_values.py"
+    },
+    {
+      "old": "notes/physics/figures/build_pixel_area.py",
+      "new": "scripts/paper/build_pixel_area.py"
+    },
+    {
+      "old": "notes/physics/tools/package_csa_v3.py",
+      "new": "scripts/paper/package_csa_v3.py"
+    },
+    {
+      "old": "notes/physics/tools/package_optimized_ltspice.py",
+      "new": "scripts/paper/package_optimized_ltspice.py"
+    },
+    {
+      "old": "notes/physics/tools/package_paper_ltspice.py",
+      "new": "scripts/paper/package_paper_ltspice.py"
+    }
+  ]
+}

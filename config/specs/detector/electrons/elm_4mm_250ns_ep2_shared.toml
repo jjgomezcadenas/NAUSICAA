@@ -1,0 +1,51 @@
+schema = "nausicaa.electron_detector_spec.v1"
+pressure_bar = 15.0
+helium_fraction = 0.15
+drift_speed_mm_us = 1.0
+lifetime_ms = 15.0
+hole_pitch_mm = 4.0
+hole_diameter_mm = 2.5
+hole_depth_mm = 5.0
+sipm_shape = "square"
+sipm_side_mm = 3.0
+bucket_width_us = 0.25
+reduced_field_kV_cm_bar = 2.0
+j_variance_ratio = 0.030
+j_status = "user_specified"
+j_reference = "Oliveira Figure 6; corrected approximate user reading, 2026-11-04"
+
+optical_model = "elm_blue_meridional"
+electron_collection_efficiency = 1.0
+
+[optics]
+photon_band = "blue_tpb"
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5
+gap_refractive_index = 1.0
+guide_length_mm = 100.0
+gas_gap_radial_mm = 0.5
+propagation_transmission = 1.0
+coupling_transmission = 1.0
+electrode_transmission = 1.0
+coupling_adhesive = "Norland NOA 87"
+guide_length_policy = "fixed_grading_field"
+grading_field_kV_cm = 4.65
+cathode_potential_V = 1200.0
+entry_potential_V = 31500.0
+exit_potential_V = 46500.0
+sensor_plane_potential_V = 0.0
+reference = "docs/elm.tex; isotropic axial EL, absorbing walls, meridional isotropic-in-core capture"
+
+[pure_xe]
+d_T_mm_sqrtbar_per_sqrtcm = 3.5
+d_L_mm_sqrtbar_per_sqrtcm = 0.9
+yield_gain_photons_per_electron_kV = 137.0
+yield_threshold_kV_cm_bar = 0.73
+
+[xe_he15]
+d_T_mm_sqrtbar_per_sqrtcm = 1.6
+d_L_mm_sqrtbar_per_sqrtcm = 0.75
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.80
+

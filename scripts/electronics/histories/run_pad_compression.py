@@ -15,14 +15,14 @@ from pad_history_viewer.engine import Engine
 
 def main():
  p=argparse.ArgumentParser(description=__doc__)
- p.add_argument('--config',type=Path,default=ROOT/'config/pad_history_viewer_direct.toml')
+ p.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/histories/pad_history_viewer_direct.toml')
  p.add_argument('--simulator',type=Path);p.add_argument('--julia');p.add_argument('--workers',type=int,default=4)
  p.add_argument('--gear-on-timeout',action='store_true',help='Retry a timed-out transient with Gear integration')
  p.add_argument('--simulation-timeout-s',type=float,default=120,help='Wall time allowed per LTspice transient')
  p.add_argument('--limit',type=int);p.add_argument('--refine',type=int,default=24);p.add_argument('--retry-failed',action='store_true')
  p.add_argument('--work-dir',type=Path,help='Private Julia worker directory for concurrent independent studies')
  args=p.parse_args()
- engine=Engine(args.config,args.work_dir or ROOT/'notes/physics/work/pad_compression_batch',args.simulator,args.julia,args.simulation_timeout_s,args.gear_on_timeout)
+ engine=Engine(args.config,args.work_dir or ROOT/'work/pad_compression_batch',args.simulator,args.julia,args.simulation_timeout_s,args.gear_on_timeout)
  failures=[];started=time.monotonic()
  try:
   plan=engine.plan();tasks=[]
@@ -67,7 +67,7 @@ def main():
   (engine.directory/'batch_status.json').write_text(json.dumps({'planned':len(alltasks),'scheduled':len(tasks),'failed':failures,'elapsed_s':time.monotonic()-started},indent=2)+'\n')
   print('Complete:',engine.directory,flush=True)
   if failures:raise RuntimeError(f'{len(failures)} simulations failed; see batch_status.json')
-  subprocess.run([engine.worker.process.args[0],'--project=.',str(ROOT/'scripts/electronics/histories/report_pad_compression.jl'),str(engine.directory)],cwd=ROOT,env=os.environ.copy()|{'JULIA_DEPOT_PATH':str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia')},check=True)
+  subprocess.run([engine.worker.process.args[0],'--project=.',str(ROOT/'scripts/electronics/histories/report_pad_compression.jl'),str(engine.directory)],cwd=ROOT,env=os.environ.copy()|{'JULIA_DEPOT_PATH':str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia')},check=True)
   subprocess.run([sys.executable,str(ROOT/'scripts/electronics/histories/present_pad_compression.py'),'--results',str(engine.directory),'--config',str(engine.card)],cwd=ROOT,check=True)
  finally:engine.close()
 if __name__=='__main__':main()

@@ -1,0 +1,31 @@
+# Independent assessment of Rogelio Palomo's 27 October 2026 circuit.
+source = "LTSpice/Spice2/v2/180nm_professional/CSAfolded180nm-2.net"
+source_model = "LTSpice/Spice2/v2/180nm_professional/180nm_professional.inc"
+corrected_model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+input = "results/ltspice/discharge_calibration/20ms/input.h5"
+reference = "results/ltspice/discharge_calibration/20ms/analysis.h5"
+output = "results/ltspice/rogelio_v2"
+frame_s = 0.02
+averaging_s = 0.0003
+prehistory_s = 0.002
+counts = [0, 1, 10, 100, 564, 1000, 2000]
+max_steps_s = [0.000005, 0.0000025]
+fit_start_s = 0.021
+fit_stop_s = 0.12
+fit_sample_step_s = 0.0002
+
+[[variants]]
+name = "v2_native_corrected"
+capacitance_F = 0.25e-12
+temperature_C = 27.0
+
+[[variants]]
+name = "v2_matched"
+capacitance_F = 1.25e-12
+temperature_C = 20.0
+
+[[variants]]
+name = "v2_m3_large"
+capacitance_F = 1.25e-12
+temperature_C = 20.0
+m3_large = true

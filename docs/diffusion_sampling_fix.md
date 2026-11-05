@@ -29,7 +29,7 @@ removes the intermediate histogram from the readout calculation.
 The electronics rerun uses the corrected 2 mm and 4 mm pixel histories through
 `config/pad_history_readout_direct.toml` and
 `config/pad_history_viewer_direct.toml`. Its comparison report is
-`latex_generated/pad_history_direct_comparison/report.tex`. Historical inputs
+`latex_generated/ion_readout/pad_history_direct_comparison/report.tex`. Historical inputs
 and electronics results remain preserved.
 
 The sections below record the diagnosed path and original implementation
@@ -81,7 +81,7 @@ remove the spatial separation of its deposits.
 
 The reproducible audit is `scripts/electronics/histories/audit_history_time.jl 3790`; its numerical
 record is `results/ltspice/history_time_audit/event_3790.h5` and its report source
-is `latex_generated/history_time_audit/event_3790/report.tex`.
+is `latex_generated/ion_readout/history_time_audit/event_3790/report.tex`.
 
 ## Proposed implementation
 

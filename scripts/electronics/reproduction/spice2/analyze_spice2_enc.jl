@@ -2,7 +2,7 @@
 using HDF5,SHA
 include(joinpath(@__DIR__,"../../../../src/ion_signal/averaging_scan.jl"))
 using .AveragingScan
-root=normpath(joinpath(@__DIR__,"../../../.."));dir=joinpath(root,"results/ltspice/spice2_enc")
+root=normpath(joinpath(@__DIR__,"../../../.."));dir=joinpath(root,"results/ltspice/reproduction/spice2_enc")
 raw=joinpath(dir,"raw.h5")
 function interpolate(t,v,x)
     j=clamp(searchsortedlast(t,x),1,length(t)-1)
@@ -82,7 +82,7 @@ h5open(raw,"r") do h
             end
         end
     end
-    previous=joinpath(root,"results/ltspice/averaging_scan.h5")
+    previous=joinpath(root,"results/ltspice/reproduction/initial/averaging_scan.h5")
     previous_gain,previous_enc=h5open(previous,"r") do old
         j=argmin(abs.(read(old["averaging_s"]).-T))
         read(old["gain_V_per_ion"])[j],read(old["enc_electrons_rms"])[j]

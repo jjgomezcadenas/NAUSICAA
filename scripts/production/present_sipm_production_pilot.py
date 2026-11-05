@@ -6,7 +6,7 @@ import html,os,subprocess,tomllib
 import h5py
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'results/sipm_statistical_production_pilot'
-LATEX=ROOT/'latex_generated/sipm_statistical_production_pilot'
+LATEX=ROOT/'latex_generated/electron_readout/sipm_statistical_production_pilot'
 
 def scalar(g,k):
     """Read a scalar value or UTF-8 string from the numerical result."""
@@ -59,7 +59,7 @@ def main():
     totalheads=['E/P','Pilot total: both gases (s)','8,000: both gases (min)']
     comparison_link='<p><a href="clipping_comparison.html">E/P comparison: clipping and event-response spread</a></p>' if (OUT/'clipping_comparison.html').exists() else ''
     headline='100-event pilots with fixed SiPM and ASIC settings; production estimates cover both gas models at each E/P.'
-    page='<!doctype html><meta charset="utf-8"><title>SiPM and ASIC production pilot</title><style>body{font:16px system-ui;max-width:1250px;margin:35px auto;padding:0 20px;color:#17334a;line-height:1.6}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:right}table{border-collapse:collapse}</style><h1>Statistical SiPM + ASIC production pilot</h1><p><strong>'+headline+'</strong></p><p>'+description+'</p>'+table(totalheads,totals)+'<h2>Timing by gas</h2>'+table(th,timing)+'<p>'+method+'</p><h2>Saved-response checks</h2><p>'+validation+'</p>'+table(ch,checks)+comparison_link+'<h2>Outputs</h2><ul>'+''.join(links)+'</ul><p><a href="files.toml">File index</a> · <a href="../../latex_generated/sipm_statistical_production_pilot/sipm_production_pilot.pdf">PDF report</a></p>'
+    page='<!doctype html><meta charset="utf-8"><title>SiPM and ASIC production pilot</title><style>body{font:16px system-ui;max-width:1250px;margin:35px auto;padding:0 20px;color:#17334a;line-height:1.6}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:right}table{border-collapse:collapse}</style><h1>Statistical SiPM + ASIC production pilot</h1><p><strong>'+headline+'</strong></p><p>'+description+'</p>'+table(totalheads,totals)+'<h2>Timing by gas</h2>'+table(th,timing)+'<p>'+method+'</p><h2>Saved-response checks</h2><p>'+validation+'</p>'+table(ch,checks)+comparison_link+'<h2>Outputs</h2><ul>'+''.join(links)+'</ul><p><a href="files.toml">File index</a> · <a href="../../latex_generated/electron_readout/sipm_statistical_production_pilot/sipm_production_pilot.pdf">PDF report</a></p>'
     (OUT/'sipm_production_pilot.html').write_text(page)
     def esc(v):return v.replace('–','--').replace('%',r'\%')
     def tex_table(heads,rows):

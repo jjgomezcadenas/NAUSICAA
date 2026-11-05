@@ -9,12 +9,15 @@ _sys.path[:0] = [str(_REPO_ROOT), str(_REPO_ROOT / "src")]
 from pathlib import Path
 import argparse, subprocess, sys, tomllib
 import h5py
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--simulator',required=True,type=Path)
     p.add_argument('--julia',default='julia')
-    a=p.parse_args();cfg=tomllib.loads((ROOT/'config/bucket_study.toml').read_text())
+    a=p.parse_args();cfg=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/readout/bucket_study.toml').read_text()))
     def run(*args):subprocess.run(list(map(str,args)),cwd=ROOT,check=True)
     def julia(script):run(a.julia,'--project=.',f'scripts/electronics/readout/{script}.jl')
     paths=[ROOT/cfg['output']/f'{round(f*1000)}ms/input.h5' for f in cfg['bucket_sizes_s']]

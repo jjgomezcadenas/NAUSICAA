@@ -11,6 +11,9 @@ import argparse,hashlib,os,re,subprocess,sys,tomllib
 import h5py
 import numpy as np
 from ion_signal.spice_acquisition import run
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def preserve(p,data):
@@ -18,8 +21,8 @@ def preserve(p,data):
     p.write_bytes(data)
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--simulator',required=True,type=Path);p.add_argument('--julia',default='julia');a=p.parse_args()
-    cfgfile=ROOT/'config/pitch_4mm_40ms.toml';c=tomllib.loads(cfgfile.read_text());out=ROOT/c['output'];decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
-    env=os.environ.copy();env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'));env.setdefault('PYTHONPATH',str(ROOT/'src'))
+    cfgfile=ROOT/'config/studies/electronics/readout/pitch_4mm_40ms.toml';c=resolve_config_paths(tomllib.loads(cfgfile.read_text()));out=ROOT/c['output'];decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
+    env=os.environ.copy();env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'));env.setdefault('PYTHONPATH',str(ROOT/'src'))
     def julia(stage):subprocess.run([a.julia,'--project=.','scripts/electronics/readout/pitch_exercise.jl',stage],cwd=ROOT,env=env,check=True)
     if not (out/'input.h5').exists():julia('inputs')
     source=ROOT/c['circuit'];model=ROOT/c['model'];noise=ROOT/c['noise_source'];sim=a.simulator.resolve()

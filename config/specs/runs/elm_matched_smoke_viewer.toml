@@ -1,0 +1,12 @@
+label = "ELM · E/P 2 · 4 mm · 5–145 cm"
+sipm_manifest = "results/elm_matched_smoke/response/8cae64e48fc61483/manifest.toml"
+id = "elm_matched_smoke"
+default_pitch_mm = 4
+sample = "bb0nu"
+production_manifest = "results/elm_matched_smoke/manifest.toml"
+default_gas = "xe_he"
+chamber_length_cm = 150.0
+
+[[ions]]
+pitch_mm = 4
+path = "results/simulations/production_pilot/bb0nu/524b3afb83f7b048e4df935f576aee11f3b77d439608e319ca0786b5ab038c29/response/ions/8a8a766ffd20532c345064585da7f0b146aea4d5ce75cadb97f19abbd6c9ff2a/284314771c002147ec479e3b6df3010ba41250134b27276f28fab92bc8b82c05/ion_response.h5"

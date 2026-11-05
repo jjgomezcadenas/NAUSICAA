@@ -1,0 +1,4 @@
+scans = ["results/ltspice/retention_scan", "results/ltspice/retention_scan_extension"]
+output = "results/ltspice/retention_comparison"
+report = "latex_generated/retention_comparison"
+study_cards = ["config/retention_scan.toml", "config/retention_scan_extension.toml"]

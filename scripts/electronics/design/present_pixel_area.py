@@ -10,14 +10,14 @@ from pathlib import Path
 import os
 import h5py
 ROOT=Path(__file__).resolve().parents[3]
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/matplotlib-cache'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/matplotlib-cache'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
 def main():
-    result=ROOT/'results/pixel_area';out=ROOT/'latex_generated/pixel_area';out.mkdir(parents=True,exist_ok=True)
+    result=ROOT/'results/pixel_area';out=ROOT/'latex_generated/ion_readout/pixel_area';out.mkdir(parents=True,exist_ok=True)
     with h5py.File(result/'analysis.h5') as h:
         a=dict(h.attrs);nom=dict(h['nominal'].attrs);wide=dict(h['wide_margins'].attrs)
         device=h['devices'];names=device['names'].asstr()[:]
@@ -184,7 +184,7 @@ python scripts/electronics/design/present_pixel_area.py
 ```
 
 Configuration: config/pixel_area.toml. Device dimensions are parsed directly
-from LTSpice/variants/m4_x4_m3_x4/noise.cir, including multiplicity. Pitch and
+from LTSpice/designs/variants/m4_x4_m3_x4/noise.cir, including multiplicity. Pitch and
 pad width come from config/detector.toml. Julia saves numerical results,
 rectangle coordinates and source hashes to analysis.h5. Python presents them.
 
@@ -210,7 +210,7 @@ circuit. Two {values['BAND']} mm edge bands geometrically accommodate the
 {values['SHAREDTOTAL']} mm2 common-area allocation in a {values['TILE']} mm
 square example array while preserving the 2 mm pad pitch.
 
-Report and figures: latex_generated/pixel_area/. Source generated without
+Report and figures: latex_generated/ion_readout/pixel_area/. Source generated without
 compiling or modifying the manuscript. Tests check multiplicity, physical
 areas, containment, overlap rejection and dimensional scaling.
 ''')

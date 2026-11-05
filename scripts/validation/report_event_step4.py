@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/"latex_generated/event_analysis_step4"
+OUT=ROOT/"latex_generated/reconstruction/event_analysis_step4"
 
 
 def render():

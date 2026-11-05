@@ -1,0 +1,4 @@
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_matched_production/response/77ed411cb39be020/manifest.toml"
+response_wall_s = 480.64503288269043
+complete = true
+card = "config/specs/runs/elm_matched_sipm_full.toml"

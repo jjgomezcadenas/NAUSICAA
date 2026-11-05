@@ -15,6 +15,9 @@ import argparse, hashlib, re, tomllib
 import h5py
 import numpy as np
 from ion_signal.spice_acquisition import run
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def string(value): return value.decode() if isinstance(value, bytes) else value
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -28,11 +31,11 @@ def main():
     p.add_argument('--bucket-ms',type=int,nargs='+')
     p.add_argument('--counts',type=int,nargs='+')
     args=p.parse_args(); sim=args.simulator.resolve()
-    cfgpath=ROOT/'config/bucket_study.toml';cfg=tomllib.loads(cfgpath.read_text())
+    cfgpath=ROOT/'config/studies/electronics/readout/bucket_study.toml';cfg=resolve_config_paths(tomllib.loads(cfgpath.read_text()))
     source=ROOT/cfg['circuit'];model=ROOT/cfg['model'];noise=ROOT/cfg['noise_source']
     body='\n'.join(x for x in source.read_text().splitlines() if not x.lower().startswith(('is1 ','.tran','.save','.end')))+'\n'
     # Verify that reused noise actually belongs to the same transistor circuit.
-    original_noise=ROOT/'results/ltspice/m3_scan/decks'/f"{cfg['noise_group']}_noise_400.cir"
+    original_noise=ROOT/'results/ltspice/design/m3_scan/decks'/f"{cfg['noise_group']}_noise_400.cir"
     noisebody='\n'.join(x for x in original_noise.read_text().splitlines() if not x.lower().startswith(('is1 ','.noise','.end')))+'\n'
     assert body==noisebody, 'Noise and transient circuits differ'
     assert sha(model)==sha(original_noise.parent/'corrected.inc')

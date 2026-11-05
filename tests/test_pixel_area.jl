@@ -3,7 +3,7 @@ include(joinpath(@__DIR__,"../src/ion_signal/pixel_area.jl"))
 using .PixelArea
 root=normpath(joinpath(@__DIR__,".."))
 @testset "Area inputs and physical geometry" begin
-    devices=read_devices(joinpath(root,"LTSpice/variants/m4_x4_m3_x4/noise.cir"))
+    devices=read_devices(joinpath(root,"LTSpice/designs/variants/m4_x4_m3_x4/noise.cir"))
     @test length(devices)==9
     @test count(d->d.instance=="M2",devices)==3
     @test only(filter(d->d.name=="M5",devices)).W_m≈220e-6

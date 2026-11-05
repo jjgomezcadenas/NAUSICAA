@@ -73,7 +73,7 @@ def main() -> None:
     if not index.is_file():
         raise RuntimeError("Numerical scan index was not written")
     run_id = index.stem.removeprefix("grid_scan_summary_")
-    report_dir = ROOT / "latex_generated/production_grid_scan" / run_id
+    report_dir = ROOT / "latex_generated/production/production_grid_scan" / run_id
     subprocess.run([os.environ.get("PYTHON", "python3.13"),
                     str(ROOT / "scripts/production/present_grid_scan.py"),
                     str(index), str(report_dir)], cwd=ROOT, check=True)

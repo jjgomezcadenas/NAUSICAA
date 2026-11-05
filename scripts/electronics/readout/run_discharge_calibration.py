@@ -11,6 +11,9 @@ import argparse,hashlib,re,tomllib
 import h5py
 import numpy as np
 from ion_signal.spice_acquisition import run
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def string(x):return x.decode() if isinstance(x,bytes) else x
@@ -21,7 +24,7 @@ def preserve(p,data):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--simulator',required=True,type=Path);p.add_argument('--counts',nargs='+',type=int)
     args=p.parse_args();sim=args.simulator.resolve()
-    cp=ROOT/'config/discharge_calibration.toml';cfg=tomllib.loads(cp.read_text())
+    cp=ROOT/'config/studies/electronics/readout/discharge_calibration.toml';cfg=resolve_config_paths(tomllib.loads(cp.read_text()))
     out=ROOT/cfg['output'];decks=out/'decks';decks.mkdir(parents=True,exist_ok=True)
     source=ROOT/cfg['circuit'];model=ROOT/cfg['model'];history=ROOT/cfg['historical']/'raw.h5'
     body='\n'.join(x for x in source.read_text().splitlines() if not x.lower().startswith(('is1 ','.tran','.save','.end')))+'\n'

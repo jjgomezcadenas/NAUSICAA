@@ -12,7 +12,7 @@ response applies no S/N cut or clipping of negative estimates.
 From the repository root, using the Julia scientific depot:
 
 ```sh
-JULIA_DEPOT_PATH="$PWD/work/julia-depot:$PWD/notes/physics/work/julia-depot:$HOME/.julia" \
+JULIA_DEPOT_PATH="$PWD/work/julia-depot:$PWD/work/julia-depot:$HOME/.julia" \
   julia --startup-file=no --project=. scripts/production/run_ion_csa.jl \
   config/specs/runs/ion_csa_v3_pilot_all.toml
 ```
@@ -197,7 +197,7 @@ work/event-viewer-venv/bin/python scripts/production/present_csa_design.py
 ```
 
 Generated values, tables, figures and standalone source are in
-`latex_generated/csa_design/`. Compilation remains a separate explicit step.
+`latex_generated/ion_readout/csa_design/`. Compilation remains a separate explicit step.
 
 ## Validation commands
 

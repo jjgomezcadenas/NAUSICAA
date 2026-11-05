@@ -9,6 +9,16 @@ const OUT=joinpath(ROOT,"results/elm_sipm_pilot")
 put(g,d)=PROD.put(g,d)
 rms_percent(x)=100std(x;corrected=false)/mean(x)
 
+"""Electron reference bounds from shared placement or an explicit legacy override."""
+function electron_reference_bounds(e,r)
+    chamber=Float64(r["chamber_length_cm"])
+    if haskey(e,"placement")
+        p=e["placement"]
+        return (Float64(p["minimum_electron_drift_cm"]),Float64(p["maximum_electron_drift_cm"]),chamber)
+    end
+    (chamber-Float64(get(r,"max_ion_drift_cm",chamber)),chamber-Float64(r["min_ion_drift_cm"]),chamber)
+end
+
 """Compare matched photon histories for two recovery constants and both gases.
 
 Input-positive SiPM/bucket cells define all pulse comparisons. Optical triggers
@@ -51,10 +61,13 @@ function main(;output_dir=OUT,report_name="elm_sipm_pilot",reference_results=not
             h5open(source_hits,"r") do hitsfile
               h5open(source,"r") do ph
                 card=TOML.parse(String(read(ph["metadata/branch_card_toml"])))
+                realization=TOML.parse(String(read(ph["metadata/realisation_card_toml"])))
+                min_drift,max_drift,chamber=electron_reference_bounds(card,realization)
                 @assert String(read(ph["metadata/photon_band"]))=="blue_tpb"
                 put(g,(;photon_path=source,photon_sha256=PROD.sha(source),
                     detector_card=String(read(ph["metadata/branch_card_toml"])),
-                    optical_acceptance=read(ph["metadata/optical_acceptance"])))
+                    optical_acceptance=read(ph["metadata/optical_acceptance"]),
+                    minimum_electron_drift_cm=min_drift,maximum_electron_drift_cm=max_drift,chamber_length_cm=chamber))
                 matching_shards=filter(x->x["gas"]==gas,manifest["shards"])
                 put(g,(;sensor_paths=[x["sensor"] for x in matching_shards],
                     electronics_paths=[x["asic"] for x in matching_shards]))
@@ -92,7 +105,7 @@ function main(;output_dir=OUT,report_name="elm_sipm_pilot",reference_results=not
                             quiet_n+=length(quiet_values);quiet_sum+=sum(quiet_values);quiet_sumsq+=sum(abs2,quiet_values)
                             hits,_=PROD.EA.read_event(hitsfile,Int64(id));energy=sum(Float64.(hits.energy_MeV))
                             drift=Float64(h.placement.electron_drift_cm)
-                            @assert 10<=drift<=150 && isapprox(drift+h.placement.ion_drift_cm,150;atol=1e-4)
+                            @assert min_drift<=drift<=max_drift && isapprox(drift+h.placement.ion_drift_cm,chamber;atol=1e-4)
                             survival=exp(-(drift*10/card["drift_speed_mm_us"]*.001)/card["lifetime_ms"])
                             dark_expected=length(pe)*settings.sensor.dark_rate_Hz*branch.src.dt
                             detector=sum(pe);raw=sum(measured)+loss;after=sum(measured);oq=sum(optical)
@@ -105,6 +118,7 @@ function main(;output_dir=OUT,report_name="elm_sipm_pilot",reference_results=not
                                 sipm_loss_percent=100sipm_loss/detector,clip_loss_percent=100loss/sum(sensor_pe),
                                 input_cells=length(selected),clipped_input_cells=count(identity,sat[selected]),
                                 clipped_acquired_cells=count(identity,sat),acquired_cells=length(pe),dark_expected,
+                                event_mean_photons=mean(h.cells.count),event_max_photons=maximum(h.cells.count),
                                 event_mean_pe=mean(pe[selected]),event_max_pe=maximum(pe[selected]),
                                 event_mean_sensor_pe=mean(optical[selected]),event_max_sensor_pe=maximum(optical[selected]),
                                 event_mean_after_pe=mean(measured[selected]),event_max_after_pe=maximum(measured[selected]),
@@ -150,7 +164,7 @@ function main(;output_dir=OUT,report_name="elm_sipm_pilot",reference_results=not
                 quiet_noise_mean_pe=quiet_mean,quiet_noise_rms_pe=quiet_rms,quiet_cells=quiet_n,
                 pde_fraction=pde_successes/pde_trials,
                 pde_mean_z=(pde_successes-pde_trials*settings.sensor.pde)/sqrt(pde_trials*settings.sensor.pde*(1-settings.sensor.pde))))
-            for key in ("event_mean_pe","event_max_pe","event_mean_sensor_pe","event_max_sensor_pe",
+            for key in ("event_mean_photons","event_max_photons","event_mean_pe","event_max_pe","event_mean_sensor_pe","event_max_sensor_pe",
                         "event_mean_after_pe","event_max_after_pe","acquired_cells","input_cells")
                 put(g,Dict("average_"*key=>mean(columns[key]),"median_"*key=>median(columns[key])))
             end

@@ -1,0 +1,15 @@
+# User design comparison; retain historical runs and write each duration separately.
+bucket_sizes_s = [0.01, 0.02]
+averaging_s = 0.0003
+correction_tau_s = 0.3
+prehistory_s = 0.002
+post_frames = 3
+max_steps_s = [0.000005, 0.0000025]
+counts = [0, 1, 1000, 2000]
+train_count = 1000
+detector = "config/detector.toml"
+circuit = "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir"
+model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+noise_source = "results/ltspice/m3_scan/raw.h5"
+noise_group = "scale_4_gate_0.5384774789"
+output = "results/ltspice/bucket_scan"

@@ -66,9 +66,9 @@ summary, tables and figures. Compilation is a separate step.
 
 ```sh
 python scripts/electronics/histories/run_pad_history_pipeline.py \
-  --config config/pad_history_readout_direct.toml --simulator /path/to/LTspice
+  --config config/studies/electronics/histories/pad_history_readout_direct.toml --simulator /path/to/LTspice
 python scripts/electronics/histories/run_pad_compression.py \
-  --config config/pad_history_viewer_direct.toml --workers 4
+  --config config/studies/electronics/histories/pad_history_viewer_direct.toml --workers 4
 python scripts/viewers/view_pad_histories.py
 ```
 
@@ -80,7 +80,7 @@ presentations:
 ```sh
 python scripts/electronics/histories/present_pad_histories.py
 python scripts/electronics/histories/present_pad_compression.py \
-  --results results/ltspice/pad_compression_direct/8b0d8b859f56
+  --results results/ltspice/histories/pad_compression_direct/8b0d8b859f56
 ```
 
 The viewer's calculation worker remains in `src/pad_history_viewer`; its reusable
@@ -104,13 +104,13 @@ To regenerate the combined report source and figures:
 
 ```sh
 julia --project=. scripts/electronics/feedback/combine_retention_scans.jl \
-  config/retention_comparison.toml
+  config/studies/electronics/feedback/retention_comparison.toml
 python scripts/electronics/feedback/present_retention_scan.py \
-  --config config/retention_comparison.toml
+  --config config/studies/electronics/feedback/retention_comparison.toml
 ```
 
 Results are in `results/ltspice/retention_{scan,scan_extension,comparison}`;
-the combined report is `latex_generated/retention_comparison/report.tex`.
+the combined report is `latex_generated/ion_readout/retention_comparison/report.tex`.
 [Study configuration and validation](../notes/physics/retention_study.md).
 
 ## Documents and path history

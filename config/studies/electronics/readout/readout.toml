@@ -1,0 +1,48 @@
+# Analytical benchmarks, not fitted X-FAB transistor parameters.
+[electronics]
+feedback_capacitance_F = 3e-15 # Starting value in Rogelio's supplied calculator.
+discharge_times_s = [0.00003, 0.001, 0.01, 0.1, 1.0]
+sample_interval_s = 0.01
+sample_phases_s = [0.0, 0.005]
+
+[numerics]
+max_step_s = 0.000005
+gaussian_tail_sigmas = 8.0
+spice_charge_relative_tolerance = 0.0001
+
+[[cases]]
+id = "single_ion"
+label = "Single ion"
+kind = "single"
+ions = 1.0
+post_window_s = 0.005
+
+[[cases]]
+id = "uniform_packet"
+label = "Uniform arrivals over 10 ms (diagnostic)"
+kind = "uniform"
+ions = 260.0
+duration_s = 0.01
+post_window_s = 0.05
+
+[[cases]]
+id = "diffused_packet"
+label = "Compact packet after 1.5 m of thermal drift"
+kind = "gaussian"
+ions = 260.0
+drift_length_m = 1.5
+post_window_s = 0.05
+
+[[cases]]
+id = "two_packets"
+label = "Two packets, 40 ms apart, after 0.75 m drift"
+kind = "double_gaussian"
+ions = 520.0
+drift_length_m = 0.75
+separation_s = 0.04
+post_window_s = 0.05
+
+[provenance]
+arrival_status = "Specified one-pad benchmarks; no event-ensemble or focusing simulation"
+charge_status = "260 ions is an illustrative packet charge inspired by the ITACA occupancy study, not a reconstructed pad event"
+frontend_status = "Ideal amplifier, linear feedback resistance, no transistor or noise prediction"

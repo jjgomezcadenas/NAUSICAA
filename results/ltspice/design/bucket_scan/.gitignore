@@ -1,0 +1,4 @@
+# Native simulator scratch; raw waveforms are preserved in compressed HDF5.
+**/decks/*.raw
+**/decks/*.log
+**/decks/*.db

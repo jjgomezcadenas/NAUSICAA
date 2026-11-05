@@ -1,0 +1,22 @@
+# Design input supplied by J. J. Gomez-Cadenas on 28 October 2026.
+pitch_m = 0.004
+frame_s = 0.04
+mean_ions = 400
+reference_mean_ions = 120
+averaging_s = 0.0003
+prehistory_s = 0.002
+stop_s = 0.2
+max_steps_s = [0.000005, 0.0000025]
+counts = [0, 1, 10, 100, 400]
+fit_start_s = 0.041
+fit_stop_s = 0.12
+fit_sample_step_s = 0.0002
+fit_checks_s = [[0.041, 0.06], [0.06, 0.09], [0.09, 0.12]]
+snr_targets = [1, 2, 3, 5]
+detector = "config/detector.toml"
+circuit = "LTSpice/variants/m4_x4_m3_x4/uniform_1000_ions.cir"
+model = "LTSpice/variants/m4_x4_m3_x4/corrected.inc"
+noise_source = "results/ltspice/discharge_calibration/20ms/raw.h5"
+reference = "results/ltspice/discharge_calibration/20ms/paper_readout.h5"
+output = "results/ltspice/pitch_4mm_40ms"
+report = "latex_generated/pitch_4mm_40ms"

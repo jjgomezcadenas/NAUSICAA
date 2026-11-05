@@ -12,7 +12,7 @@ class SpiceTests(unittest.TestCase):
 
     def test_supplied_connectivity(self):
         root=Path(__file__).resolve().parents[1]
-        el,d=schematic_netlist(root/'LTSpice/CSAfolded180nm.asc')
+        el,d=schematic_netlist(root/'LTSpice/reference/rogelio/initial/CSAfolded180nm.asc')
         self.assertIn('Mf out Vdis in 0 180nmN l={LMf} w={WMf} m=1',el)
         self.assertIn('M1 s in med Vdda 180nmP l={Lcs} w={Wcs} m={Mp}',el)
         self.assertIn('Cf out in 3f',el)

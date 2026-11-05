@@ -8,7 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'results/sipm_statistical_production_pilot'
-LATEX=ROOT/'latex_generated/sipm_statistical_production_pilot'
+LATEX=ROOT/'latex_generated/electron_readout/sipm_statistical_production_pilot'
 
 def main():
     """Render the Julia comparison as plots, tables, HTML and a self-contained PDF."""
@@ -49,7 +49,7 @@ def main():
         'All 100 events enter; the quoted widths are full-distribution RMS values. Each plotted ASIC distribution is divided by its own mean.')
     heads=['Gas','E/P','J','Events','Charge retained %','Photon cells clipped %','Events with clipping %','Before ASIC RMS %','After ASIC RMS %']
     table='<table><tr>'+''.join(f'<th>{h}</th>' for h in heads)+'</tr>'+''.join('<tr>'+''.join(f'<td>{html.escape(v)}</td>' for v in row)+'</tr>' for row in rows)+'</table>'
-    page='<!doctype html><meta charset="utf-8"><title>E/P scan: SiPM and ASIC clipping</title><style>body{max-width:1350px;margin:35px auto;padding:0 20px;font:16px system-ui;line-height:1.6;color:#17334a}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:right}img{width:100%}</style><h1>E/P = 2, 2.5, 3: clipping pilot</h1><p>'+description+'</p>'+table+'<p>'+definitions+'</p><p>'+spread+'</p><img src="'+figure+'"><ul>'+''.join(links)+'</ul><p><a href="../../latex_generated/sipm_statistical_production_pilot/clipping_comparison.pdf">PDF</a> · <a href="sipm_production_pilot.html">Timing and saved-history checks</a></p>'
+    page='<!doctype html><meta charset="utf-8"><title>E/P scan: SiPM and ASIC clipping</title><style>body{max-width:1350px;margin:35px auto;padding:0 20px;font:16px system-ui;line-height:1.6;color:#17334a}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:right}img{width:100%}</style><h1>E/P = 2, 2.5, 3: clipping pilot</h1><p>'+description+'</p>'+table+'<p>'+definitions+'</p><p>'+spread+'</p><img src="'+figure+'"><ul>'+''.join(links)+'</ul><p><a href="../../latex_generated/electron_readout/sipm_statistical_production_pilot/clipping_comparison.pdf">PDF</a> · <a href="sipm_production_pilot.html">Timing and saved-history checks</a></p>'
     (OUT/'clipping_comparison.html').write_text(page)
     esc=lambda s:s.replace('%',r'\%').replace('–','--')
     tex=r'''\documentclass[10pt,a4paper]{article}

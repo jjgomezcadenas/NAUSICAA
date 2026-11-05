@@ -1,7 +1,7 @@
 using HDF5, SHA
 include(joinpath(@__DIR__,"../../../../src/ion_signal/averaging_scan.jl"))
 using .AveragingScan
-root=normpath(joinpath(@__DIR__,"../../../.."));dir=joinpath(root,"results/ltspice/spice2_diagnostics")
+root=normpath(joinpath(@__DIR__,"../../../.."));dir=joinpath(root,"results/ltspice/reproduction/spice2_diagnostics")
 integral(t,v)=sum(diff(t).*(v[1:end-1].+v[2:end])./2)
 function interp(t,v,x)
     j=clamp(searchsortedlast(t,x),1,length(t)-1)
@@ -81,7 +81,7 @@ h5open(joinpath(dir,"raw.h5"),"r") do h
                 println("Injection ",width*1e6," us: ENC = ",sigi/gaini)
             end
             println("Injection with 10 ms boundary estimator: ENC = ",sigma/gframe)
-            old=h5open(joinpath(root,"results/ltspice/spice2_enc/analysis.h5"),"r") do old
+            old=h5open(joinpath(root,"results/ltspice/reproduction/spice2_enc/analysis.h5"),"r") do old
                 read(attributes(old)["enc_electrons_rms"])
             end
             @assert abs(sigma/gain/old-1)<1e-9

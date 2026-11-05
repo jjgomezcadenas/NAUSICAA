@@ -9,12 +9,15 @@ _sys.path[:0] = [str(_REPO_ROOT), str(_REPO_ROOT / "src")]
 from pathlib import Path
 import argparse,os,subprocess,sys,tomllib
 import h5py
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--simulator',required=True,type=Path);p.add_argument('--julia',default='julia');a=p.parse_args();sim=a.simulator.resolve()
- env=os.environ.copy();env['PYTHONPATH']=str(ROOT/'src');env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
+ env=os.environ.copy();env['PYTHONPATH']=str(ROOT/'src');env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'))
  def run(*args):subprocess.run(list(map(str,args)),cwd=ROOT,env=env,check=True)
- c=tomllib.loads((ROOT/'config/feedback_optimization.toml').read_text());out=ROOT/c['output']
+ c=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/feedback/feedback_optimization.toml').read_text()));out=ROOT/c['output']
  for v in c['variants']:
   path=out/(v['name']+'.h5')
   if path.exists():

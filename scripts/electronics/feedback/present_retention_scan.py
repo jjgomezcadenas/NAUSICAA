@@ -2,11 +2,14 @@
 """Present the saved Julia longer-retention comparison without repeating calculations."""
 from pathlib import Path
 import sys
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 sys.path[:0]=[str(ROOT),str(ROOT/'src')]
 import argparse,csv,hashlib,os,tomllib
 import h5py,numpy as np
-os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/retention_matplotlib'))
+os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/retention_matplotlib'))
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -14,8 +17,8 @@ import matplotlib.pyplot as plt
 def scalar(x):return x.decode() if isinstance(x,bytes) else x
 
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,default=ROOT/'config/retention_scan.toml');a=p.parse_args()
- c=tomllib.loads(a.config.read_text());data=ROOT/c['output'];out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/feedback/retention_scan.toml');a=p.parse_args()
+ c=resolve_config_paths(tomllib.loads(a.config.read_text()));data=ROOT/c['output'];out=ROOT/c['report'];out.mkdir(parents=True,exist_ok=True)
  rows=[];budgets=[];compression=[];validation=[];baseline_checks=[];cal_csv=[];comp_csv=[];noise_csv=[]
  with h5py.File(data/'presentation.h5') as h:
   names=[scalar(x) for x in h['variant_names'][:]]

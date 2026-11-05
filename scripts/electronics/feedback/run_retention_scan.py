@@ -2,6 +2,9 @@
 """Acquire and reproduce the isolated longer-retention CSA study."""
 from pathlib import Path
 import sys
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 sys.path[:0]=[str(ROOT),str(ROOT/'src')]
 import argparse,hashlib,json,os,re,shutil,subprocess,time,tomllib
@@ -97,11 +100,11 @@ def acquire(c,cp,variant,gate,simulator,op_only=False):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--config',type=Path,default=ROOT/'config/retention_scan.toml')
+    parser.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/feedback/retention_scan.toml')
     parser.add_argument('--simulator',required=True,type=Path);parser.add_argument('--julia',default=str(Path.home()/'.juliaup/bin/julia'))
     parser.add_argument('--stage',choices=['all','calibrate','inputs','tune','op','acquire','analyze','histories','controls','summary','present'],default='all')
     parser.add_argument('--variant');parser.add_argument('--m4-gate',type=float);parser.add_argument('--workers',type=int,default=4)
-    args=parser.parse_args();cp=args.config.resolve();c=tomllib.loads(cp.read_text());sim=args.simulator.resolve()
+    args=parser.parse_args();cp=args.config.resolve();c=resolve_config_paths(tomllib.loads(cp.read_text()));sim=args.simulator.resolve()
     out=ROOT/c['output'];out.mkdir(parents=True,exist_ok=True)
     preserve(out/'configuration.toml',cp.read_bytes())
     preserve(out/'.gitignore','*.h5\n*.h5.tmp\n*.raw\n*.log\ntuning/\ninputs/*.pwl\ncompression/**/cases/\n')
@@ -110,8 +113,8 @@ def main():
         print(acquire(c,cp,variant,args.m4_gate,sim,True).relative_to(ROOT));return
     archive_sources(c)
     env=os.environ.copy();env['PYTHONPATH']=str(ROOT/'src')
-    env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'notes/physics/work/julia-depot')+':'+str(Path.home()/'.julia'))
-    env.setdefault('MPLCONFIGDIR',str(ROOT/'notes/physics/work/retention_matplotlib'))
+    env.setdefault('JULIA_DEPOT_PATH',str(ROOT/'work/julia-depot')+':'+str(Path.home()/'.julia'))
+    env.setdefault('MPLCONFIGDIR',str(ROOT/'work/retention_matplotlib'))
     def command(*parts):subprocess.run(list(map(str,parts)),cwd=ROOT,env=env,check=True)
     def julia(stage):
         command(args.julia,'--startup-file=no','--project=.',ROOT/'scripts/electronics/feedback/retention_scan.jl',stage,cp,sys.executable,sim)
@@ -132,7 +135,7 @@ def main():
             viewer=qualified if qualified.exists() else out/'cards'/(variant['name']+'_viewer.toml')
             command(sys.executable,ROOT/'scripts/electronics/histories/run_pad_compression.py',
                     '--config',viewer,'--simulator',sim,'--workers',args.workers,'--gear-on-timeout',
-                    '--work-dir',ROOT/'notes/physics/work'/('retention_'+out.name+'_'+variant['name']))
+                    '--work-dir',ROOT/'work'/('retention_'+out.name+'_'+variant['name']))
     if args.stage in ('all','summary'):julia('summary')
     if args.stage in ('all','present'):
         command(sys.executable,ROOT/'scripts/electronics/feedback/present_retention_scan.py','--config',cp)

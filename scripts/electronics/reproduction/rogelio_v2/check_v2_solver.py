@@ -15,8 +15,8 @@ import h5py
 from ion_signal.spice_storage import save
 def main():
  p=argparse.ArgumentParser();p.add_argument('--simulator',type=Path,required=True);a=p.parse_args()
- folder=ROOT/'results/ltspice/rogelio_v2/decks/solver';folder.mkdir(parents=True,exist_ok=True)
- source=ROOT/'results/ltspice/rogelio_v2/decks/v2_native_corrected/op.cir'
+ folder=ROOT/'results/ltspice/reproduction/rogelio_v2/decks/solver';folder.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'results/ltspice/reproduction/rogelio_v2/decks/v2_native_corrected/op.cir'
  body='\n'.join(x for x in source.read_text().splitlines() if not x.lower().startswith(('.op','.options','.end','is1 ')))+'\n'
  preserve(folder/'corrected.inc',(source.parent/'corrected.inc').read_text())
  with h5py.File(folder.parent.parent/'solver.h5','a') as h:

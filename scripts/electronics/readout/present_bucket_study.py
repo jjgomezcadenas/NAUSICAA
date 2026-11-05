@@ -13,10 +13,13 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT=Path(__file__).resolve().parents[3]
 def main():
-    cfg=tomllib.loads((ROOT/'config/bucket_study.toml').read_text())
-    out=ROOT/'latex_generated/bucket_scan';out.mkdir(parents=True,exist_ok=True)
+    cfg=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/readout/bucket_study.toml').read_text()))
+    out=ROOT/'latex_generated/ion_readout/bucket_scan';out.mkdir(parents=True,exist_ok=True)
     records=[]
     for frame in cfg['bucket_sizes_s']:
         ms=round(frame*1000)

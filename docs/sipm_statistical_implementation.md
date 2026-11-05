@@ -4,7 +4,7 @@ The implementation is in `src/ion_signal/sipm_statistical.jl`, included by
 `SiPMResponse`. Its derivation is in `docs/sipm_electronics_model.tex`, under
 “Compact recovery-state and charge moments” and “Conditional-count statistical
 implementation”. The generated model PDF is
-`latex_generated/sipm_response/sipm_electronics_model.pdf`.
+`latex_generated/electron_readout/sipm_response/sipm_electronics_model.pdf`.
 
 ## Interface and state
 
@@ -67,7 +67,7 @@ make sipm-statistical-report
 
 The numerical benchmark is `results/sipm_statistical_validation/validation.h5`.
 The browser report is `results/sipm_statistical_validation/validation.html`;
-LaTeX, figures and PDF are under `latex_generated/sipm_statistical_validation/`.
+LaTeX, figures and PDF are under `latex_generated/electron_readout/sipm_statistical_validation/`.
 The benchmark stores source snapshots, hashes and photon-source identities.
 
 Synthetic tests compare fixed-count pulses, bright transients, sparse pulses
@@ -108,7 +108,7 @@ cell identities, charge ledgers, clipping bounds and quiet-cell noise. Timings,
 The driver requires fresh outputs for timing; cached histories remain available
 through their manifests. `make sipm-production-pilot-report` regenerates the
 [HTML report](../results/sipm_statistical_production_pilot/sipm_production_pilot.html)
-and [PDF](../latex_generated/sipm_statistical_production_pilot/sipm_production_pilot.pdf)
+and [PDF](../latex_generated/electron_readout/sipm_statistical_production_pilot/sipm_production_pilot.pdf)
 from saved numerical results. Full production is a separate step.
 
 The E/P = 2 extension uses `elcc_250ns_ep2.toml` with the user-specified

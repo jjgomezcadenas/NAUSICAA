@@ -3,7 +3,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,booktabs,hyperref,xurl}
 \usepackage[numbers,sort&compress]{natbib}
-\input{latex_generated/nygren_review/values.tex}
+\input{latex_generated/literature/nygren_review/values.tex}
 \title{Assessment of the SeF$_6$ ion-TPC proposal:\\noise, collection time, pile-up and calorimetry}
 \author{NAUSICAA working note}
 \date{4 November 2026}
@@ -125,7 +125,7 @@ not be used without this density correction; they are optimistic compared
 with its own reduced mobilities at 10 bar and the later CDR.
 
 \begin{center}\small
-\input{latex_generated/nygren_review/timing_table.tex}
+\input{latex_generated/literature/nygren_review/timing_table.tex}
 \end{center}
 The 0.1 m/s column is the current NAUSICAA adopted Xe-ion speed, a design
 assumption rather than a measured equality of Xe and SeF$_6$ mobilities.
@@ -188,7 +188,7 @@ attachment fluctuations, no pile-up and independent channel estimates.
 The intrinsic FWHM is \IntrinsicFWHM.
 
 \begin{center}\small
-\input{latex_generated/nygren_review/energy_table.tex}
+\input{latex_generated/literature/nygren_review/energy_table.tex}
 \end{center}
 
 The CDR's 25 channels at 30 electrons reproduces its quoted 0.51\% FWHM.
@@ -199,7 +199,7 @@ being below 1000 electrons is not by itself sufficient to ensure below 2\%.
 The maximum independent-channel budgets before additional imperfections are:
 
 \begin{center}\small
-\input{latex_generated/nygren_review/limits_table.tex}
+\input{latex_generated/literature/nygren_review/limits_table.tex}
 \end{center}
 These are continuous variance budgets; an integer channel limit is their floor.
 
@@ -230,8 +230,9 @@ Python presents the saved values. Reproduce from the repository root:
 JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia" \
   julia --startup-file=no --project=. scripts/validation/nygren_review.jl
 python3.13 scripts/validation/present_nygren_review.py
-latexmk -pdf -interaction=nonstopmode -halt-on-error \
-  -outdir=latex_generated/nygren_review docs/nygren_ion_tpc_review.tex
+python3.13 scripts/documentation/build_report.py \
+  docs/nygren_ion_tpc_review.tex --cwd . \
+  --destination latex_generated/literature/nygren_review/nygren_ion_tpc_review.pdf
 \end{verbatim}
 \bibliographystyle{unsrtnat}
 \bibliography{notes/physics/references}

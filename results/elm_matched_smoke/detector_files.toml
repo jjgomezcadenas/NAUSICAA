@@ -1,0 +1,6 @@
+detector_wall_s = 5.577124118804932
+detector_card = "config/specs/runs/elm_matched_detector_smoke.toml"
+detector_index = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_matched_smoke/detector_index.h5"
+common_realisation = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/524b3afb83f7b048e4df935f576aee11f3b77d439608e319ca0786b5ab038c29/realisation.h5"
+complete = true
+ions = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/524b3afb83f7b048e4df935f576aee11f3b77d439608e319ca0786b5ab038c29/detector/ions/8a8a766ffd20532c345064585da7f0b146aea4d5ce75cadb97f19abbd6c9ff2a/ions.h5"

@@ -136,11 +136,11 @@ function response_cards(tag,index;tau_ns=12.5,substeps=512)
     ep=save_card("config/specs/response/sipm_electronics/readout_s14160_1315ps.toml",asic)
     pilot=TOML.parsefile(joinpath(ROOT,"config/specs/runs/sipm_response_statistical_ep2_pilot.toml"))
     merge!(pilot,Dict("photon_index"=>index,"sipm_card"=>cp,"electronics_card"=>ep,
-        "results_directory"=>"results/sipm_tpb_pilot","report_directory"=>"latex_generated/sipm_tpb_pilot"))
+        "results_directory"=>"results/sipm_tpb_pilot","report_directory"=>"latex_generated/electron_readout/sipm_tpb_pilot"))
     pp=save_card("config/specs/runs/sipm_response_$(label).toml",pilot)
     run=TOML.parsefile(joinpath(ROOT,"config/specs/runs/sipm_bb0nu_statistical_ep2_pilot100.toml"))
     merge!(run,Dict("photon_index"=>index,"pilot_card"=>pp,"results_directory"=>"results/sipm_tpb_pilot/$(label)",
-        "report_directory"=>"latex_generated/sipm_tpb_pilot"))
+        "report_directory"=>"latex_generated/electron_readout/sipm_tpb_pilot"))
     save_card("config/specs/runs/sipm_bb0nu_statistical_$(label)_pilot100.toml",run)
     label
 end

@@ -15,8 +15,8 @@ from ion_signal.spice_acquisition import run
 from ion_signal.spice import schematic_netlist
 def main():
  p=argparse.ArgumentParser();p.add_argument('--simulator',required=True,type=Path);a=p.parse_args()
- source=ROOT/'LTSpice/Spice2/v3/CSAfolded180nm-2_Astronio.asc';model=source.parent/'180nm_professional.inc'
- out=ROOT/'results/ltspice/rogelio_v3';folder=out/'decks';folder.mkdir(parents=True,exist_ok=True)
+ source=ROOT/'LTSpice/reference/rogelio/v3/CSAfolded180nm-2_Astronio.asc';model=source.parent/'180nm_professional.inc'
+ out=ROOT/'results/ltspice/reproduction/rogelio_v3';folder=out/'decks';folder.mkdir(parents=True,exist_ok=True)
  preserve(folder/model.name,model.read_text())
  elements,directives=schematic_netlist(source)
  body='* Rogelio v3; connectivity from supplied schematic\n'+'\n'.join(elements)+'\n'
@@ -42,7 +42,7 @@ def main():
    step=5e-6/r
    options='.options reltol=1e-6 abstol=1e-19 vntol=1e-10 numdgt=15 plotwinsize=0\n'
    acquire(f'exp_r{r}',body+options+f'.tran 0 1 0 {step:.17e}\n.save V(out) V(in) I(Is1) V(Qmip_C)\n.end\n')
-   with h5py.File(ROOT/'results/ltspice/discharge_calibration/20ms/input.h5') as inp:
+   with h5py.File(ROOT/'results/ltspice/calibration/discharge_calibration/20ms/input.h5') as inp:
     t=inp[f'r{r}/time_s'][:];i=1000*inp[f'r{r}/single_A_per_ion'][:]
     pwl=folder/f'uniform_1000_r{r}.pwl';preserve(pwl,''.join(f'{x:.17e} {y:.17e}\n' for x,y in zip(t,i)))
    uniform=re.sub(r'^Is1 (\S+) (\S+) .*$',rf'Is1 \1 \2 PWL FILE="{pwl.name}"',body,flags=re.M)

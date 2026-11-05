@@ -16,6 +16,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT = Path(__file__).resolve().parents[3]
 LABELS = {'p2_bb0nu': r'2 mm, 20 ms, $0\nu\beta\beta$',
           'p2_electrons': '2 mm, 20 ms, electrons',
@@ -29,8 +32,8 @@ def tex(value):
     return decode(value).replace('_', r'\_').replace('%', r'\%')
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--config',type=Path,default=ROOT/'config/pad_history_readout_direct.toml');args=parser.parse_args()
-    config = tomllib.loads(args.config.read_text())
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--config',type=Path,default=ROOT/'config/studies/electronics/histories/pad_history_readout_direct.toml');args=parser.parse_args()
+    config = resolve_config_paths(tomllib.loads(args.config.read_text()))
     data = ROOT/config['output']
     out = ROOT/config['report']
     out.mkdir(parents=True, exist_ok=True)

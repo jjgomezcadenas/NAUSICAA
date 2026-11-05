@@ -1,7 +1,7 @@
 include(joinpath(@__DIR__,"../../../src/ion_signal/bucket_study.jl"))
 using HDF5,TOML,SHA
 root=normpath(joinpath(@__DIR__,"../../.."))
-configpath=joinpath(root,"config/bucket_study.toml")
+configpath=joinpath(root,"config/studies/electronics/readout/bucket_study.toml")
 cfg=TOML.parsefile(configpath)
 for frame in cfg["bucket_sizes_s"]
     dir=joinpath(root,cfg["output"],"$(round(Int,frame*1000))ms")

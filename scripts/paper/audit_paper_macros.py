@@ -9,6 +9,8 @@ _sys.path[:0] = [str(_REPO_ROOT), str(_REPO_ROOT / "src")]
 from pathlib import Path
 import hashlib,json,re,tomllib
 import h5py
+from ion_signal.project_paths import resolve_config_paths
+
 ROOT=Path(__file__).resolve().parents[2];NOTE=ROOT/'notes/physics'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def active(s):return '\n'.join(re.split(r'(?<!\\)%',line)[0] for line in s.splitlines())
@@ -32,7 +34,7 @@ def main():
             assert abs(float(value)-float(expected))<=tolerance,(name,value,expected)
         checks[name]={'displayed':value,'expected':expected,'source':source,'macro_file':locations[name]}
     physfile=ROOT/'results/physics_benchmarks.json';phys=json.loads(physfile.read_text());b=phys['benchmarks']
-    detfile=ROOT/'config/detector.toml';det=tomllib.loads(detfile.read_text())
+    detfile=ROOT/'config/detector.toml';det=resolve_config_paths(tomllib.loads(detfile.read_text()))
     assert phys['config_sha256']==sha(detfile)
     mapping={'OpenFraction':('open_fraction',1),'EntranceThreshold':('entrance_threshold_V_m',1e-5),'FluxRatio':('flux_capacity_ratio',1),'Mobility':('mobility_m2_V_s',1e6),'DiffusionCoefficient':('thermal_D_m2_s',1e7),'PeakCurrent':('peak_A',1e15),'DiskPeakCurrent':('disk_peak_A',1e15),'FinalNinetyTime':('final_90pct_duration_s',1e6),'GapChargeFraction':('finite_gap_charge_e',1),'GapPotential':('phi_at_gap',1),'GapMissingPercent':('phi_at_gap',100),'GapSpeed':('gap_speed_m_s',1)}
     for name,(key,scale) in mapping.items():check(name,b[key]*scale,f'results/physics_benchmarks.json:benchmarks/{key}')
@@ -40,7 +42,7 @@ def main():
     check('ConfigHash',sha(detfile)[:12],'config/detector.toml:sha256 prefix')
     readfile=ROOT/'results/readout/benchmarks.json';readout=json.loads(readfile.read_text())
     assert readout['detector_sha256']==sha(detfile)
-    readcfg=tomllib.loads((ROOT/'config/readout.toml').read_text())
+    readcfg=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/readout/readout.toml').read_text()))
     check('SignalPadWidth',det['geometry']['pad_width_m']*1000,'config/detector.toml:geometry/pad_width_m, mm')
     check('SignalGap',det['geometry']['gap_m']*1000,'config/detector.toml:geometry/gap_m, mm')
     region=next(x for x in phys['nominal_regions'] if abs(x['length_m']-det['geometry']['gap_m'])<1e-12)
@@ -48,7 +50,7 @@ def main():
     check('ReadoutCapacitance',readcfg['electronics']['feedback_capacitance_F']*1e15,'config/readout.toml:feedback_capacitance_F, fF')
     case=next(x for x in readout['cases'] if x['id']=='single_ion')
     check('SingleIonIdealVoltage',case['responses'][0]['metrics'][0]['ideal_output_magnitude_V']*1e6,'results/readout/benchmarks.json:single_ion ideal_output_magnitude_V, microvolt')
-    cfg=tomllib.loads((ROOT/'config/discharge_calibration.toml').read_text())
+    cfg=resolve_config_paths(tomllib.loads((ROOT/'config/studies/electronics/readout/discharge_calibration.toml').read_text()))
     datafile=ROOT/cfg['output']/'paper_readout.h5'
     with h5py.File(datafile) as h:
         a=dict(h.attrs);snrs=dict(zip(h['counts'][:],h['snr'][:]))
@@ -72,12 +74,12 @@ def main():
     circuit=json.loads((NOTE/'generated/spice_circuit_provenance.json').read_text())
     check('SpiceBaselineV',circuit['operating_point']['dc_output_V'],'generated/spice_circuit_provenance.json:operating_point/dc_output_V')
     check('SpicePowerUw',circuit['operating_point']['quiescent_power_W']*1e6,'generated/spice_circuit_provenance.json:operating_point/quiescent_power_W, microwatt')
-    with h5py.File(ROOT/'results/ltspice/bias_sensitivity/analysis.h5') as h:
+    with h5py.File(ROOT/'results/ltspice/design/bias_sensitivity/analysis.h5') as h:
         a=h['paper_rounded_4'].attrs
         for name,key in [('SpiceMthreeGateV','m3_gate_V'),('SpiceMfourGateV','m4_gate_V')]:
-            check(name,float(a[key]),f'results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/{key}')
+            check(name,float(a[key]),f'results/ltspice/design/bias_sensitivity/analysis.h5:paper_rounded_4/{key}')
         for name,key in [('SpiceBiasRoundingEncPercent','ENC_relative_to_nominal'),('SpiceBiasRoundingGainPercent','gain_relative_to_nominal')]:
-            check(name,abs(float(a[key])-1)*100,f'results/ltspice/bias_sensitivity/analysis.h5:paper_rounded_4/{key}, percent change')
+            check(name,abs(float(a[key])-1)*100,f'results/ltspice/design/bias_sensitivity/analysis.h5:paper_rounded_4/{key}, percent change')
     with h5py.File(ROOT/'results/pixel_area/analysis.h5') as h:
         fields={'PixelCellArea':('cell_area_m2',1e6),'PixelBudgetArea':('envelope_area_m2',1e6),'PixelClearanceUm':('pad_clearance_m',1e6)}
         for name,(key,scale) in fields.items():check(name,float(h.attrs[key])*scale,f'results/pixel_area/analysis.h5:{key}')

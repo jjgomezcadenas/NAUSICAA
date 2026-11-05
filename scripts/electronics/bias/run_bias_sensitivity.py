@@ -10,12 +10,15 @@ from pathlib import Path
 import argparse,re,tomllib,hashlib
 import h5py,numpy as np
 from ion_signal.spice_storage import preserve, save
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+from ion_signal.project_paths import resolve_config_paths, resolve_recorded_path
 ROOT = _REPO_ROOT
 from ion_signal.spice_acquisition import run
 def main():
  p=argparse.ArgumentParser();p.add_argument('--simulator',type=Path,required=True)
  p.add_argument('--stage',choices=['op','transient'],default='op');p.add_argument('--names',nargs='+');p.add_argument('--refine',action='store_true');a=p.parse_args()
- cp=ROOT/'config/bias_sensitivity.toml';c=tomllib.loads(cp.read_text());out=ROOT/c['output']
+ cp=ROOT/'config/studies/electronics/bias/bias_sensitivity.toml';c=resolve_config_paths(tomllib.loads(cp.read_text()));out=ROOT/c['output']
  with h5py.File(out/'points.h5') as points,h5py.File(ROOT/c['input']) as inp:
   names=a.names or sorted(points.keys(),key=lambda n:(not ('rounded' in n),n))
   for name in names:
