@@ -1,0 +1,161 @@
+<!doctype html><meta charset="utf-8"><title>ELM SiPM pilot</title><style>body{font:16px system-ui;line-height:1.6;max-width:1400px;margin:35px auto;padding:0 22px;color:#17334a}table{border-collapse:collapse;margin:18px 0;width:100%}td,th{padding:8px;text-align:right;border-bottom:1px solid #ccd6de}td:first-child,th:first-child{text-align:left}img{width:100%;margin:15px 0}pre{white-space:pre-wrap}</style><h1>ELM · finite-cell SiPM pilot</h1><h2>Configuration</h2><p>The same first 100 bb0nu tracks (source IDs 0–99) are replayed for both gases. Electron reference drift is sampled uniformly from 10 to 150 cm with a separate reproducible placement stream. Ion drift is its complement within 150 cm. This reference distance sets the common diffusion and attachment for the event hits; their source coordinates and primary-pair realization are retained. No ion histories are produced. Both recovery cases reuse the identical saved blue-photon histories; their SiPM stochastic draws are independent.</p><p>E/P = 2 kV/cm/bar at 15 bar; 3 mm diameter holes, 5 mm EL depth, 5 mm pitch and 250 ns buckets. Electron collection is unity. Uniform axial EL and absorbing walls give the analytical exit acceptance. TPB conversion 0.65, forward factor 0.5 and guide capture 1−1/1.5 apply once. The optical probability is 0.01386501. Guide propagation and NOA 87 coupling are ideal; the xenon gap is 0.5 mm radially. The saved optical signal is blue photons at the SiPM entrance.</p><p>S14160-3015PS: 3 × 3 mm², 39,984 cells at 15 micrometre pitch, PDE 0.32 (peak at 460 nm used as a spectrum-average approximation), gain 360,000, +4 V and 25 C. Uniform illumination of the centered 3 mm circular guide footprint uses 31,403 cells, round(39984 × π/4). The remaining 8,581 cells receive dark triggers only. The full-device 700 kcps dark rate is split by cell count; both populations have independent stationary recovery states. Provisional exponential recovery constants 12.5 and 25 ns are sensitivity parameters, not measured recharge constants for this device. Crosstalk, afterpulsing and gain spread remain deferred; PDE is independent of recovery.</p><h2>Separate SiPM and ASIC losses</h2><table><tr><th>Gas</th><th>Recovery</th><th>Mean detected PE/event</th><th>SiPM loss (%)</th><th>ASIC loss (%)</th><th>Events clipped (%)</th><th>Pulses clipped (%)</th></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>616,706</td><td>0.0276</td><td>0.0000</td><td>0.0</td><td>0.00000</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>591,118</td><td>0.0790</td><td>0.2184</td><td>11.0</td><td>0.01705</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>616,687</td><td>0.0552</td><td>0.0000</td><td>0.0</td><td>0.00000</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>591,025</td><td>0.1576</td><td>0.2098</td><td>10.0</td><td>0.01657</td></tr></table><h2>Corrected event widths</h2><table><tr><th>Gas</th><th>Recovery</th><th>Detected RMS (%)</th><th>SiPM RMS (%)</th><th>Noisy unclipped RMS (%)</th><th>ASIC RMS (%)</th></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>0.1724</td><td>0.1763</td><td>0.2291</td><td>0.2291</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>0.1807</td><td>0.1951</td><td>0.2347</td><td>0.9396</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>0.1911</td><td>0.2035</td><td>0.2853</td><td>0.2853</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>0.1683</td><td>0.2107</td><td>0.2564</td><td>0.9521</td></tr></table><h2>Pulse statistics</h2><table><tr><th>Gas</th><th>Recovery</th><th>Event-mean avg PE</th><th>Event-max avg PE</th><th>Largest count</th><th>Largest charge PE</th><th>Max occupancy (%)</th></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>53.41</td><td>721.9</td><td>3,325</td><td>3,310.4</td><td>10.05</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>121.65</td><td>1,994.4</td><td>8,738</td><td>8,614.5</td><td>24.29</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>53.40</td><td>725.4</td><td>3,295</td><td>3,263.2</td><td>9.96</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>121.64</td><td>1,986.4</td><td>8,672</td><td>8,445.6</td><td>24.13</td></tr></table><h2>Statistical response and definitions</h2><p>The validated statistical model retains first and second moments of cell recovery, uses exact conditional finite-cell occupancy moments, and a bounded moment-matched charge draw. Dense buckets use 128 substeps; sparse triggers use individual uniform times. Optical trigger counts are sampled PDE successes, and recurrent firing is allowed. Charge-equivalent PE is collected charge divided by e × gain. Distinct optical occupancy is the conditional expected number M[1−(1−1/M)^N] of cells reached by N optical triggers during a bucket. It counts each cell once; it is saved as an expectation rather than as sampled cell identities. See src/ion_signal/sipm_statistical.jl and the implementation tests.</p><p>The ASIC adds 3.5417 PE RMS Gaussian noise to each acquired bucket and clips at 1 mA bucket-average current (4334.38 charge-equivalent PE). Signed values are retained. Pulse comparisons use all photon-positive input cells at every stage. Event totals sum the full acquisition interval on illuminated channels, including four quiet buckets at either end. SiPM loss is optical trigger count minus optical charge, divided by trigger count. ASIC loss is clipped charge divided by incoming sensor charge, including dark charge. Event widths are full-distribution RMS/mean after known attachment and deposited-energy correction. Optical and SiPM widths use optical quantities; ASIC widths subtract the expected full-area dark baseline before normalization. A correction for SiPM compression is not applied.</p><h2>Timing and validation</h2><p>Photon replay/archive 5.29 s; response 12.5 ns 42.85 s; response 25 ns 40.64 s; combined 88.78 s. Stage timings include compilation and I/O; process startup and presentation are separate.</p><p>Twenty dedicated tests cover placement reproducibility, uniform range, full-area dark rate, count/charge conservation, recurrent firing and 128-to-256 substep convergence. Saved-event checks verify primary checksums, PDE statistics, charge ledgers, response diagnostics and quiet-cell noise. Rare state feasibility repairs adjust only the second recovery moment, preserving sampled charge and the first moment. Their maximum size is reported relative to the smaller cell population; checks require less than 10 ppm and fewer than one repair per million batches. No charge-variance limits occurred.</p><img src="elm_sipm_pulses.png" alt="elm_sipm_pulses.png"><img src="elm_sipm_energy.png" alt="elm_sipm_energy.png"><img src="elm_sipm_drift.png" alt="elm_sipm_drift.png"><img src="elm_sipm_occupancy.png" alt="elm_sipm_occupancy.png"><h2>Largest event losses</h2><table><tr><th>Gas</th><th>Recovery</th><th>Event ID</th><th>Drift (cm)</th><th>Max count</th><th>Occupancy (%)</th><th>SiPM loss (%)</th><th>ASIC loss (%)</th></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>52</td><td>13.17</td><td>3,325</td><td>10.05</td><td>0.131</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>2</td><td>10.78</td><td>3,176</td><td>9.62</td><td>0.129</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>78</td><td>13.21</td><td>3,080</td><td>9.34</td><td>0.120</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>67</td><td>13.75</td><td>3,199</td><td>9.69</td><td>0.115</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>54</td><td>14.87</td><td>2,628</td><td>8.03</td><td>0.105</td><td>0.000</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>78</td><td>13.21</td><td>7,613</td><td>21.53</td><td>0.313</td><td>4.702</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>52</td><td>13.17</td><td>7,935</td><td>22.33</td><td>0.313</td><td>4.472</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>67</td><td>13.75</td><td>8,738</td><td>24.29</td><td>0.310</td><td>4.309</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>2</td><td>10.78</td><td>6,885</td><td>19.69</td><td>0.325</td><td>2.580</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>54</td><td>14.87</td><td>5,973</td><td>17.32</td><td>0.280</td><td>2.043</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>2</td><td>10.78</td><td>3,279</td><td>9.92</td><td>0.273</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>52</td><td>13.17</td><td>3,295</td><td>9.96</td><td>0.262</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>78</td><td>13.21</td><td>3,060</td><td>9.28</td><td>0.240</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>67</td><td>13.75</td><td>3,293</td><td>9.96</td><td>0.221</td><td>0.000</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>54</td><td>14.87</td><td>2,651</td><td>8.10</td><td>0.207</td><td>0.000</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>78</td><td>13.21</td><td>7,600</td><td>21.50</td><td>0.605</td><td>4.579</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>52</td><td>13.17</td><td>7,860</td><td>22.14</td><td>0.627</td><td>4.321</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>67</td><td>13.75</td><td>8,672</td><td>24.13</td><td>0.598</td><td>4.140</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>2</td><td>10.78</td><td>6,914</td><td>19.76</td><td>0.639</td><td>2.463</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>54</td><td>14.87</td><td>6,094</td><td>17.64</td><td>0.551</td><td>1.993</td></tr></table><h2>Validation checks</h2><table><tr><th>Gas</th><th>Recovery</th><th>Ledger checks</th><th>State repairs</th><th>Variance limits</th><th>PDE z</th><th>Quiet RMS PE</th><th>Max repair (ppm)</th></tr><tr><td>Pure Xe</td><td>12.5 ns</td><td>100</td><td>4</td><td>0</td><td>1.01</td><td>3.5427</td><td>5.527</td></tr><tr><td>Xe–15% He</td><td>12.5 ns</td><td>100</td><td>3</td><td>0</td><td>0.54</td><td>3.5401</td><td>0.537</td></tr><tr><td>Pure Xe</td><td>25 ns</td><td>100</td><td>1</td><td>0</td><td>0.72</td><td>3.5428</td><td>4.412</td></tr><tr><td>Xe–15% He</td><td>25 ns</td><td>100</td><td>0</td><td>0</td><td>-0.93</td><td>3.5413</td><td>0.000</td></tr></table><p><a href="../../latex_generated/electron_readout/elm_sipm_pilot/elm_sipm_pilot.pdf">PDF</a> · <a href="files.toml">File index</a>. Complete workflow: <code>make elm-sipm-pilot</code>; presentation: <code>make elm-sipm-report</code>.</p><details><summary>Cards and provenance</summary><pre>schema = &quot;nausicaa.electron_detector_spec.v1&quot;
+pressure_bar = 15.0
+helium_fraction = 0.15
+drift_speed_mm_us = 1.0
+lifetime_ms = 15.0
+hole_pitch_mm = 5.0
+hole_diameter_mm = 3.0
+hole_depth_mm = 5.0
+sipm_shape = &quot;square&quot;
+sipm_side_mm = 3.0
+bucket_width_us = 0.25
+reduced_field_kV_cm_bar = 2.0
+j_variance_ratio = 0.030
+j_status = &quot;user_specified&quot;
+j_reference = &quot;Oliveira Figure 6; corrected approximate user reading, 2026-11-04&quot;
+
+optical_model = &quot;elm_blue_meridional&quot;
+electron_collection_efficiency = 1.0
+
+[optics]
+photon_band = &quot;blue_tpb&quot;
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5
+gap_refractive_index = 1.0
+guide_length_mm = 100.0
+gas_gap_radial_mm = 0.5
+propagation_transmission = 1.0
+coupling_transmission = 1.0
+electrode_transmission = 1.0
+coupling_adhesive = &quot;Norland NOA 87&quot;
+guide_length_policy = &quot;fixed_grading_field&quot;
+grading_field_kV_cm = 4.65
+cathode_potential_V = 1200.0
+entry_potential_V = 31500.0
+exit_potential_V = 46500.0
+sensor_plane_potential_V = 0.0
+reference = &quot;docs/elm.tex; isotropic axial EL, absorbing walls, meridional isotropic-in-core capture&quot;
+
+[pure_xe]
+d_T_mm_sqrtbar_per_sqrtcm = 3.5
+d_L_mm_sqrtbar_per_sqrtcm = 0.9
+yield_gain_photons_per_electron_kV = 137.0
+yield_threshold_kV_cm_bar = 0.73
+
+[xe_he15]
+d_T_mm_sqrtbar_per_sqrtcm = 1.6
+d_L_mm_sqrtbar_per_sqrtcm = 0.75
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.80
+
+[placement]
+mode = &quot;uniform_electron_reference&quot;
+minimum_electron_drift_cm = 10.0
+maximum_electron_drift_cm = 150.0
+seed = 2026
+reference = &quot;Event reference drift; common diffusion and attachment distance for all hits, original hit coordinates retained&quot;
+
+schema = &quot;nausicaa.sipm_spec.v1&quot;
+response_model = &quot;statistical&quot;
+statistical_substeps = 128
+sparse_trigger_limit = 16
+microcell_count = 39984
+illuminated_microcell_count = 31403
+microcell_pitch_m = 15e-6
+recovery_s = 1.25e-08
+arrival_model = &quot;uniform_in_bucket&quot;
+illumination = &quot;uniform_disk_subset&quot;
+recovery_pde = &quot;constant&quot;
+initial_state = &quot;stationary_dark&quot;
+charge_assignment = &quot;avalanche_bucket&quot;
+input_photon_band = &quot;blue_tpb&quot;
+shape = &quot;square&quot;
+side_m = 0.003
+pde = 0.32
+gain = 360000.0
+dark_reference_rate_Hz = 700000.0
+dark_reference_area_m2 = 9e-6
+crosstalk = false
+afterpulsing = false
+gain_spread = false
+seed = 2026
+
+[acquisition]
+channels = &quot;illuminated_in_event&quot;
+additional_channels = []
+quiet_before_buckets = 4
+quiet_after_buckets = 4
+empty_first_bucket = 0
+empty_last_bucket = 7
+
+[provenance]
+device = &quot;Hamamatsu S14160-3015PS, 3x3 mm2; nominal +4 V, 25 C&quot;
+pde = &quot;0.32 peak PDE at 460 nm used as provisional TPB-spectrum average; packaged PDE includes entrance window&quot;
+gain = &quot;3.6e5 nominal electrons per primary avalanche; charge per fully recovered avalanche&quot;
+dark_rate = &quot;S14160-3015PS nominal primary dark rate 700 kcps at 25 C and +4 V&quot;
+window = &quot;S14160-3015PS silicone resin, nominal n=1.57; unit external coupling used in pilot&quot;
+datasheet = &quot;papers/SiPM/Hamamatsu_S14160_small_cells.pdf&quot;
+
+recovery = &quot;Provisional 12p5 ns exponential recovery; sensitivity parameter, not a measured 3015PS recharge constant&quot;
+illumination = &quot;Uniform centered 3 mm disk on 3x3 mm square: round(39984*pi/4)=31403 lit cells; remaining 8581 dark-only; full 700 kcps dark rate split by cell count&quot;
+
+schema = &quot;nausicaa.sipm_spec.v1&quot;
+response_model = &quot;statistical&quot;
+statistical_substeps = 128
+sparse_trigger_limit = 16
+microcell_count = 39984
+illuminated_microcell_count = 31403
+microcell_pitch_m = 15e-6
+recovery_s = 2.5e-08
+arrival_model = &quot;uniform_in_bucket&quot;
+illumination = &quot;uniform_disk_subset&quot;
+recovery_pde = &quot;constant&quot;
+initial_state = &quot;stationary_dark&quot;
+charge_assignment = &quot;avalanche_bucket&quot;
+input_photon_band = &quot;blue_tpb&quot;
+shape = &quot;square&quot;
+side_m = 0.003
+pde = 0.32
+gain = 360000.0
+dark_reference_rate_Hz = 700000.0
+dark_reference_area_m2 = 9e-6
+crosstalk = false
+afterpulsing = false
+gain_spread = false
+seed = 2026
+
+[acquisition]
+channels = &quot;illuminated_in_event&quot;
+additional_channels = []
+quiet_before_buckets = 4
+quiet_after_buckets = 4
+empty_first_bucket = 0
+empty_last_bucket = 7
+
+[provenance]
+device = &quot;Hamamatsu S14160-3015PS, 3x3 mm2; nominal +4 V, 25 C&quot;
+pde = &quot;0.32 peak PDE at 460 nm used as provisional TPB-spectrum average; packaged PDE includes entrance window&quot;
+gain = &quot;3.6e5 nominal electrons per primary avalanche; charge per fully recovered avalanche&quot;
+dark_rate = &quot;S14160-3015PS nominal primary dark rate 700 kcps at 25 C and +4 V&quot;
+window = &quot;S14160-3015PS silicone resin, nominal n=1.57; unit external coupling used in pilot&quot;
+datasheet = &quot;papers/SiPM/Hamamatsu_S14160_small_cells.pdf&quot;
+
+recovery = &quot;Provisional 25 ns exponential recovery; sensitivity parameter, not a measured 3015PS recharge constant&quot;
+illumination = &quot;Uniform centered 3 mm disk on 3x3 mm square: round(39984*pi/4)=31403 lit cells; remaining 8581 dark-only; full 700 kcps dark rate split by cell count&quot;
+
+baseline_pe = 0.0
+bucket_width_s = 2.5e-7
+current_limit_A = 0.001
+lower_clipping = false
+noise = &quot;independent_gaussian_pe&quot;
+noise_rms_pe = 3.5416666666666665
+schema = &quot;nausicaa.sipm_electronics_spec.v1&quot;
+seed = 2027
+transfer = &quot;bucket_average_current&quot;
+
+[provenance]
+noise = &quot;Same input charge RMS as 0.5 PE at gain 2.55e6; rescaled to gain 3.6e5&quot;
+range = &quot;User design input: upper clipping at 1 mA; supersedes the provisional 300 PE limit&quot;
+timing = &quot;User 0.25 us buckets; integrated charge divided by bucket duration&quot;
+</pre></details>

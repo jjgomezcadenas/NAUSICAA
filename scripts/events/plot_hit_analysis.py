@@ -134,6 +134,7 @@ def number(value, digits=6):
 
 
 def make_report(datasets, figures, report_dir):
+    report_dir = report_dir.resolve()
     report_dir.mkdir(parents=True, exist_ok=True)
     p = datasets[0]["parameters"]
     macros = {"IonWorkEv": p["w_eV"], "IonPitchMm": p["pitch_mm"], "IonFrameMs": p["frame_ms"],
@@ -286,7 +287,7 @@ quantities, bin edges and per-hit ion expectations in source row order.
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("inputs", nargs="*", type=Path)
-    parser.add_argument("--report-dir", type=Path, default=ROOT / "latex_generated/ion_tracks")
+    parser.add_argument("--report-dir", type=Path, default=ROOT / "latex_generated/ion_readout/ion_tracks")
     args = parser.parse_args()
     paths = args.inputs or sorted((ROOT / "results/ion_tracks").glob("*/analysis.h5"))
     if not paths:

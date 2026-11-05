@@ -1,0 +1,10 @@
+schema = "nausicaa.sipm_production_run.v1"
+sample = "bb0nu"
+gases = ["pure_xe", "xe_he15"]
+event_selection = "first_n_sorted_source_ids"
+max_events = 100
+shard_events = 100
+photon_index = "results/elm_sipm_pilot/photons_ep2.h5"
+pilot_card = "config/specs/runs/elm_sipm_response_tau25ns.toml"
+results_directory = "results/elm_sipm_pilot/response"
+report_directory = "latex_generated/electron_readout/elm_sipm_pilot"

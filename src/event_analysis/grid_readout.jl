@@ -37,6 +37,37 @@ function axial_light_acceptance(radius_mm::Float32, depth_mm::Float32)::Float32
 end
 
 """
+    elm_light_acceptance(radius_mm, depth_mm; tpb_efficiency, forward_fraction,
+        guide_index, gap_index, propagation_transmission=1f0,
+        coupling_transmission=1f0, electrode_transmission=1f0)::Float32
+
+Probability that one emitted EL photon produces a blue photon at the SiPM
+entrance. Positions are mm. VUV emission is isotropic and uniform on the hole
+axis; walls absorb. TPB absorbs the arriving VUV and converts with the specified
+Bernoulli efficiency. The forward fraction is applied once, followed by the
+meridional trapping fraction `1-gap_index/guide_index` for isotropic light
+inside the core. The centred sensor covers the guide exit. Packaged SiPM PDE
+is applied by the response stage. See docs/elm.tex for the derivation.
+
+Transmission/conversion probabilities must be finite in [0,1]; indices must
+be positive with gap_index <= guide_index. Equal indices give zero TIR capture.
+This function preserves its scalar inputs and returns the combined probability.
+"""
+function elm_light_acceptance(radius_mm::Float32,depth_mm::Float32;
+        tpb_efficiency::Float32,forward_fraction::Float32,
+        guide_index::Float32,gap_index::Float32,
+        propagation_transmission::Float32=1f0,coupling_transmission::Float32=1f0,
+        electrode_transmission::Float32=1f0)::Float32
+    factors=(tpb_efficiency,forward_fraction,propagation_transmission,
+             coupling_transmission,electrode_transmission)
+    all(x->isfinite(x)&&0f0<=x<=1f0,factors) ||
+        throw(ArgumentError("Optical probabilities must lie in [0,1]"))
+    isfinite(guide_index)&&isfinite(gap_index)&&0f0<gap_index<=guide_index ||
+        throw(ArgumentError("Require positive gap index <= guide index"))
+    axial_light_acceptance(radius_mm,depth_mm)*(1f0-gap_index/guide_index)*prod(factors)
+end
+
+"""
     axial_square_acceptance(side_mm, depth_mm, hole_radius_mm; steps=16384)
 
 Fraction of isotropic light incident on a centred square at the hole exit,

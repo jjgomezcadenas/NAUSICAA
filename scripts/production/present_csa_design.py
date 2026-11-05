@@ -25,7 +25,7 @@ def save(fig,out,name):
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--results',type=Path,default=ROOT/'results/csa_design');a=p.parse_args()
- source=a.results/'summary.h5';out=ROOT/'latex_generated/csa_design';out.mkdir(parents=True,exist_ok=True)
+ source=a.results/'summary.h5';out=ROOT/'latex_generated/ion_readout/csa_design';out.mkdir(parents=True,exist_ok=True)
  with h5py.File(source) as h:
   assert h.attrs['complete']
   parameters=json.loads(h['parameters_json'][()].decode());response=__import__('tomllib').loads(h['response_card_toml'][()].decode());design=__import__('tomllib').loads(h['design_card_toml'][()].decode())
@@ -98,7 +98,7 @@ def main():
   sources += [{'path':str(source.relative_to(ROOT)),'sha256':hashlib.sha256(source.read_bytes()).hexdigest()},{'path':str(Path(__file__).relative_to(ROOT)),'sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}]
   (out/'sources.json').write_text(json.dumps({'sources':sources},indent=2)+'\n')
  import shutil
- shutil.copy2(ROOT/'notes/physics/csa_design.tex',out/'report.tex')
+ shutil.copy2(ROOT/'notes/physics/csa_design.tex',out/'csa_design.tex')
  shutil.copy2(ROOT/'notes/physics/figures/Nausica_Image.jpg',out/'Nausica_Image.jpg')
  bib=(ROOT/'notes/physics/references.bib').read_text()
  entries=[]

@@ -1,0 +1,43 @@
+schema = "nausicaa.sipm_spec.v1"
+response_model = "statistical"
+statistical_substeps = 128
+sparse_trigger_limit = 16
+microcell_count = 39984
+illuminated_microcell_count = 21808
+microcell_pitch_m = 15e-6
+recovery_s = 1.25e-08
+arrival_model = "uniform_in_bucket"
+illumination = "uniform_disk_subset"
+recovery_pde = "constant"
+initial_state = "stationary_dark"
+charge_assignment = "avalanche_bucket"
+input_photon_band = "blue_tpb"
+shape = "square"
+side_m = 0.003
+pde = 0.32
+gain = 360000.0
+dark_reference_rate_Hz = 700000.0
+dark_reference_area_m2 = 9e-6
+crosstalk = false
+afterpulsing = false
+gain_spread = false
+seed = 2026
+
+[acquisition]
+channels = "illuminated_in_event"
+additional_channels = []
+quiet_before_buckets = 4
+quiet_after_buckets = 4
+empty_first_bucket = 0
+empty_last_bucket = 7
+
+[provenance]
+device = "Hamamatsu S14160-3015PS, 3x3 mm2; nominal +4 V, 25 C"
+pde = "0.32 peak PDE at 460 nm used as provisional TPB-spectrum average; packaged PDE includes entrance window"
+gain = "3.6e5 nominal electrons per primary avalanche; charge per fully recovered avalanche"
+dark_rate = "S14160-3015PS nominal primary dark rate 700 kcps at 25 C and +4 V"
+window = "S14160-3015PS silicone resin, nominal n=1.57; unit external coupling used in pilot"
+datasheet = "papers/SiPM/Hamamatsu_S14160_small_cells.pdf"
+
+recovery = "Provisional 12p5 ns exponential recovery; sensitivity parameter, not a measured 3015PS recharge constant"
+illumination = "Uniform centered 2.5 mm disk on 3x3 mm square: round(39984*pi*1.25^2/9)=21808 lit cells; remaining 18176 dark-only; full 700 kcps dark rate split by cell count"

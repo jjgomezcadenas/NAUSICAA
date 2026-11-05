@@ -1,0 +1,437 @@
+{
+  "schema": 1,
+  "reports": {
+    "adc_estimate": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "bias_sensitivity": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "bucket_noise_covariance": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "bucket_scan": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "calibrated_spice_averaging": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "csa_design": {
+      "group": "ion_readout",
+      "status": "reference",
+      "title": "Ion CSA design",
+      "description": "Circuit, calibration, signal reconstruction and validation.",
+      "source": "notes/physics/csa_design.tex",
+      "result": "results/csa_design/summary.h5",
+      "workflow": "make csa-design-note"
+    },
+    "discharge_calibration": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "electron_250ns": {
+      "group": "electron_readout",
+      "status": "study"
+    },
+    "electron_diffusion": {
+      "group": "transport",
+      "status": "reference"
+    },
+    "electron_operating_points": {
+      "group": "electron_readout",
+      "status": "study",
+      "title": "Electron operating-point comparison",
+      "description": "Injected PE per SiPM\u2013bucket and attachment-corrected event totals.",
+      "html": "results/electron_operating_points/electron_operating_points.html",
+      "presentation": "make electron-operating-points-present"
+    },
+    "elm": {
+      "group": "detector",
+      "status": "reference",
+      "title": "ELM geometry and optical transport",
+      "description": "Electrodes, gas-isolated light guides, TPB conversion and a worked E/P = 2 example.",
+      "source": "docs/elm.tex",
+      "result": "results/elm/elm_example.h5",
+      "presentation": "make elm-note-present",
+      "workflow": "make elm-note",
+      "configuration": "15 bar; 3 mm holes; 5 mm pitch; 5 mm EL depth; 100 mm light guides; E/P = 2 kV/cm/bar."
+    },
+    "elm_pilot": {
+      "group": "electron_readout",
+      "status": "validation",
+      "title": "ELM: linear SiPM and electronics pilot",
+      "description": "PE pulse distributions, event energy and electronics clipping for the ELM geometry.",
+      "result": "results/elm_pilot/elm_pilot.h5",
+      "html": "results/elm_pilot/elm_pilot.html",
+      "presentation": "make elm-report",
+      "workflow": "make elm-pilot",
+      "cards": [
+        "config/specs/runs/elm_bb0nu_ep2_pilot100.toml",
+        "config/specs/detector/electrons/elm_5mm_250ns_ep2.toml",
+        "config/specs/response/sipm/elm_linear_3015ps.toml"
+      ],
+      "configuration": "100 bb0nu events; pure Xe and Xe\u201315% He; 5 mm pitch / 3 mm holes; E/P = 2 kV/cm/bar; 250 ns buckets."
+    },
+    "event_analysis_step1": {
+      "group": "reconstruction",
+      "status": "validation"
+    },
+    "event_analysis_step2": {
+      "group": "reconstruction",
+      "status": "validation"
+    },
+    "event_analysis_step3": {
+      "group": "reconstruction",
+      "status": "validation"
+    },
+    "event_analysis_step4": {
+      "group": "reconstruction",
+      "status": "validation"
+    },
+    "feedback_optimization": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "grid_readout": {
+      "group": "archive",
+      "status": "historical",
+      "status_basis": "Superseded by direct carrier-to-grid readout; see docs/diffusion_sampling_fix.md."
+    },
+    "grid_readout_direct": {
+      "group": "production",
+      "status": "study"
+    },
+    "grid_readout_direct_3mm": {
+      "group": "production",
+      "status": "study"
+    },
+    "history_time_audit": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_0p5_enc_benchmark": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "ion_csa_0p5_enc_corrected_benchmark": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "ion_csa_0p5_enc_corrected_production": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_0p5_enc_corrected_production_2mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_0p5_enc_corrected_production_4mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_0p5_enc_production": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_0p5_enc_production_2mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_0p5_enc_production_4mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_v3_corrected": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_v3_corrected_2mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_v3_corrected_4mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "ion_csa_v3_pilot": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "ion_csa_v3_pilot_2mm": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "ion_csa_v3_pilot_4mm": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "ion_tracks": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "m3_scan": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "m4_scan": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "mc_graph_diagnostic": {
+      "group": "reconstruction",
+      "status": "validation"
+    },
+    "mc_selection": {
+      "group": "reconstruction",
+      "status": "reference"
+    },
+    "noise_measurement": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "nygren_review": {
+      "group": "literature",
+      "status": "study",
+      "title": "Nygren ion-TPC review",
+      "description": "Literature assessment and associated local calculations.",
+      "source": "docs/nygren_ion_tpc_review.tex"
+    },
+    "pad_compression": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pad_compression_direct": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pad_history_direct_comparison": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "pad_history_readout": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pad_history_readout_direct": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pad_sequence_example": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "photon_production_pilot": {
+      "group": "electron_readout",
+      "status": "validation"
+    },
+    "pitch_4mm_40ms": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_area": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_charge": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_charge_1mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_charge_1mm_3mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_charge_1mm_3mm_direct": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_charge_1mm_4mm": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_charge_1mm_4mm_direct": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "pixel_charge_1mm_direct": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "production_grid_scan": {
+      "group": "production",
+      "status": "reference",
+      "title": "Detector production: ion grids of 2, 3 and 4 mm",
+      "description": "Shared event realisations and independent ion/electron branches.",
+      "configuration": "8,000 events per species; bb0nu and single electrons; ion pitch 2 / 3 / 4 mm and frames 20 / 30 / 40 ms. Original electron production settings are retained in the report."
+    },
+    "production_pilot": {
+      "group": "production",
+      "status": "validation"
+    },
+    "production_total_fluctuations": {
+      "group": "production",
+      "status": "study"
+    },
+    "ramo_check": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "readout_pulses_8000": {
+      "group": "production",
+      "status": "reference"
+    },
+    "response_overview": {
+      "group": "production",
+      "status": "reference",
+      "title": "Ion and electron response overview",
+      "description": "Event mean and maximum charge over positive-input channel\u2013bucket cells.",
+      "html": "results/response_overview/response_overview.html",
+      "presentation": "make response-overview-present"
+    },
+    "retention_comparison": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "retention_scan": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "retention_scan_extension": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "rogelio_v2": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "rogelio_v3": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "sipm_geometry_estimate": {
+      "group": "electron_readout",
+      "status": "study"
+    },
+    "sipm_response": {
+      "group": "electron_readout",
+      "status": "reference",
+      "title": "SiPM response model and pilot",
+      "description": "Statistical SiPM charge response, recovery and ASIC readout.",
+      "source": "docs/sipm_electronics_model.tex",
+      "presentation": "make sipm-report",
+      "workflow": "make sipm-pilot"
+    },
+    "sipm_statistical_production_pilot": {
+      "group": "electron_readout",
+      "status": "validation"
+    },
+    "sipm_statistical_validation": {
+      "group": "electron_readout",
+      "status": "validation",
+      "title": "Statistical SiPM validation",
+      "description": "Comparison of the statistical model with individual-cell simulations.",
+      "presentation": "make sipm-statistical-report",
+      "workflow": "make sipm-statistical-validation"
+    },
+    "sipm_tpb_pilot": {
+      "group": "electron_readout",
+      "status": "validation",
+      "title": "Small SiPM with TPB: pilot comparisons",
+      "description": "Optical conversion, recovery-time sensitivity, pulse charge and clipping.",
+      "presentation": "make sipm-tpb-report",
+      "workflow": "make sipm-tpb-pilot"
+    },
+    "spice2_diagnostics": {
+      "group": "ion_readout",
+      "status": "validation"
+    },
+    "spice2_enc": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "spice2_reproduction": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "spice_averaging": {
+      "group": "ion_readout",
+      "status": "study"
+    },
+    "three_cloud_benchmark": {
+      "group": "transport",
+      "status": "validation"
+    },
+    "three_cloud_sample_500": {
+      "group": "transport",
+      "status": "study"
+    },
+    "three_clouds_8000": {
+      "group": "transport",
+      "status": "study"
+    },
+    "formulas": {
+      "group": "production",
+      "status": "reference",
+      "title": "Production formulas and operating parameters",
+      "description": "Implemented transport, fluctuations, EL yield and optical acceptance, with physical references.",
+      "source": "docs/production_formulas.tex",
+      "presentation": "make production-formulas"
+    },
+    "elm_sipm_pilot": {
+      "group": "electron_readout",
+      "status": "validation",
+      "title": "ELM: finite-cell SiPM and electronics pilot",
+      "description": "Uniform 10\u2013150 cm electron placement, illuminated-disk recovery, separate SiPM and ASIC losses, occupancy and corrected event widths.",
+      "result": "results/elm_sipm_pilot/elm_sipm_pilot.h5",
+      "html": "results/elm_sipm_pilot/elm_sipm_pilot.html",
+      "presentation": "make elm-sipm-report",
+      "workflow": "make elm-sipm-pilot",
+      "cards": [
+        "config/specs/runs/elm_bb0nu_tau12p5ns_pilot100.toml",
+        "config/specs/runs/elm_bb0nu_tau25ns_pilot100.toml",
+        "config/specs/detector/electrons/elm_5mm_250ns_ep2_drift10cm.toml"
+      ],
+      "configuration": "100 bb0nu events; both gases; E/P=2; 5 mm pitch / 3 mm holes; 250 ns; S14160-3015PS; recovery 12.5 and 25 ns."
+    },
+    "elm_sipm_pitch4mm_pilot": {
+      "group": "electron_readout",
+      "status": "validation",
+      "title": "ELM: 4 mm pitch / 2.5 mm holes, Xe\u2013He pilot",
+      "description": "Matched 100-event comparison with 5 mm pitch, SiPM and ASIC losses, clipping-event rejection and energy widths.",
+      "result": "results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.h5",
+      "html": "results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.html",
+      "presentation": "make elm-pitch4-report",
+      "workflow": "make elm-pitch4-pilot",
+      "cards": [
+        "config/specs/runs/elm_pitch4mm_bb0nu_tau12p5ns_pilot100.toml",
+        "config/specs/runs/elm_pitch4mm_bb0nu_tau25ns_pilot100.toml",
+        "config/specs/detector/electrons/elm_4mm_250ns_ep2_drift10cm.toml"
+      ],
+      "configuration": "100 bb0nu events; Xe\u201315% He; E/P=2; 4 mm pitch / 2.5 mm holes; 250 ns; recovery 12.5 and 25 ns."
+    },
+    "elm_sipm_pitch4mm_production": {
+      "group": "electron_readout",
+      "status": "production",
+      "title": "ELM baseline: full bb0nu Xe\u2013He production",
+      "description": "8,000 events at 4 mm pitch and 2.5 mm holes; SiPM/ASIC charge losses, pulse means/maxima and energy widths before/after rejecting clipped events.",
+      "result": "results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.h5",
+      "html": "results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.html",
+      "presentation": "make elm-pitch4-production-report",
+      "workflow": "make elm-pitch4-production",
+      "cards": [
+        "config/specs/runs/elm_photons_pitch4mm_ep2_full.toml",
+        "config/specs/runs/elm_pitch4mm_bb0nu_full.toml",
+        "config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml"
+      ],
+      "configuration": "8,000 bb0nu events; Xe\u201315% He only; E/P=2; 4 mm pitch / 2.5 mm holes; 250 ns; 12.5 ns recovery."
+    }
+  }
+}

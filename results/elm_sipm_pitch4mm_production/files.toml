@@ -1,0 +1,12 @@
+total_wall_s = 509.39273405075073
+photon_index = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_sipm_pitch4mm_production/photons_ep2.h5"
+response_wall_s = 439.23395586013794
+complete = true
+sample = "bb0nu"
+events_per_gas = 8000
+photon_wall_s = 70.15870308876038
+
+[responses.12p5]
+elapsed_s = 439.2339267730713
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_sipm_pitch4mm_production/response/e81af979873f182c/manifest.toml"
+card = "config/specs/runs/elm_pitch4mm_bb0nu_full.toml"

@@ -239,7 +239,7 @@ if __name__ == "__main__":
     parser.add_argument("--output-dir", type=Path,
                         default=ROOT / "results/readout_pulses_8000")
     parser.add_argument("--latex-dir", type=Path,
-                        default=ROOT / "latex_generated/readout_pulses_8000")
+                        default=ROOT / "latex_generated/production/readout_pulses_8000")
     args = parser.parse_args()
     html_path, pdf_path = present(args.reduction, args.output_dir, args.latex_dir)
     print("HTML:", html_path)

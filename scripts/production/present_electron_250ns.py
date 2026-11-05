@@ -57,7 +57,7 @@ def main() -> None:
                     f"{label} & {title} & {events:,} & {pairs:,} & "
                     f"{survivors:,} & {emitted:,} & {incident:,} " + r"\\"
                 )
-    out = (args.output or ROOT / "latex_generated/electron_250ns" / run_id).resolve()
+    out = (args.output or ROOT / "latex_generated/electron_readout/electron_250ns" / run_id).resolve()
     out.mkdir(parents=True, exist_ok=True)
     tex = r"""\documentclass[10pt,a4paper]{article}
 \usepackage[margin=18mm]{geometry}

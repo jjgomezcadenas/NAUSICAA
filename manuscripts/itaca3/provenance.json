@@ -1,0 +1,189 @@
+{
+  "created": "2026-11-05",
+  "source_manuscript": "notes/physics/nausica.tex",
+  "source_sha256": "7fe587ff14faab3bc9c9222da6864e5184e321d91279d3ae4e57d0abc46b1bf2",
+  "template_zip": "Download+the+journal+article+template+package+(December+2024+version).zip",
+  "template_zip_sha256": "812e76dcaa9c28dc1bff1fb6065d51729b67d4ea140552a05088317414a3ecae",
+  "journal_guidelines": "https://link.springer.com/journal/10052/submission-guidelines",
+  "class_options": [
+    "pdflatex",
+    "iicol",
+    "sn-mathphys-num"
+  ],
+  "copied_dependencies": [
+    {
+      "source": "notes/physics/itaca_defs.tex",
+      "destination": "itaca_defs.tex",
+      "sha256": "62906abca1c7b6e0058b311924516cf895303a66c818b8f4e08a371edf852567",
+      "manuscript_sha256": "62906abca1c7b6e0058b311924516cf895303a66c818b8f4e08a371edf852567"
+    },
+    {
+      "source": "notes/physics/generated/values.tex",
+      "destination": "generated/values.tex",
+      "sha256": "bd52e056a9370a2dd6cd2099904deb4dbca3304a91d55df5d2eda5c77a81ebc1",
+      "manuscript_sha256": "bd52e056a9370a2dd6cd2099904deb4dbca3304a91d55df5d2eda5c77a81ebc1"
+    },
+    {
+      "source": "notes/physics/generated/readout_values.tex",
+      "destination": "generated/readout_values.tex",
+      "sha256": "2e44fea71ff7693dd5fa5ff29be9ed7c658ee456f863555e77d4a7ceb5815311",
+      "manuscript_sha256": "2e44fea71ff7693dd5fa5ff29be9ed7c658ee456f863555e77d4a7ceb5815311"
+    },
+    {
+      "source": "notes/physics/generated/spice_values.tex",
+      "destination": "generated/spice_values.tex",
+      "sha256": "5d41412853759315877d4a0f997a1d7beb9ad29cd0fe8695fe50fb85453e3c88",
+      "manuscript_sha256": "5d41412853759315877d4a0f997a1d7beb9ad29cd0fe8695fe50fb85453e3c88"
+    },
+    {
+      "source": "notes/physics/generated/spice_operating_values.tex",
+      "destination": "generated/spice_operating_values.tex",
+      "sha256": "1ea68da533d3914e0d17adce2491fd66099a0a7ee0d4201ce52b1b2b16765b0d",
+      "manuscript_sha256": "1ea68da533d3914e0d17adce2491fd66099a0a7ee0d4201ce52b1b2b16765b0d"
+    },
+    {
+      "source": "notes/physics/generated/spice_bias_values.tex",
+      "destination": "generated/spice_bias_values.tex",
+      "sha256": "ccc2e05b1c2101cc0011fd4bcfa1a4be52e79b9b631dca314b744d42c3ca194f",
+      "manuscript_sha256": "ccc2e05b1c2101cc0011fd4bcfa1a4be52e79b9b631dca314b744d42c3ca194f"
+    },
+    {
+      "source": "notes/physics/generated/spice_injection_values.tex",
+      "destination": "generated/spice_injection_values.tex",
+      "sha256": "ccc3ddc66b8e56f52a5fc886f98700c74f665ea22762a49424a1a9f72a9d4442",
+      "manuscript_sha256": "ccc3ddc66b8e56f52a5fc886f98700c74f665ea22762a49424a1a9f72a9d4442"
+    },
+    {
+      "source": "notes/physics/generated/spice_averaging_values.tex",
+      "destination": "generated/spice_averaging_values.tex",
+      "sha256": "1c2fb1a0108eaf8f8c68e3d38fb554c3d44f39b75aa7283b73a60e07714a311e",
+      "manuscript_sha256": "1c2fb1a0108eaf8f8c68e3d38fb554c3d44f39b75aa7283b73a60e07714a311e"
+    },
+    {
+      "source": "notes/physics/generated/pixel_area_values.tex",
+      "destination": "generated/pixel_area_values.tex",
+      "sha256": "22c058c703a56d8c28b6c8a3587b4210743f8246ee389fd68a5a28d162031d44",
+      "manuscript_sha256": "22c058c703a56d8c28b6c8a3587b4210743f8246ee389fd68a5a28d162031d44"
+    },
+    {
+      "source": "notes/physics/figures/weighting_boundary.tex",
+      "destination": "figures/weighting_boundary.tex",
+      "sha256": "401aa571b6fc232e14c60a8e2f4bdd2c5ffa8a983c6992a92b7d556b8b1c5663",
+      "manuscript_sha256": "401aa571b6fc232e14c60a8e2f4bdd2c5ffa8a983c6992a92b7d556b8b1c5663"
+    },
+    {
+      "source": "notes/physics/generated/spice_devices_table.tex",
+      "destination": "generated/spice_devices_table.tex",
+      "sha256": "b36a4502116b99d94b1974a79be3732845b78d7251155f5ffa3107648985aece",
+      "manuscript_sha256": "b36a4502116b99d94b1974a79be3732845b78d7251155f5ffa3107648985aece"
+    },
+    {
+      "source": "notes/physics/generated/spice_noise_budget.tex",
+      "destination": "generated/spice_noise_budget.tex",
+      "sha256": "0529addcec17111fc78b07c21113854e0fee8173bd435f5b938410878ef935f7",
+      "manuscript_sha256": "0529addcec17111fc78b07c21113854e0fee8173bd435f5b938410878ef935f7"
+    },
+    {
+      "source": "notes/physics/generated/pixel_area_table.tex",
+      "destination": "generated/pixel_area_table.tex",
+      "sha256": "17a16faf87e3026160af040bf35ce6f88ad12a019b0b3425d65172eb04798b41",
+      "manuscript_sha256": "17a16faf87e3026160af040bf35ce6f88ad12a019b0b3425d65172eb04798b41"
+    },
+    {
+      "source": "notes/physics/appendix_spice_readout.tex",
+      "destination": "appendix_spice_readout.tex",
+      "sha256": "aa10f66d56bc6e4ddf730f1b133d19872e8b648e7f3eb671f4ccf4724c0bf062",
+      "manuscript_sha256": "aa10f66d56bc6e4ddf730f1b133d19872e8b648e7f3eb671f4ccf4724c0bf062"
+    },
+    {
+      "source": "notes/physics/generated/spice_averaging.pdf",
+      "destination": "generated/spice_averaging.pdf",
+      "sha256": "31464a9d376d25a42d7e950b219136cec815d0d8344423c4eb77109a1b1f5042",
+      "manuscript_sha256": "31464a9d376d25a42d7e950b219136cec815d0d8344423c4eb77109a1b1f5042"
+    },
+    {
+      "source": "notes/physics/appendix_pixel_area.tex",
+      "destination": "appendix_pixel_area.tex",
+      "sha256": "0584f5f43498128b2cec87e957c55d03e0349aa4e86199198ce3abcdf933c5b0",
+      "manuscript_sha256": "0584f5f43498128b2cec87e957c55d03e0349aa4e86199198ce3abcdf933c5b0"
+    },
+    {
+      "source": "notes/physics/appendix_topmetal.tex",
+      "destination": "appendix_topmetal.tex",
+      "sha256": "0294d41bf17570ad932e9f0fa7ca669bc9735c098489d4a87a7eddfc8a9821d1",
+      "manuscript_sha256": "044d059b56f2765cfbbd3d4413934a466150cb08eb2d5ae1e24b7794e20259e4",
+      "adaptation": "Full-width table float for the two-column journal layout."
+    },
+    {
+      "source": "notes/physics/img/ion_diffusion_vs_length.png",
+      "destination": "img/ion_diffusion_vs_length.png",
+      "sha256": "023b7464df4d41e8a5b5f80eaf13a8e9a75181e162603bceaafe6127ebdbc5e7",
+      "manuscript_sha256": "023b7464df4d41e8a5b5f80eaf13a8e9a75181e162603bceaafe6127ebdbc5e7"
+    },
+    {
+      "source": "notes/physics/img/electron_ion_diffusion.png",
+      "destination": "img/electron_ion_diffusion.png",
+      "sha256": "f2067115b441840f6120bac0099556f9e0515394c0ce9d6c6e2ef35113db8d53",
+      "manuscript_sha256": "f2067115b441840f6120bac0099556f9e0515394c0ce9d6c6e2ef35113db8d53"
+    },
+    {
+      "source": "notes/physics/figures/nausica_concept.pdf",
+      "destination": "figures/nausica_concept.pdf",
+      "sha256": "7b98dde0d60bdc23a82d9e3d00521d9d92d2798da72be82ff81bcfc1a63afb46",
+      "manuscript_sha256": "7b98dde0d60bdc23a82d9e3d00521d9d92d2798da72be82ff81bcfc1a63afb46"
+    },
+    {
+      "source": "notes/physics/generated/single_ion_current.pdf",
+      "destination": "generated/single_ion_current.pdf",
+      "sha256": "4fcbfeef0166f29737d62fb7347a15ed2af9f2110f96a7224d19e8aacc99f674",
+      "manuscript_sha256": "4fcbfeef0166f29737d62fb7347a15ed2af9f2110f96a7224d19e8aacc99f674"
+    },
+    {
+      "source": "notes/physics/figures/Nausica_Image.jpg",
+      "destination": "figures/Nausica_Image.jpg",
+      "sha256": "68273a42aeb85713d8e40ef8bebc19d7ff7a476459108ceb67bf9bc0a7b0f514",
+      "manuscript_sha256": "68273a42aeb85713d8e40ef8bebc19d7ff7a476459108ceb67bf9bc0a7b0f514"
+    },
+    {
+      "source": "notes/physics/generated/spice_ion_response.pdf",
+      "destination": "generated/spice_ion_response.pdf",
+      "sha256": "144f0867ce4fe2bd99fa355c86970138b881ace477bcf7f600817b676edb1a40",
+      "manuscript_sha256": "144f0867ce4fe2bd99fa355c86970138b881ace477bcf7f600817b676edb1a40"
+    },
+    {
+      "source": "notes/physics/generated/pixel_area.pdf",
+      "destination": "generated/pixel_area.pdf",
+      "sha256": "267063296671cd385bab3bc87f2b22a0907666691cd6d43d165acc769f6b3d2f",
+      "manuscript_sha256": "267063296671cd385bab3bc87f2b22a0907666691cd6d43d165acc769f6b3d2f"
+    },
+    {
+      "source": "notes/physics/references.bib",
+      "destination": "references.bib",
+      "sha256": "acdfef9f7aa2e6c521e25b3e1cfcaaf4b4c828da2d06b4216bcc2ff2ca26069f",
+      "manuscript_sha256": "acdfef9f7aa2e6c521e25b3e1cfcaaf4b4c828da2d06b4216bcc2ff2ca26069f"
+    },
+    {
+      "source": "notes/physics/figures/nausica_concept.tex",
+      "destination": "figures/nausica_concept.tex",
+      "sha256": "a45ba27fce8da0c23ce77f02063944c50a83851c81cea8a3e9cb80cd733f0cad",
+      "manuscript_sha256": "a45ba27fce8da0c23ce77f02063944c50a83851c81cea8a3e9cb80cd733f0cad"
+    },
+    {
+      "source": "notes/physics/figures/rogelio_circuit_provenance.json",
+      "destination": "figures/rogelio_circuit_provenance.json",
+      "sha256": "314222aa264bc6caed03258f80850b869b0be3d67f9bb48497fb01742323d1ef",
+      "manuscript_sha256": "314222aa264bc6caed03258f80850b869b0be3d67f9bb48497fb01742323d1ef"
+    },
+    {
+      "source": "notes/physics/img/SOURCES.txt",
+      "destination": "img/SOURCES.txt",
+      "sha256": "f43813d4ca9d590301588d714a26258ec63bf6e5c5f534f51d892ad0af6613b0",
+      "manuscript_sha256": "f43813d4ca9d590301588d714a26258ec63bf6e5c5f534f51d892ad0af6613b0"
+    }
+  ],
+  "manuscript_sha256": "ab8bf693b992365ac0427a15b7d5802690718fecc70a7da5f1aee71ec3a5a66a",
+  "template_files": {
+    "sn-jnl.cls": "36d0c3273a59d48dc6a9c7b080dfa1ec50dc10229d8751568d1f2e490ffa5ecc",
+    "sn-mathphys-num.bst": "b3a7c7fbcc1e7f9619de634fcea2f5bb7a245818a5942bc576e40ea001633332"
+  }
+}

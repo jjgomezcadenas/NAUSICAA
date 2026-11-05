@@ -39,7 +39,7 @@ function sources(s)
     for src in Pilot.sources(s.pilot)
         src.sample==s.run["sample"] && src.gas in s.run["gases"] || continue
         ids=h5open(src.path,"r") do h
-            require(schema(h)=="nausicaa.photon_sipm_file.pilot.v1" &&
+            require(schema(h) in ("nausicaa.photon_sipm_file.pilot.v1","nausicaa.photon_sipm_file.pilot.v2") &&
                     Bool(read(h["metadata/complete"])),"Incomplete photon source")
             found=sort!(parse.(Int64,collect(keys(h["events"]))))
             require(length(found)==read(h["metadata/event_count"]),"Source event count")
@@ -121,6 +121,8 @@ function sensor_shard(s,branch,ids,number)
                 grid=Pilot.acquisition(history,pilot.c["acquisition"])
                 nb=length(grid.buckets);nc=length(grid.channels);rows=nb*nc
                 detected=zeros(Int64,rows);dark=zeros(Int64,rows);sensor_pe=zeros(Float64,rows)
+                optical_charge_pe=zeros(Float64,rows);dark_charge_pe=zeros(Float64,rows)
+                distinct=zeros(Float64,rows)
                 seeds=zeros(UInt64,nc)
                 repairs=0;limits=0;charge_limits=0;label_limits=0;maxrepair=0.;batches=0
                 for (j,ch) in enumerate(grid.channels)
@@ -136,6 +138,11 @@ function sensor_shard(s,branch,ids,number)
                     detected[selection]=trace.detected_pe
                     dark[selection]=trace.dark_pulses
                     sensor_pe[selection]=trace.charge_C./q0
+                    optical_charge_pe[selection]=trace.optical_charge_C./q0
+                    dark_charge_pe[selection]=trace.dark_charge_C./q0
+                    if hasproperty(trace,:expected_distinct_optical_cells)
+                        distinct[selection]=trace.expected_distinct_optical_cells
+                    end
                 end
                 require(all(detected.<=vec(grid.counts)) && all(sensor_pe.>=0) &&
                         all(sensor_pe.<=detected.+dark.+1e-8),"SiPM ledger")
@@ -158,6 +165,13 @@ function sensor_shard(s,branch,ids,number)
                 vector(g,"detected_pe",detected)
                 vector(g,"dark_pulses",dark)
                 vector(g,"sensor_pe_equiv",sensor_pe)
+                vector(g,"optical_charge_pe_equiv",optical_charge_pe)
+                vector(g,"dark_charge_pe_equiv",dark_charge_pe)
+                if get(pilot.c,"illumination","")=="uniform_disk_subset"
+                    vector(g,"expected_distinct_optical_cells",distinct)
+                    put(g,(;illuminated_microcells=pilot.c["illuminated_microcell_count"],
+                        physical_microcells=pilot.c["microcell_count"]))
+                end
             end
         end
     end

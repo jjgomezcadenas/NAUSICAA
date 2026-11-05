@@ -1,0 +1,425 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NAUSICAA · Generated notes</title><style>body{font:16px/1.55 system-ui;margin:0;color:#203040;background:#f6f7f8}main{max-width:1180px;margin:40px auto;padding:0 24px}h1{margin-bottom:0}h2{padding-top:20px;border-top:2px solid #dbe2e8}article{background:white;border:1px solid #dae1e6;border-radius:8px;padding:18px 22px;margin:14px 0}h3{margin:0}a{color:#126687}a+a{margin-left:14px}small,.muted{color:#586977}code{white-space:pre-wrap;background:#f0f3f5;padding:2px 5px}input{font:inherit;padding:10px;width:95%;margin:18px 0}nav a{display:inline-block;margin:3px 12px 3px 0}summary{cursor:pointer}li{margin:6px 0}.tag{font-size:12px;border-radius:4px;background:#e9f0f5;padding:3px 7px;float:right}.doc{margin:8px 0}footer{margin:35px 0}</style><main>
+<h1>NAUSICAA · Generated notes</h1><p>Reports, model notes and validation studies, grouped by scientific subject. Each entry links its saved documents and available provenance.</p>
+<nav><a href="#detector">Detector and ELM</a><a href="#transport">Carrier transport</a><a href="#reconstruction">Event reconstruction</a><a href="#ion_readout">Ion readout and CSA</a><a href="#electron_readout">Electron readout and SiPM</a><a href="#production">Production and combined response</a><a href="#literature">Literature reviews</a><a href="#archive">Historical reference outputs</a></nav>
+<input id="search" type="search" placeholder="Filter by title, configuration, species or workflow…" aria-label="Filter reports">
+<section id="detector"><h2>Detector and ELM <small>(1)</small></h2>
+<article><span class="tag">reference</span><h3>ELM geometry and optical transport</h3>
+<p>Electrodes, gas-isolated light guides, TPB conversion and a worked E/P = 2 example.</p>
+<p><b>Configuration:</b> 15 bar; 3 mm holes; 5 mm pitch; 5 mm EL depth; 100 mm light guides; E/P = 2 kV/cm/bar.</p>
+<div class="doc">ELM: electroluminescence and light-guide manifold · <a href="../docs/elm.tex">TeX</a> <a href="detector/elm/elm.pdf">PDF</a></div>
+<p><a href="../docs/elm.tex">Source</a> <a href="../results/elm/elm_example.h5">Result</a></p>
+<p>Presentation only: <code>make elm-note-present</code></p>
+<p>Complete workflow: <code>make elm-note</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/documentation/present_elm_example.py">scripts/documentation/present_elm_example.py</a></li><li><a href="../config/electron_transport.toml">config/electron_transport.toml</a></li><li><a href="../config/specs/detector/electrons/elm_4mm_250ns_ep2_drift10cm.toml">config/specs/detector/electrons/elm_4mm_250ns_ep2_drift10cm.toml</a></li><li><a href="../config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml">config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml</a></li><li><a href="../config/specs/response/sipm_electronics/readout_s14160_1315ps.toml">config/specs/response/sipm_electronics/readout_s14160_1315ps.toml</a></li><li><a href="../docs/elm.tex">docs/elm.tex</a></li><li><a href="../docs/figures/elm_setup.tex">docs/figures/elm_setup.tex</a></li><li><a href="../results/elm/elm_example.h5">results/elm/elm_example.h5</a></li><li><a href="../results/elm_sipm_pilot/elm_sipm_pilot.h5">results/elm_sipm_pilot/elm_sipm_pilot.h5</a></li><li><a href="../results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.h5">results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.h5</a></li></ul></details></article>
+</section>
+<section id="transport"><h2>Carrier transport <small>(4)</small></h2>
+<article><span class="tag">reference</span><h3>Electron diffusion at operating pressure</h3>
+<div class="doc">Electron diffusion at operating pressure · <a href="transport/electron_diffusion/electron_diffusion.tex">TeX</a> <a href="transport/electron_diffusion/electron_diffusion.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/transport/present_electron_diffusion.py">scripts/transport/present_electron_diffusion.py</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Three-cloud propagation prototype: concurrency benchmark</h3>
+<div class="doc">Three-cloud propagation prototype: concurrency benchmark · <a href="transport/three_cloud_benchmark/three_cloud_benchmark.tex">TeX</a> <a href="transport/three_cloud_benchmark/three_cloud_benchmark.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/transport/present_three_cloud_benchmark.py">scripts/transport/present_three_cloud_benchmark.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Six-stream cloud propagation: 500-event sample</h3>
+<div class="doc">Six-stream cloud propagation: 500-event sample · <a href="transport/three_cloud_sample_500/three_cloud_sample_500.tex">TeX</a> <a href="transport/three_cloud_sample_500/three_cloud_sample_500.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Six-stream cloud propagation: 8000-event sample</h3>
+<div class="doc">Six-stream cloud propagation: 8000-event sample · <a href="transport/three_clouds_8000/three_clouds_8000.tex">TeX</a> <a href="transport/three_clouds_8000/three_clouds_8000.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+</section>
+<section id="reconstruction"><h2>Event reconstruction <small>(6)</small></h2>
+<article><span class="tag">validation</span><h3>Event analysis: step-one checkpoint</h3>
+<div class="doc">Event analysis: step-one checkpoint · <a href="reconstruction/event_analysis_step1/report.tex">TeX</a> <a href="reconstruction/event_analysis_step1/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/validation/report_event_step1.py">scripts/validation/report_event_step1.py</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Event analysis: ion production and diffusion</h3>
+<div class="doc">Event analysis: ion production and diffusion · <a href="reconstruction/event_analysis_step2/report.tex">TeX</a> <a href="reconstruction/event_analysis_step2/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/validation/report_event_step2.py">scripts/validation/report_event_step2.py</a></li><li><a href="../config/detector.toml">config/detector.toml</a></li><li><a href="../results/event_analysis/step2_validation.h5">results/event_analysis/step2_validation.h5</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Event analysis: selection and pad histories</h3>
+<div class="doc">Event analysis: selection and pad histories · <a href="reconstruction/event_analysis_step3/report.tex">TeX</a> <a href="reconstruction/event_analysis_step3/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/validation/report_event_step3.py">scripts/validation/report_event_step3.py</a></li><li><a href="../config/detector.toml">config/detector.toml</a></li><li><a href="../results/event_analysis/step3_validation.h5">results/event_analysis/step3_validation.h5</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Event analysis: paired scans and ensemble means</h3>
+<div class="doc">Event analysis: paired scans and ensemble means · <a href="reconstruction/event_analysis_step4/report.tex">TeX</a> <a href="reconstruction/event_analysis_step4/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/validation/report_event_step4.py">scripts/validation/report_event_step4.py</a></li><li><a href="../config/detector.toml">config/detector.toml</a></li><li><a href="../results/event_analysis/step4_scans.h5">results/event_analysis/step4_scans.h5</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>MC connectivity with 100 micrometre simulation steps</h3>
+<div class="doc">MC connectivity with 100 micrometre simulation steps · <a href="reconstruction/mc_graph_diagnostic/comparison_100um.tex">TeX</a> <a href="reconstruction/mc_graph_diagnostic/comparison_100um.pdf">PDF</a></div>
+<div class="doc">Primary-hit spacing and MC graph fragmentation · <a href="reconstruction/mc_graph_diagnostic/hit_spacing.tex">TeX</a> <a href="reconstruction/mc_graph_diagnostic/hit_spacing.pdf">PDF</a></div>
+<div class="doc">MC graph fragmentation diagnostic · <a href="reconstruction/mc_graph_diagnostic/report.tex">TeX</a> <a href="reconstruction/mc_graph_diagnostic/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">reference</span><h3>MC selection</h3>
+<div class="doc">MC selection · <a href="reconstruction/mc_selection/mc_selection.tex">TeX</a> <a href="reconstruction/mc_selection/mc_selection.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/events/present_mc_selection.py">scripts/events/present_mc_selection.py</a></li></ul></details></article>
+</section>
+<section id="ion_readout"><h2>Ion readout and CSA <small>(52)</small></h2>
+<article><span class="tag">study</span><h3>Preliminary ADC range and resolution for NAUSICA</h3>
+<div class="doc">Preliminary ADC range and resolution for NAUSICA · <a href="ion_readout/adc_estimate/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/design/present_adc_estimate.py">scripts/electronics/design/present_adc_estimate.py</a></li><li><a href="ion_readout/adc_estimate/provenance.json">latex_generated/ion_readout/adc_estimate/provenance.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>CSA sensitivity to bias-voltage precision</h3>
+<div class="doc">CSA sensitivity to bias-voltage precision · <a href="ion_readout/bias_sensitivity/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/bias/present_bias_sensitivity.py">scripts/electronics/bias/present_bias_sensitivity.py</a></li><li><a href="ion_readout/bias_sensitivity/provenance.json">latex_generated/ion_readout/bias_sensitivity/provenance.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Noise correlations between NAUSICA buckets</h3>
+<div class="doc">Noise correlations between NAUSICA buckets · <a href="ion_readout/bucket_noise_covariance/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/readout/present_bucket_noise_covariance.py">scripts/electronics/readout/present_bucket_noise_covariance.py</a></li><li><a href="ion_readout/bucket_noise_covariance/provenance.json">latex_generated/ion_readout/bucket_noise_covariance/provenance.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>NAUSICAA: comparison of 10 and 20 ms buckets</h3>
+<div class="doc">NAUSICAA: comparison of 10 and 20 ms buckets · <a href="ion_readout/bucket_scan/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/readout/present_bucket_study.py">scripts/electronics/readout/present_bucket_study.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>report</h3>
+<div class="doc">report · <a href="ion_readout/calibrated_spice_averaging/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/paper/build_spice_paper.py">scripts/paper/build_spice_paper.py</a></li></ul></details></article>
+<article><span class="tag">reference</span><h3>Ion CSA design</h3>
+<p>Circuit, calibration, signal reconstruction and validation.</p>
+<div class="doc">NAUSICAA CSA: design, readout and response to ion tracks · <a href="ion_readout/csa_design/csa_design.tex">TeX</a> <a href="ion_readout/csa_design/csa_design.pdf">PDF</a></div>
+<p><a href="../notes/physics/csa_design.tex">Source</a> <a href="../results/csa_design/summary.h5">Result</a></p>
+<p>Complete workflow: <code>make csa-design-note</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_csa_design.py">scripts/production/present_csa_design.py</a></li><li><a href="ion_readout/csa_design/sources.json">latex_generated/ion_readout/csa_design/sources.json</a></li><li><a href="../config/specs/runs/ion_csa_v3_corrected_pilot_2mm.toml">config/specs/runs/ion_csa_v3_corrected_pilot_2mm.toml</a></li><li><a href="../config/specs/runs/ion_csa_v3_pilot_2mm.toml">config/specs/runs/ion_csa_v3_pilot_2mm.toml</a></li><li><a href="../config/specs/runs/ion_csa_v3_pilot_all.toml">config/specs/runs/ion_csa_v3_pilot_all.toml</a></li><li><a href="../notes/physics/nausica.tex">notes/physics/nausica.tex</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>NAUSICAA: discharge correction calibrated from the CSA</h3>
+<div class="doc">NAUSICAA: discharge correction calibrated from the CSA · <a href="ion_readout/discharge_calibration/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/readout/present_discharge_calibration.py">scripts/electronics/readout/present_discharge_calibration.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>NAUSICA: feedback transistor and averaging optimization</h3>
+<div class="doc">NAUSICA: feedback transistor and averaging optimization · <a href="ion_readout/feedback_optimization/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/feedback_optimization/provenance.json">latex_generated/ion_readout/feedback_optimization/provenance.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Event 3790: origin and resolution of the arrival-time axis</h3>
+<div class="doc">Event 3790: origin and resolution of the arrival-time axis · <a href="ion_readout/history_time_audit/event_3790/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/histories/present_history_time_audit.py">scripts/electronics/histories/present_history_time_audit.py</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Ion CSA v3 response pilot</h3>
+<div class="doc">Ion CSA v3 response pilot · <a href="ion_readout/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_benchmark/79fb6b96c43ce463/sources.json</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Ion CSA v3 corrected response pilot</h3>
+<div class="doc">Ion CSA v3 corrected response pilot · <a href="ion_readout/ion_csa_0p5_enc_corrected_benchmark/e506fb574f80d169/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_corrected_benchmark/e506fb574f80d169/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_corrected_benchmark/e506fb574f80d169/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_corrected_benchmark/e506fb574f80d169/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 response study</h3>
+<div class="doc">Ion CSA v3 response study · <a href="ion_readout/ion_csa_0p5_enc_corrected_production/bf27d046b2019f71/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_corrected_production/bf27d046b2019f71/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_corrected_production/bf27d046b2019f71/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_corrected_production/bf27d046b2019f71/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 response study</h3>
+<div class="doc">Ion CSA v3 response study · <a href="ion_readout/ion_csa_0p5_enc_corrected_production_2mm/7a75ad6039a234a0/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_corrected_production_2mm/7a75ad6039a234a0/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_corrected_production_2mm/7a75ad6039a234a0/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_corrected_production_2mm/7a75ad6039a234a0/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 response study</h3>
+<div class="doc">Ion CSA v3 response study · <a href="ion_readout/ion_csa_0p5_enc_corrected_production_4mm/588da52478312c29/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_corrected_production_4mm/588da52478312c29/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_corrected_production_4mm/588da52478312c29/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_corrected_production_4mm/588da52478312c29/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 response study</h3>
+<div class="doc">Ion CSA v3 response study · <a href="ion_readout/ion_csa_0p5_enc_production/0127dbf33ad328c8/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_production/0127dbf33ad328c8/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_production/0127dbf33ad328c8/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_production/0127dbf33ad328c8/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 response study</h3>
+<div class="doc">Ion CSA v3 response study · <a href="ion_readout/ion_csa_0p5_enc_production_2mm/da95679c2bfc42f2/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_production_2mm/da95679c2bfc42f2/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_production_2mm/da95679c2bfc42f2/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_production_2mm/da95679c2bfc42f2/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 response study</h3>
+<div class="doc">Ion CSA v3 response study · <a href="ion_readout/ion_csa_0p5_enc_production_4mm/0e84b70bcc70c20c/report.tex">TeX</a> <a href="ion_readout/ion_csa_0p5_enc_production_4mm/0e84b70bcc70c20c/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_0p5_enc_production_4mm/0e84b70bcc70c20c/sources.json">latex_generated/ion_readout/ion_csa_0p5_enc_production_4mm/0e84b70bcc70c20c/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 corrected response pilot</h3>
+<div class="doc">Ion CSA v3 corrected response pilot · <a href="ion_readout/ion_csa_v3_corrected/bfe6dd3720d0e9b9/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_v3_corrected/bfe6dd3720d0e9b9/sources.json">latex_generated/ion_readout/ion_csa_v3_corrected/bfe6dd3720d0e9b9/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 corrected response pilot</h3>
+<div class="doc">Ion CSA v3 corrected response pilot · <a href="ion_readout/ion_csa_v3_corrected_2mm/621ee0d8943bf79c/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_v3_corrected_2mm/621ee0d8943bf79c/sources.json">latex_generated/ion_readout/ion_csa_v3_corrected_2mm/621ee0d8943bf79c/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Ion CSA v3 corrected response pilot</h3>
+<div class="doc">Ion CSA v3 corrected response pilot · <a href="ion_readout/ion_csa_v3_corrected_4mm/1a907c5dff36993d/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_v3_corrected_4mm/1a907c5dff36993d/sources.json">latex_generated/ion_readout/ion_csa_v3_corrected_4mm/1a907c5dff36993d/sources.json</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Ion CSA v3 response pilot</h3>
+<div class="doc">Ion CSA v3 response pilot · <a href="ion_readout/ion_csa_v3_pilot/e350c80d4a1396a4/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">Ion CSA v3 response pilot · <a href="ion_readout/ion_csa_v3_pilot/fe44c7ae68e2df1f/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_v3_pilot/e350c80d4a1396a4/sources.json">latex_generated/ion_readout/ion_csa_v3_pilot/e350c80d4a1396a4/sources.json</a></li><li><a href="ion_readout/ion_csa_v3_pilot/fe44c7ae68e2df1f/sources.json">latex_generated/ion_readout/ion_csa_v3_pilot/fe44c7ae68e2df1f/sources.json</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Ion CSA v3 response pilot</h3>
+<div class="doc">Ion CSA v3 response pilot · <a href="ion_readout/ion_csa_v3_pilot_2mm/0d8a8d4b9ddd6666/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_v3_pilot_2mm/0d8a8d4b9ddd6666/sources.json">latex_generated/ion_readout/ion_csa_v3_pilot_2mm/0d8a8d4b9ddd6666/sources.json</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Ion CSA v3 response pilot</h3>
+<div class="doc">Ion CSA v3 response pilot · <a href="ion_readout/ion_csa_v3_pilot_4mm/289ba0ab6997a94f/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/ion_csa_v3_pilot_4mm/289ba0ab6997a94f/sources.json">latex_generated/ion_readout/ion_csa_v3_pilot_4mm/289ba0ab6997a94f/sources.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Initial ionization from NEXUS tracks</h3>
+<div class="doc">Initial ionization from NEXUS tracks · <a href="ion_readout/ion_tracks/report.tex">TeX</a> <a href="ion_readout/ion_tracks/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/events/plot_hit_analysis.py">scripts/events/plot_hit_analysis.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>M3 noise study with M4 at its provisional design</h3>
+<div class="doc">M3 noise study with M4 at its provisional design · <a href="ion_readout/m3_scan/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/devices/present_m3_scan.py">scripts/electronics/devices/present_m3_scan.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>M4 geometry and bias study in the 180 nm CSA</h3>
+<div class="doc">M4 geometry and bias study in the 180 nm CSA · <a href="ion_readout/m4_scan/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/devices/present_m4_scan.py">scripts/electronics/devices/present_m4_scan.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Output noise and the noise of the frame measurement</h3>
+<div class="doc">Output noise and the noise of the frame measurement · <a href="ion_readout/noise_measurement/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/reproduction/rogelio_v3/present_noise_measurement.py">scripts/electronics/reproduction/rogelio_v3/present_noise_measurement.py</a></li><li><a href="ion_readout/noise_measurement/provenance.json">latex_generated/ion_readout/noise_measurement/provenance.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>CSA compression in complete ion-pad histories</h3>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/pad_compression/297cfaf80cec/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/pad_compression/297cfaf80cec/sources.txt">latex_generated/ion_readout/pad_compression/297cfaf80cec/sources.txt</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>CSA compression in complete ion-pad histories</h3>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/pad_compression_direct/8b0d8b859f56/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/pad_compression_direct/8b0d8b859f56/sources.txt">latex_generated/ion_readout/pad_compression_direct/8b0d8b859f56/sources.txt</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>CSA performance with direct carrier collection</h3>
+<div class="doc">CSA performance with direct carrier collection · <a href="ion_readout/pad_history_direct_comparison/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/pad_history_direct_comparison/sources.txt">latex_generated/ion_readout/pad_history_direct_comparison/sources.txt</a></li><li><a href="../config/pad_history_readout_direct.toml">config/pad_history_readout_direct.toml</a></li><li><a href="../config/pad_history_viewer_direct.toml">config/pad_history_viewer_direct.toml</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Complete pad histories with the optimized NAUSICAA CSA</h3>
+<div class="doc">Complete pad histories with the optimized NAUSICAA CSA · <a href="ion_readout/pad_history_readout/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/pad_history_readout/sources.txt">latex_generated/ion_readout/pad_history_readout/sources.txt</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Complete pad histories with the optimized NAUSICAA CSA</h3>
+<div class="doc">Complete pad histories with the optimized NAUSICAA CSA · <a href="ion_readout/pad_history_readout_direct/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/pad_history_readout_direct/sources.txt">latex_generated/ion_readout/pad_history_readout_direct/sources.txt</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>A ten-bucket example through the optimized CSA</h3>
+<div class="doc">A ten-bucket example through the optimized CSA · <a href="ion_readout/pad_sequence_example/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>NAUSICA: 4 mm pitch and 40 ms buckets</h3>
+<div class="doc">NAUSICA: 4 mm pitch and 40 ms buckets · <a href="ion_readout/pitch_4mm_40ms/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/readout/present_pitch_exercise.py">scripts/electronics/readout/present_pitch_exercise.py</a></li><li><a href="ion_readout/pitch_4mm_40ms/provenance.json">latex_generated/ion_readout/pitch_4mm_40ms/provenance.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Presupuesto de área para un píxel de NAUSICA</h3>
+<div class="doc">Presupuesto de área para un píxel de NAUSICA · <a href="ion_readout/pixel_area/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/design/present_pixel_area.py">scripts/electronics/design/present_pixel_area.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Pixel charge per electronics frame</h3>
+<div class="doc">Pixel charge per electronics frame · <a href="ion_readout/pixel_charge/pixel_charge.tex">TeX</a> <a href="ion_readout/pixel_charge/pixel_charge.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/collection/present_pixel_charge.py">scripts/collection/present_pixel_charge.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Pixel charge per electronics frame</h3>
+<div class="doc">Pixel charge per electronics frame · <a href="ion_readout/pixel_charge_1mm/pixel_charge.tex">TeX</a> <a href="ion_readout/pixel_charge_1mm/pixel_charge.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Pixel charge per electronics frame</h3>
+<div class="doc">Pixel charge per electronics frame · <a href="ion_readout/pixel_charge_1mm_3mm/pixel_charge.tex">TeX</a> <a href="ion_readout/pixel_charge_1mm_3mm/pixel_charge.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Pixel charge per electronics frame</h3>
+<div class="doc">Pixel charge per electronics frame · <a href="ion_readout/pixel_charge_1mm_3mm_direct/pixel_charge.tex">TeX</a> <a href="ion_readout/pixel_charge_1mm_3mm_direct/pixel_charge.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Pixel charge per electronics frame</h3>
+<div class="doc">Pixel charge per electronics frame · <a href="ion_readout/pixel_charge_1mm_4mm/pixel_charge.tex">TeX</a> <a href="ion_readout/pixel_charge_1mm_4mm/pixel_charge.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Pixel charge per electronics frame</h3>
+<div class="doc">Pixel charge per electronics frame · <a href="ion_readout/pixel_charge_1mm_4mm_direct/pixel_charge.tex">TeX</a> <a href="ion_readout/pixel_charge_1mm_4mm_direct/pixel_charge.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Pixel charge per electronics frame</h3>
+<div class="doc">Pixel charge per electronics frame · <a href="ion_readout/pixel_charge_1mm_direct/pixel_charge.tex">TeX</a> <a href="ion_readout/pixel_charge_1mm_direct/pixel_charge.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Corriente inducida en un pad de NAUSICA</h3>
+<div class="doc">Corriente inducida en un pad de NAUSICA · <a href="ion_readout/ramo_check/report.tex">TeX</a> <a href="ion_readout/ramo_check/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/paper/write_ramo_note.py">scripts/paper/write_ramo_note.py</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Longer CSA feedback retention for NAUSICA</h3>
+<div class="doc">Longer CSA feedback retention for NAUSICA · <a href="ion_readout/retention_comparison/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/retention_comparison/sources.txt">latex_generated/ion_readout/retention_comparison/sources.txt</a></li><li><a href="../config/retention_comparison.toml">config/retention_comparison.toml</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>CSA compression in complete ion-pad histories</h3>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/retention_scan/compression/length_1200um/163540268c70/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/retention_scan/compression/length_1600um/e217ebc49b6c/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/retention_scan/compression/length_2000um/689e1eee3a45/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/retention_scan/compression/length_400um/df613e0e4a69/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/retention_scan/compression/length_800um/caac67eddc10/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">Longer CSA feedback retention for NAUSICA · <a href="ion_readout/retention_scan/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/retention_scan/compression/length_1200um/163540268c70/sources.txt">latex_generated/ion_readout/retention_scan/compression/length_1200um/163540268c70/sources.txt</a></li><li><a href="ion_readout/retention_scan/compression/length_1600um/e217ebc49b6c/sources.txt">latex_generated/ion_readout/retention_scan/compression/length_1600um/e217ebc49b6c/sources.txt</a></li><li><a href="ion_readout/retention_scan/compression/length_2000um/689e1eee3a45/sources.txt">latex_generated/ion_readout/retention_scan/compression/length_2000um/689e1eee3a45/sources.txt</a></li><li><a href="ion_readout/retention_scan/compression/length_400um/df613e0e4a69/sources.txt">latex_generated/ion_readout/retention_scan/compression/length_400um/df613e0e4a69/sources.txt</a></li><li><a href="ion_readout/retention_scan/compression/length_800um/caac67eddc10/sources.txt">latex_generated/ion_readout/retention_scan/compression/length_800um/caac67eddc10/sources.txt</a></li><li><a href="ion_readout/retention_scan/sources.txt">latex_generated/ion_readout/retention_scan/sources.txt</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>CSA compression in complete ion-pad histories</h3>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/retention_scan_extension/compression/length_3000um/d33a9d9f1862/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">CSA compression in complete ion-pad histories · <a href="ion_readout/retention_scan_extension/compression/length_4000um/5969b0a76d44/report.tex">TeX</a> <small>TeX available</small></div>
+<div class="doc">Longer CSA feedback retention for NAUSICA · <a href="ion_readout/retention_scan_extension/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="ion_readout/retention_scan_extension/compression/length_3000um/d33a9d9f1862/sources.txt">latex_generated/ion_readout/retention_scan_extension/compression/length_3000um/d33a9d9f1862/sources.txt</a></li><li><a href="ion_readout/retention_scan_extension/compression/length_4000um/5969b0a76d44/sources.txt">latex_generated/ion_readout/retention_scan_extension/compression/length_4000um/5969b0a76d44/sources.txt</a></li><li><a href="ion_readout/retention_scan_extension/sources.txt">latex_generated/ion_readout/retention_scan_extension/sources.txt</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Assessment of Rogelio Palomo&#x27;s v2 CSA</h3>
+<div class="doc">Assessment of Rogelio Palomo&#x27;s v2 CSA · <a href="ion_readout/rogelio_v2/report.tex">TeX</a> <a href="ion_readout/rogelio_v2/report.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/reproduction/rogelio_v2/present_rogelio_v2.py">scripts/electronics/reproduction/rogelio_v2/present_rogelio_v2.py</a></li><li><a href="ion_readout/rogelio_v2/provenance.json">latex_generated/ion_readout/rogelio_v2/provenance.json</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Rogelio v3: input charge and the 14 mV signal</h3>
+<div class="doc">Rogelio v3: input charge and the 14 mV signal · <a href="ion_readout/rogelio_v3/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/reproduction/rogelio_v3/present_rogelio_v3.py">scripts/electronics/reproduction/rogelio_v3/present_rogelio_v3.py</a></li><li><a href="ion_readout/rogelio_v3/provenance.json">latex_generated/ion_readout/rogelio_v3/provenance.json</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>CSA noise: capacitance and injection controls</h3>
+<div class="doc">CSA noise: capacitance and injection controls · <a href="ion_readout/spice2_diagnostics/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/reproduction/spice2/present_spice2_diagnostics.py">scripts/electronics/reproduction/spice2/present_spice2_diagnostics.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>report</h3>
+<div class="doc">report · <a href="ion_readout/spice2_enc/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/reproduction/spice2/plot_spice2_enc.py">scripts/electronics/reproduction/spice2/plot_spice2_enc.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>report</h3>
+<div class="doc">report · <a href="ion_readout/spice2_reproduction/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/electronics/reproduction/spice2/plot_spice2.py">scripts/electronics/reproduction/spice2/plot_spice2.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>report</h3>
+<div class="doc">report · <a href="ion_readout/spice_averaging/report.tex">TeX</a> <small>TeX available</small></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+</section>
+<section id="electron_readout"><h2>Electron readout and SiPM <small>(12)</small></h2>
+<article><span class="tag">study</span><h3>Electron photon histories with 250 ns buckets</h3>
+<div class="doc">Electron photon histories with 250 ns buckets · <a href="electron_readout/electron_250ns/464425eac32a2c34/electron_250ns.tex">TeX</a> <a href="electron_readout/electron_250ns/464425eac32a2c34/electron_250ns.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_electron_250ns.py">scripts/production/present_electron_250ns.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Electron operating-point comparison</h3>
+<p>Injected PE per SiPM–bucket and attachment-corrected event totals.</p>
+<div class="doc">Electron operating points: signal entering electronics · <a href="electron_readout/electron_operating_points/electron_operating_points.tex">TeX</a> <a href="electron_readout/electron_operating_points/electron_operating_points.pdf">PDF</a></div>
+<a href="../results/electron_operating_points/electron_operating_points.html">Interactive HTML report</a>
+<p></p>
+<p>Presentation only: <code>make electron-operating-points-present</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_electron_operating_points.py">scripts/production/present_electron_operating_points.py</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>ELM: linear SiPM and electronics pilot</h3>
+<p>PE pulse distributions, event energy and electronics clipping for the ELM geometry.</p>
+<p><b>Configuration:</b> 100 bb0nu events; pure Xe and Xe–15% He; 5 mm pitch / 3 mm holes; E/P = 2 kV/cm/bar; 250 ns buckets.</p>
+<div class="doc">ELM: linear SiPM and electronics clipping pilot · <a href="electron_readout/elm_pilot/elm_pilot.tex">TeX</a> <a href="electron_readout/elm_pilot/elm_pilot.pdf">PDF</a></div>
+<a href="../results/elm_pilot/elm_pilot.html">Interactive HTML report</a>
+<p><a href="../results/elm_pilot/elm_pilot.h5">Result</a> <a href="../config/specs/runs/elm_bb0nu_ep2_pilot100.toml">Card: elm_bb0nu_ep2_pilot100.toml</a> <a href="../config/specs/detector/electrons/elm_5mm_250ns_ep2.toml">Card: elm_5mm_250ns_ep2.toml</a> <a href="../config/specs/response/sipm/elm_linear_3015ps.toml">Card: elm_linear_3015ps.toml</a></p>
+<p>Presentation only: <code>make elm-report</code></p>
+<p>Complete workflow: <code>make elm-pilot</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_elm_pilot.py">scripts/production/present_elm_pilot.py</a></li><li><a href="../docs/elm.tex">docs/elm.tex</a></li><li><a href="../results/elm_pilot/elm_pilot.h5">results/elm_pilot/elm_pilot.h5</a></li><li><a href="../results/elm_pilot/files.toml">results/elm_pilot/files.toml</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Photon production pilot</h3>
+<div class="doc">Photon production pilot · <a href="electron_readout/photon_production_pilot/photon_production_pilot.tex">TeX</a> <a href="electron_readout/photon_production_pilot/photon_production_pilot.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_photon_production_pilot.py">scripts/production/present_photon_production_pilot.py</a></li><li><a href="../results/photon_production_pilot/files.toml">results/photon_production_pilot/files.toml</a></li><li><a href="../results/photon_production_pilot/timing.h5">results/photon_production_pilot/timing.h5</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>estimate</h3>
+<div class="doc">estimate · <a href="electron_readout/sipm_geometry_estimate/estimate.tex">TeX</a> <a href="electron_readout/sipm_geometry_estimate/estimate.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_sipm_geometry.py">scripts/production/present_sipm_geometry.py</a></li></ul></details></article>
+<article><span class="tag">reference</span><h3>SiPM response model and pilot</h3>
+<p>Statistical SiPM charge response, recovery and ASIC readout.</p>
+<div class="doc">SiPM and ASIC response: first pilot · <a href="electron_readout/sipm_response/sipm_pilot.tex">TeX</a> <a href="electron_readout/sipm_response/sipm_pilot.pdf">PDF</a></div>
+<div class="doc">SiPM charge response and provisional ASIC readout\ NAUSICAA electroluminescence · <a href="../docs/sipm_electronics_model.tex">TeX</a> <a href="electron_readout/sipm_response/sipm_electronics_model.pdf">PDF</a></div>
+<p><a href="../docs/sipm_electronics_model.tex">Source</a></p>
+<p>Presentation only: <code>make sipm-report</code></p>
+<p>Complete workflow: <code>make sipm-pilot</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_sipm_pilot.py">scripts/production/present_sipm_pilot.py</a></li><li><a href="../scripts/production/present_sipm_statistical.py">scripts/production/present_sipm_statistical.py</a></li><li><a href="electron_readout/sipm_response/sources.json">latex_generated/electron_readout/sipm_response/sources.json</a></li><li><a href="../config/specs/response/sipm/sipm_statistical_v1.toml">config/specs/response/sipm/sipm_statistical_v1.toml</a></li><li><a href="../config/specs/response/sipm/sipm_v1.toml">config/specs/response/sipm/sipm_v1.toml</a></li><li><a href="../config/specs/response/sipm_electronics/readout_v1.toml">config/specs/response/sipm_electronics/readout_v1.toml</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>E/P = 2, 2.5, 3: SiPM and ASIC clipping pilot</h3>
+<div class="doc">E/P = 2, 2.5, 3: SiPM and ASIC clipping pilot · <a href="electron_readout/sipm_statistical_production_pilot/clipping_comparison.tex">TeX</a> <a href="electron_readout/sipm_statistical_production_pilot/clipping_comparison.pdf">PDF</a></div>
+<div class="doc">Statistical SiPM and ASIC production pilot · <a href="electron_readout/sipm_statistical_production_pilot/sipm_production_pilot.tex">TeX</a> <a href="electron_readout/sipm_statistical_production_pilot/sipm_production_pilot.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_sipm_clipping_pilots.py">scripts/production/present_sipm_clipping_pilots.py</a></li><li><a href="../scripts/production/present_sipm_production_pilot.py">scripts/production/present_sipm_production_pilot.py</a></li><li><a href="../results/sipm_statistical_production_pilot/clipping_comparison.h5">results/sipm_statistical_production_pilot/clipping_comparison.h5</a></li><li><a href="../results/sipm_statistical_production_pilot/files.toml">results/sipm_statistical_production_pilot/files.toml</a></li><li><a href="../results/sipm_statistical_production_pilot/timing.h5">results/sipm_statistical_production_pilot/timing.h5</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Statistical SiPM validation</h3>
+<p>Comparison of the statistical model with individual-cell simulations.</p>
+<div class="doc">SiPM statistical response: validation pilot · <a href="electron_readout/sipm_statistical_validation/sipm_validation.tex">TeX</a> <a href="electron_readout/sipm_statistical_validation/sipm_validation.pdf">PDF</a></div>
+<p></p>
+<p>Presentation only: <code>make sipm-statistical-report</code></p>
+<p>Complete workflow: <code>make sipm-statistical-validation</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_sipm_statistical.py">scripts/production/present_sipm_statistical.py</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Small SiPM with TPB: pilot comparisons</h3>
+<p>Optical conversion, recovery-time sensitivity, pulse charge and clipping.</p>
+<div class="doc">sipm tpb pilot · <a href="electron_readout/sipm_tpb_pilot/sipm_tpb_pilot.tex">TeX</a> <a href="electron_readout/sipm_tpb_pilot/sipm_tpb_pilot.pdf">PDF</a></div>
+<p></p>
+<p>Presentation only: <code>make sipm-tpb-report</code></p>
+<p>Complete workflow: <code>make sipm-tpb-pilot</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_sipm_tpb_pilot.py">scripts/production/present_sipm_tpb_pilot.py</a></li><li><a href="../scripts/production/run_sipm_tpb_pilot.jl">scripts/production/run_sipm_tpb_pilot.jl</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>ELM: finite-cell SiPM and electronics pilot</h3>
+<p>Uniform 10–150 cm electron placement, illuminated-disk recovery, separate SiPM and ASIC losses, occupancy and corrected event widths.</p>
+<p><b>Configuration:</b> 100 bb0nu events; both gases; E/P=2; 5 mm pitch / 3 mm holes; 250 ns; S14160-3015PS; recovery 12.5 and 25 ns.</p>
+<div class="doc">ELM: finite-cell SiPM pilot · <a href="electron_readout/elm_sipm_pilot/elm_sipm_pilot.tex">TeX</a> <a href="electron_readout/elm_sipm_pilot/elm_sipm_pilot.pdf">PDF</a></div>
+<a href="../results/elm_sipm_pilot/elm_sipm_pilot.html">Interactive HTML report</a>
+<p><a href="../results/elm_sipm_pilot/elm_sipm_pilot.h5">Result</a> <a href="../config/specs/runs/elm_bb0nu_tau12p5ns_pilot100.toml">Card: elm_bb0nu_tau12p5ns_pilot100.toml</a> <a href="../config/specs/runs/elm_bb0nu_tau25ns_pilot100.toml">Card: elm_bb0nu_tau25ns_pilot100.toml</a> <a href="../config/specs/detector/electrons/elm_5mm_250ns_ep2_drift10cm.toml">Card: elm_5mm_250ns_ep2_drift10cm.toml</a></p>
+<p>Presentation only: <code>make elm-sipm-report</code></p>
+<p>Complete workflow: <code>make elm-sipm-pilot</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_elm_sipm_pilot.py">scripts/production/present_elm_sipm_pilot.py</a></li><li><a href="../docs/elm.tex">docs/elm.tex</a></li><li><a href="../results/elm_sipm_pilot/elm_sipm_pilot.h5">results/elm_sipm_pilot/elm_sipm_pilot.h5</a></li><li><a href="../results/elm_sipm_pilot/files.toml">results/elm_sipm_pilot/files.toml</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>ELM: 4 mm pitch / 2.5 mm holes, Xe–He pilot</h3>
+<p>Matched 100-event comparison with 5 mm pitch, SiPM and ASIC losses, clipping-event rejection and energy widths.</p>
+<p><b>Configuration:</b> 100 bb0nu events; Xe–15% He; E/P=2; 4 mm pitch / 2.5 mm holes; 250 ns; recovery 12.5 and 25 ns.</p>
+<div class="doc">ELM: 4 mm pitch, 2.5 mm holes\--He pilot · <a href="electron_readout/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.tex">TeX</a> <a href="electron_readout/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.pdf">PDF</a></div>
+<a href="../results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.html">Interactive HTML report</a>
+<p><a href="../results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.h5">Result</a> <a href="../config/specs/runs/elm_pitch4mm_bb0nu_tau12p5ns_pilot100.toml">Card: elm_pitch4mm_bb0nu_tau12p5ns_pilot100.toml</a> <a href="../config/specs/runs/elm_pitch4mm_bb0nu_tau25ns_pilot100.toml">Card: elm_pitch4mm_bb0nu_tau25ns_pilot100.toml</a> <a href="../config/specs/detector/electrons/elm_4mm_250ns_ep2_drift10cm.toml">Card: elm_4mm_250ns_ep2_drift10cm.toml</a></p>
+<p>Presentation only: <code>make elm-pitch4-report</code></p>
+<p>Complete workflow: <code>make elm-pitch4-pilot</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_elm_pitch4mm_pilot.py">scripts/production/present_elm_pitch4mm_pilot.py</a></li><li><a href="../docs/elm.tex">docs/elm.tex</a></li><li><a href="../results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.h5">results/elm_sipm_pitch4mm_pilot/elm_sipm_pitch4mm_pilot.h5</a></li><li><a href="../results/elm_sipm_pitch4mm_pilot/files.toml">results/elm_sipm_pitch4mm_pilot/files.toml</a></li></ul></details></article>
+<article><span class="tag">production</span><h3>ELM baseline: full bb0nu Xe–He production</h3>
+<p>8,000 events at 4 mm pitch and 2.5 mm holes; SiPM/ASIC charge losses, pulse means/maxima and energy widths before/after rejecting clipped events.</p>
+<p><b>Configuration:</b> 8,000 bb0nu events; Xe–15% He only; E/P=2; 4 mm pitch / 2.5 mm holes; 250 ns; 12.5 ns recovery.</p>
+<div class="doc">ELM: full Xe--He production\\4 mm pitch, 2.5 mm holes · <a href="electron_readout/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.tex">TeX</a> <a href="electron_readout/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.pdf">PDF</a></div>
+<a href="../results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.html">Interactive HTML report</a>
+<p><a href="../results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.h5">Result</a> <a href="../config/specs/runs/elm_photons_pitch4mm_ep2_full.toml">Card: elm_photons_pitch4mm_ep2_full.toml</a> <a href="../config/specs/runs/elm_pitch4mm_bb0nu_full.toml">Card: elm_pitch4mm_bb0nu_full.toml</a> <a href="../config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml">Card: elm_pitch4mm_3015ps_tau12p5ns.toml</a></p>
+<p>Presentation only: <code>make elm-pitch4-production-report</code></p>
+<p>Complete workflow: <code>make elm-pitch4-production</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_elm_pitch4mm_production.py">scripts/production/present_elm_pitch4mm_production.py</a></li><li><a href="../docs/elm.tex">docs/elm.tex</a></li><li><a href="../results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.h5">results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.h5</a></li><li><a href="../results/elm_sipm_pitch4mm_production/files.toml">results/elm_sipm_pitch4mm_production/files.toml</a></li></ul></details></article>
+</section>
+<section id="production"><h2>Production and combined response <small>(8)</small></h2>
+<article><span class="tag">study</span><h3>Direct ion pad and electron SiPM readout</h3>
+<div class="doc">Direct ion pad and electron SiPM readout · <a href="production/grid_readout_direct/grid_readout.tex">TeX</a> <a href="production/grid_readout_direct/grid_readout.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/collection/present_grid_readout.py">scripts/collection/present_grid_readout.py</a></li></ul></details></article>
+<article><span class="tag">study</span><h3>Direct ion pad and electron SiPM readout</h3>
+<div class="doc">Direct ion pad and electron SiPM readout · <a href="production/grid_readout_direct_3mm/grid_readout.tex">TeX</a> <a href="production/grid_readout_direct_3mm/grid_readout.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">reference</span><h3>Detector production: ion grids of 2, 3 and 4 mm</h3>
+<p>Shared event realisations and independent ion/electron branches.</p>
+<p><b>Configuration:</b> 8,000 events per species; bb0nu and single electrons; ion pitch 2 / 3 / 4 mm and frames 20 / 30 / 40 ms. Original electron production settings are retained in the report.</p>
+<div class="doc">Detector production: 8,000-event ion-grid scan · <a href="production/production_grid_scan/238ddc5a75e0fd9b/grid_scan.tex">TeX</a> <a href="production/production_grid_scan/238ddc5a75e0fd9b/grid_scan.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/run_grid_scan.py">scripts/production/run_grid_scan.py</a></li></ul></details></article>
+<article><span class="tag">validation</span><h3>Detector production pilot: formulas and results</h3>
+<div class="doc">Detector production pilot: formulas and results · <a href="production/production_pilot/238ddc5a75e0fd9b/formulas.tex">TeX</a> <a href="production/production_pilot/238ddc5a75e0fd9b/formulas.pdf">PDF</a></div>
+<div class="doc">Detector production pilot: formulas and results · <a href="production/production_pilot/26f5b7a9092738ed/formulas.tex">TeX</a> <a href="production/production_pilot/26f5b7a9092738ed/formulas.pdf">PDF</a></div>
+<div class="doc">Detector production pilot: formulas and results · <a href="production/production_pilot/41b93bb23acbe2ac/formulas.tex">TeX</a> <a href="production/production_pilot/41b93bb23acbe2ac/formulas.pdf">PDF</a></div>
+<div class="doc">Detector production pilot: formulas and results · <a href="production/production_pilot/6c3af3e35b13b25c/formulas.tex">TeX</a> <a href="production/production_pilot/6c3af3e35b13b25c/formulas.pdf">PDF</a></div>
+<div class="doc">Detector production pilot: formulas and results · <a href="production/production_pilot/c024fb0dfb340170/formulas.tex">TeX</a> <a href="production/production_pilot/c024fb0dfb340170/formulas.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">study</span><h3>Event-total ion and photon fluctuations: 100 bb0nu events</h3>
+<div class="doc">Event-total ion and photon fluctuations: 100 bb0nu events · <a href="production/production_total_fluctuations/bb0nu_100_41b93bb23acbe2ac/total_fluctuations.tex">TeX</a> <a href="production/production_total_fluctuations/bb0nu_100_41b93bb23acbe2ac/total_fluctuations.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+<article><span class="tag">reference</span><h3>Ion and photon pulses per readout cell</h3>
+<div class="doc">Ion and photon pulses per readout cell · <a href="production/readout_pulses_8000/readout_pulses.tex">TeX</a> <a href="production/readout_pulses_8000/readout_pulses.pdf">PDF</a></div>
+<p></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_readout_pulses.py">scripts/production/present_readout_pulses.py</a></li><li><a href="../scripts/production/run_readout_pulses.py">scripts/production/run_readout_pulses.py</a></li></ul></details></article>
+<article><span class="tag">reference</span><h3>Ion and electron response overview</h3>
+<p>Event mean and maximum charge over positive-input channel–bucket cells.</p>
+<div class="doc">Ion and electron response: bb0nu · <a href="production/response_overview/response_overview.tex">TeX</a> <a href="production/response_overview/response_overview.pdf">PDF</a></div>
+<a href="../results/response_overview/response_overview.html">Interactive HTML report</a>
+<p></p>
+<p>Presentation only: <code>make response-overview-present</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/production/present_response_overview.py">scripts/production/present_response_overview.py</a></li></ul></details></article>
+<article><span class="tag">reference</span><h3>Production formulas and operating parameters</h3>
+<p>Implemented transport, fluctuations, EL yield and optical acceptance, with physical references.</p>
+<div class="doc">Detector-production formulas and default operating point · <a href="../docs/production_formulas.tex">TeX</a> <a href="production/formulas/production_formulas.pdf">PDF</a></div>
+<p><a href="../docs/production_formulas.tex">Source</a></p>
+<p>Presentation only: <code>make production-formulas</code></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul></ul></details></article>
+</section>
+<section id="literature"><h2>Literature reviews <small>(1)</small></h2>
+<article><span class="tag">study</span><h3>Nygren ion-TPC review</h3>
+<p>Literature assessment and associated local calculations.</p>
+<div class="doc">Assessment of the SeF$_6$ ion-TPC proposal:\, collection time, pile-up and calorimetry · <a href="../docs/nygren_ion_tpc_review.tex">TeX</a> <a href="literature/nygren_review/nygren_ion_tpc_review.pdf">PDF</a></div>
+<p><a href="../docs/nygren_ion_tpc_review.tex">Source</a></p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/validation/present_nygren_review.py">scripts/validation/present_nygren_review.py</a></li><li><a href="../config/nygren_review.toml">config/nygren_review.toml</a></li><li><a href="../docs/nygren_ion_tpc_review.tex">docs/nygren_ion_tpc_review.tex</a></li><li><a href="../results/nygren_review/budgets.h5">results/nygren_review/budgets.h5</a></li></ul></details></article>
+</section>
+<section id="archive"><h2>Historical reference outputs <small>(1)</small></h2>
+<article><span class="tag">historical</span><h3>Ion pad and electron SiPM readout</h3>
+<div class="doc">Ion pad and electron SiPM readout · <a href="archive/grid_readout/grid_readout.tex">TeX</a> <a href="archive/grid_readout/grid_readout.pdf">PDF</a></div>
+<p></p>
+<p>Superseded by direct carrier-to-grid readout; see docs/diffusion_sampling_fix.md.</p>
+<details><summary>Sources, configuration and provenance</summary><p>Physical settings and event counts are recorded in the report and its saved cards. Original run manifests retain their recorded identities.</p><ul><li><a href="../scripts/collection/present_grid_readout.py">scripts/collection/present_grid_readout.py</a></li></ul></details></article>
+</section>
+<footer>Regenerate: <code>make report-catalogue</code>. Registry: <a href="../docs/generated_reports.json">generated_reports.json</a>. Directory aliases preserve existing bookmarks.</footer><script>document.querySelector("#search").addEventListener("input",e=>{let q=e.target.value.toLowerCase();document.querySelectorAll("article").forEach(a=>a.hidden=!a.textContent.toLowerCase().includes(q));document.querySelectorAll("section").forEach(s=>s.hidden=![...s.querySelectorAll("article")].some(a=>!a.hidden));});</script></main></html>

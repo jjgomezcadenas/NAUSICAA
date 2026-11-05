@@ -1,0 +1,17 @@
+total_wall_s = 88.78161096572876
+photon_index = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_sipm_pilot/photons_ep2.h5"
+response_wall_s = 83.49163913726807
+complete = true
+sample = "bb0nu"
+events_per_gas = 100
+photon_wall_s = 5.2899110317230225
+
+[responses.12p5]
+elapsed_s = 42.85448598861694
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_sipm_pilot/response/1ff9a28ddc69408f/manifest.toml"
+card = "config/specs/runs/elm_bb0nu_tau12p5ns_pilot100.toml"
+
+[responses.25]
+elapsed_s = 40.63712406158447
+manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_sipm_pilot/response/dec67ec82e7f02ff/manifest.toml"
+card = "config/specs/runs/elm_bb0nu_tau25ns_pilot100.toml"

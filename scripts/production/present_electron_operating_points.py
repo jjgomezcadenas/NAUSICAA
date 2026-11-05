@@ -7,11 +7,15 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 ROOT=Path(__file__).resolve().parents[2]
+import sys
+sys.path.insert(0, str(ROOT / "scripts/documentation"))
+from build_report import build_report
+
 
 def present(source=None, report_dir=None):
     """Generate HTML, figures and self-contained LaTeX from Julia reductions."""
     source=Path(source) if source else ROOT/'results/electron_operating_points/electron_operating_points.h5'
-    out=source.parent;texdir=Path(report_dir) if report_dir else ROOT/'latex_generated/electron_operating_points';texdir.mkdir(parents=True,exist_ok=True)
+    out=source.parent;texdir=Path(report_dir) if report_dir else ROOT/'latex_generated/electron_readout/electron_operating_points';texdir.mkdir(parents=True,exist_ok=True)
     plots=[];rows=[]
     with h5py.File(source) as f:
         if not f['complete'][()]:raise ValueError('Incomplete reduction')
@@ -59,7 +63,7 @@ def present(source=None, report_dir=None):
         'The previous E/P = 3, J = 0.01 production is retained as a reference.')
     headers=['Gas','E/P','J','Events','Mean pulse PE','Corrected RMS %','Equivalent FWHM %','PE/MeV equiv. FWHM %','Clipped pulses %','Output charge retained %']
     table=''.join('<tr>'+''.join('<td>'+html.escape(str(v) if i in (0,3) else f'{v:.3f}')+'</td>' for i,v in enumerate(row))+'</tr>' for row in rows)
-    page='<!doctype html><meta charset="utf-8"><title>Electron operating points</title><style>body{font:16px system-ui;color:#17334a;max-width:1350px;margin:35px auto}p{line-height:1.6}table{border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:right}img{width:100%}</style><h1>Electron operating points · pre-electronics response</h1><p>'+explanation+'</p><p><a href="../../latex_generated/electron_operating_points/electron_operating_points.pdf">PDF</a> · <a href="http://127.0.0.1:8769/">Interactive viewer</a> · <a href="../response_overview/response_overview.html">Ion and electron overview</a></p><table><tr>'+''.join(f'<th>{h}</th>' for h in headers)+'</tr>'+table+'</table>'+''.join(f'<img src="{name}">' for name in plots)
+    page='<!doctype html><meta charset="utf-8"><title>Electron operating points</title><style>body{font:16px system-ui;color:#17334a;max-width:1350px;margin:35px auto}p{line-height:1.6}table{border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:right}img{width:100%}</style><h1>Electron operating points · pre-electronics response</h1><p>'+explanation+'</p><p><a href="../../latex_generated/electron_readout/electron_operating_points/electron_operating_points.pdf">PDF</a> · <a href="http://127.0.0.1:8769/">Interactive viewer</a> · <a href="../response_overview/response_overview.html">Ion and electron overview</a></p><table><tr>'+''.join(f'<th>{h}</th>' for h in headers)+'</tr>'+table+'</table>'+''.join(f'<img src="{name}">' for name in plots)
     (out/'electron_operating_points.html').write_text(page)
     tex=r'''\documentclass[10pt]{article}
 \usepackage[a4paper,margin=15mm]{geometry}
@@ -71,6 +75,6 @@ def present(source=None, report_dir=None):
     tex+='\\bottomrule\\end{tabular}}\\end{center}\n'
     for name in plots:tex+='\\clearpage\\noindent\\includegraphics[width=\\textwidth]{'+name+'}\n'
     tex+='\\end{document}\n';(texdir/'electron_operating_points.tex').write_text(tex)
-    subprocess.run(['latexmk','-pdf','-interaction=nonstopmode','-halt-on-error','electron_operating_points.tex'],cwd=texdir,check=True,stdout=subprocess.DEVNULL)
+    build_report(texdir / "electron_operating_points.tex")
     print(out/'electron_operating_points.html')
 if __name__=='__main__':present()

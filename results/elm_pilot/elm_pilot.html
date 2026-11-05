@@ -1,0 +1,96 @@
+<!doctype html><meta charset="utf-8"><title>ELM clipping pilot</title><style>body{font:16px system-ui;line-height:1.6;max-width:1400px;margin:35px auto;padding:0 22px;color:#17334a}table{border-collapse:collapse;margin:18px 0;width:100%}td,th{padding:8px;text-align:right;border-bottom:1px solid #ccd6de}td:first-child,th:first-child{text-align:left}img{width:100%;margin:15px 0}pre{white-space:pre-wrap}</style><h1>ELM · linear SiPM and electronics clipping pilot</h1><p>100 matched bb0nu events, IDs 0–99, for both gas models. E/P = 2 kV/cm/bar at 15 bar; 3 mm holes, 5 mm EL depth and 5 mm square-grid pitch. Electron collection is unity. VUV photons emitted uniformly on the hole axis are thinned through absorbing-hole acceptance, TPB conversion 0.65, forward fraction 0.5 and meridional capture 1 − 1/1.5. The combined optical probability is 0.01386501. Guides have a 0.5 mm radial xenon gap; propagation and NOA 87 coupling are ideal. Saved photons are blue photons at the SiPM entrance; TPB is applied exactly once.</p><p>The 3 × 3 mm² S14160-3015PS uses packaged PDE 0.32 (peak-value approximation), gain 360000, and 700 kcps primary dark rate. Each optical/dark detection contributes full gain; microcell occupancy and recovery are deferred. The device has a silicone-resin entrance window; its transmission is included in PDE. The electronics adds 3.5417 PE RMS independent Gaussian noise and clips the 250 ns bucket-average current at 1 mA (4334.38 PE). Signed noise values are retained.</p><h2>Clipping and pulse counts</h2><table><thead><tr><th>Gas</th><th>Events</th><th>Mean optical PE/event</th><th>Pulses clipped (%)</th><th>Events clipped (%)</th><th>Charge lost (%)</th><th>Largest pulse (PE)</th></tr></thead><tbody><tr><td>Pure Xe</td><td>100</td><td>617,500</td><td>0.0037</td><td>5.0</td><td>0.1495</td><td>8,815</td></tr><tr><td>Xe–15% He</td><td>100</td><td>592,112</td><td>0.0270</td><td>11.0</td><td>0.6402</td><td>13,872</td></tr></tbody></table><table><thead><tr><th>Gas</th><th>Inclusive mean</th><th>Inclusive median</th><th>Mean-pulse mean</th><th>Mean-pulse median</th><th>Max-pulse mean</th><th>Max-pulse median</th></tr></thead><tbody><tr><td>Pure Xe</td><td>42.31</td><td>18.00</td><td>66.03</td><td>37.89</td><td>1,033.9</td><td>423.0</td></tr><tr><td>Xe–15% He</td><td>98.74</td><td>32.00</td><td>142.87</td><td>91.95</td><td>2,436.0</td><td>1,272.0</td></tr></tbody></table><p>All pulse entries are PE per SiPM per 250 ns bucket.</p><h2>Event response widths</h2><table><thead><tr><th>Gas</th><th>Detected PE RMS (%)</th><th>Before clipping RMS (%)</th><th>After clipping RMS (%)</th></tr></thead><tbody><tr><td>Pure Xe</td><td>0.1803</td><td>0.2412</td><td>0.9411</td></tr><tr><td>Xe–15% He</td><td>0.1818</td><td>0.2351</td><td>2.4857</td></tr></tbody></table><p>Pulse statistics select photon-positive SiPM–bucket cells and keep the same cells through electronics; zero detected PE in an input cell is retained. Each event contributes one mean and one maximum. Pulse clipping uses input cells as denominator; event clipping means any acquired bucket clips. Charge loss is summed clipped PE-equivalent divided by summed sensor PE-equivalent (optical plus dark). Event energy sums include all acquired cells on illuminated channels, over the event time span plus four quiet buckets at each end. Resolution diagnostics subtract the expected dark count, correct the known electron attachment survival and divide by deposited MC energy. Widths are full-distribution RMS/mean, including tails; they are not fitted peak widths. Before-clipping totals include electronics noise.</p><img src="elm_pe_pulses.png" alt="elm_pe_pulses.png"><img src="elm_event_totals.png" alt="elm_event_totals.png"><img src="elm_clipping_vs_drift.png" alt="elm_clipping_vs_drift.png"><h2>Largest event losses</h2><table><thead><tr><th>Gas</th><th>Event ID</th><th>Electron drift (cm)</th><th>Maximum pulse (PE)</th><th>Charge lost (%)</th></tr></thead><tbody><tr><td>Pure Xe</td><td>8</td><td>2.90</td><td>8,654</td><td>6.802</td></tr><tr><td>Pure Xe</td><td>49</td><td>3.32</td><td>8,815</td><td>6.250</td></tr><tr><td>Pure Xe</td><td>43</td><td>2.00</td><td>7,021</td><td>1.367</td></tr><tr><td>Pure Xe</td><td>66</td><td>7.18</td><td>4,992</td><td>0.303</td></tr><tr><td>Pure Xe</td><td>37</td><td>6.89</td><td>4,391</td><td>0.010</td></tr><tr><td>Xe–15% He</td><td>49</td><td>3.32</td><td>13,697</td><td>16.043</td></tr><tr><td>Xe–15% He</td><td>8</td><td>2.90</td><td>13,872</td><td>15.732</td></tr><tr><td>Xe–15% He</td><td>66</td><td>7.18</td><td>10,217</td><td>8.105</td></tr><tr><td>Xe–15% He</td><td>37</td><td>6.89</td><td>8,467</td><td>5.259</td></tr><tr><td>Xe–15% He</td><td>43</td><td>2.00</td><td>11,900</td><td>4.216</td></tr></tbody></table><h2>Validation and timing</h2><table><thead><tr><th>Gas</th><th>Pair checks</th><th>Ledger checks</th><th>Measured PDE</th><th>PDE z-score</th><th>Quiet mean (PE)</th><th>Quiet RMS (PE)</th></tr></thead><tbody><tr><td>Pure Xe</td><td>100</td><td>100</td><td>0.319975</td><td>-0.74</td><td>-0.0005</td><td>3.5412</td></tr><tr><td>Xe–15% He</td><td>100</td><td>100</td><td>0.320049</td><td>1.42</td><td>0.0027</td><td>3.5404</td></tr></tbody></table><p>Photon replay/archive: 4.729 s; SiPM + electronics: 11.873 s; combined timed workflow: 16.602 s. These timings include first-use compilation within the stages, source checks and HDF5 I/O; process startup and presentation are separate.</p><p>The 22 dedicated optical/linear-response tests passed; saved-event checks verify grid geometry, primary-pair identity, charge ledgers, PDE sampling and quiet-cell electronics noise.</p><p><a href="../../latex_generated/electron_readout/elm_pilot/elm_pilot.pdf">PDF report</a> · <a href="files.toml">File index</a></p><p>Complete workflow: <code>make elm-pilot</code>. Presentation only: <code>make elm-report</code>.</p><details><summary>Cards and provenance</summary><pre>schema = &quot;nausicaa.sipm_spec.v1&quot;
+response_model = &quot;linear&quot;
+input_photon_band = &quot;blue_tpb&quot;
+shape = &quot;square&quot;
+side_m = 0.003
+pde = 0.32
+gain = 360000.0
+dark_reference_rate_Hz = 700000.0
+dark_reference_area_m2 = 9e-6
+crosstalk = false
+afterpulsing = false
+gain_spread = false
+seed = 2026
+
+[acquisition]
+channels = &quot;illuminated_in_event&quot;
+additional_channels = []
+quiet_before_buckets = 4
+quiet_after_buckets = 4
+empty_first_bucket = 0
+empty_last_bucket = 7
+
+[provenance]
+device = &quot;Hamamatsu S14160-3015PS, 3x3 mm2; nominal +4 V, 25 C&quot;
+pde = &quot;0.32 peak PDE at 460 nm used as provisional TPB-spectrum average; packaged PDE includes entrance window&quot;
+gain = &quot;3.6e5 nominal electrons per primary avalanche; full gain linear approximation&quot;
+dark_rate = &quot;S14160-3015PS nominal primary dark rate 700 kcps at 25 C and +4 V&quot;
+window = &quot;S14160-3015PS silicone resin, nominal n=1.57; unit external coupling used in pilot&quot;
+datasheet = &quot;papers/SiPM/Hamamatsu_S14160_small_cells.pdf&quot;
+
+baseline_pe = 0.0
+bucket_width_s = 2.5e-7
+current_limit_A = 0.001
+lower_clipping = false
+noise = &quot;independent_gaussian_pe&quot;
+noise_rms_pe = 3.5416666666666665
+schema = &quot;nausicaa.sipm_electronics_spec.v1&quot;
+seed = 2027
+transfer = &quot;bucket_average_current&quot;
+
+[provenance]
+noise = &quot;Same input charge RMS as 0.5 PE at gain 2.55e6; rescaled to gain 3.6e5&quot;
+range = &quot;User design input: upper clipping at 1 mA; supersedes the provisional 300 PE limit&quot;
+timing = &quot;User 0.25 us buckets; integrated charge divided by bucket duration&quot;
+
+schema = &quot;nausicaa.electron_detector_spec.v1&quot;
+pressure_bar = 15.0
+helium_fraction = 0.15
+drift_speed_mm_us = 1.0
+lifetime_ms = 15.0
+hole_pitch_mm = 5.0
+hole_diameter_mm = 3.0
+hole_depth_mm = 5.0
+sipm_shape = &quot;square&quot;
+sipm_side_mm = 3.0
+bucket_width_us = 0.25
+reduced_field_kV_cm_bar = 2.0
+j_variance_ratio = 0.030
+j_status = &quot;user_specified&quot;
+j_reference = &quot;Oliveira Figure 6; corrected approximate user reading, 2026-11-04&quot;
+
+optical_model = &quot;elm_blue_meridional&quot;
+electron_collection_efficiency = 1.0
+
+[optics]
+photon_band = &quot;blue_tpb&quot;
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5
+gap_refractive_index = 1.0
+guide_length_mm = 100.0
+gas_gap_radial_mm = 0.5
+propagation_transmission = 1.0
+coupling_transmission = 1.0
+electrode_transmission = 1.0
+coupling_adhesive = &quot;Norland NOA 87&quot;
+guide_length_policy = &quot;fixed_grading_field&quot;
+grading_field_kV_cm = 4.65
+cathode_potential_V = 1200.0
+entry_potential_V = 31500.0
+exit_potential_V = 46500.0
+sensor_plane_potential_V = 0.0
+reference = &quot;docs/elm.tex; isotropic axial EL, absorbing walls, meridional isotropic-in-core capture&quot;
+
+[pure_xe]
+d_T_mm_sqrtbar_per_sqrtcm = 3.5
+d_L_mm_sqrtbar_per_sqrtcm = 0.9
+yield_gain_photons_per_electron_kV = 137.0
+yield_threshold_kV_cm_bar = 0.73
+
+[xe_he15]
+d_T_mm_sqrtbar_per_sqrtcm = 1.6
+d_L_mm_sqrtbar_per_sqrtcm = 0.75
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.80
+</pre></details>

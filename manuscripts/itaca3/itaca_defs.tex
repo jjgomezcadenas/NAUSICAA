@@ -1,0 +1,67 @@
+% Selected definitions imported from the ITACA manuscript on 2026-10-22.
+% Source: /Users/jjgomezcadenas/Papers/itaca/pool/NextDefs.tex
+% Used by itacaRevisited.tex alongside pool/NextLatexPackagesBase.tex.
+% Local copy: compiling this note does not require the external directory.
+% Preserve source macro names and notation; omit numerical design inputs,
+% run-specific measurements, draft labels and conflicting SI unit aliases.
+\usepackage{siunitx,xspace}
+\sisetup{separate-uncertainty=true}
+
+% Double-beta decay
+\newcommand{\bb}{\ensuremath{\beta\beta}}
+\newcommand{\bbonu}{\ensuremath{\beta\beta0\nu}}
+\newcommand{\bbtnu}{\ensuremath{\beta\beta2\nu}}
+\newcommand{\Qbb}{\ensuremath{Q_{\beta\beta}}}
+\newcommand{\mbb}{\ensuremath{m_{\beta\beta}}}
+\newcommand{\Tonu}{\ensuremath{T_{1/2}^{0\nu}}}
+\newcommand{\Ttnu}{\ensuremath{T_{1/2}^{2\nu}}}
+\newcommand{\Monu}{\ensuremath{\Big|M_{0\nu}\Big|}}
+\newcommand{\Mtnu}{\ensuremath{\Big|M_{2\nu}\Big|}}
+\newcommand{\Gonu}{\ensuremath{G_{0\nu}(\Qbb, Z)}}
+\newcommand{\Gtnu}{\ensuremath{G_{2\nu}(\Qbb, Z)}}
+
+% Isotopes and ion species
+\newcommand{\XE}{\ensuremath{{}^{136}\rm Xe}}
+\newcommand{\XEO}{\ensuremath{^{137}}Xe}
+\newcommand{\BI}{\ensuremath{{}^{214}\rm Bi}}
+\newcommand{\TL}{\ensuremath{{}^{208}\rm{Tl}}}
+\newcommand{\KR}{\ensuremath{^{83m}\mathrm{Kr}}\xspace}
+\newcommand{\Xe}[1]{\ensuremath{^{#1}\mathrm{Xe}}\xspace}
+\newcommand{\Bi}[1]{\ensuremath{^{#1}\mathrm{Bi}}\xspace}
+\newcommand{\Tl}[1]{\ensuremath{^{#1}\mathrm{Tl}}\xspace}
+\newcommand{\Kr}[1]{\ensuremath{^{#1}\mathrm{Kr}}\xspace}
+\newcommand{\xetp}{\ensuremath{{\rm Xe_2^{+}}}}
+\newcommand{\batp}{\ensuremath{{\rm Ba^{2+}}}}
+\newcommand{\nhfp}{\ensuremath{{\rm NH_4^{+}}}}
+\newcommand{\nht}{\ensuremath{{\rm NH_3}}}
+
+% Detector names and terminology
+\newcommand{\NEW}{NEXT-White}
+\newcommand{\NEXT}{NEXT-100}
+\newcommand{\GXeEL}{GXeEL}
+\newcommand{\HPXe}{HPXe}
+\newcommand{\HPXeEL}{HPXe-EL}
+\newcommand{\TM}{\emph{Topmetal}\xspace}
+
+% Signals, transport and statistical notation
+\newcommand{\tz}{\ensuremath{t_0}}
+\newcommand{\sone}{\ensuremath{S_1}}
+\newcommand{\stwo}{\ensuremath{S_2}}
+\newcommand{\nph}{\ensuremath{n_\gamma}}
+\newcommand{\VDR}{\ensuremath{v_d}}
+\newcommand{\VD}{\ensuremath{v_d}}
+\newcommand{\REF}{\ensuremath{\frac{E}{P}}}
+\newcommand{\REY}{\ensuremath{\frac{Y}{P}}}
+\newcommand{\chitwo}{\ensuremath{\chi^2}}
+\newcommand{\SigmaE}{\ensuremath{\sigma_E / E}}
+\newcommand{\stat}{\textrm{(stat.)}}
+\newcommand{\sys}{\textrm{(sys.)}}
+
+% Reference and table helpers
+\newcommand{\fig}{figure}
+\newcommand{\eq}{equation}
+\newcommand{\tab}{table}
+\newcommand{\Fig}{Figure}
+\newcommand{\Eq}{Equation}
+\newcommand{\Tab}{Table}
+\newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}

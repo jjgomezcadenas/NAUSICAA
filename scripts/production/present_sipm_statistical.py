@@ -7,6 +7,10 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 ROOT=Path(__file__).resolve().parents[2]
+import sys
+sys.path.insert(0, str(ROOT / "scripts/documentation"))
+from build_report import build_report
+
 
 def plot_label(name):
     labels={'bright':'20k','dark':'Dark','few':'16 triggers','moderate':'1k',
@@ -15,7 +19,7 @@ def plot_label(name):
 
 def main():
     """Render numerical comparisons computed in Julia to HTML, PNG and LaTeX/PDF."""
-    out=ROOT/'results/sipm_statistical_validation';latex=ROOT/'latex_generated/sipm_statistical_validation';latex.mkdir(parents=True,exist_ok=True)
+    out=ROOT/'results/sipm_statistical_validation';latex=ROOT/'latex_generated/electron_readout/sipm_statistical_validation';latex.mkdir(parents=True,exist_ok=True)
     rows=[];figures=[];independent='';diagnostics=''
     pilots=[]
     for path in (ROOT/'results/sipm_statistical_pilot').glob('*/manifest.toml'):
@@ -100,7 +104,7 @@ def main():
     headers=['Case','Mean bias %','Variance ratio','Speedup','Means','Variances','Covariances','State repairs','Variance limits']
     def val(v):return 'N/A' if v is None else ('pass' if v else 'FAIL') if isinstance(v,bool) else f'{v:.4g}' if isinstance(v,float) else str(v)
     table=''.join('<tr>'+''.join('<td>'+html.escape(val(v))+'</td>' for v in row)+'</tr>' for row in rows)
-    page='<!doctype html><meta charset="utf-8"><title>SiPM statistical model validation</title><style>body{font:16px system-ui;max-width:1400px;margin:35px auto;padding:0 20px;color:#17334a}p{line-height:1.6}td,th{padding:7px;border-bottom:1px solid #ddd;text-align:right}img{width:100%}details{padding:12px;background:#f1f5f8}summary{cursor:pointer}</style><h1>SiPM statistical model · validation pilot</h1><p>'+headline+'</p><p><a href="../../latex_generated/sipm_statistical_validation/validation.pdf">PDF report</a> · <a href="../../latex_generated/sipm_response/sipm_electronics_model.pdf">Model derivation</a>'+pilot_link+'</p><details><summary>Methods and comparison criteria</summary><p>'+explanation+'</p></details><h2>Variance follow-up</h2><p>'+independent+'</p>'+''.join(f'<img src="{x}">' for x in figures)+'<h2>Numerical diagnostics</h2><p>'+diagnostics+'</p><table><tr>'+''.join(f'<th>{h}</th>' for h in headers)+'</tr>'+table+'</table>'
+    page='<!doctype html><meta charset="utf-8"><title>SiPM statistical model validation</title><style>body{font:16px system-ui;max-width:1400px;margin:35px auto;padding:0 20px;color:#17334a}p{line-height:1.6}td,th{padding:7px;border-bottom:1px solid #ddd;text-align:right}img{width:100%}details{padding:12px;background:#f1f5f8}summary{cursor:pointer}</style><h1>SiPM statistical model · validation pilot</h1><p>'+headline+'</p><p><a href="../../latex_generated/electron_readout/sipm_statistical_validation/sipm_validation.pdf">PDF report</a> · <a href="../../latex_generated/electron_readout/sipm_response/sipm_electronics_model.pdf">Model derivation</a>'+pilot_link+'</p><details><summary>Methods and comparison criteria</summary><p>'+explanation+'</p></details><h2>Variance follow-up</h2><p>'+independent+'</p>'+''.join(f'<img src="{x}">' for x in figures)+'<h2>Numerical diagnostics</h2><p>'+diagnostics+'</p><table><tr>'+''.join(f'<th>{h}</th>' for h in headers)+'</tr>'+table+'</table>'
     (out/'validation.html').write_text(page)
     tex=r'''\documentclass[10pt]{article}
 \usepackage[a4paper,margin=17mm]{geometry}
@@ -110,8 +114,8 @@ def main():
     for filename in figures:tex+='\\clearpage\\noindent\\includegraphics[width=\\textwidth]{'+filename+'}\n'
     tex+='\\clearpage\\scriptsize\\noindent\\resizebox{\\textwidth}{!}{\\begin{tabular}{lrrrrrrrr}\\toprule\nCase & Bias (\\%) & Var. ratio & Speedup & Mean & Variance & Covariance & Repairs & Limits \\\\ \\midrule\n'
     for row in rows:tex+=' & '.join(val(v).replace('_',r'\_') for v in row)+r' \\'+'\n'
-    tex+='\\bottomrule\\end{tabular}}\\end{document}\n';(latex/'validation.tex').write_text(tex)
+    tex+='\\bottomrule\\end{tabular}}\\end{document}\n';(latex/'sipm_validation.tex').write_text(tex)
     (latex/'.gitignore').write_text('*.aux\n*.log\n*.out\n*.fls\n*.fdb_latexmk\n')
-    subprocess.run(['latexmk','-pdf','-interaction=nonstopmode','-halt-on-error','validation.tex'],cwd=latex,check=True,stdout=subprocess.DEVNULL)
+    build_report(latex / "sipm_validation.tex")
     print(out/'validation.html')
 if __name__=='__main__':main()

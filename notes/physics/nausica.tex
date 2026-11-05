@@ -136,13 +136,21 @@ ITACA is a proposed HPXeEL TPC implementing the readout of both the ion and the 
 \label{eq:drift}
 \end{equation}
 %
-where $L$ is the ion drift distance, $E$ the drift field, $T$ the gas temperature, $k_B$ Boltzmann's constant and $q_e$ the elementary charge. Equation~\ref{eq:drift} favours shorter $L$ and larger $E$. Figure~\ref{fig:sigmatvsl} shows $\sigma_T$ for three different drift fields. For a TPC drift length of 150~cm, the average $\sigma_T$ is of the order of \SI{1}{mm}, one order of magnitude smaller than the corresponding diffusion for electrons in pure xenon.
+where $L$ is the ion drift distance, $E$ the drift field, $T$ the gas temperature, $k_B$ Boltzmann's constant and $q_e$ the elementary charge. Equation~\ref{eq:drift} favours shorter $L$ and larger $E$. Figure~\ref{fig:sigmatvsl} shows $\sigma_T$ for three different drift fields. For a TPC drift length of 150~cm, the average $\sigma_T$ is of the order of \SI{1}{mm}, one order of magnitude smaller than the corresponding diffusion for electrons in pure xenon. Once the length of the TPC is defined, the diameter of the TPC defines the fiducial mass that can be achieved. At 15 bar, choosing $D= 320$ cm, results in a fiducial mass slightly above one ton, $M_{fid} = 1050$ kg. 
+ 
+A large diameter TPC requires modular instrumentation of both the EL side (with pixels sensitive to light) and the cathode side (with pixels sensitive to bare ion charge). There is no charge amplification in the cathode, but an intense field
 
-Another important design factor is the voltages in the TPC electrodes. All sensors (the CMOS reading the ions and the SiPMs reading the EL light) operate best at ground, but the drifting of electrons and ions requires a constant field in the TPC, and the generation of EL light requires an additional, higher field, in the EL region. 
+In addition, one has to provide a system to measure the energy of the event with excellent resolution. ITACA is equipped with a Barrel Fibre Detector (BFD) able to measure both primary scintillation (\sone) and secondary, EL scintillation (\stwo). The measurement of \sone\ provides the start-of-the-event, \tz\, needed to fiducialize it. The measurement of \stwo\ provides a measurement of the energy, to a resolution 
+of the order of 0.7\% FWHM at \Qbb. 
+
+The anode is equipped with a HELM device, whose role is to provide the EL light needed for the BFD and a measurement of the electron track topology. 
+
+%The cathode side
+
+%Another important design factor is the voltages in the TPC electrodes. All sensors (the CMOS reading the ions and the SiPMs reading the EL light) operate best at ground, but the drifting of electrons and ions requires a constant field in the TPC, and the generation of EL light requires an additional, higher field, in the EL region. 
 
 The cathode is instrumented with an Ion Focusing Grid (IFG) which focuses the incoming ions into the readout pads of the CMOS detector. The upper electrode of the IFG is at a voltage $V_c = \SI{8}{kV}$. The voltage on the anode side of the TPC depends on the drift length and the drift field. A good compromise between minimizing diffusion and keeping voltage at the anode reasonable is to choose a drift field of \SI{200}{V/cm}, which results in \SI{38}{kV} at the first anode electrode, and \SI{54}{kV} at the second (with \SI{16}{kV} across the EL gap). 
  
- Once the length of the TPC is defined, the diameter of the TPC defines the fiducial mass that can be achieved. At 15 bar, choosing $D= 320$ cm, results in a fiducial mass slightly above one ton, $M_{fid} = 1050$ kg. 
  
  A large diameter TPC requires instrumenting both the EL side (with SiPMs) and the cathode side (with top metal devices). 
   Previous work involving the detection of

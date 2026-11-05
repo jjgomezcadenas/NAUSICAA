@@ -65,7 +65,8 @@ function load_specs(root::AbstractString,run_card::AbstractString)
                e["bucket_width_us"])) || error("Invalid electron card")
     0<=e["helium_fraction"]<1 && 1.5<=e["reduced_field_kV_cm_bar"]<=3 &&
         0<=e["j_variance_ratio"]<1 || error("Invalid gas/EL parameters")
-    e["sipm_diameter_mm"]>=e["hole_diameter_mm"] || error("SiPM must cover hole")
+    sensor_size = get(e,"sipm_shape","circle")=="square" ? e["sipm_side_mm"] : e["sipm_diameter_mm"]
+    sensor_size>=e["hole_diameter_mm"] || error("SiPM must cover hole")
     j_anchors=Dict(1.5=>0.1,2.0=>0.05,3.0=>0.01)
     j_status=get(e,"j_status",nothing)
     j_status in ("oliveira_fig6_user_reading","user_specified") ||

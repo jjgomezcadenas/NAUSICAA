@@ -1,0 +1,8 @@
+schema = "nausicaa.detector_run.v1"
+detector_configuration = "config/specs/detector/configurations/elm_4mm_250ns_ep2_drift10cm.toml"
+selected_samples = ["bb0nu"]
+results_dir = "results/simulations/production_pilot"
+report_dir = "latex_generated/electron_readout/elm_sipm_pitch4mm_pilot"
+pilot_only = true
+
+selected_gases = ["xe_he15"]

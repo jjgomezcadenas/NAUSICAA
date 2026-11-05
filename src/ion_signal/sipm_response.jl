@@ -2,7 +2,7 @@
 module SiPMResponse
 using Random, Distributions
 export Sensor, elementary_charge_C, charge_per_pe_C, dark_rate_Hz, recovered_fraction,
-       simulate_channel, axel_mean, axel_inverse
+       simulate_channel, LinearSensor, simulate_channel_linear, axel_mean, axel_inverse
 
 const elementary_charge_C = 1.602176634e-19
 
@@ -27,6 +27,49 @@ struct Sensor
     end
 end
 charge_per_pe_C(s::Sensor) = elementary_charge_C * s.gain
+
+"""
+    LinearSensor(pde, gain, dark_rate_Hz)
+
+Full-gain SiPM approximation: packaged-device detection probability, electrons
+per avalanche and total primary dark rate in Hz. Every detected optical photon
+and dark pulse contributes charge e*gain. The model has no microcell state.
+PDE lies in [0,1], gain is positive and dark rate is nonnegative; all are finite.
+"""
+struct LinearSensor
+    pde::Float64
+    gain::Float64
+    dark_rate_Hz::Float64
+    function LinearSensor(pde,gain,dark_rate_Hz)
+        isfinite(pde)&&0<=pde<=1 || throw(ArgumentError("PDE must lie in [0,1]"))
+        isfinite(gain)&&gain>0 || throw(ArgumentError("Gain must be positive"))
+        isfinite(dark_rate_Hz)&&dark_rate_Hz>=0 || throw(ArgumentError("Dark rate must be nonnegative"))
+        new(pde,gain,dark_rate_Hz)
+    end
+end
+charge_per_pe_C(s::LinearSensor)=elementary_charge_C*s.gain
+
+"""
+    simulate_channel_linear(rng, incident, dt, sensor::LinearSensor)
+
+Sample independent binomial optical detections and Poisson primary dark pulses
+in successive buckets of duration dt seconds. Convert each count to full
+avalanche charge in coulombs. Returns owned incident/count/charge arrays with
+the same interface as simulate_channel; source counts are preserved and the
+caller owns the RNG. Counts must be nonnegative and dt positive and finite.
+"""
+function simulate_channel_linear(rng::AbstractRNG,incident::AbstractVector{<:Integer},
+        dt::Real,sensor::LinearSensor)
+    isfinite(dt)&&dt>0 || throw(ArgumentError("Bucket duration must be positive"))
+    all(>=(0),incident) || throw(ArgumentError("Incident counts must be nonnegative"))
+    optical=Int64[rand(rng,Binomial(n,sensor.pde)) for n in incident]
+    dark=Int64[rand(rng,Poisson(sensor.dark_rate_Hz*dt)) for _ in incident]
+    q=charge_per_pe_C(sensor)
+    optical_charge=q.*optical;dark_charge=q.*dark
+    (;incident_photons=Int64.(incident),detected_pe=optical,dark_pulses=dark,
+      optical_charge_C=optical_charge,dark_charge_C=dark_charge,
+      charge_C=optical_charge+dark_charge)
+end
 dark_rate_Hz(rate, reference_area, diameter) = rate * (pi * diameter^2 / 4) / reference_area
 
 """Recovered charge fraction after a nonnegative interval; zero recovery time is ideal."""
@@ -89,6 +132,6 @@ function axel_inverse(m::Real,s::Sensor,dt::Real;clipped::Bool=false)
     (; pe=valid ? m/denominator : NaN, valid)
 end
 include("sipm_statistical.jl")
-export StatisticalOptions, simulate_channel_statistical, occupancy_moments, recover_totals
+export StatisticalOptions, simulate_channel_statistical, simulate_channel_illuminated, occupancy_moments, recover_totals
 
 end

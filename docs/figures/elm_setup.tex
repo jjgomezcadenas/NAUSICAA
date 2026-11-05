@@ -1,0 +1,74 @@
+% Editable vector drawing. Longitudinal scale is schematic.
+% Rod diameter and radial gas gap share a transverse scale: 2 units = 2.5 mm.
+% Thus each 0.5 mm annulus is 0.4 unit in the longitudinal panel.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\small,>=Latex]
+\node[anchor=west,font=\bfseries] at (0,1.0) {Potential sequence};
+\draw[->,thick] (0,0)--(15,0);
+\foreach \x/\v/\lab in {0.4/1.2/Cathode,4/31.2/TPC end,7/31.5/EL entry,10.6/46.5/EL exit,14.3/0/SiPM plane}{
+  \draw (\x,-.12)--(\x,.12);
+  \node[above,align=center] at (\x,.15) {\v\ kV};
+  \node[below,align=center,font=\footnotesize] at (\x,-.15) {\lab};
+}
+\node[font=\footnotesize,align=center] at (2.2,-1.0) {150 cm TPC\\200 V/cm};
+\node[font=\footnotesize,align=center] at (5.5,-1.0) {1 cm transfer\\300 V/cm};
+\node[font=\footnotesize,align=center] at (8.8,-1.0) {5 mm EL\\30 kV/cm};
+\node[font=\footnotesize,align=center] at (12.5,-1.0) {10 cm grading\\4.65 kV/cm};
+
+\node[anchor=west,font=\bfseries] at (0,-2.1) {Longitudinal section through one channel};
+% Hole block and acrylic manifold, with a gas-filled channel around the rod.
+\fill[gray!25] (1,-3.2) rectangle (4.4,-7.2);
+\fill[white] (1,-4.2) rectangle (4.4,-6.2);
+\draw (1,-3.2) rectangle (4.4,-7.2);
+\draw (1,-4.2)--(4.4,-4.2) (1,-6.2)--(4.4,-6.2);
+\fill[gray!25] (4.4,-3.2) rectangle (12.5,-7.2);
+\fill[yellow!15] (4.4,-3.8) rectangle (12.5,-6.6);
+\fill[cyan!18] (4.4,-4.2) rectangle (12.5,-6.2);
+\draw (4.4,-3.2) rectangle (12.5,-7.2);
+\draw (4.4,-3.8)--(12.5,-3.8) (4.4,-6.6)--(12.5,-6.6);
+\draw[thick] (4.4,-4.2)--(12.5,-4.2) (4.4,-6.2)--(12.5,-6.2);
+% Copper-coated EL faces, opening onto the gas hole.
+\draw[orange!80!black,line width=3pt] (1,-3.2)--(1,-4.2) (1,-6.2)--(1,-7.2);
+\draw[orange!80!black,line width=3pt] (4.4,-3.2)--(4.4,-4.2) (4.4,-6.2)--(4.4,-7.2);
+\draw[magenta,line width=3pt] (4.4,-4.2)--(4.4,-6.2);
+% Glue / packaged sensor front window / active sensor.
+\fill[blue!12] (12.5,-4.0) rectangle (12.58,-6.4);
+\fill[black!65] (12.58,-4.0) rectangle (12.70,-6.4);
+\draw[green!55!black,line width=1.5pt] (12.5,-4.2)--(12.5,-6.2);
+\draw[red!75!black,->,thick] (0,-5.2)--(2.6,-5.2);
+\node[red!75!black,above] at (1.8,-5.1) {$e^-$};
+\fill[violet] (2.6,-5.2) circle (.055);
+\draw[violet,->,thick] (2.6,-5.2)--(4.35,-4.8);
+\draw[violet,->,dashed] (2.6,-5.2)--(3.1,-6.2);
+\node[violet,font=\footnotesize,align=center] at (2.8,-6.65) {VUV wall hit\\absorbed};
+\draw[blue,->,thick] (4.45,-4.8)--(6.0,-6.2)--(8.25,-4.2)--(10.5,-6.2)--(12.5,-4.42);
+\node[font=\footnotesize,fill=cyan!18,inner sep=2pt] at (8.5,-5.25) {Acrylic rod, $d=2.5$ mm};
+\node[font=\scriptsize] at (8.5,-4.0) {Xenon annulus: 0.5 mm radial gap};
+\node[font=\footnotesize] at (8.5,-6.95) {Acrylic structure};
+\node[font=\footnotesize,align=center] at (2.7,-3.6) {Acrylic + copper faces};
+\node[align=center,font=\footnotesize] at (1,-2.7) {Entry\\31.5 kV};
+\node[align=center,font=\footnotesize] at (4.4,-2.7) {Exit / TPB\\46.5 kV};
+\draw[<->] (1,-7.6)--node[below] {$h=5$ mm}(4.4,-7.6);
+\draw[<->] (4.4,-7.6)--node[below] {$t=100$ mm}(12.5,-7.6);
+\node[anchor=west,align=left,font=\footnotesize] (glue) at (13.3,-3.1) {NOA 87};
+\draw[thin] (glue.west)--(12.5,-4.2);
+\node[anchor=west,align=left,font=\footnotesize] at (13.05,-5.0) {Silicone window\\+ SiPM\\$3\times3$ mm$^2$\\ground reference};
+\node[magenta,anchor=east,font=\footnotesize] at (4.1,-4.65) {TPB};
+
+\node[anchor=west,font=\bfseries] at (0,-9.0) {Transverse section in the guide region};
+\begin{scope}[shift={(1,-13.7)},scale=.75]
+\fill[gray!25] (-.2,-.2) rectangle (8.2,4.2);
+\foreach \x in {2,6}{
+ \filldraw[fill=yellow!15,draw=black] (\x,2) circle (1.75);
+ \filldraw[fill=cyan!18,draw=black] (\x,2) circle (1.25);
+ \draw[dashed,gray!80] (\x-1.5,.5) rectangle (\x+1.5,3.5);
+ \fill (\x,2) circle (.035);
+}
+\draw[<->] (2,5)--node[above] {4 mm pitch}(6,5);
+\draw[dotted] (2,2)--(2,5.15) (6,2)--(6,5.15);
+\draw[<->] (3.75,2)--(4.25,2);
+\draw[thin] (4,2)--(4,-.65);
+\node[below,font=\footnotesize] at (4,-.65) {0.5 mm acrylic web};
+\end{scope}
+\node[anchor=west,align=left,font=\footnotesize,text width=5cm] at (9.6,-12.0)
+{Blue: 2.5 mm rod.\\Yellow: xenon gap.\\Grey: acrylic web.\\Dashed square: projected SiPM.\\Outer channel diameter: 3.5 mm.};
+\end{tikzpicture}

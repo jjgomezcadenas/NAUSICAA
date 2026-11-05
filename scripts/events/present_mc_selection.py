@@ -20,7 +20,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/'results/mc_selection';FIG=OUT/'figures';TEX=ROOT/'latex_generated/mc_selection'
+OUT=ROOT/'results/mc_selection';FIG=OUT/'figures';TEX=ROOT/'latex_generated/reconstruction/mc_selection'
 FIG.mkdir(parents=True,exist_ok=True);TEX.mkdir(parents=True,exist_ok=True)
 samples=('bb0nu','electrons');labels=('Double beta (100 μm)','Single electrons (100 μm)')
 plots=[('voxel_energy_MeV','Occupied voxel energy','keV','Voxels'),

@@ -20,9 +20,13 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 ROOT=Path(__file__).resolve().parents[2]
+import sys
+sys.path.insert(0, str(ROOT / "scripts/documentation"))
+from build_report import build_report
+
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--results-dir',type=Path,default=ROOT/'results/pixel_charge')
-parser.add_argument('--latex-dir',type=Path,default=ROOT/'latex_generated/pixel_charge')
+parser.add_argument('--latex-dir',type=Path,default=ROOT/'latex_generated/ion_readout/pixel_charge')
 args=parser.parse_args()
 OUT=args.results_dir.resolve();FIG=OUT/'figures';TEX=args.latex_dir.resolve()
 FIG.mkdir(parents=True,exist_ok=True);TEX.mkdir(parents=True,exist_ok=True)
@@ -113,7 +117,7 @@ try:
     for sample,label in zip(samples,labels):
         tex+=r'\clearpage\section*{'+label+r'}\noindent\includegraphics[width=\linewidth]{'+sample+r'_pixel_charge.png}'+'\n'
     tex+=r'\end{document}';(TEX/'pixel_charge.tex').write_text(tex)
-    subprocess.run(['latexmk','-pdf','-interaction=nonstopmode','-halt-on-error','pixel_charge.tex'],cwd=TEX,check=True)
+    build_report(TEX / "pixel_charge.tex")
     print('HTML:',OUT/'pixel_charge.html');print('PDF:',TEX/'pixel_charge.pdf')
     for row in rows+timings:print(' | '.join(row))
 finally:

@@ -1,5 +1,8 @@
 # NAUSICAA: ion signal physics
 
+Generated notes: [browse the catalogue](latex_generated/index.html).
+Directory layout and regeneration: [generated reports](docs/generated_reports.md).
+
 Reproducible calculations and a LaTeX note for positive molecular Xe2+ ions
 collected by a focused CMOS pad plane. Each ion carries **+e**.
 

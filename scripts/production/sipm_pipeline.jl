@@ -44,18 +44,27 @@ function settings(root,runpath)
     cp=joinpath(root,run["sipm_card"]); ep=joinpath(root,run["electronics_card"])
     c=TOML.parsefile(cp); e=TOML.parsefile(ep)
     c["schema"]=="nausicaa.sipm_spec.v1" && e["schema"]=="nausicaa.sipm_electronics_spec.v1" || error("Response card schema")
-    for (key,value) in (("arrival_model","uniform_in_bucket"),("illumination","uniform_microcells"),
+    model=get(c,"response_model","microscopic")
+    if model!="linear"
+    for (key,value) in (("arrival_model","uniform_in_bucket"),
         ("recovery_pde","constant"),("initial_state","stationary_dark"),("charge_assignment","avalanche_bucket"))
         c[key]==value || error("Unsupported sensor policy: $key")
+    end
+    c["illumination"] in ("uniform_microcells","uniform_disk_subset") || error("Unsupported illumination")
+    if c["illumination"]=="uniform_disk_subset"
+        model=="statistical" || error("Disk subset requires statistical response")
+        0<c["illuminated_microcell_count"]<=c["microcell_count"] || error("Invalid illuminated count")
+    end
     end
     !any(c[k] for k in ("crosstalk","afterpulsing","gain_spread")) || error("Additional sensor effects require a model")
     e["transfer"]=="bucket_average_current" && e["noise"]=="independent_gaussian_pe" &&
         e["baseline_pe"]==0 && !e["lower_clipping"] || error("Unsupported ASIC policy")
     area=sensor_area_m2(c)
-    all(x->isfinite(x)&&x>0,(c["microcell_pitch_m"],c["dark_reference_area_m2"])) || error("Sensor geometry")
+    isfinite(c["dark_reference_area_m2"])&&c["dark_reference_area_m2"]>0 || error("Sensor geometry")
+    model=="linear" || (isfinite(c["microcell_pitch_m"])&&c["microcell_pitch_m"]>0 || error("Microcell pitch"))
     c["seed"]>=0 && e["seed"]>=0 || error("Seeds must be nonnegative")
     model=get(c,"response_model","microscopic")
-    model in ("microscopic","statistical") || error("Unknown SiPM response_model")
+    model in ("microscopic","statistical","linear") || error("Unknown SiPM response_model")
     if model=="statistical"
         P.StatisticalOptions(c["statistical_substeps"],get(c,"sparse_trigger_limit",16))
     end
@@ -63,8 +72,9 @@ function settings(root,runpath)
     a["channels"]=="illuminated_in_event" && a["quiet_before_buckets"]>=0 &&
         a["quiet_after_buckets"]>=0 && a["empty_last_bucket"]>=a["empty_first_bucket"] || error("Acquisition policy")
     all(x->length(x)==2 && all(v->v isa Integer,x),a["additional_channels"]) || error("Additional channel indices")
-    sensor=P.Sensor(effective_pde(c),c["microcell_count"],c["gain"],c["recovery_s"],
-        c["dark_reference_rate_Hz"]*area/c["dark_reference_area_m2"])
+    dark_rate=c["dark_reference_rate_Hz"]*area/c["dark_reference_area_m2"]
+    sensor = model=="linear" ? P.LinearSensor(effective_pde(c),c["gain"],dark_rate) :
+        P.Sensor(effective_pde(c),c["microcell_count"],c["gain"],c["recovery_s"],dark_rate)
     electronics=E.Electronics(e["bucket_width_s"],e["noise_rms_pe"],e["current_limit_A"])
     common=[@__FILE__,joinpath(@__DIR__,"specs.jl"),joinpath(root,"src/event_analysis/production_readout.jl"),
         joinpath(root,"src/event_analysis/EventAnalysis.jl"),joinpath(root,"Manifest.toml")]
@@ -84,8 +94,13 @@ The statistical card owns its time discretization and sparse-trigger settings;
 its output count and charge arrays obey the same saved-history interface.
 """
 function simulate_sensor_channel(rng,counts,dt,s)
-    if get(s.c,"response_model","microscopic")=="statistical"
+    if get(s.c,"response_model","microscopic")=="linear"
+        return P.simulate_channel_linear(rng,counts,dt,s.sensor)
+    elseif get(s.c,"response_model","microscopic")=="statistical"
         options=P.StatisticalOptions(s.c["statistical_substeps"],get(s.c,"sparse_trigger_limit",16))
+        if get(s.c,"illumination","")=="uniform_disk_subset"
+            return P.simulate_channel_illuminated(rng,counts,dt,s.sensor,s.c["illuminated_microcell_count"];options)
+        end
         return P.simulate_channel_statistical(rng,counts,dt,s.sensor;options)
     end
     P.simulate_channel(rng,counts,dt,s.sensor)
@@ -113,10 +128,14 @@ function sources(s)
         for sample in s.run["samples"],gas in s.run["gases"]
             path=str(idx,"$sample/$(gas)_path"); sourcehash=sha(path)
             h5open(path,"r") do h
-                schema(h)=="nausicaa.photon_sipm_file.pilot.v1" || error("Photon file schema")
+                schema(h) in ("nausicaa.photon_sipm_file.pilot.v1","nausicaa.photon_sipm_file.pilot.v2") || error("Photon file schema")
                 m=h["metadata"]
                 Bool(read(m["complete"])) && str(m,"sample")==sample && str(m,"branch")==gas || error("Photon input identity")
                 str(m,"signal_unit")=="incident_photons" && str(m,"time_unit")=="us" || error("Photon input units")
+                band=haskey(m,"photon_band") ? str(m,"photon_band") : "vuv"
+                band in ("vuv","blue_tpb") || error("Unknown photon band")
+                band=="blue_tpb" && haskey(s.c,"tpb") && error("Blue photon input already includes TPB conversion")
+                get(s.c,"input_photon_band",band)==band || error("SiPM card photon band differs")
                 card=TOML.parse(str(m,"branch_card_toml")); dt=card["bucket_width_us"]*1e-6
                 isapprox(dt,s.electronics.bucket_width_s;rtol=1e-12) || error("Photon and ASIC buckets differ")
                 shape=get(card,"sipm_shape","circle")
@@ -282,8 +301,9 @@ function run(root,runpath)
     h5open(path*".tmp","w") do out
         attributes(out)["schema"]="nausicaa.sipm_pilot_summary.v1"
         p=create_group(out,"parameters")
-        put(p,(;pde=s.sensor.pde,microcells=s.sensor.microcells,gain=s.sensor.gain,recovery_s=s.sensor.recovery_s,
-            diameter_m=s.c["diameter_m"],dark_rate_Hz=s.sensor.dark_rate_Hz,charge_per_pe_C=P.charge_per_pe_C(s.sensor),
+        put(p,(;pde=s.sensor.pde,microcells=s.sensor isa P.Sensor ? s.sensor.microcells : 0,gain=s.sensor.gain,
+            recovery_s=s.sensor isa P.Sensor ? s.sensor.recovery_s : 0.,
+            active_area_m2=sensor_area_m2(s.c),dark_rate_Hz=s.sensor.dark_rate_Hz,charge_per_pe_C=P.charge_per_pe_C(s.sensor),
             bucket_width_s=s.electronics.bucket_width_s,noise_rms_pe=s.electronics.noise_rms_pe,
             current_limit_A=s.electronics.current_limit_A,
             current_limit_pe=s.electronics.current_limit_A*s.electronics.bucket_width_s/P.charge_per_pe_C(s.sensor),

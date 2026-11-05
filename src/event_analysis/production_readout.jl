@@ -293,7 +293,9 @@ end
 
 Diffuse surviving electrons into EL holes and time buckets. For each occupied
 cell, sample emitted VUV photons using `J`, then incident photons using the
-analytic geometric acceptance. Assign each cell's photons to the parent
+supplied optical acceptance. This may represent direct VUV collection or the
+complete ELM VUV-to-blue chain; the caller records photon-band identity in
+the file metadata. Assign each cell's photons to the parent
 electrons' arrival bucket, matching the approved first timing approximation.
 Return sparse incident-photon counts with an
 exact emitted/incident ledger. A single event RNG drives diffusion and EL;

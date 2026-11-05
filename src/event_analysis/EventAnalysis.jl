@@ -21,7 +21,7 @@ export CoordinateFrame, source_frame, vertex_frame, EventInfo, EventHits, center
        MCEnergyMaps, bin_mc_energy, MCGraphSettings, MCComponent,
        resolved_mc_distance, build_mc_components, analyze_mc_event,
        collect_ion_cloud, pixel_frame_statistics,
-       el_photon_yield, axial_light_acceptance, axial_square_acceptance, sample_detected_pe,
+       el_photon_yield, axial_light_acceptance, axial_square_acceptance, elm_light_acceptance, sample_detected_pe,
        collect_grid_history, detect_pe_history, diffuse_to_grid,
        diffused_carrier_reference
 export EventPlacement, GridSpec, SparseCells, IonPadHistory, PhotonSiPMHistory,

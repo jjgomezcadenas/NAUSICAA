@@ -1,0 +1,8 @@
+total_wall_s = 16.601993799209595
+photon_index = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_pilot/photons_ep2.h5"
+response_wall_s = 11.872978925704956
+complete = true
+sample = "bb0nu"
+events_per_gas = 100
+response_manifest = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_pilot/response/48866556804505d0/manifest.toml"
+photon_wall_s = 4.72894287109375

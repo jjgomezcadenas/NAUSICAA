@@ -107,17 +107,17 @@ The physical model and source discussion are in \texttt{docs/sipm\_electronics\_
 \input{pilot_results.tex}
 \end{document}
 """
-    (output / "report.tex").write_text(report)
+    (output / "sipm_pilot.tex").write_text(report)
     (output / "sources.json").write_text(json.dumps(sources, indent=2) + "\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--summary", type=Path)
-    parser.add_argument("--output", type=Path, default=ROOT / "latex_generated/sipm_response")
+    parser.add_argument("--output", type=Path, default=ROOT / "latex_generated/electron_readout/sipm_response")
     parser.add_argument("--validation", type=Path, default=ROOT / "results/sipm_response_validation/validation.h5")
     args = parser.parse_args()
     summary = args.summary
     if summary is None:
         summary = Path(tomllib.loads((ROOT / "results/sipm_response_pilot/latest.toml").read_text())["summary"])
     render(summary, args.output, args.validation)
-    print(args.output / "report.tex")
+    print(args.output / "sipm_pilot.tex")

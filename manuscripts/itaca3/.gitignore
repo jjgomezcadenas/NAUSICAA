@@ -1,0 +1,10 @@
+# Build intermediates; manuscript PDF, figures, sources and numerical macros are retained.
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+work/

@@ -10,7 +10,7 @@ from pathlib import Path
 import subprocess
 import h5py
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/'results/electron_diffusion';TEX=ROOT/'latex_generated/electron_diffusion';TEX.mkdir(parents=True,exist_ok=True)
+OUT=ROOT/'results/electron_diffusion';TEX=ROOT/'latex_generated/transport/electron_diffusion';TEX.mkdir(parents=True,exist_ok=True)
 with h5py.File(OUT/'electron_diffusion.h5') as f:
     pressure=float(f['pressure_bar'][()]);helium=100*float(f['helium_fraction'][()])
     coefficients=[];widths=[]

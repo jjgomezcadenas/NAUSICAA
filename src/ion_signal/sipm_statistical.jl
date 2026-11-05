@@ -166,3 +166,40 @@ function simulate_channel_statistical(rng::AbstractRNG,incident::AbstractVector{
       state_repairs=repairs,maximum_state_repair=maxrepair,variance_limits=limited+label_limits,charge_variance_limits=limited,
       label_variance_limits=label_limits,batches)
 end
+
+"""
+    simulate_channel_illuminated(rng, incident, dt, sensor, illuminated_cells; options)
+
+Statistical response of a uniformly illuminated subset of the physical SiPM.
+`illuminated_cells` cells receive all optical photons; the remaining cells
+receive dark triggers. The full-device primary dark rate is partitioned by cell
+count. Each population uses the same gain and recovery law and independent RNG
+substreams, preserving stationary dark initialization and recurrent avalanches.
+
+Returns the standard detected-count and charge histories, separate optical and
+dark charge, and `expected_distinct_optical_cells`: the conditional expectation
+M*(1-(1-1/M)^N) for N sampled optical triggers in a bucket. This diagnostic
+counts each illuminated cell once and does not describe charge-equivalent PE.
+`detected_pe` counts optical triggers, including repeated firing of a cell.
+"""
+function simulate_channel_illuminated(rng::AbstractRNG,incident::AbstractVector{<:Integer},
+    dt::Real,sensor::Sensor,illuminated_cells::Integer;
+    options::StatisticalOptions=StatisticalOptions())
+    M=Int(illuminated_cells);total=sensor.microcells
+    0<M<=total || throw(ArgumentError("Illuminated cells must be within the device"))
+    lit=Sensor(sensor.pde,M,sensor.gain,sensor.recovery_s,sensor.dark_rate_Hz*M/total)
+    a=simulate_channel_statistical(Xoshiro(rand(rng,UInt64)),incident,dt,lit;options)
+    distinct=[M==1 ? Float64(n>0) : -M*expm1(n*log1p(-1/Float64(M))) for n in a.detected_pe]
+    M==total && return merge(a,(;expected_distinct_optical_cells=distinct))
+    unlit=Sensor(0.,total-M,sensor.gain,sensor.recovery_s,sensor.dark_rate_Hz*(total-M)/total)
+    b=simulate_channel_statistical(Xoshiro(rand(rng,UInt64)),zeros(Int64,length(incident)),dt,unlit;options)
+    (;incident_photons=a.incident_photons,detected_pe=a.detected_pe,
+      dark_pulses=a.dark_pulses+b.dark_pulses,optical_charge_C=a.optical_charge_C,
+      dark_charge_C=a.dark_charge_C+b.dark_charge_C,charge_C=a.charge_C+b.charge_C,
+      expected_distinct_optical_cells=distinct,
+      state_repairs=a.state_repairs+b.state_repairs,
+      maximum_state_repair=max(a.maximum_state_repair,b.maximum_state_repair),
+      variance_limits=a.variance_limits+b.variance_limits,
+      charge_variance_limits=a.charge_variance_limits+b.charge_variance_limits,
+      label_variance_limits=a.label_variance_limits+b.label_variance_limits,batches=a.batches+b.batches)
+end

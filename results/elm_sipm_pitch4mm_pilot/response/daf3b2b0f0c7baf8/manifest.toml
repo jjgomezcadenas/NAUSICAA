@@ -1,0 +1,15 @@
+summary = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/elm_sipm_pitch4mm_pilot/response/daf3b2b0f0c7baf8/summary.h5"
+run_card = "/Users/jjgomezcadenas/Projects/NAUSICAA/config/specs/runs/elm_pitch4mm_bb0nu_tau25ns_pilot100.toml"
+summary_sha256 = "fafa600a7af641785069859ec6b96f009e84152421c099e1b760583ebbfe78b4"
+run_id = "daf3b2b0f0c7baf8"
+complete = true
+schema = "nausicaa.sipm_production_manifest.v1"
+
+[[shards]]
+sensor_sha256 = "7467247c1dbc149c49d5e41c6aa073ec60408605d69ca544d5929c726f870d79"
+event_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+sensor = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/f0883ce54511acd1dc3a1a0422f21a06aa137bae28452f4f7c7f722dda916628/sensor_pe/6878b7e9e150556770ddbb123cc6c9ce5d37465018651b73e6f3c4ae5a1c9614/shard_0001.h5"
+sample = "bb0nu"
+gas = "xe_he15"
+asic = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/electrons/f0883ce54511acd1dc3a1a0422f21a06aa137bae28452f4f7c7f722dda916628/asic_pe/4e54e72a43f65b0aab43cd7940c0a2e20a42d0585d6fc0181efb2d8614e18f96/shard_0001.h5"
+asic_sha256 = "43823a86e424fafdcd5df7158ae6891bc7825736ae5fac6c2eeb45c225b07987"

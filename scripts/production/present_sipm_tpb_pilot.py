@@ -10,8 +10,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[2]
+import sys
+sys.path.insert(0, str(ROOT / "scripts/documentation"))
+from build_report import build_report
+
 OUT = ROOT / "results/sipm_tpb_pilot"
-TEX = ROOT / "latex_generated/sipm_tpb_pilot"
+TEX = ROOT / "latex_generated/electron_readout/sipm_tpb_pilot"
 TEX.mkdir(parents=True, exist_ok=True)
 text = lambda x: x.decode() if isinstance(x, bytes) else str(x)
 
@@ -127,7 +131,7 @@ def main():
         + "<h2>TPB reference</h2><p>Figure 19 gives approximately 0.65 at 170 nm and 0.50 at 190 nm; "
           "0.62 is a rounded interpolation near 175 nm. The typical quoted QE uncertainty is about 8% relative. "
           "This intrinsic QE is separate from film-dependent external wavelength-shifting efficiency.</p>"+source_html
-        + '<p><a href="../../latex_generated/sipm_tpb_pilot/sipm_tpb_pilot.pdf">PDF report</a></p>')
+        + '<p><a href="../../latex_generated/electron_readout/sipm_tpb_pilot/sipm_tpb_pilot.pdf">PDF report</a></p>')
     (OUT/"sipm_tpb_pilot.html").write_text('<!doctype html><meta charset="utf-8"><title>SiPM TPB pilot</title>'
         '<style>body{max-width:1250px;margin:40px auto;padding:0 20px;font:16px system-ui;line-height:1.5}'
         'table{border-collapse:collapse;width:100%}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:right}'
@@ -148,6 +152,6 @@ def main():
     tex+="\n".join(r"\item \href{"+u+"}{"+t+"}" for t,u in sources)
     tex+=r"\end{itemize}\end{document}"
     (TEX/"sipm_tpb_pilot.tex").write_text(tex)
-    subprocess.run(["latexmk","-pdf","-interaction=nonstopmode","-halt-on-error","sipm_tpb_pilot.tex"],cwd=TEX,check=True)
+    build_report(TEX / "sipm_tpb_pilot.tex")
 
 if __name__ == "__main__":main()

@@ -1,0 +1,24 @@
+\section{Pixel area estimate}
+\label{app:pixel_area}
+
+The pad is centred in the pixel cell, with a clearance of
+\SI{\PixelClearanceUm}{\micro\metre} on each side. The electronics are placed
+outside this region. Each transistor channel is represented by a rectangle
+with the dimensions in Table~\ref{tab:spice_devices}; the three parallel
+instances of M2 are included separately. A margin of
+\SI{\PixelDeviceMarginUm}{\micro\metre} is added on each side of each channel
+to allow space for contacts, diffusion, wells and connections. These margins
+are geometric allowances for the area estimate.
+
+The rectangles are arranged in rows in a strip
+\SI{\PixelCsaWidthUm}{\micro\metre} wide, with
+\SI{\PixelRowGapUm}{\micro\metre} between neighbouring rectangles and
+\SI{\PixelOuterMarginUm}{\micro\metre} at the outer boundary. A separate
+rectangle reserves space for the feedback capacitor and its connections.
+The resulting CSA block is \SI{\PixelCsaHeightUm}{\micro\metre} high.
+The packing calculation checks that the rectangles do not overlap and
+remain inside the allocated strip. Together with the readout, routing and
+shared circuitry reserves in Table~\ref{tab:pixel_area}, this gives the
+approximately \SI{\PixelBudgetArea}{\milli\metre\squared} budget.
+This is a geometric estimate; a routed layout and parasitic extraction are
+needed to determine the final circuit area and its effect on the noise.

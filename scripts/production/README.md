@@ -81,3 +81,26 @@ provenance. The generated report is
 The current SiPM input paths are listed in
 `docs/sipm_electronics_handoff.md`. An optional final integer argument to
 `run_electron_250ns.jl` limits events for a pilot and writes to `work/`.
+
+## ELM baseline: full bb0nu Xe–He sample
+
+`make elm-pitch4-production` runs the 8,000-event Xe–15% He baseline:
+4 mm pitch, 2.5 mm holes/guides, 250 ns buckets and 12.5 ns SiPM recovery.
+The photon runner selects gas branches through `selected_gases` in its run card.
+Four independent Julia workers process disjoint 100-event response shards;
+completed shards are validated and reused when the workflow resumes.
+
+The controlling cards are `config/specs/runs/elm_photons_pitch4mm_ep2_full.toml`
+and `config/specs/runs/elm_pitch4mm_bb0nu_full.toml`. The resulting
+`results/elm_sipm_pitch4mm_production/files.toml` resolves the photon index,
+response manifest and immutable histories. Numerical reduction streams quiet
+noise statistics and saves event means, maxima, charge losses, clipping flags
+and attachment-corrected energy widths. The report also gives the efficiency
+and energy width after rejecting clipped events.
+
+Regenerate presentation with `make elm-pitch4-production-report`. The browser
+report is `results/elm_sipm_pitch4mm_production/elm_sipm_pitch4mm_production.html`;
+the self-contained TeX/PDF is under
+`latex_generated/electron_readout/elm_sipm_pitch4mm_production/`.
+Use `JULIA="$HOME/.juliaup/bin/julia" PYTHON=work/event-viewer-venv/bin/python`
+as Make overrides when those are the configured local environments.

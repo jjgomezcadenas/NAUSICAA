@@ -11,11 +11,15 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 ROOT=Path(__file__).resolve().parents[2]
+import sys
+sys.path.insert(0, str(ROOT / "scripts/documentation"))
+from build_report import build_report
+
 LABELS={'pure_xe':'Pure Xe','xe_he15':'Xe + 15% He'}
 
 def render(source):
     """Present saved histograms and summary scalars without repeating reduction."""
-    out=source.parent;latex=ROOT/'latex_generated/response_overview';latex.mkdir(parents=True,exist_ok=True)
+    out=source.parent;latex=ROOT/'latex_generated/production/response_overview';latex.mkdir(parents=True,exist_ok=True)
     plots=[];table=[]
     with h5py.File(source) as f:
         if not f['complete'][()]: raise ValueError('Incomplete reduction')
@@ -48,7 +52,7 @@ def render(source):
         'These pulse summaries describe the occupied input support; event energy requires the complete response history.')
     heads=['Stage','Events','Unit','Mean: average','Mean: median','Maximum: average','Maximum: median']
     rows=''.join('<tr>'+''.join(f'<td>{html.escape(str(x) if i<3 else f"{x:.3f}")}</td>' for i,x in enumerate(row))+'</tr>' for row in table)
-    document='<!doctype html><meta charset="utf-8"><title>NAUSICAA response overview</title><style>body{font:17px system-ui;max-width:1250px;margin:40px auto;color:#17334a}img{width:100%}td,th{padding:9px;border-bottom:1px solid #ddd;text-align:right}th:first-child,td:first-child{text-align:left}p{line-height:1.6}</style><h1>Ion and electron response · bb0nu</h1><p><a href="../electron_operating_points/electron_operating_points.html">Electron operating points: pre-electronics pulses and event sums</a></p><p>'+html.escape(explanation)+'</p><p><a href="../../latex_generated/response_overview/response_overview.pdf">PDF report</a></p><table><tr>'+''.join(f'<th>{h}</th>' for h in heads)+'</tr>'+rows+'</table>'+''.join(f'<img src="{p}" alt="{p}">' for p in plots)
+    document='<!doctype html><meta charset="utf-8"><title>NAUSICAA response overview</title><style>body{font:17px system-ui;max-width:1250px;margin:40px auto;color:#17334a}img{width:100%}td,th{padding:9px;border-bottom:1px solid #ddd;text-align:right}th:first-child,td:first-child{text-align:left}p{line-height:1.6}</style><h1>Ion and electron response · bb0nu</h1><p><a href="../electron_operating_points/electron_operating_points.html">Electron operating points: pre-electronics pulses and event sums</a></p><p>'+html.escape(explanation)+'</p><p><a href="../../latex_generated/production/response_overview/response_overview.pdf">PDF report</a></p><table><tr>'+''.join(f'<th>{h}</th>' for h in heads)+'</tr>'+rows+'</table>'+''.join(f'<img src="{p}" alt="{p}">' for p in plots)
     (out/'response_overview.html').write_text(document)
     tex=r'''\documentclass[10pt]{article}
 \usepackage[a4paper,margin=18mm]{geometry}
@@ -61,7 +65,7 @@ def render(source):
     for plot in plots:tex+=f'\\begin{{figure}}[htbp]\\centering\\includegraphics[width=\\textwidth]{{{plot}}}\\end{{figure}}\n'
     tex+='\\clearpage\\section*{Reproduction}\nNumerical reduction: \\texttt{scripts/production/reduce\\_response\\_overview.jl}.\\par Presentation: \\texttt{scripts/production/present\\_response\\_overview.py}. The HDF5 reduction retains the source card, SiPM manifest, event IDs and reducer digest.\n\\end{document}\n'
     (latex/'response_overview.tex').write_text(tex)
-    subprocess.run(['latexmk','-pdf','-interaction=nonstopmode','-halt-on-error','response_overview.tex'],cwd=latex,check=True,stdout=subprocess.DEVNULL)
+    build_report(latex / "response_overview.tex")
     print(out/'response_overview.html');print(latex/'response_overview.pdf')
 
 if __name__=='__main__':

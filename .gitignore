@@ -112,3 +112,17 @@ results/ltspice/noise_audit/decks/*.db
 # Production numerical files; retain cards, manifests and presentation artifacts.
 /results/sipm_response_production/**/*.h5
 /results/sipm_response_ep*/**/*.h5
+
+# Reproducible ELM worked-example data; retain generated TeX and PDF.
+/results/elm/*.h5
+
+# ELM photon and electronics pilot numerical outputs.
+/results/elm_pilot/**/*.h5
+/results/elm_pilot/*.h5
+/results/elm_sipm_pilot/**/*.h5
+/results/elm_sipm_pilot/*.h5
+/results/elm_sipm_pitch4mm_pilot/**/*.h5
+/results/elm_sipm_pitch4mm_pilot/*.h5
+/results/elm_sipm_pitch4mm_production/**/*.h5
+/results/elm_sipm_pitch4mm_production/*.h5
+/results/elm_sipm_pitch4mm_production/worker_*.log
