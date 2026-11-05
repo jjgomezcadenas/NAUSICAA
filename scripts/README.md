@@ -11,6 +11,7 @@ results.
 | `events/` | NEXUS input, hit analysis and MC selection | `extract_hits.jl`, `analyze_mc_selection.jl` |
 | `transport/` | Diffusion coefficients, cloud studies and concurrency benchmarks | `calculate_electron_diffusion.jl`, `propagate_clouds_parallel.jl` |
 | `collection/` | Direct carrier sampling and physical grid/time assignment | `sample_collect_parallel.jl`, `run_pixel_charge_direct.jl` |
+| `production/` | Shared realizations, detector/electronics runs and matched reports | `run_elm_matched_production.py`, `run_matched_detector.jl`, `run_ion_csa.jl`, `run_matched_sipm.jl` |
 | `electronics/reproduction/` | Initial, Spice2 and Rogelio v2/v3 circuit studies | Each version's acquisition, Julia reduction and presentation commands |
 | `electronics/devices/` | M3/M4 geometry and bias tuning | `run_m3_scan.py`, `run_m4_scan.py` |
 | `electronics/bias/` | Bias precision study | `run_bias_sensitivity_pipeline.py` |
@@ -24,7 +25,27 @@ results.
 | `validation/` | Petit references and event-analysis checkpoints | `validate_event_step*.jl`, `generate_petit_*_reference.jl` |
 | `documentation/` | HTML review-guide builder | `make event-review` |
 
-## Current ion and electron readout
+## Current matched detector and electronics workflow
+
+The completed production is 8,000 bb0nu events with shared placement in
+5–145 cm, 4 mm ion pitch / 40 ms frames, and Xe–15% He at 4 mm EL pitch /
+250 ns buckets. Its selected cards and manifests are documented in
+[matched production](../docs/elm_matched_production.md).
+
+```sh
+make elm-matched-production PYTHON=work/event-viewer-venv/bin/python
+make elm-matched-analysis PYTHON=work/event-viewer-venv/bin/python
+make elm-matched-report PYTHON=work/event-viewer-venv/bin/python
+make response-viewer
+```
+
+These commands respectively run the full workflow, reduce saved responses and
+present them, regenerate presentation alone, and serve the production viewer
+on port 8769. The current run is already complete; its manifest selects the
+existing files. The nonlinear CSA approximation is new development; the saved
+production uses the SPICE/linear response.
+
+## Earlier direct ion and electron readout studies
 
 ```sh
 make grid-readout
@@ -43,7 +64,7 @@ To inspect the saved ion and PE histories event by event, run
 open `http://127.0.0.1:8767/`. The viewer selects one sample and one electron
 gas; event numbers are positions in the file, starting at 1.
 
-## Production ion CSA response
+## Original ion CSA pilot publication workflow
 
 ```sh
 julia --project=. scripts/production/run_ion_csa.jl \
@@ -95,7 +116,8 @@ python scripts/electronics/feedback/run_retention_comparison.py \
 ```
 
 This runs the preserved feedback-length studies in
-`config/retention_scan.toml` and `config/retention_scan_extension.toml`, screens
+`config/studies/electronics/feedback/retention_scan.toml` and
+`config/studies/electronics/feedback/retention_scan_extension.toml`, screens
 all direct-collection pad histories and simulates the candidate/control pads.
 Julia saves calibration, noise, validation and nonlinear statistics as HDF5;
 Python acquires LTspice results and presents the saved numbers.
@@ -109,7 +131,7 @@ python scripts/electronics/feedback/present_retention_scan.py \
   --config config/studies/electronics/feedback/retention_comparison.toml
 ```
 
-Results are in `results/ltspice/retention_{scan,scan_extension,comparison}`;
+Results are in `results/ltspice/design/retention_{scan,scan_extension,comparison}`;
 the combined report is `latex_generated/ion_readout/retention_comparison/report.tex`.
 [Study configuration and validation](../notes/physics/retention_study.md).
 
@@ -117,7 +139,8 @@ the combined report is `latex_generated/ion_readout/retention_comparison/report.
 
 Presentation commands write report source and figures. Compile reports explicitly
 with `make pdf-grid-readout`, `make pdf-electron-diffusion`, or
-`make pdf-mc-selection`. Compile the manuscript with `make note` when requested.
+`make pdf-mc-selection`. `make note` builds the earlier physics draft;
+`make -C manuscripts/itaca3` builds the current EPJC manuscript.
 Review-guide content lives in `docs/event_analysis_review/content/`; the readout
 HTML template is `assets/readout/readout.html`. Included historical pixel batch
 and cache functions live in `src/event_analysis/batch/`.

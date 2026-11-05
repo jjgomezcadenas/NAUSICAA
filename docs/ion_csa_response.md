@@ -1,5 +1,11 @@
 # Ion CSA response and reconstructed matrices
 
+> The pilot paths and completion statements below describe the original CSA
+> workflow. The current completed 8,000-event matched 4 mm production is
+> documented in [elm_matched_production.md](elm_matched_production.md).
+> The proposed fast nonlinear CSA mode is new development; this document's
+> SPICE/linear workflow remains the production reference.
+
 The ion response uses the adopted v3 circuit: nominal 20 s retention, fitted
 19.544 s discharge, 5 ms voltage averages and the three-frame charge
 reconstruction. The matched pilots contain 100 evenly spaced event IDs from

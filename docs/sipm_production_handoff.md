@@ -1,5 +1,12 @@
 # SiPM response: audit and full-production handoff
 
+> Historical handoff for the 2026-10-30 configuration. The production status,
+> geometry, sensor settings and runtime limits below describe that task.
+> For the completed matched ELM run and current statistical SiPM response,
+> start with [elm_matched_production.md](elm_matched_production.md),
+> [sipm_statistical_implementation.md](sipm_statistical_implementation.md) and
+> the cards referenced by the matched production manifest.
+
 ## Authorization and task
 
 On 2026-10-30, after reviewing the model, saved-channel policy and pilot

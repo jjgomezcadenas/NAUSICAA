@@ -1,30 +1,32 @@
 # NAUSICAA working conventions
 
-This repository develops a reproducible physical input-current model for a
-positive-ion CMOS detector. Establish the physics before implementing electronics.
+This repository develops reproducible ion and electron readout models for the
+ITACA TPC, including detector transport, optical collection and electronics.
+Establish the physics before implementing electronics.
 
 - Xe2+ means the molecular ion Xe_2^+, with charge +e, not atomic Xe^{2+}.
 - Extend event readout to both carrier populations: a single-electron or
   double-electron ionisation track produces a trail of electrons and positive
   ions. Work to 2026-10-28 simulated the positive ions; electron drift to the
-  anode is now part of the simulation scope. Trace Petit's electron diffusion
-  laws and pure-Xe/Xe–He coefficient choices before implementation; preserve
+  anode is now part of the simulation scope. Trace the implemented electron
+  diffusion laws and pure-Xe/Xe–He coefficient choices before implementation; preserve
   carrier and gas-model identity in configurations, caches and outputs.
   Electron readout operates at 15 bar; the Xe–He prescription represents 15% He
-  (user design inputs). Store these in config/electron_transport.toml and derive
-  operating-pressure diffusion coefficients from Petit's pressure scaling.
+  (user design inputs). The production cards under config/specs/ select the
+  operating conditions; config/electron_transport.toml records the earlier
+  transport study. Cite diffusion formulas to papers or local derivations.
 - Sample one event location along the 1.5 m TPC: ion and electron drift
   lengths are complementary, L and L_max-L. Sample each diffused carrier
   directly into its physical grid cell and longitudinal bucket; save sparse
-  readout histories, seeds and provenance. The electron EL grid has 5 mm
-  diameter holes, 10 mm pitch and 5 mm depth, with E/P = 3 kV/cm/bar.
-  Store entry/exit electrode potentials in TOML.
+  readout histories, seeds and provenance. Geometry, chamber length, lifetime,
+  fields and time buckets are configurable. The current matched ELM production
+  is specified below; earlier 10 mm electron pitch and E/P = 3 cards remain
+  historical configurations. Store entry/exit electrode potentials in TOML.
   Route electrons geometrically to holes. Compute direct VUV collection
   acceptance analytically for the assumed electron path and sample that
   fraction. Save photons reaching each SiPM per time bucket. Apply SiPM PDE and
-  electronics in a separate response stage. Use 1 microsecond per mm and an
-  initial 2 mm bucket (2 microseconds at this
-  speed). SiPM PDE is TOML-configurable, initially 0.30 (user input).
+  electronics in a separate response stage. At 1 microsecond per mm the current
+  0.25 mm electron bucket is 250 ns. SiPM PDE is TOML-configurable.
   These are user design inputs;
   record the adopted gas-dependent EL yield and optical boundary conditions.
 - For EL variance, use the user's corrected approximate readings of Oliveira
@@ -142,6 +144,46 @@ positive-ion CMOS detector. Establish the physics before implementing electronic
   work. Check each file's size; ask before committing a paper larger than 20 MB
   rather than silently omitting it.
 - Do not change the existing remote or publish/push without a user request.
+
+## Current production and active development (2026-11-05)
+
+- Read docs/elm_matched_production.md and its linked cards/manifests for the
+  completed 8,000-event bb0nu production: ions at 4 mm pitch / 40 ms, Xe–15% He
+  photons at 4 mm pitch / 250 ns. One shared realization places ion drift
+  uniformly in 5–145 cm of the 150 cm chamber, with complementary electron
+  drift. Shared primary-pair counts and checksums are preserved across arms.
+  Electron attachment uses the configured lifetime (currently 15 ms); ions
+  receive no electron-attachment loss. These are configurable design inputs.
+- The current ELM has 2.5 mm diameter holes/guides, 5 mm EL depth, E/P = 2
+  kV/cm/bar at 15 bar, and 0.5 mm radial xenon gaps around the guides. The
+  optical model includes analytical hole acceptance, TPB conversion 0.65,
+  forward fraction 0.5 and the documented meridional guide capture. See
+  docs/elm.tex and config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml.
+  Photons saved at the SiPM are blue after TPB in this configuration; preserve
+  the photon-band metadata. The SiPM uses the statistical recovery model,
+  with PDE 0.32 and provisional 12.5 ns recovery in the current setup.
+- The current matched run is bb0nu / Xe–He only. Earlier pure-Xe, electron
+  background, 2/3 mm and other optical configurations remain separate runs.
+  Historical handoff instructions describe their original tasks; consult the
+  current manifest before selecting a production input or claiming completion.
+- The CSA nonlinear development keeps the existing 0.63 V guard and 0.5 ENC
+  validation target. Full SPICE is selected when the predicted minimum output
+  voltage falls BELOW the guard, plus controls. The proposed selectable fast
+  nonlinear response is under development, not an existing validated mode.
+  Calibrate against saved SPICE histories, split calibration/validation by
+  event, and validate the final corrected bucket estimates and event totals.
+- Production-viewer geometry uses source x/y/z in mm, inverting the saved
+  electron bucket direction. Both arms start with shared ranges 25% larger
+  than their combined occupied extent; zoom and rotation remain independent.
+- Canonical LTspice locations, local simulator configuration and historical
+  path resolution are documented in docs/ltspice_setup.md. Generated HDF5,
+  PWL and compressed waveform CSV files under results/ltspice/ remain local
+  and untracked. Logs and build auxiliaries are excluded. Portable release
+  inputs under LTSpice/releases/ remain tracked. Do not delete local numerical
+  histories when applying Git exclusions; they are calibration evidence.
+- The current publication manuscript is manuscripts/itaca3/itaca3.tex (EPJC).
+  The user also maintains the earlier notes/physics/nausica.tex draft. Preserve
+  author edits and distinguish paper text from generated numerical reports.
 
 ## Related ITACA sources
 

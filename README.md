@@ -1,25 +1,33 @@
-# NAUSICAA: ion signal physics
+# NAUSICAA / ITACA: detector and electronics simulation
 
 LTspice installation and scientific files: [setup and layout](docs/ltspice_setup.md).
 
 Generated notes: [browse the catalogue](latex_generated/index.html).
 Directory layout and regeneration: [generated reports](docs/generated_reports.md).
 
-Reproducible calculations and a LaTeX note for positive molecular Xe2+ ions
-collected by a focused CMOS pad plane. Each ion carries **+e**.
+The current workflow simulates shared ion/electron production, diffusion,
+ion-pad and photon-SiPM collection, CSA response and statistical SiPM/electronics
+response. The completed matched run contains 8,000 bb0nu events with 4 mm ion
+and EL pitch, 40 ms ion frames and 250 ns electron buckets, for Xe–15% He.
+See [matched production](docs/elm_matched_production.md) for its cards,
+manifests and commands. Run `make response-viewer` for the paired display.
 
-## First milestone
+The publication manuscript is `manuscripts/itaca3/itaca3.tex`; build it with
+`make -C manuscripts/itaca3`. Earlier analytical studies remain available below.
+Positive molecular Xe2+ denotes Xe_2^+; each ion carries **+e**.
 
-The implemented model covers detector geometry and the revised nominal fields,
+## Original analytical benchmark
+
+This benchmark covers detector geometry and its nominal fields,
 constant-mobility transport, thermal diffusion, and an analytical single-ion
-weighting-potential benchmark. It does **not** yet solve the actual IFG field,
-simulate realistic event tracks, or evaluate the feedback transistor.
+weighting potential. Event transport and transistor-level response are separate
+implemented workflows described in the current production documentation.
 
 The revised design uses 200 V/cm in the bulk, 5 kV across a 10 mm IFG, and
 3 kV across the final 5 mm gap. The pads are at 0 V, IC at +3 kV and gate at
 +8 kV. These values supersede the older voltage scheme in the ITACA preprint.
 
-## Reproduce
+## Reproduce the analytical benchmark
 
 Use Python >=3.11 (the tested environment is recorded in results/physics_benchmarks.json):
 
@@ -51,8 +59,8 @@ Generated benchmark outputs are checked in so the note is inspectable without
 first installing Python. Regenerate them after changing any input or equation.
 The note's explanatory prose describes the baseline design; review it alongside
 the generated tables whenever changing that design.
-Build intermediates and scratch files are ignored. No random sampling is used
-in milestone one. Future event simulations must record seeds and data provenance.
+Build intermediates and scratch files are ignored. This analytical benchmark
+uses no random sampling; the event simulations record seeds and data provenance.
 
 ## Julia event-analysis core
 
@@ -70,10 +78,9 @@ position, energy and MC-time vectors in mm, MeV and ns, plus integer identifiers
 subtracts the true vertex and returns independently owned arrays. Each public
 interface has an extensive docstring with an executable example.
 
-Run `make test-event-core` for these tests. The next design review starts with
-the offline [Petit assessment](docs/event_analysis_review/index.html): active
-implementation, existing types/interfaces, and the proposed adaptation. Earlier
-interface pages are retained as superseded pending review.
+Run `make test-event-core` for these tests. The offline
+[Petit assessment](docs/event_analysis_review/index.html) records the design
+review and implementation lineage, including historical interface proposals.
 Run `make event-review` with Python 3.11+ to rebuild the assessment from the
 sibling `../Petit` checkout. Select Python with `PYTHON=/path/to/python3` if
 necessary; the builder also accepts `--petit-root /path/to/Petit`.
@@ -91,23 +98,22 @@ caches in `work/julia-depot` and also consult the user's existing depot.
 The outputs are `events/0nubb_hitdf.h5` and
 `events/electron_0nubb_energy_hitdf.h5`. Each contains column datasets under
 `/hits`: `event_id` (Int64), `particle_id` and `hit_id` (Int32), and `x_mm`,
-`y_mm`, `z_mm`, `energy_MeV` (Float32). Coordinates and deposited energies retain
+`y_mm`, `z_mm`, `energy_MeV`, `time_ns` (Float32). Coordinates and deposited energies retain
 the original mm and MeV units, precision and row order. All particles and hits
 are retained; no topology cuts, ion production or transport are applied.
 The original units and identifier conventions follow the
 [NEXUS output format](https://github.com/next-exp/nexus/wiki/Output-format).
 
 The constant volume label is stored once in `/metadata/label`; nonconstant
-labels cause an error rather than silent information loss. Deposit time is
-omitted, treating the event as instantaneous for later ion transport.
+labels cause an error. Schema v3 preserves the original MC deposit time in ns.
 `/events` stores `event_id`, `first_row` (one-based), `n_hits`, and `energy_MeV`
-(Float64 sum of the original deposits), plus `vertex_x_mm`, `vertex_y_mm`,
+(Float32 source-order sum of the original deposits), plus `vertex_x_mm`, `vertex_y_mm`,
 `vertex_z_mm` (Float32) and `n_primaries`. The vertex is copied from the common
 initial position of primary particles in `/MC/particles`; missing or distinct
-primary vertices are errors. Schema v2 adds these event-level fields without
-changing any hit values. Use `read_event_metadata(path)` to obtain this table.
-Track analysis shifts coordinates to this generation vertex, before any cuts;
-it does not use the unfiltered energy barycenter. Events must occupy contiguous rows;
+primary vertices are errors. Schema v3 also stores actual primary particle IDs
+and their per-event row ranges. Use `read_event_metadata(path)` for the event
+table and `read_primary_ids(file; event_id=...)` on an open HDF5 file for primary IDs. Production
+transport uses the stored source coordinates. Events must occupy contiguous rows;
 nonconsecutive event IDs are supported. `/metadata` records the original file
 name and SHA-256, software/schema versions, reader and manifest hashes, units,
 and the original configuration as ordered key/value columns with repeated
@@ -147,7 +153,7 @@ must scan `/MC/hits`. Missing event IDs raise `KeyError`. Event IDs are local to
 each source: add a source identifier when combining DataFrames from different
 files. Hit IDs are local to a particle and volume, not globally unique.
 
-## Ion-track analysis and generated report
+## Earlier ion-track analysis and generated report
 
 `make ion-tracks PYTHON=/path/to/python3` runs Julia analysis, then Python
 presentation and LaTeX compilation. `make ion-report PYTHON=/path/to/python3`
@@ -155,7 +161,7 @@ regenerates only PNGs, tables, macros and the report PDF from saved results.
 Python needs the pinned `requirements.txt`; Julia uses `Project.toml` and
 `Manifest.toml`. Run `make test-events test-ion-analysis` for the Julia checks.
 
-Inputs are the v2 hit tables above. `config/ion_tracks.toml` specifies the
+This study reads reduced hit tables. `config/ion_tracks.toml` specifies the
 samples, a nominal mean pair-production energy of 21.9 eV, a vertex-relative
 XY cut of +/-150 mm, a 20 ms frame, and the grid margin. Pitch and drift speed
 come from `config/detector.toml`. The initial analysis computes continuous ion
@@ -193,6 +199,9 @@ files stay in `work/ion_tracks_latex`.
 
 ## Paired production viewer
 
+The independent repository-review assignment and current development boundary
+are documented in [the review handoff](docs/reviews/independent_repository_review_handoff.md).
+
 The paired production viewer is launched with `make response-viewer` and opens
 at `http://127.0.0.1:8769/`. Its default card is
 `config/specs/runs/elm_matched_response_viewer.toml`, written after the matched
@@ -219,8 +228,8 @@ The square-pad benchmark assumes a 0.5 mm square surrounded by an infinite
 grounded conductor, a central normal trajectory and uniform local speed.
 It is an analytical reference, not a prediction of the full perforated IFG.
 The finite final-gap charge is kept as q Delta(phi_w); it is not silently
-normalized to e. Full-geometry fields, measured transport and event samples
-are the next steps before realistic packet distributions and electronics.
+normalized to e. The production CSA uses this documented weighting approximation
+with simulated event histories and the calibrated transistor response.
 
 ## Analytical front-end model
 

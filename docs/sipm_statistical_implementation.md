@@ -9,7 +9,7 @@ implementation”. The generated model PDF is
 ## Interface and state
 
 ```julia
-StatisticalOptions(substeps=128, sparse_trigger_limit=16)
+StatisticalOptions(128, 16)  # substeps, sparse_trigger_limit
 simulate_channel_statistical(rng, incident_photons, bucket_width_s, sensor;
                             options=StatisticalOptions())
 ```
@@ -36,11 +36,30 @@ uses a bounded approximation to the squared-charge sum; production saves their
 sum. Numerical diagnostics count state repairs, charge-variance limiting and
 optical/dark-label variance limiting separately.
 
-The existing assumptions are uniform microcell illumination, constant PDE,
+The existing assumptions are uniform illumination within the selected cell population, constant PDE,
 exponential recharge, uniform arrivals within each input bucket and reset after
 an avalanche. Crosstalk, afterpulsing and gain spread retain their card settings.
 The TOML card `config/specs/response/sipm/sipm_statistical_v1.toml` selects this
 model. Cards without `response_model` retain the microscopic implementation.
+
+## Current matched ELM application
+
+The completed 8,000-event bb0nu / Xe–He run is documented in
+[elm_matched_production.md](elm_matched_production.md). It selects
+`config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml`: 250 ns
+buckets, PDE 0.32, 39,984 physical microcells, 21,808 illuminated microcells,
+12.5 ns provisional recovery and 700 kcps full-device dark rate.
+
+`simulate_channel_illuminated(rng, incident, dt, sensor, illuminated_cells;
+options=StatisticalOptions())` invokes the statistical model separately for
+illuminated and unilluminated cells. Optical photons enter the illuminated
+population; dark rate is apportioned by cell count across both populations.
+Independent random substreams propagate their recovery, and the returned
+charge includes both populations. The detected-PE array counts optical triggers;
+`expected_distinct_optical_cells` is a separate occupancy diagnostic.
+
+The validation and pilot commands below reproduce the earlier named studies.
+Their E/P and sensor cards are distinct from the current matched ELM run.
 
 ## Validation and reproducible commands
 
