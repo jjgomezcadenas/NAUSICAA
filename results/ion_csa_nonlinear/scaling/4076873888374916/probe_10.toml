@@ -1,0 +1,8 @@
+selection = "evenly_spaced_sorted_event_ids"
+ion_index = "results/elm_matched_production/detector_index.h5"
+samples = ["bb0nu"]
+pitches_mm = [4]
+response_card = "results/ion_csa_nonlinear/scaling/4076873888374916/resolved_10.toml"
+results_directory = "results/ion_csa_nonlinear/scaling/4076873888374916/probe"
+schema = "nausicaa.ion_csa_run.v1"
+events_per_sample = 10

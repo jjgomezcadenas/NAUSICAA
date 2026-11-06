@@ -47,7 +47,7 @@ function main()
                 event_mean_reconstructed=mean(r[pos]),event_max_reconstructed=maximum(r[pos]),
                 event_mean_snr=mean(snr),total_noiseless=totalq,total_reconstructed=totalr,
                 noiseless_ratio=totalq/initial,reconstructed_ratio=totalr/initial,
-                compressed50=any(flags.>=3),spice_pixels=count(>(0),event.model_used),
+                compressed50=any(flags.>=3),spice_pixels=count(==(1),event.model_used),
                 negative_input_cells=count(<(0),r[pos]))
             for (k,v) in pairs(values);push!(get!(columns,string(k),Float64[]),Float64(v));end
             if j%1000==0;println("Matched ion analysis $j/$(length(ids))");flush(stdout);end

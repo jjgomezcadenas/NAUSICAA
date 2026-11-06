@@ -2,6 +2,10 @@
 module IonCSAProduction
 using HDF5, TOML, SHA, LinearAlgebra
 include("../../scripts/production/specs.jl")
+include("ion_csa_nonlinear_io.jl")
+const NL=IonCSANonlinearIO
+include("ion_csa_response.jl")
+const R=IonCSAResponse
 const S = ProductionSpecs
 export ReconstructedIonEvent, read_event, read_covariance, validate_response, settings, run
 const CHANNEL_POLICY = "pixels_with_positive_input_charge"
@@ -123,7 +127,7 @@ function read_event(h::HDF5.File,id::Integer)
     require(maximum(abs.(Float64.(r).-Float64.(q).-Float64.(z))./sigma)<0.001,
             "Reconstruction is inconsistent with mean plus noise")
     model=Int8.(read(g["model_used"]));seed=UInt64.(read(g["noise_seed"]))
-    require(length(model)==np && all(x->x in (0,1),model) && length(seed)==np,"Pad model/seed dimensions")
+    require(length(model)==np && all(x->x in (0,1,2),model) && length(seed)==np,"Pad model/seed dimensions")
     reference=Float32.(read(g["reference_mm"]));phase=Float32.(read(g["phase_mm"]))
     width=Float32(read(g["bucket_width_mm"]));direction=Int8(read(g["drift_direction"]))
     require(length(reference)==3 && length(phase)==2 && all(isfinite,reference) && all(isfinite,phase) && width>0 && direction==1,
@@ -215,6 +219,14 @@ function settings(root::AbstractString,card::AbstractString)
     require(r["selection"]=="evenly_spaced_sorted_event_ids" && r["events_per_sample"]>0,"Event selection mismatch")
     require(!isempty(r["samples"]) && allunique(r["samples"]) && all(x->x in ("bb0nu","single_electrons"),r["samples"]),"Sample selection mismatch")
     branches=r["branches"];pitches=[b["pitch_mm"] for b in branches]
+    # Historical saved-study registration preserves its original response card.
+    default_mode=all(b->haskey(b,"corrected_study"),branches) ? "hybrid_spice" : "hybrid_nonlinear"
+    if !all(b->haskey(b,"corrected_study"),branches) || haskey(r,"mode")
+        c["mode"]=get(r,"mode","production")
+    end
+    haskey(r,"response_model") && (c["response_model"]=r["response_model"])
+    haskey(r,"nonlinear_calibration") && (c["nonlinear_calibration"]=r["nonlinear_calibration"])
+    c=NL.resolve_card(root,c;default_mode)
     require(!isempty(pitches) && allunique(pitches) && all(x->x in (2,3,4),pitches),"Select unique available pitches")
     require(isfile(resolve(root,r["ion_index"])),"Ion index is absent")
     files=[@__FILE__,joinpath(root,"Manifest.toml")]
@@ -223,6 +235,8 @@ function settings(root::AbstractString,card::AbstractString)
         "scripts/production/run_ion_csa_pilot.py","scripts/production/ion_csa_pilot.jl",
         "scripts/production/run_ion_csa_correction.py","scripts/production/ion_csa_correction.jl",
         "src/ion_signal/ion_csa_response.jl","src/ion_signal/ion_csa_correction.jl",
+        "src/ion_signal/ion_csa_nonlinear.jl","src/ion_signal/ion_csa_nonlinear_io.jl",
+        "src/ion_signal/ion_csa_nonlinear_cases.jl",
         "src/ion_signal/ion_csa_summary.jl","src/ion_signal/pad_history_readout.jl",
         "src/ion_signal/bucket_study.jl","src/ion_signal/averaging_scan.jl",
         "src/ion_signal/discharge_calibration.jl","src/ion_signal/bucket_noise_covariance.jl",
@@ -263,22 +277,61 @@ end
 """Run one selected geometry using the existing LTspice acquisition and Julia reconstruction stages."""
 function simulate_branch(s,b;python,simulator=nothing,workers=4)
     pitch=b["pitch_mm"];base=joinpath(s.dir,"execution","pitch$pitch");mkpath(base)
-    raw=Dict("schema"=>"nausicaa.ion_csa_run.v1","response_card"=>s.r["response_card"],"ion_index"=>s.r["ion_index"],
+    timing=Dict{String,Any}("mode"=>get(s.c,"mode","validation"));started=time_ns()
+    function timed(f,name)
+        t=time_ns();value=f();timing[name]=(time_ns()-t)/1e9;value
+    end
+    resolvedcard=write_toml(joinpath(base,"resolved_response.toml"),s.c)
+    raw=Dict("schema"=>"nausicaa.ion_csa_run.v1","response_card"=>relpath(resolvedcard,s.root),"ion_index"=>s.r["ion_index"],
         "samples"=>s.r["samples"],"pitches_mm"=>[pitch],"events_per_sample"=>s.r["events_per_sample"],"selection"=>s.r["selection"],
         "results_directory"=>relpath(joinpath(base,"filtered"),s.root),"report_directory"=>relpath(joinpath(base,"filtered_report"),s.root))
     rawcard=write_toml(joinpath(base,"filtered_run.toml"),raw)
     args=[python,joinpath(s.root,"scripts/production/run_ion_csa_pilot.py"),"--config",rawcard,"--workers",string(workers)]
     simulator===nothing || append!(args,["--simulator",simulator])
-    Base.run(Cmd(Cmd(args);dir=s.root))
+    production=get(s.c,"mode","validation")=="production"
+    if production
+        filtered=timed("prepare_s") do;R.prepare(s.root,rawcard);end
+        timed("nonlinear_s") do;R.nonlinear_cases(s.root,rawcard,filtered);end
+        joblist=TOML.parsefile(joinpath(filtered,"jobs.toml"))["jobs"]
+        fallback=count(j->!isfile(joinpath(j["folder"],"response.h5")),joblist)
+        timing["spice_fallback_histories"]=fallback
+        timing["candidate_histories"]=length(joblist)
+        if fallback>0
+            append!(args,["--prepared",filtered])
+            timed("fallback_workflow_s") do;Base.run(Cmd(Cmd(args);dir=s.root));end
+        else
+            timed("response_noise_summary_s") do
+                R.assess(s.root,rawcard,filtered);R.validate_cases(s.root,rawcard,filtered)
+                R.finish(s.root,rawcard,filtered);R.NC.IonCSASummary.run(R,s.root,rawcard,filtered)
+            end
+        end
+    else
+        timed("validation_workflow_s") do;Base.run(Cmd(Cmd(args);dir=s.root));end
+    end
     choices=filter(p->isfile(joinpath(p,"summary.h5")),readdir(joinpath(base,"filtered");join=true))
     require(length(choices)==1,"Expected one completed filtered study")
     reconstruction=Dict("schema"=>"nausicaa.ion_csa_reconstruction_run.v1","parent_study"=>relpath(only(choices),s.root),
         "reconstruction_card"=>s.r["reconstruction_card"],"results_directory"=>relpath(joinpath(base,"corrected"),s.root),
         "report_directory"=>relpath(joinpath(base,"corrected_report"),s.root))
     rcard=write_toml(joinpath(base,"reconstruction_run.toml"),reconstruction)
-    Base.run(Cmd(Cmd([python,joinpath(s.root,"scripts/production/run_ion_csa_correction.py"),"--config",rcard]);dir=s.root))
+    if production
+        timed("correction_summary_s") do;R.NC.correct(R.NC.setup(s.root,rcard));end
+    else
+        timed("correction_presentation_s") do
+            Base.run(Cmd(Cmd([python,joinpath(s.root,"scripts/production/run_ion_csa_correction.py"),"--config",rcard]);dir=s.root))
+        end
+    end
     choices=filter(p->isfile(joinpath(p,"summary.h5")),readdir(joinpath(base,"corrected");join=true))
     require(length(choices)==1,"Expected one completed corrected study")
+    if production
+        timing["numerical_s"]=(time_ns()-started)/1e9
+        write_toml(joinpath(base,"timing.toml"),timing)
+        timed("presentation_s") do
+            Base.run(Cmd(Cmd([python,joinpath(s.root,"scripts/production/present_ion_csa_pilot.py"),"--results",only(choices)]);dir=s.root))
+        end
+    end
+    timing["branch_total_s"]=(time_ns()-started)/1e9
+    write_toml(joinpath(base,"timing.toml"),timing)
     only(choices)
 end
 

@@ -10,6 +10,15 @@ from ion_signal.spice_runtime import resolve_simulator, simulator_identity
 LOADED_SHA=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
+def nonlinear_case(job):
+ """Identify an accepted calibrated response; controls retain their SPICE response."""
+ path=Path(job['folder'])/'response.h5'
+ if not path.exists():return False
+ with h5py.File(path) as h:
+  value=h.attrs.get('response_model')
+  if isinstance(value,bytes):value=value.decode('utf-8')
+  return value=='calibrated_nonlinear'
+
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('--config',type=Path,default=ROOT/'config/specs/runs/ion_csa_v3_pilot.toml')
@@ -45,6 +54,7 @@ def main():
  model_sha=sha(model);simulator_sha=sha(a.simulator)
  body='\n'.join(x for x in source.read_text().splitlines() if not x.lower().startswith(('is1 ','.tran','.save','.end')))+'\n'
  def transient(job,refined=False,*,step_override=None,force=False):
+  if nonlinear_case(job):return False
   folder=Path(job['folder']);suffix='refined' if refined else 'history';target=folder/('refined_raw.h5' if refined else 'raw.h5')
   if target.exists() and not force:return False
   if target.exists() and force:
@@ -97,7 +107,13 @@ def main():
     (directory/'acquisition_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
  if not a.present_only:
   for iteration in range(8):
+   julia('nonlinear',directory)
    jobs=tomllib.loads((directory/'jobs.toml').read_text())['jobs'];new=0
+   nonlinear_summary=directory/'nonlinear_summary.toml'
+   if nonlinear_summary.exists():
+    expected=tomllib.loads(nonlinear_summary.read_text())['nonlinear_histories']
+    if sum(nonlinear_case(j) for j in jobs)!=expected:
+     raise RuntimeError('Julia and Python disagree on accepted nonlinear histories')
    print('Acquiring',len(jobs),'candidate/control histories',flush=True)
    with concurrent.futures.ThreadPoolExecutor(max_workers=a.workers) as pool:
     futures={pool.submit(transient,j):j for j in jobs}
@@ -113,11 +129,12 @@ def main():
   else:raise RuntimeError('Fast-path validation did not converge')
   # Independent solver refinement of controls spread through the selected set.
   jobs=tomllib.loads((directory/'jobs.toml').read_text())['jobs']
-  selected=jobs[::max(1,len(jobs)//12)][:12]
+  spice_jobs=[j for j in jobs if not nonlinear_case(j)]
+  selected=spice_jobs[::max(1,len(spice_jobs)//12)][:12] if c.get('mode','validation')=='validation' else []
   with concurrent.futures.ThreadPoolExecutor(max_workers=a.workers) as pool:list(pool.map(lambda j:transient(j,True),selected))
   reduce_with_resolution('validate')
   julia('finish',directory);julia('summary',directory)
-  summary['elapsed_s']=time.monotonic()-started;summary['direct_histories']=len(jobs);summary['refined_histories']=len(selected)
+  summary['elapsed_s']=time.monotonic()-started;summary['direct_histories']=len(spice_jobs);summary['nonlinear_histories']=len(jobs)-len(spice_jobs);summary['refined_histories']=len(selected)
   (directory/'acquisition_summary.json').write_text(json.dumps(summary,indent=2)+'\n')
  subprocess.run([sys.executable,str(ROOT/'scripts/production/present_ion_csa_pilot.py'),'--results',str(directory)],cwd=ROOT,env=env,check=True)
  print('Study:',directory,flush=True)

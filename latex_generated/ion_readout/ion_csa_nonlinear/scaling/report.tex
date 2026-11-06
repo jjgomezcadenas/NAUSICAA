@@ -1,0 +1,17 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=23mm]{geometry}
+\usepackage{booktabs,hyperref}
+\title{ITACA CSA: per-event production scaling}
+\author{Generated from saved timing measurements}\date{2026-11-06}
+\begin{document}\maketitle
+Fresh outputs, after a 10-event warm-up: 7.891 s for 100 events and 18.701 s for 300 events. The incremental cost is 0.0541 s/event. The projected event-processing cost for 8,000 events is 434.9 s (7.25 min), excluding one-time calibration, process loading and presentation. The previous linear/SPICE 8,000-event job took 1733.8 s (28.90 min), or 0.2167 s/event including its fixed overhead.
+\begin{center}\begin{tabular}{rrrrr}\toprule
+Events & Processing (s) & Calibration (s) & Nonlinear pads & SPICE\\\midrule
+100 & 7.891 & 5.209 & 342 & 0 \\
+300 & 18.701 & 10.448 & 1125 & 0 \\
+\bottomrule\end{tabular}\end{center}
+The benchmark uses bb0nu at 4 mm / 40 ms. Each run uses a recorded fresh noise seed to force a fresh response identity; absence of filtered response files is asserted before running. Source ion histories and all physical/electronics parameters are unchanged. Both measured runs use the same warmed Julia process. Covariance calibration is computed and timed separately before event processing; presentation is timed and subtracted. Processing includes linear screening, nonlinear evaluation, noise generation, reconstruction, summaries, output writing, publication and consistency checks. The two-point slope removes remaining fixed processing overhead. No SPICE controls or fallbacks were needed. The 8,000-event value is an extrapolation, subject to event-complexity and disk-throughput variation.
+
+The fitted residual fixed cost is 2.485 s. The earlier 28.46 s pilot reused a filtered response and is excluded from this scaling analysis.
+
+Reproduce with \texttt{scripts/production/benchmark\_ion\_csa\_scaling.jl}; the selected timing artifact is recorded in \path{results/ion_csa_nonlinear/scaling/latest.toml}.\end{document}

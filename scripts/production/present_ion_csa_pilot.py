@@ -16,6 +16,7 @@ from plotly.offline import get_plotlyjs
 def plain(x):
  if isinstance(x,bytes):return x.decode()
  if isinstance(x,np.ndarray):return [plain(v) for v in x]
+ if isinstance(x,(float,np.floating)) and not np.isfinite(x):return None
  return x.item() if isinstance(x,np.generic) else x
 
 def tree(g):
@@ -89,7 +90,7 @@ def main():
  (directory/'outputs.json').write_text(json.dumps({'study_id':config['study_id'],'schema':'nausicaa.ion_csa_response.pilot.v2' if corrected else 'nausicaa.ion_csa_response.pilot.v1','matrix_axes_hdf5':['pad','frame'],'matrix_axes_julia':['frame','pad'],'responses':outputs},indent=2)+'\n')
  table='\n'.join(f"{labels[r[0]]} & {r[1]} & {r[5]:.2f} & {r[6]:.3f} & {r[7]:.3f} & {r[9]:.2f} & {r[10]:.3f} & {r[11]:+.3f} "+r'\\' for r in rows)
  caltable='\n'.join(f"{key[:-2]} & {c['meta']['tau_s']:.4f} & {1e6*c['meta']['gain_V_per_ion']:.3f} & {c['meta']['ENC_e_rms']:.2f} & {c['covariance_e2'][1]/c['covariance_e2'][0]:.4f} "+r'\\' for key,c in sorted(calibration.items()))
- v=validation['meta'];maxref=max(validation['refinement_error_ENC'])
+ v=validation['meta'];maxref=max(validation['refinement_error_ENC'],default=float('nan'))
  predicted_bias=100*calibration[frame_key]['meta']['predicted_linear_total_bias_fraction']
  tex=r'''\documentclass[10pt,a4paper]{article}
 \usepackage[margin=18mm]{geometry}
@@ -181,7 +182,8 @@ work/event-viewer-venv/bin/python scripts/production/present_ion_csa_pilot.py \
 \end{document}
 '''
  tex=tex.replace('@PITCH@',f'{pitch_mm:g}').replace('@FRAME@',str(frame_ms)).replace('@EVENT_COUNT@',f'{event_count:,}')
- tex=tex.replace('@BIAS@',f'{predicted_bias:.3f}').replace('@GUARD@',f"{v['guard_V']:.2f}").replace('@CONTROL@',f"{v['maximum_remaining_control_error_ENC']:.4g}").replace('@REFINE@',f'{maxref:.4g}')
+ control=v['maximum_remaining_control_error_ENC']
+ tex=tex.replace('@BIAS@',f'{predicted_bias:.3f}').replace('@GUARD@',f"{v['guard_V']:.2f}").replace('@CONTROL@','not repeated' if control is None else f'{control:.4g}').replace('@REFINE@',f'{maxref:.4g}')
  if corrected:
   start=tex.index("The isolated-packet")
   stop=tex.index("\n\n\\begin{figure}",start)
@@ -202,6 +204,11 @@ work/event-viewer-venv/bin/python scripts/production/present_ion_csa_pilot.py \
     f"require about {performance['estimated_acquisition_s_for_pilot_selected_histories']:.0f} s of acquisition. "
     "Current generation, reduction, noise sampling and presentation have separate timings.\n\n")
   tex=tex.replace('From the repository root:',benchmark+'From the repository root:')
+ if v.get('mode')=='production':
+  start=tex.index('The inherited fast response' if corrected else 'The fast response is checked')
+  stop=tex.index('Independent checks cover',start)
+  tex=tex[:start]+('Production mode uses the saved, hash-checked nonlinear calibration and voltage guard. '
+    'SPICE is used for histories outside the calibrated domain. No new SPICE control or solver-refinement histories are generated. ')+tex[stop:]
  (out/'report.tex').write_text(tex.replace('0.1 ENC',tolerance_label).replace('Saved pilot quality','Saved study quality').replace('requested pilot ledgers','requested event ledgers'))
  (out/'sources.json').write_text(json.dumps({'summary':str((directory/'summary.h5').relative_to(ROOT)),'summary_sha256':hashlib.sha256((directory/'summary.h5').read_bytes()).hexdigest(),'presenter_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest()},indent=2)+'\n')
  print(directory/'ion_csa.html');print(out/'report.tex')

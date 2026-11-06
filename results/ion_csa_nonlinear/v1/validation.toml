@@ -1,0 +1,10 @@
+valid_histories = 9390
+passed = true
+fallback_histories = 1
+validation_histories = 9391
+maximum_event_charge_difference_ions = 3.82938091474149
+maximum_refinement_ENC = 3.501222265185617e-5
+median_model_seconds = 0.0020509165
+model_sha256 = "d7a017c205a90f0aa850b32dba5ce79bf5b8f89c61a1094c9cfbb91ec74be889"
+maximum_error_ENC = 0.009032732066773672
+median_error_ENC = 0.0008350489405992022

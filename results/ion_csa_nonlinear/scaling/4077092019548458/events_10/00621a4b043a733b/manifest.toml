@@ -1,0 +1,31 @@
+production_code_hash = "629c5d41721c85ce17cecfd90f219bf89cd1a310d45d6dc694c59d79ad8d8f67"
+matrix_axes_hdf5 = "pad,frame"
+graph_id = "9a2944e7d37fb57007e5454c04c25b9b844b89cc3de93b38f8456aeafbefaa5b"
+run_identity = "00621a4b043a733b35f208949499ab3961a5daa7464619fec87c3cc56dbf078d"
+channel_selection = "pixels_with_positive_input_charge"
+run_card_toml = """reconstruction_card = \"config/specs/response/ion_csa/reconstruction_v1.toml\"\nmode = \"production\"\nresponse_model = \"hybrid_nonlinear\"\nresults_directory = \"results/ion_csa_nonlinear/scaling/4077092019548458/events_10\"\nnegative_estimate_clipping = false\nchannel_selection = \"pixels_with_positive_input_charge\"\nion_index = \"results/elm_matched_production/detector_index.h5\"\nmeasured_zero_suppression = false\nabsent_channel_policy = \"no_input_charge_noise_not_simulated\"\nselection = \"evenly_spaced_sorted_event_ids\"\nresponse_card = \"results/ion_csa_nonlinear/scaling/4077092019548458/response_10.toml\"\nschema = \"nausicaa.ion_csa_pipeline_run.v1\"\nevents_per_sample = 10\nsamples = [\"bb0nu\"]\n\n[[branches]]\npitch_mm = 4\n"""
+absent_channel_policy = "no_input_charge_noise_not_simulated"
+run_card = "results/ion_csa_nonlinear/scaling/4077092019548458/run_10.toml"
+matrix_axes_julia = "frame,pad"
+schema = "nausicaa.ion_response_run.v1"
+calibration_sha256 = "5703eaec4005d68067885fd066a2d3a99c32a5ba0ae552826dc9a8fb16043ef3"
+complete = true
+calibration_file = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/csa_v3_response_calibration/analysis.h5"
+
+[[responses]]
+pads = 816
+event_count = 10
+source_sha256 = "eb57ab4d466ffd8bd515c0e21f61719ede2d51112ac0339f1590febb30e29b31"
+path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/b9ee951d11c7ae5b2d3e53ab9a1e1070d3776083fcd06eb63aabb89f617d3b17/ion_response.h5"
+pitch_mm = 4
+input_ion_total = 1122834
+source_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/detector/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/ions.h5"
+parent_corrected_response = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/9c65f661148ec4915d216a780b408aac90ddcd6071a98a5979888eeb2b8f29f8/ion_response.h5"
+pair_identity = "1e7f8ade3be1cc66cd96e5d458f094a1a352fbce7724db706757525e3e59859b"
+frame_s = 0.04
+zero_input_buckets = 81710
+sha256 = "470393162d997e4b148cafd21b2b27a3a862fffefa2076a90bf57a46c613f6d9"
+sample = "bb0nu"
+negative_estimates = 41542
+response_id = "b9ee951d11c7ae5b2d3e53ab9a1e1070d3776083fcd06eb63aabb89f617d3b17"
+selected_event_ids = [0, 889, 1778, 2666, 3555, 4444, 5333, 6221, 7110, 7999]

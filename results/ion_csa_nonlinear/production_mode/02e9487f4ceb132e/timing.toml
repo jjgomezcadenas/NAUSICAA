@@ -1,0 +1,4 @@
+includes = "module loading, calculation, reconstruction, presentation and publication"
+entrypoint_elapsed_s = 28.461709
+filtered_response_reused = true
+timing_correction = "Filtered output reused from preceding attempt; excluded from fresh-output scaling benchmark."

@@ -1,0 +1,18 @@
+schema = "nausicaa.ion_csa_pipeline_run.v1"
+mode = "production"
+response_model = "hybrid_nonlinear"
+response_card = "config/specs/response/ion_csa/csa_0p5_enc_4mm.toml"
+reconstruction_card = "config/specs/response/ion_csa/reconstruction_v1.toml"
+ion_index = "results/ion_csa_nonlinear/matched_pitch3/detector_index.h5"
+samples = ["bb0nu"]
+selection = "evenly_spaced_sorted_event_ids"
+channel_selection = "pixels_with_positive_input_charge"
+absent_channel_policy = "no_input_charge_noise_not_simulated"
+measured_zero_suppression = false
+negative_estimate_clipping = false
+events_per_sample = 8000
+results_directory = "results/ion_csa_nonlinear/matched_pitch3/response"
+
+[[branches]]
+pitch_mm = 3
+corrected_study = "results/ion_csa_nonlinear/matched_pitch3/response/08986770dcf3b428/execution/pitch3/corrected/640c204612ab27aa"

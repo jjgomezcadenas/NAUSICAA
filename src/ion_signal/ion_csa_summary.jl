@@ -46,7 +46,10 @@ function run_context(C,s,dir,card)
    C.HDF5.copy_object(h["maximum_error_ENC"],out,"validation/refinement_error_ENC")
   end
   v=TOML.parsefile(joinpath(dir,"fast_path_validation.toml"))
-  for (key,value) in v;attributes(out["validation"])[key]=value;end
+  for (key,value) in v
+   # TOML empty arrays have element type Any; HDF5 requires a concrete type.
+   attributes(out["validation"])[key]=key=="control_errors_ENC" ? Float64.(value) : value
+  end
   names=String[]
   for source in s.sources
    name=source.sample*"_p"*string(source.pitch);push!(names,name);g=create_group(out,name)
@@ -67,7 +70,7 @@ function run_context(C,s,dir,card)
      ni=Int64(read(e["initial_pairs"]));@test sum(n)==ni;ledger+=ni;pos=n.>0
      sigma=haskey(e,"noise_sigma_ions") ? repeat(read(e["noise_sigma_ions"]),1,size(n,2)) : fill(enc,size(n))
      snr=mean[pos]./sigma[pos];append!(expected,snr);append!(truthsnr,n[pos]./sigma[pos]);push!(eventsnr,Statistics.mean(snr))
-     push!(initial,ni);push!(cells,count(pos));push!(padcounts,size(n,2));push!(spicecounts,count(>(0),read(e["model_used"])));push!(negative,count(<(0),noisy))
+     push!(initial,ni);push!(cells,count(pos));push!(padcounts,size(n,2));push!(spicecounts,count(==(1),read(e["model_used"])));push!(negative,count(<(0),noisy))
      push!(linearbias,(sum(linear)-ni)/ni);push!(meanbias,(sum(mean)-ni)/ni);push!(noisybias,(sum(noisy)-ni)/ni)
      deficit=max.(linear.-mean,0.);push!(deficitfraction,sum(deficit[pos])/ni)
      for j in 1:levels

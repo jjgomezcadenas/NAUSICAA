@@ -357,4 +357,45 @@ alongside the existing SPICE reference. Split calibration/validation by event,
 retain state-dependent compression and recovery, and test final corrected
 bucket estimates, event charge and maximum pulses. Preserve noise treatment
 and record model/calibration identity. These are development decisions; the
-nonlinear mode is not yet implemented or validated.
+nonlinear mode was not yet implemented or validated at that decision.
+
+## 2026-11-05: validated nonlinear CSA becomes the production default
+
+The user specified that, after validation, the fast nonlinear model must be
+the default for larger productions. The implementation fits a one-state
+voltage evolution law to saved SPICE histories and validates complete histories
+from disjoint events. The 0.63 V guard and 0.5 ENC corrected-bucket tolerance
+remain unchanged. The 20/30/40 ms validation and 100-event 4 mm production pilot
+passed; numerical results and the compiled report are linked from
+`docs/ion_csa_nonlinear_model.html`.
+
+New production uses `hybrid_nonlinear`. An explicit run-card
+`response_model = "hybrid_spice"` selects the reference method. SPICE controls
+remain in every run, and current/voltage excursions outside the calibration
+domain use SPICE. Calibration content enters the response identity. Historical
+saved-study registration retains its original card and numerical payload.
+The stationary noise model, signed bucket estimates, three-frame correction
+and complete ion ledgers are preserved. Saved per-pad codes identify linear,
+SPICE and calibrated nonlinear responses as 0, 1 and 2 respectively.
+
+## 2026-11-06: separate CSA production from validation
+
+The validated model is reused in normal production. Run cards select
+`mode = "production"` (the default for new runs) or `mode = "validation"`.
+Production creates no SPICE control or solver-refinement histories; SPICE
+serves only histories outside the calibrated domain. Validation repeats the
+control comparisons. Both retain calibration hashes, ion ledgers, covariance,
+noise, reconstruction and storage checks. Numerical production stages share
+one Julia process. The 100-event production card and stage timings are kept
+separate from the earlier control-heavy validation pilot.
+
+### CSA timing correction and scaling benchmark
+
+The reported 28.46 s production execution reused a filtered response, so it
+does not measure fresh event processing. The scaling benchmark asserts that
+filtered outputs are absent, records fresh noise seeds, warms the numerical
+code and measures fresh 100- and 300-event runs in one Julia process.
+Covariance calibration and presentation are timed separately. Its saved
+measurements and extrapolation are selected by
+`results/ion_csa_nonlinear/scaling/latest.toml`; the generated report is
+`latex_generated/ion_readout/ion_csa_nonlinear/scaling/index.html`.

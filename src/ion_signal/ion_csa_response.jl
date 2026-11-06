@@ -8,6 +8,10 @@ const A=D.A
 include("bucket_noise_covariance.jl")
 include("../event_analysis/EventAnalysis.jl")
 include("../../scripts/production/specs.jl")
+include("ion_csa_nonlinear_io.jl")
+include("ion_csa_correction.jl")
+const NL=IonCSANonlinearIO
+const NC=IonCSACorrection
 const EA=EventAnalysis
 const S=ProductionSpecs
 sha(path)=open(io->bytes2hex(sha256(io)),path)
@@ -60,7 +64,7 @@ end
 function settings(root,runpath)
  runfile=joinpath(root,runpath);run=TOML.parsefile(runfile)
  get(run,"schema","")=="nausicaa.ion_csa_run.v1" || error("Ion CSA run schema")
- cp=joinpath(root,run["response_card"]);c=TOML.parsefile(cp)
+ cp=joinpath(root,run["response_card"]);c=NL.resolve_card(root,TOML.parsefile(cp))
  get(c,"schema","")=="nausicaa.ion_csa_spec.v1" || error("Ion CSA card schema")
  c["input_timing"]=="uniform_mean_arrivals_with_finite_gap_current" || error("Unknown arrival model")
  c["channel_noise"]=="independent_pads" || error("Unknown pad covariance model")
@@ -72,6 +76,7 @@ function settings(root,runpath)
  all(p->p in (2,3,4),run["pitches_mm"]) && run["events_per_sample"]>0 || error("Pilot grid/event count")
  caldir=joinpath(root,c["calibration_directory"]);calfile=joinpath(caldir,"analysis.h5")
  files=[@__FILE__,joinpath(@__DIR__,"pad_history_readout.jl"),joinpath(@__DIR__,"bucket_study.jl"),joinpath(@__DIR__,"averaging_scan.jl"),joinpath(@__DIR__,"discharge_calibration.jl"),joinpath(@__DIR__,"bucket_noise_covariance.jl"),joinpath(root,"src/event_analysis/production_readout.jl"),joinpath(root,"scripts/production/specs.jl"),joinpath(root,"scripts/production/run_ion_csa_pilot.py"),joinpath(root,"scripts/production/ion_csa_pilot.jl"),joinpath(@__DIR__,"spice_acquisition.py"),joinpath(@__DIR__,"spice.py")]
+ append!(files,[joinpath(@__DIR__,f) for f in ("ion_csa_nonlinear.jl","ion_csa_nonlinear_io.jl","ion_csa_nonlinear_cases.jl","ion_csa_correction.jl")])
  codehash=bytes2hex(sha256(join(sha.(files),"|")))
  modelid=bytes2hex(sha256(join((S.canonical(c),sha(calfile),codehash),"|")))
  sources=NamedTuple[]
@@ -206,6 +211,7 @@ function prepare(root,runpath)
   end
   controls=fill(false,length(names));edges=s.c["control_voltage_edges_V"]
   for name in unique(names),j in 1:length(edges)-1
+   get(s.c,"mode","validation")=="production" && continue
    possible=findall((names.==name).&(minimums.>=edges[j]).&(minimums.<edges[j+1]))
    isempty(possible) && continue
    sort!(possible;by=i->minimums[i])
@@ -333,7 +339,10 @@ function assess(root,runpath,dir)
   end
  end
  open(joinpath(dir,"fast_path_validation.toml"),"w") do io
-  TOML.print(io,Dict("guard_V"=>current,"proposed_guard_V"=>guard,"maximum_remaining_control_error_ENC"=>isempty(errors) ? 0. : maximum(errors),"control_errors_ENC"=>errors,"passed"=>guard==current))
+  production=get(s.c,"mode","validation")=="production"
+  TOML.print(io,Dict("guard_V"=>current,"proposed_guard_V"=>guard,"maximum_remaining_control_error_ENC"=>isempty(errors) ? NaN : maximum(errors),"control_errors_ENC"=>errors,"passed"=>guard==current,
+   "mode"=>get(s.c,"mode","validation"),"validation_source"=>production ? "saved_calibration" : "run_controls",
+   "nonlinear_calibration_sha256"=>get(s.c,"nonlinear_calibration_sha256","")))
  end
  if guard>current;jobs(root,runpath,dir;guard);println("EXPANDED ",guard);else;println("VALIDATED ",guard);end
 end
@@ -362,7 +371,7 @@ function finish(root,runpath,dir)
     continue
    end
    factor_cache=Dict{Int,Any}();key="$(round(Int,1000source.frame))ms";ca=attrs(calibration[key]);cv=read(calibration[key*"/covariance_e2"])
-   count_ledger=Int64(0);maximum_storage_error=0.;spicepads=0;allpads=0;negative=0
+   count_ledger=Int64(0);maximum_storage_error=0.;spicepads=0;nonlinearpads=0;allpads=0;negative=0
    started=time_ns()
    h5open(source.path,"r") do upstream
    h5open(output*".tmp","w") do out
@@ -370,6 +379,13 @@ function finish(root,runpath,dir)
     m=create_group(out,"metadata");m["complete"]=false;m["source_path"]=source.path;m["source_sha256"]=source.sourcehash
     m["source_event_count"]=source.source_events;m["selected_event_ids"]=source.selected;m["event_count"]=length(source.selected)
     m["sample"]=source.sample;m["model_id"]=s.modelid;m["response_id"]=source.nodeid;m["study_id"]=s.studyid;m["code_hash"]=s.codehash
+    m["response_model"]=get(s.c,"response_model","hybrid_spice")
+    m["mode"]=get(s.c,"mode","validation")
+    m["model_used_codes"]="0=linear,1=SPICE,2=calibrated_nonlinear"
+    if haskey(s.c,"nonlinear_calibration_sha256")
+     m["nonlinear_calibration_sha256"]=s.c["nonlinear_calibration_sha256"]
+     m["nonlinear_calibration"]=s.c["nonlinear_calibration"]
+    end
     m["response_card_toml"]=read(s.cp,String);m["run_card_toml"]=read(s.runfile,String);m["signal_unit"]="ion_charges";m["time_unit"]="s"
     m["matrix_axes_hdf5"]="pad,frame";m["matrix_axes_julia"]="frame,pad";m["nominal_discharge_time_s"]=s.c["nominal_discharge_time_s"]
     m["frame_s"]=source.frame;m["pitch_mm"]=source.pitch;m["noise_seed"]=s.c["noise_seed"];m["noise_assumption"]="Stationary quiescent-point Gaussian frame noise; independent pads; full saved temporal covariance."
@@ -384,8 +400,9 @@ function finish(root,runpath,dir)
       if isfile(p)
        h5open(p,"r") do h
         mean[:,col]=read(h["estimated_ions"]);voltage[:,col]=read(h["output_at_edges_V"]);average[:,col]=read(h["average_at_edges_V"])
+        model[col]=haskey(attributes(h),"response_model") && read(attributes(h)["response_model"])=="calibrated_nonlinear" ? 2 : 1
        end
-       model[col]=1;spicepads+=1
+       spicepads+=model[col]==1;nonlinearpads+=model[col]==2
       end
       # Model identity excludes the pilot event selection, giving stable replay.
       seed=S.event_seed(s.modelid*"|"*source.sourcehash,id,"pad:$((px[col],py[col])):$(s.c["noise_seed"])")
@@ -413,7 +430,7 @@ function finish(root,runpath,dir)
      event["compression_level",compress=6]=flags
      attributes(event)["input_ion_ledger"]=sum(counts);attributes(event)["storage_max_absolute_error"]=maximum_storage_error
     end
-    m["input_ion_total"]=count_ledger;m["pads"]=allpads;m["direct_spice_pads"]=spicepads;m["negative_estimates"]=negative
+    m["input_ion_total"]=count_ledger;m["pads"]=allpads;m["direct_spice_pads"]=spicepads;m["nonlinear_pads"]=nonlinearpads;m["negative_estimates"]=negative
     m["maximum_storage_error"]=maximum_storage_error;m["response_seconds"]=(time_ns()-started)/1e9
     write(m["complete"],true)
    end
@@ -449,11 +466,13 @@ function validate_cases(root,runpath,dir)
   end
  end
  end
- @test !isempty(rows)
+ @test get(s.c,"mode","validation")=="production" || !isempty(rows)
  end
  h5open(joinpath(dir,"solver_validation.h5"),"w") do out
   out["pad_row"]=rows;out["maximum_error_ENC"]=errors;out["charge_error"]=charge
  end
 end
+
+include("ion_csa_nonlinear_cases.jl")
 
 end

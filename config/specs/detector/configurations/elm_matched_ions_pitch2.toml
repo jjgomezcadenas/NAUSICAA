@@ -1,0 +1,4 @@
+schema = "nausicaa.detector_configuration.v1"
+realisation = "config/specs/realisations/elm_matched_full.toml"
+ions = "config/specs/detector/ions/pitch2mm_bucket20ms.toml"
+electrons = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"

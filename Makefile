@@ -340,12 +340,30 @@ test-script-layout:
 
 .PHONY: ion-csa-test ion-csa-pilot csa-design-note
 ion-csa-test:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_nonlinear.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_response.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_correction.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_pipeline.jl
 
 ion-csa-pilot:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_ion_csa.jl config/specs/runs/ion_csa_v3_pilot_all.toml
+
+.PHONY: ion-csa-nonlinear-calibrate ion-csa-nonlinear-pilot ion-csa-nonlinear-report
+ion-csa-nonlinear-calibrate:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/calibrate_ion_csa_nonlinear.jl
+
+ion-csa-nonlinear-pilot:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_ion_csa.jl config/specs/runs/ion_csa_nonlinear_pilot.toml
+	$(MAKE) ion-csa-nonlinear-report
+
+ion-csa-nonlinear-report:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_ion_csa_nonlinear_report.jl
+	$(VIEWER_PYTHON) scripts/production/present_ion_csa_nonlinear.py
+
+.PHONY: ion-csa-nonlinear-production-100
+ion-csa-nonlinear-production-100:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_ion_csa.jl config/specs/runs/ion_csa_nonlinear_production_100.toml
+	$(VIEWER_PYTHON) scripts/production/present_ion_csa_production_timing.py
 
 csa-design-note:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_csa_design.jl

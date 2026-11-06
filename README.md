@@ -12,6 +12,13 @@ and EL pitch, 40 ms ion frames and 250 ns electron buckets, for Xe–15% He.
 See [matched production](docs/elm_matched_production.md) for its cards,
 manifests and commands. Run `make response-viewer` for the paired display.
 
+New CSA production defaults to the validated fast nonlinear response, with
+SPICE only for domain fallback. Run cards select `mode = "production"` or
+`mode = "validation"`; validation repeats SPICE controls. See the [model](docs/ion_csa_nonlinear_model.html)
+and [validation report](latex_generated/ion_readout/ion_csa_nonlinear/index.html).
+`make ion-csa-nonlinear-pilot` runs the 100-event integration case and report;
+set `mode = "validation"` and `response_model = "hybrid_spice"` for the reference mode.
+
 The publication manuscript is `manuscripts/itaca3/itaca3.tex`; build it with
 `make -C manuscripts/itaca3`. Earlier analytical studies remain available below.
 Positive molecular Xe2+ denotes Xe_2^+; each ion carries **+e**.

@@ -1,0 +1,31 @@
+production_code_hash = "629c5d41721c85ce17cecfd90f219bf89cd1a310d45d6dc694c59d79ad8d8f67"
+matrix_axes_hdf5 = "pad,frame"
+graph_id = "725a2e6eab2da29b9a1bdcbb5325f246721a9291fd4967f9f745efc41d3bb006"
+run_identity = "57bc079b8bda681f1a6a28640b1e676eb1727cd11663da140cecb27a90a6c3a3"
+channel_selection = "pixels_with_positive_input_charge"
+run_card_toml = """reconstruction_card = \"config/specs/response/ion_csa/reconstruction_v1.toml\"\nmode = \"production\"\nresponse_model = \"hybrid_nonlinear\"\nresults_directory = \"results/ion_csa_nonlinear/scaling/4076873888374916/events_300\"\nnegative_estimate_clipping = false\nchannel_selection = \"pixels_with_positive_input_charge\"\nion_index = \"results/elm_matched_production/detector_index.h5\"\nmeasured_zero_suppression = false\nabsent_channel_policy = \"no_input_charge_noise_not_simulated\"\nselection = \"evenly_spaced_sorted_event_ids\"\nresponse_card = \"results/ion_csa_nonlinear/scaling/4076873888374916/response_300.toml\"\nschema = \"nausicaa.ion_csa_pipeline_run.v1\"\nevents_per_sample = 300\nsamples = [\"bb0nu\"]\n\n[[branches]]\npitch_mm = 4\n"""
+absent_channel_policy = "no_input_charge_noise_not_simulated"
+run_card = "results/ion_csa_nonlinear/scaling/4076873888374916/run_300.toml"
+matrix_axes_julia = "frame,pad"
+schema = "nausicaa.ion_response_run.v1"
+calibration_sha256 = "5703eaec4005d68067885fd066a2d3a99c32a5ba0ae552826dc9a8fb16043ef3"
+complete = true
+calibration_file = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/csa_v3_response_calibration/analysis.h5"
+
+[[responses]]
+pads = 26453
+event_count = 300
+source_sha256 = "eb57ab4d466ffd8bd515c0e21f61719ede2d51112ac0339f1590febb30e29b31"
+path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/23d17d02ebccf8565da597ff0fbef65d74ba64aa7c2f9529bff169319502cef7/ion_response.h5"
+pitch_mm = 4
+input_ion_total = 33643945
+source_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/detector/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/ions.h5"
+parent_corrected_response = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/e6eef859099ede76b997a3bb73275ab5e334c30ade87c72d1db96e20f1edd1f6/ion_response.h5"
+pair_identity = "afcbd68cf125954aa9de25847f83c80600124c3894b6c7ac64cedcbbe776712b"
+frame_s = 0.04
+zero_input_buckets = 2743490
+sha256 = "60fb5e256d6f580358c2bc296ac2ff8d1c7ed8b3254eea310899a22eebc91773"
+sample = "bb0nu"
+negative_estimates = 1396289
+response_id = "23d17d02ebccf8565da597ff0fbef65d74ba64aa7c2f9529bff169319502cef7"
+selected_event_ids = [0, 27, 54, 80, 107, 134, 161, 187, 214, 241, 268, 294, 321, 348, 375, 401, 428, 455, 482, 508, 535, 562, 589, 615, 642, 669, 696, 722, 749, 776, 803, 829, 856, 883, 910, 936, 963, 990, 1017, 1043, 1070, 1097, 1124, 1150, 1177, 1204, 1231, 1257, 1284, 1311, 1338, 1364, 1391, 1418, 1445, 1471, 1498, 1525, 1552, 1578, 1605, 1632, 1659, 1685, 1712, 1739, 1766, 1792, 1819, 1846, 1873, 1899, 1926, 1953, 1980, 2006, 2033, 2060, 2087, 2113, 2140, 2167, 2194, 2220, 2247, 2274, 2301, 2327, 2354, 2381, 2408, 2434, 2461, 2488, 2515, 2541, 2568, 2595, 2622, 2648, 2675, 2702, 2729, 2756, 2782, 2809, 2836, 2863, 2889, 2916, 2943, 2970, 2996, 3023, 3050, 3077, 3103, 3130, 3157, 3184, 3210, 3237, 3264, 3291, 3317, 3344, 3371, 3398, 3424, 3451, 3478, 3505, 3531, 3558, 3585, 3612, 3638, 3665, 3692, 3719, 3745, 3772, 3799, 3826, 3852, 3879, 3906, 3933, 3959, 3986, 4013, 4040, 4066, 4093, 4120, 4147, 4173, 4200, 4227, 4254, 4280, 4307, 4334, 4361, 4387, 4414, 4441, 4468, 4494, 4521, 4548, 4575, 4601, 4628, 4655, 4682, 4708, 4735, 4762, 4789, 4815, 4842, 4869, 4896, 4922, 4949, 4976, 5003, 5029, 5056, 5083, 5110, 5136, 5163, 5190, 5217, 5243, 5270, 5297, 5324, 5351, 5377, 5404, 5431, 5458, 5484, 5511, 5538, 5565, 5591, 5618, 5645, 5672, 5698, 5725, 5752, 5779, 5805, 5832, 5859, 5886, 5912, 5939, 5966, 5993, 6019, 6046, 6073, 6100, 6126, 6153, 6180, 6207, 6233, 6260, 6287, 6314, 6340, 6367, 6394, 6421, 6447, 6474, 6501, 6528, 6554, 6581, 6608, 6635, 6661, 6688, 6715, 6742, 6768, 6795, 6822, 6849, 6875, 6902, 6929, 6956, 6982, 7009, 7036, 7063, 7089, 7116, 7143, 7170, 7196, 7223, 7250, 7277, 7303, 7330, 7357, 7384, 7410, 7437, 7464, 7491, 7517, 7544, 7571, 7598, 7624, 7651, 7678, 7705, 7731, 7758, 7785, 7812, 7838, 7865, 7892, 7919, 7945, 7972, 7999]

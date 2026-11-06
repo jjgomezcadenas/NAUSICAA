@@ -1,0 +1,15 @@
+\section{Production mode timing}
+This execution reused a filtered-response file. Its elapsed time is not a fresh-output scaling measurement. The separate fresh-output scaling report measures event processing after warm-up and separates covariance calibration and presentation. 
+
+This run processes 100 bb0nu events at 4 mm pitch and 40 ms frames, with 342 nonlinear pad histories, 0 SPICE histories and 11,220,599 input ions. The run card selects \texttt{mode = "production"}.
+The saved calibration is reused. SPICE controls and solver-refinement histories are generated only in validation mode. Charge, noise, reconstruction, provenance and storage checks remain active.
+\begin{center}\small\begin{tabular}{p{11cm}r}\toprule Stage & Seconds\\\midrule
+Input preparation and linear predictions & 10.34 \\
+Nonlinear evaluation and storage & 1.94 \\
+Response, noise and summary & 3.54 \\
+Three-frame correction and summary & 2.38 \\
+Numerical branch total & 18.30 \\
+Presentation & 1.00 \\
+Complete workflow, including module loading and publication & 28.46 \\
+\bottomrule\end{tabular}\end{center}
+The numerical total includes the preceding numerical stages; the complete total also includes module loading, presentation and publication. These are nested timings. The entrypoint timer starts before module loading. The run uses one Julia process for its numerical stages.

@@ -2,6 +2,7 @@ module IonCSACorrection
 using HDF5,LinearAlgebra,Statistics,Random,SHA,TOML,Test
 include("../../scripts/production/specs.jl")
 include("ion_csa_summary.jl")
+include("ion_csa_nonlinear_io.jl")
 const S=ProductionSpecs
 sha(p)=open(io->bytes2hex(sha256(io)),p)
 attrs(g)=Dict(k=>read(attributes(g)[k]) for k in keys(attributes(g)))
@@ -154,6 +155,20 @@ end
 """Re-evaluate saved fast-path and solver controls after the same inverse operation."""
 function validate_controls(s)
  original=TOML.parsefile(joinpath(s.parent,"fast_path_validation.toml"));errors=Float64[];refine_errors=Float64[];rows=Int64[]
+ if get(original,"mode","validation")=="production"
+  card=h5open(h->TOML.parse(String(read(h["response_card_toml"]))),joinpath(s.parent,"plan.h5"),"r")
+  resolved=IonCSANonlinearIO.resolve_card(s.root,card)
+  @assert resolved["mode"]=="production" && original["passed"]
+  @assert original["validation_source"]=="saved_calibration"
+  @assert resolved["nonlinear_calibration_sha256"]==original["nonlinear_calibration_sha256"]
+  @assert original["guard_V"]==resolved["initial_spice_guard_V"]
+  open(joinpath(s.dir,"fast_path_validation.toml"),"w") do io;TOML.print(io,original);end
+  h5open(joinpath(s.dir,"solver_validation.h5"),"w") do h
+   h["pad_row"]=rows;h["maximum_error_ENC"]=refine_errors
+  end
+  println("Production: using validated calibration; no repeated SPICE controls")
+  return
+ end
  tolerance=h5open(joinpath(s.parent,"plan.h5"),"r") do plan
   TOML.parse(String(read(plan["response_card_toml"])))["linear_error_tolerance_ENC"]
  end

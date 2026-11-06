@@ -92,6 +92,13 @@ end
     @test C.read_event(f.parent,5).input_ions[2,1]==2 # owned data
     @test_throws ArgumentError C.read_event(f.parent,99)
     @test C.read_covariance(f.parent,4)==Matrix{Float64}(I,4,4)
+    h5open(f.parent,"r+") do h;write(h["events/5/model_used"],Int8[0,2]);end
+    @test C.read_event(f.parent,5).model_used==Int8[0,2]
+    h5open(f.parent,"r+") do h;write(h["events/5/model_used"],Int8[0,1]);end
+    # Restore the fixture summary hash after checking the extended model codes.
+    h5open(joinpath(f.study,"summary.h5"),"r+") do h
+        HDF5.delete_attribute(h["bb0nu_p3"],"response_sha256");attributes(h["bb0nu_p3"])["response_sha256"]=C.sha(f.parent)
+    end
     @test_throws ArgumentError C.read_covariance(f.parent,3)
     ledger=C.validate_response(f.parent)
     @test ledger.input_ion_total==5 && ledger.event_count==1 && ledger.pads==2

@@ -1,0 +1,19 @@
+schema = "nausicaa.ion_csa_nonlinear_training.v1"
+training_study = "results/elm_matched_production/ion_csa/359613d487dfeee8/execution/pitch4/filtered/5bcfd782ef02bcad"
+validation_studies = [
+  "results/elm_matched_production/ion_csa/359613d487dfeee8/execution/pitch4/filtered/5bcfd782ef02bcad",
+  "results/ion_csa_0p5_enc_production/0127dbf33ad328c8",
+  "results/ion_csa_0p5_enc_production_2mm/da95679c2bfc42f2",
+]
+training_histories = 240
+validation_limit_per_study = 0
+event_split_modulus = 5
+validation_remainder = 0
+knot_spacing_V = 0.01
+maximum_step_s = 0.0001
+ridge = 1e-8
+maximum_error_ENC = 0.5
+maximum_refinement_error_ENC = 0.01
+averaging_s = 0.005
+guard_V = 0.63
+results_directory = "results/ion_csa_nonlinear/v1"

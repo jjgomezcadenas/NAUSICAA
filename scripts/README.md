@@ -42,8 +42,28 @@ make response-viewer
 These commands respectively run the full workflow, reduce saved responses and
 present them, regenerate presentation alone, and serve the production viewer
 on port 8769. The current run is already complete; its manifest selects the
-existing files. The nonlinear CSA approximation is new development; the saved
-production uses the SPICE/linear response.
+existing files. That saved production uses the SPICE/linear response. New runs
+default to `mode = "production"`, using the validated nonlinear CSA with SPICE
+only for domain fallback. `mode = "validation"` repeats SPICE controls and
+solver refinements. In validation mode, `response_model = "hybrid_spice"` selects the
+reference mode. See [interfaces](../docs/ion_csa_nonlinear_model.html) and the
+[validation report](../latex_generated/ion_readout/ion_csa_nonlinear/index.html).
+
+```sh
+make ion-csa-nonlinear-calibrate  # first calibration, using saved SPICE evidence
+make ion-csa-nonlinear-pilot      # 100 events and generated report
+make ion-csa-nonlinear-report     # present saved evidence
+```
+
+Calibration artifacts are immutable; choose a new output directory in a copied
+calibration card when fitting a revised model. The resolved production response
+card records the selected calibration checksum.
+
+The production-mode 100-event card is
+`config/specs/runs/ion_csa_nonlinear_production_100.toml`. Run it with
+`julia --project=. scripts/production/run_ion_csa.jl <card>` using the configured
+Julia depot. Production keeps numerical stages in one Julia process and saves
+per-stage `execution/pitch4/timing.toml` and complete-entrypoint `timing.toml`.
 
 ## Earlier direct ion and electron readout studies
 

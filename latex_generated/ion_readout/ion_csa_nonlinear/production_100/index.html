@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>ITACA CSA production: 100 events</title>
+<style>body{font:17px system-ui;line-height:1.5;max-width:950px;margin:40px auto;padding:0 20px;color:#193c4a}td,th{border:1px solid #cbd8df;padding:9px}table{border-collapse:collapse}img{width:100%}</style>
+<h1>ITACA CSA production: 100 events</h1>
+<p><strong>Timing correction:</strong> This execution reused a filtered-response file. Its elapsed time is not a fresh-output scaling measurement. The separate fresh-output scaling report measures event processing after warm-up and separates covariance calibration and presentation. <a href="../scaling/index.html">Fresh-output scaling report</a>.</p>
+<p><strong>Complete workflow: 28.46 s.</strong> bb0nu, 4 mm pitch, 40 ms frames; mode: production.</p>
+<p>342 nonlinear pad histories, 0 SPICE histories, zero repeated SPICE controls. Charge ledger: 11,220,599 ions. Numerical consistency checks passed.</p>
+<table><tr><th>Stage</th><th>Seconds</th></tr><tr><td>Input preparation and linear predictions</td><td>10.34</td></tr><tr><td>Nonlinear evaluation and storage</td><td>1.94</td></tr><tr><td>Response, noise and summary</td><td>3.54</td></tr><tr><td>Three-frame correction and summary</td><td>2.38</td></tr><tr><td>Numerical branch total</td><td>18.30</td></tr><tr><td>Presentation</td><td>1.00</td></tr><tr><td>Complete workflow, including module loading and publication</td><td>28.46</td></tr></table><p>Numerical and complete totals include the preceding stages. The complete timer starts before module loading and includes reconstruction, presentation and publication. The stages run in one Julia process.</p>
+<p><code>mode = "production"</code> reuses the validated calibration; SPICE serves domain fallback.
+<code>mode = "validation"</code> additionally generates SPICE controls and solver refinements.</p>
+<p>Card: <code>config/specs/runs/ion_csa_nonlinear_production_100.toml</code>.</p>
+<p><a href="report.pdf">PDF report</a> · <a href="response.html">Interactive response diagnostics</a> · <a href="../index.html">Earlier validation report</a></p>
+<img src="diagnostics.png" alt="Production response diagnostics"></html>

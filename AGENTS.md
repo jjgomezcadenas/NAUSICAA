@@ -167,11 +167,19 @@ Establish the physics before implementing electronics.
   Historical handoff instructions describe their original tasks; consult the
   current manifest before selecting a production input or claiming completion.
 - The CSA nonlinear development keeps the existing 0.63 V guard and 0.5 ENC
-  validation target. Full SPICE is selected when the predicted minimum output
-  voltage falls BELOW the guard, plus controls. The proposed selectable fast
-  nonlinear response is under development, not an existing validated mode.
-  Calibrate against saved SPICE histories, split calibration/validation by
-  event, and validate the final corrected bucket estimates and event totals.
+  validation target. New production defaults to `hybrid_nonlinear`: use the
+  calibrated stateful model when the predicted minimum output falls BELOW the
+  guard. Run cards select `mode = "production"` (default for new runs) or
+  `mode = "validation"`. Production reuses the validated calibration and runs
+  SPICE only for histories outside its domain. Validation additionally runs
+  SPICE controls and solver-refinement histories. Keep the inexpensive
+  provenance, charge, storage and noise consistency checks in both modes.
+  `response_model = "hybrid_spice"` with validation mode selects the reference.
+  Saved-study registration preserves its recorded mode. The calibration uses
+  disjoint events for fitting and validation; 20/30/40 ms histories and a
+  100-event 4 mm production pilot passed. See docs/ion_csa_nonlinear_model.html
+  and latex_generated/ion_readout/ion_csa_nonlinear/index.html. Changes to the
+  circuit or calibrated input-current prescription require revalidation.
 - Production-viewer geometry uses source x/y/z in mm, inverting the saved
   electron bucket direction. Both arms start with shared ranges 25% larger
   than their combined occupied extent; zoom and rotation remain independent.

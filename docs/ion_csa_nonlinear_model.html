@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<title>CSA nonlinear production model</title>
+<style>body{font:17px system-ui;line-height:1.55;max-width:1100px;margin:40px auto;padding:0 25px;color:#183449}h1,h2{color:#164b62}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccd8df;padding:10px;text-align:left}code,pre{background:#eef3f6}pre{padding:15px;overflow:auto}.status{border-left:5px solid #bd832d;padding:12px;background:#fff6df}</style>
+<h1>Fast nonlinear CSA response</h1>
+<p class="status">Validated implementation, 2026-11-05. The fast nonlinear backend is now
+the default for new production within its validated domain. Production uses
+SPICE for out-of-domain histories. Validation mode repeats SPICE controls.
+<a href="../latex_generated/ion_readout/ion_csa_nonlinear/index.html">Generated validation report</a>
+· <a href="../latex_generated/ion_readout/ion_csa_nonlinear/ion_csa_nonlinear.pdf">PDF</a>.</p>
+<h2>Purpose and existing flow</h2>
+<p>A pad's full ion history generates a finite-gap input current. The current
+pipeline predicts its linear voltage history; a minimum below 0.63 V selects
+transistor simulation. The saved voltage is averaged over 5 ms windows,
+discharge-corrected and passed through the three-frame inverse reconstruction.
+The new model replaces selected transistor simulations while retaining these
+input, sampling, reconstruction and stationary-noise conventions.</p>
+<h2>Implemented model</h2>
+<p>Let x = V<sub>baseline</sub> − V<sub>out</sub> be accumulated voltage excursion,
+and u = I/e the input current in elementary charges per second. Propagate</p>
+<pre>dx/dt = gain(x) * u(t) − recovery(x)
+Vout(t) = baseline_V − x(t)
+x(0) = 0</pre>
+<p>Gain is measured in V per elementary charge; recovery is in V/s. Both are
+continuous piecewise-linear tables fitted to SPICE waveforms. The baseline
+is an equilibrium: recovery(0)=0. Positive gain and nonnegative recovery
+encode signal accumulation and return towards baseline. The small-signal
+response is checked against the saved calibration. RK4 integrates the state
+on intervals bounded by input-current knots and requested output times.</p>
+<p>This one-state description passed checks on complete held-out histories,
+including quiet tails and compressed signals. Leaving the fitted domain
+selects SPICE for the complete history.</p>
+<h2>Library contracts</h2>
+<table><tr><th>Type / function</th><th>Data and behavior</th></tr>
+<tr><td><code>NonlinearCSA</code></td><td>Owned Float64 vectors for excursion knots [V], gain [V/e] and recovery [V/s], baseline [V], integration step [s]. Strictly ordered knots start at zero; gain is positive and recovery is nonnegative with zero at equilibrium. Calibration I/O and identity belong to the adapter.</td></tr>
+<tr><td><code>nonlinear_waveform(model, time_s, current_A; sample_time_s)</code></td><td>Nonnegative piecewise-linear input current, increasing times, initial equilibrium. Returns owned sample voltages and an explicit domain-validity result. Preserves inputs; converts amperes to elementary charges/s at this interface.</td></tr>
+<tr><td><code>fit_nonlinear_csa(histories, knots_V; baseline_V, step_s)</code></td><td>Fit gain/recovery from integrated voltage increments and input current in calibration histories. Return a model plus fit support diagnostics. Calibration and validation events are selected by scripts.</td></tr>
+<tr><td><code>sampled_response(...)</code></td><td>Integrate voltage over the existing centered averaging windows and return edge voltages, average voltages and the existing filtered-ion estimator. The standard three-frame inverse remains downstream.</td></tr>
+</table>
+<p>Physical/electronics calculations use Float64 with explicit SI interfaces;
+saved response matrices retain the existing validated Float32 representation.</p>
+<h2>Calibration and independent checks</h2>
+<ol><li>Extract current, voltage, event identity and source/calibration hashes from
+saved acquisitions. Stratify calibration histories by signal excursion and
+history shape. Split by event so no event contributes to both fit and validation.</li>
+<li>Fit the local evolution law, then propagate full histories from equilibrium.
+Do not use true SPICE state to initialize individual validation buckets.</li>
+<li>Compare the final corrected estimates against SPICE, with the existing
+0.5 ENC maximum bucket-error target, event-charge bias and maximum-pulse statistics.</li>
+<li>Test timestep refinement, linear-limit analytic solutions, recovery,
+state/domain handling, preservation of inputs and voltage-window integration.</li>
+<li>Begin with 4 mm / 40 ms bb0nu and assess the available 20/30 ms histories
+before declaring coverage of those configurations.</li></ol>
+<h2>Production modes and provenance</h2>
+<p><a href="../latex_generated/ion_readout/ion_csa_nonlinear/scaling/index.html">Fresh-output per-event scaling</a> separates calibration, compilation and presentation from event processing.
+The earlier 28.46 s run reused a filtered response; use the fresh benchmark for production estimates.</p>
+<p><a href="../latex_generated/ion_readout/ion_csa_nonlinear/production_100/index.html">100-event production-mode timing and response report</a>.</p>
+<p>Run cards select <code>mode = "production"</code> or
+<code>mode = "validation"</code>. Production is the default for new runs:
+it reuses the validated model without generating SPICE control or refinement
+histories. Validation repeats those comparisons. Both modes retain charge,
+provenance, noise, reconstruction and storage checks. Production executes the
+numerical stages in one Julia process and records separate stage timings.</p>
+<p><code>hybrid_spice</code> retains linear predictions above the 0.63 V guard
+and SPICE below it, plus controls. <code>hybrid_nonlinear</code> uses the same
+guard and substitutes the validated nonlinear model below it. Out-of-domain
+histories use SPICE. Model identity includes calibration contents, circuit and
+solver provenance, model code and selected numerical settings. Each history
+records its actual backend. Existing response files remain immutable.</p>
+<p>The production default is <code>hybrid_nonlinear</code>. Reference runs can explicitly choose
+<code>hybrid_spice</code>. Noise is generated by the existing covariance model.</p>
+<p>Set <code>mode = "validation"</code> and <code>response_model = "hybrid_spice"</code> at the run-card
+top level to select the reference mode. The optional <code>nonlinear_calibration</code>
+path defaults to <code>results/ion_csa_nonlinear/v1/calibration.h5</code>.
+The resolved card pins its SHA256. Saved-study registration and historical
+low-level acquisition cards retain their recorded interpretation.</p>
+<p>The adapter <code>ion_csa_nonlinear_io.jl</code> checks the calibration,
+circuit and input-current prescription. <code>nonlinear_cases</code> evaluates
+candidate histories and saves separate predictions for SPICE controls;
+<code>validate_nonlinear_controls</code> checks their corrected bucket errors.
+HDF5 <code>model_used</code> codes are 0 linear, 1 SPICE and 2 calibrated nonlinear.
+The production interface, signed arrays, covariance and charge ledger are retained.</p>
+<h2>Artifacts</h2>
+<p>Julia calibration/reduction: <code>scripts/production/calibrate_ion_csa_nonlinear.jl</code>.
+Pure numerical library: <code>src/ion_signal/ion_csa_nonlinear.jl</code>.
+Tests: <code>tests/test_ion_csa_nonlinear.jl</code>.
+Numerical output: <code>results/ion_csa_nonlinear/</code>.
+Generated report: <code>latex_generated/ion_readout/ion_csa_nonlinear/</code>.
+Python generates figures, HTML and LaTeX from saved numerical results.</p>
+<pre>make ion-csa-nonlinear-calibrate  # first calibration; existing artifacts are immutable
+make ion-csa-nonlinear-pilot      # 100 events, then generated report
+make ion-csa-nonlinear-report     # reuse saved numerical evidence
+make ion-csa-nonlinear-production-100 # production mode, no repeated SPICE controls
+make ion-csa-test</pre>
+<p>To recalibrate, copy the calibration TOML and choose a new results directory.
+The calibration script preserves existing HDF5 evidence. Normal production
+requires the local validated calibration artifact.</p>
+</html>

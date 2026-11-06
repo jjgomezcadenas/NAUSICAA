@@ -1,0 +1,10 @@
+correction_summary_s = 145.929207875
+presentation_s = 0.93050975
+spice_fallback_histories = 6
+candidate_histories = 15184
+prepare_s = 90.984285334
+fallback_workflow_s = 227.681049584
+numerical_s = 526.4824105
+mode = "production"
+branch_total_s = 527.413114458
+nonlinear_s = 61.786349958

@@ -3,8 +3,11 @@
 > The pilot paths and completion statements below describe the original CSA
 > workflow. The current completed 8,000-event matched 4 mm production is
 > documented in [elm_matched_production.md](elm_matched_production.md).
-> The proposed fast nonlinear CSA mode is new development; this document's
-> SPICE/linear workflow remains the production reference.
+> New production uses the validated fast nonlinear CSA by default, with
+> `mode = "production"`. Set `mode = "validation"` to repeat SPICE controls. See the
+> [model and interfaces](ion_csa_nonlinear_model.html) and
+> [validation report](../latex_generated/ion_readout/ion_csa_nonlinear/index.html).
+> The SPICE/linear workflow below remains selectable as `hybrid_spice`.
 
 The ion response uses the adopted v3 circuit: nominal 20 s retention, fitted
 19.544 s discharge, 5 ms voltage averages and the three-frame charge
@@ -18,7 +21,7 @@ response applies no S/N cut or clipping of negative estimates.
 From the repository root, using the Julia scientific depot:
 
 ```sh
-JULIA_DEPOT_PATH="$PWD/work/julia-depot:$PWD/work/julia-depot:$HOME/.julia" \
+JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia" \
   julia --startup-file=no --project=. scripts/production/run_ion_csa.jl \
   config/specs/runs/ion_csa_v3_pilot_all.toml
 ```
@@ -38,8 +41,11 @@ It has been prepared for an explicit production request; the current work
 ran the 100-event pilots and a separate one-event integration test.
 
 Each `[[branches]]` entry selects a pitch. A `corrected_study` path imports a
-saved corrected study. With that key omitted, the stage runs the existing
-LTspice acquisition, Julia response, noise and three-frame reconstruction.
+saved corrected study. With that key omitted, the stage runs the calibrated
+nonlinear response, domain fallback, noise and three-frame
+reconstruction. Set `mode = "validation"` and `response_model = "hybrid_spice"` at the run-card top level
+to use the SPICE reference below the guard. The nonlinear calibration HDF5 is
+resolved and hash-pinned in the execution's `resolved_response.toml`.
 Python launches LTspice; physical response, numerical reduction and HDF5
 writing use Julia. The selected circuit calibration must already exist; generate it with
 `config/csa_v3_response_calibration.toml` before production. Its content hash
