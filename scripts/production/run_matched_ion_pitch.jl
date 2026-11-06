@@ -5,6 +5,9 @@ using HDF5,TOML,SHA
 module Ions
 include("run_ion_readout.jl")
 end
+module Common
+include("run_common_realisation.jl")
+end
 const ROOT=Ions.ROOT
 sha(path)=open(io->bytes2hex(sha256(io)),path)
 
@@ -22,6 +25,7 @@ function main(pitch::Int)
     pitch in (2,3) || error("Choose pitch 2 or 3 mm")
     card="config/specs/runs/elm_matched_ions_pitch$pitch.toml"
     spec=Ions.load_specs(ROOT,card);code=Ions.ion_replay_code_hash()
+    Common.run_common(spec,"bb0nu")
     paths=Ions.ion_paths(spec,"bb0nu",code)
     out=joinpath(ROOT,"results/ion_csa_nonlinear/matched_pitch$pitch");mkpath(out)
     write(joinpath(out,".gitignore"),"*.h5\n*.tmp\n")

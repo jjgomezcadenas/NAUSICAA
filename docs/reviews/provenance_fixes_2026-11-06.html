@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<title>ITACA · production provenance fixes</title>
+<style>body{font:17px/1.6 system-ui;max-width:1100px;margin:40px auto;padding:0 24px;color:#183247}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:14px;border-bottom:1px solid #ccd8df}code{font-size:.9em}a{color:#086eaa}</style>
+<h1>ITACA · production provenance fixes</h1><p>6 November 2026 · Follow-up to the <a href="repository_review_2026-11-05.html">independent review</a>.</p>
+<table><tr><th>Finding</th><th>Change</th><th>Evidence</th></tr>
+<tr><td>W-01</td><td>Verify the actual CSA deck, transistor model and linear waveform against acquisition hashes. Include their hashes in new response identities and saved provenance.</td><td>Mutation checks reject altered resources. A fresh three-event CSA run passed through corrected response and publication.</td></tr>
+<tr><td>W-10</td><td>Read cards and source paths from saved response/shard metadata. Use the saved electron branch. Allow absent workflow timings.</td><td>Report reduction succeeds with an unavailable working-tree card and reproduces the saved numerical observables.</td></tr>
+<tr><td>R-01</td><td>Separate shared sampling and seed derivation from collection. Both arms verify the sampler identity; new ledgers use a versioned identity and directory.</td><td>All 8,000 matched events reproduce their primary counts, checksums and complementary drift distances exactly. Collection edits leave the primary identity stable; sampler changes produce a new identity.</td></tr></table>
+<h2>Historical files</h2><p>Existing ledgers and response arrays remain in their original directories. Migration replays the source hits and verifies the old ledger before writing a new file. The random streams and numerical sampling law are preserved.</p>
+<h2>Verification</h2><p>CSA tests, primary-identity tests, the streaming report regression, 2,213 event-analysis checks and 72 Python tests passed. All 162 numerical datasets in the regenerated matched reduction are identical to the previous version; the HTML/TeX/PDF report is also unchanged.</p>
+<p><a href="provenance_fixes_2026-11-06.md">Implementation details and reproduction commands</a> · <a href="../../latex_generated/ion_readout/ion_csa_nonlinear_pitch3/index.html">Completed 3 mm production</a></p>
+</html>

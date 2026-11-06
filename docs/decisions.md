@@ -399,3 +399,21 @@ Covariance calibration and presentation are timed separately. Its saved
 measurements and extrapolation are selected by
 `results/ion_csa_nonlinear/scaling/latest.toml`; the generated report is
 `latex_generated/ion_readout/ion_csa_nonlinear/scaling/index.html`.
+
+## 2026-11-06 — Production provenance corrections (W-01, W-10, R-01)
+
+- Validate the CSA production deck, transistor model and linear waveform against
+  the acquisition hashes stored in the calibration. Include their content hashes
+  in new response identities, HDF5 metadata and run manifests.
+- Regenerate matched reports from the cards saved with the response and photon
+  files. Workflow timings are optional; select the saved electron branch from
+  the reduction. SiPM reductions resolve their sources through saved shards.
+- Isolate primary-pair and common-placement sampling from readout code. A v2
+  shared ledger includes the sampler implementation identity; both collection
+  arms verify it. Preserve the original RNG streams and all historical files.
+  Replaying a same-card legacy ledger verifies every pair checksum and both drift
+  distances before publishing a new ledger in its own directory.
+- This change preserves the integer sampler's numerical law. The separate R-02
+  low-mean Bernoulli issue remains open.
+
+Implementation and validation: [audit follow-up](reviews/provenance_fixes_2026-11-06.md).

@@ -74,8 +74,8 @@ function run_sample(spec,sample::String,code_hash::String)
             h5open(temporary.ions,"w") do fi
                 h5open(temporary.pure_xe,"w") do fx
                     h5open(temporary.xe_he15,"w") do fh
-                        write_header(fr,"nausicaa.event_realisation.pilot.v1",sample,
-                            source_path,source_sha,realisation_id,code_hash,seed,
+                        write_header(fr,"nausicaa.event_realisation.v2",sample,
+                            source_path,source_sha,realisation_id,identities.primary_code_hash,seed,
                             "realisation",read(spec.realisation.path,String),"")
                         write_header(fi,"nausicaa.ion_pad_file.pilot.v1",sample,
                             source_path,source_sha,ion_id,code_hash,seed,
@@ -88,6 +88,7 @@ function run_sample(spec,sample::String,code_hash::String)
                             "xe_he15",read(spec.realisation.path,String),read(spec.electrons.path,String))
                         for file in (fr,fi,fx,fh)
                             file["metadata/stream_identity"]=stream_identity
+                            file["metadata/primary_code_hash"]=identities.primary_code_hash
                         end
                         for raw_id in ids
                             id=Int64(raw_id)

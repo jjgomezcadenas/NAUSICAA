@@ -1,0 +1,17 @@
+primary_ledger = "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/realisation.h5"
+legacy_ledger = "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/realisation.h5"
+total_pairs = 897306359
+events_verified = 8000
+primary_ledger_sha256 = "60d35b6f216b510601b9a62aaa05c765a616727ee0af4be2c45ef04267d106ed"
+schema = "itaca.provenance_validation.v1"
+primary_code_hash = "77234abf2e9495723b31caedca65e87614d2c6ba5ed345f9e225ace9d118fe9e"
+smoke_passed = true
+legacy_sha256 = "80c045754c6a5a44c0d95b647f36b231fd9150f48b03908cd71f6d94edc40de3"
+smoke_events = 3
+complete = true
+
+[csa_resources]
+analysis_sha256 = "5703eaec4005d68067885fd066a2d3a99c32a5ba0ae552826dc9a8fb16043ef3"
+deck_sha256 = "825b2ef412215a728154f0c81c8facc9a0bbecf145339a9f71287376a9029608"
+kernel_sha256 = "49a819e0e4e7c979fd9b0624c34bd6c9983578dd0954a94ae6b2a9df33b05692"
+model_sha256 = "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608"

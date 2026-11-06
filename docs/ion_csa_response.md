@@ -232,3 +232,11 @@ changed-source rejection, publication/cache checks and analytic correlated
 Gaussian moment identities. The integration smoke card exercises acquisition,
 noise, correction and publication for one event; it is separate from the
 matched 100-event comparison.
+
+## Acquired-resource identity (2026-11-06)
+
+`src/ion_signal/csa_resources.jl` verifies the actual production deck, transistor
+model and linear waveform against their saved acquisition hashes before reuse.
+New response identities and metadata include these digests. The analysis pins
+the waveform, which pins the acquired deck and model. The detailed audit
+follow-up is in [provenance fixes](reviews/provenance_fixes_2026-11-06.md).

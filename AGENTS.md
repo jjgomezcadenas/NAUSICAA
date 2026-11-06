@@ -72,6 +72,12 @@ Establish the physics before implementing electronics.
   use the same cells at every response stage. Keep signed reconstructed values
   and apply no amplitude or signal-to-noise cut. Each event contributes one
   mean and one maximum.
+- Production provenance: shared v2 primary ledgers hash the dedicated sampling,
+  seed and ordered-hit-reading code; both arms verify that identity. Preserve RNG
+  streams and historical ledgers when migrating; replay-verify counts, checksums
+  and drift placement. CSA production verifies the actual deck/model/kernel
+  against acquired calibration hashes. Report regeneration uses saved cards.
+  See docs/reviews/provenance_fixes_2026-11-06.md.
 - The active readout replays source hits and deterministic diffusion seeds when
   pitch or bucket width changes; it does not save individual carrier coordinates.
   Histogram cell centres are valid for display and historical comparison, not

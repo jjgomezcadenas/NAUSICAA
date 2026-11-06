@@ -16,7 +16,8 @@ compression and signed noise remain separate from the electron ASIC clipping.
 """
 function main()
     graph=TOML.parsefile(joinpath(OUT,"manifest.toml"))
-    times=TOML.parsefile(joinpath(OUT,"run_timings.toml"))
+    timing_path=joinpath(OUT,"run_timings.toml")
+    timing_text=isfile(timing_path) ? read(timing_path,String) : ""
     MatchedElectronAnalysis.main("full")
     target=joinpath(OUT,"matched_analysis.h5")
     h5open(target*".tmp","w") do out
@@ -25,14 +26,18 @@ function main()
       for (k,v) in pairs((;complete=false,manifest_path=joinpath(OUT,"manifest.toml"),
           manifest_sha256=sha(joinpath(OUT,"manifest.toml")),ion_path=graph["ion_response"],
           electron_analysis_path=joinpath(OUT,"electron_analysis.h5"),
-          reduction_sha256=sha(@__FILE__),run_timings_toml=read(joinpath(OUT,"run_timings.toml"),String)))
+          reduction_sha256=sha(@__FILE__),run_timings_toml=timing_text))
         meta[string(k)]=v
       end
       columns=Dict{String,Vector{Float64}}()
       h5open(graph["ion_response"],"r") do source
         ids=sort!(parse.(Int64,collect(keys(source["events"]))))
         h5open(joinpath(OUT,"electron_analysis.h5"),"r") do electrons
-            @assert ids==Int64.(read(electrons["tau_12p5/xe_he15/event_id"]))
+            branches=["$tau/$gas" for tau in keys(electrons) if startswith(tau,"tau_")
+                      for gas in keys(electrons[tau]) if gas!="parameters"]
+            length(branches)==1 || error("Matched report requires one selected electron branch")
+            meta["electron_branch"]=only(branches)
+            @assert ids==Int64.(read(electrons[only(branches)*"/event_id"]))
         end
         for (j,id) in enumerate(ids)
             event=IonCSAProduction.read_event(source,id)
@@ -64,8 +69,8 @@ function main()
         g["reconstructed_total_bias_percent"]=100(sum(columns["total_reconstructed"])/sum(columns["initial_ions"])-1)
         g["noiseless_ratio_rms_percent"]=100std(columns["noiseless_ratio"];corrected=false)
         g["reconstructed_ratio_rms_percent"]=100std(columns["reconstructed_ratio"];corrected=false)
-        g["response_card"]=read(joinpath(ROOT,"config/specs/response/ion_csa/csa_0p5_enc_4mm.toml"),String)
-        g["reconstruction_card"]=read(joinpath(ROOT,"config/specs/response/ion_csa/reconstruction_v1.toml"),String)
+        g["response_card"]=String(read(source["metadata/response_card_toml"]))
+        g["reconstruction_card"]=String(read(source["metadata/reconstruction_card_toml"]))
       end
       corrected=joinpath(dirname(graph["ion_manifest"]),"execution/pitch4/corrected")
       summary=only(filter(isfile,[joinpath(d,"summary.h5") for d in readdir(corrected;join=true)]))

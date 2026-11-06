@@ -19,6 +19,47 @@ function electron_reference_bounds(e,r)
     (chamber-Float64(get(r,"max_ion_drift_cm",chamber)),chamber-Float64(r["min_ion_drift_cm"]),chamber)
 end
 
+"""Read response parameters and photon sources from completed response shards.
+
+Saved sensor/ASIC cards describe the calculation that produced each shard. All
+shards must agree on those cards, charge conversion and bucket width. Return
+owned parameters and per-gas photon paths without consulting working-tree cards.
+"""
+function saved_response(manifest)
+    manifest["complete"] || error("Incomplete SiPM manifest")
+    branches=Dict{String,Any}();sensor_text=nothing;electronics_text=nothing
+    charge=0.;dt=0.
+    for shard in manifest["shards"]
+        h5open(shard["sensor"],"r") do sh
+          h5open(shard["asic"],"r") do ah
+            sm=sh["metadata"];am=ah["metadata"]
+            read(sm["complete"]) && read(am["complete"]) || error("Incomplete response shard")
+            sc=String(read(sm["sensor_card_toml"]));ec=String(read(am["electronics_card_toml"]))
+            q=Float64(read(sm["charge_per_pe_C"]));width=Float64(read(sm["bucket_width_s"]))
+            if sensor_text===nothing
+                sensor_text=sc;electronics_text=ec;charge=q;dt=width
+            else
+                sc==sensor_text && ec==electronics_text && q==charge && width==dt ||
+                    error("Response shards disagree on saved cards or conversion")
+            end
+            gas=String(read(sm["gas_model"]));gas==shard["gas"] || error("Shard gas mismatch")
+            path=String(read(sm["source_path"]))
+            branch=(;src=(;gas,path,dt=width))
+            get(branches,gas,branch)==branch || error("Multiple photon sources for one gas")
+            branches[gas]=branch
+          end
+        end
+    end
+    sensor_text===nothing && error("Empty SiPM manifest")
+    c=TOML.parse(sensor_text);e=TOML.parse(electronics_text)
+    sensor=(;pde=PROD.Pilot.effective_pde(c),gain=c["gain"],
+        dark_rate_Hz=c["dark_reference_rate_Hz"]*PROD.Pilot.sensor_area_m2(c)/c["dark_reference_area_m2"],
+        recovery_s=c["recovery_s"],microcells=c["microcell_count"])
+    electronics=(;bucket_width_s=e["bucket_width_s"],noise_rms_pe=e["noise_rms_pe"],current_limit_A=e["current_limit_A"])
+    dt==electronics.bucket_width_s || error("Saved ASIC bucket width differs")
+    (;c,sensor,electronics,sensor_text,electronics_text,charge,branches=collect(values(branches)))
+end
+
 """Compare matched photon histories for two recovery constants and both gases.
 
 Input-positive SiPM/bucket cells define all pulse comparisons. Optical triggers
@@ -38,9 +79,9 @@ function main(;output_dir=OUT,report_name="elm_sipm_pilot",reference_results=not
             reduction_sha256=PROD.sha(@__FILE__),photon_wall_s=files["photon_wall_s"],
             response_wall_s=files["response_wall_s"],total_wall_s=files["total_wall_s"]))
         for tag in sort!(collect(keys(files["responses"])))
-          entry=files["responses"][tag];run=PROD.settings(entry["card"])
-          settings=run.pilot;manifest=TOML.parsefile(entry["manifest"])
-          q0=PROD.P.charge_per_pe_C(settings.sensor)
+          entry=files["responses"][tag];manifest=TOML.parsefile(entry["manifest"])
+          settings=saved_response(manifest)
+          q0=settings.charge
           limit=settings.electronics.current_limit_A*settings.electronics.bucket_width_s/q0
           M=settings.c["illuminated_microcell_count"]
           tg=create_group(out,"tau_"*tag);p=create_group(tg,"parameters")
@@ -49,9 +90,9 @@ function main(;output_dir=OUT,report_name="elm_sipm_pilot",reference_results=not
               physical_microcells=settings.sensor.microcells,illuminated_microcells=M,
               bucket_us=settings.electronics.bucket_width_s*1e6,noise_rms_pe=settings.electronics.noise_rms_pe,
               current_limit_mA=settings.electronics.current_limit_A*1000,clip_threshold_pe=limit,
-              response_wall_s=entry["elapsed_s"],sensor_card=read(settings.cp,String),
-              electronics_card=read(settings.ep,String),source_manifest=entry["manifest"]))
-          for branch in PROD.sources(run)
+              response_wall_s=entry["elapsed_s"],sensor_card=settings.sensor_text,
+              electronics_card=settings.electronics_text,source_manifest=entry["manifest"]))
+          for branch in settings.branches
             gas=branch.src.gas;g=create_group(tg,gas)
             columns=Dict{String,Vector{Float64}}()
             inclusive=Dict(k=>Float64[] for k in ("detected_pe","optical_charge_pe","after_pe","occupancy_percent"))
@@ -66,6 +107,7 @@ function main(;output_dir=OUT,report_name="elm_sipm_pilot",reference_results=not
                 @assert String(read(ph["metadata/photon_band"]))=="blue_tpb"
                 put(g,(;photon_path=source,photon_sha256=PROD.sha(source),
                     detector_card=String(read(ph["metadata/branch_card_toml"])),
+                    realisation_card=String(read(ph["metadata/realisation_card_toml"])),
                     optical_acceptance=read(ph["metadata/optical_acceptance"]),
                     minimum_electron_drift_cm=min_drift,maximum_electron_drift_cm=max_drift,chamber_length_cm=chamber))
                 matching_shards=filter(x->x["gas"]==gas,manifest["shards"])

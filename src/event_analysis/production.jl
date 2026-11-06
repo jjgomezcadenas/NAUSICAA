@@ -79,30 +79,6 @@ function sigma_t_ion_mm(T_K::Float32,L_cm::Float32,E_V_cm::Float32)::Float32
 end
 
 """
-    sample_drift_cm(rng::AbstractRNG, min_cm::Float32, max_cm::Float32)::Float32
-
-Sample the common event drift uniformly in [min_cm,max_cm). Bounds are finite,
-nonnegative and ordered; equal bounds return that fixed distance without
-advancing rng. A nonzero interval consumes one Float32 uniform draw. Roundoff
-at the upper bound is assigned to prevfloat(max_cm), preserving the half-open
-interval. This pure boundary makes random state explicit to the caller.
-
-# Example
-```julia
-using Random
-rng = Xoshiro(42)
-@assert 10f0 <= sample_drift_cm(rng,10f0,150f0) < 150f0
-@assert sample_drift_cm(rng,20f0,20f0) === 20f0
-```
-"""
-function sample_drift_cm(rng::AbstractRNG,min_cm::Float32,max_cm::Float32)::Float32
-    all(isfinite,(min_cm,max_cm)) && 0f0 <= min_cm <= max_cm ||
-        throw(ArgumentError("Drift bounds must be finite, nonnegative and ordered"))
-    min_cm == max_cm && return min_cm
-    return min(min_cm+(max_cm-min_cm)*rand(rng,Float32),prevfloat(max_cm))
-end
-
-"""
     sample_grid_offset_mm(rng::AbstractRNG, pitch_mm::Float32)::NTuple{2,Float32}
 
 Return independent uniform x/y offsets in [0,pitch_mm), in mm. Consume two

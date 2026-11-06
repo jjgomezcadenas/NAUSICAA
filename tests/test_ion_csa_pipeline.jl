@@ -17,11 +17,19 @@ function fixture(dir)
     inputs=joinpath(calibrationdir,"inputs.h5")
     h5open(inputs,"w") do h;h["fixture"]=true;end
     design=TOML.parsefile(joinpath(root,responsevalues["design_card"]))
+    actualdeck=joinpath(calibrationdir,"decks",responsevalues["variant"],"30ms_single_N100_r2.cir")
+    actualmodel=joinpath(dirname(actualdeck),"corrected.inc");mkpath(dirname(actualdeck))
+    cp(deck,actualdeck);cp(model,actualmodel)
+    kernel=joinpath(calibrationdir,"variants",responsevalues["variant"]*".h5");mkpath(dirname(kernel))
+    h5open(kernel,"w") do h
+        attributes(h)["model_sha256"]=C.sha(actualmodel)
+        attributes(create_group(h,"30ms/single_N100_r2"))["deck_sha256"]=C.sha(actualdeck)
+    end
     h5open(joinpath(calibrationdir,"analysis.h5"),"w") do h
         attributes(h)["config_sha256"]=C.sha(calibration_card)
         g=create_group(h,responsevalues["variant"]);a=attributes(g)
         a["source_sha256"]=C.sha(deck);a["model_sha256"]=C.sha(model)
-        a["inputs_sha256"]=C.sha(inputs)
+        a["inputs_sha256"]=C.sha(inputs);a["raw_sha256"]=C.sha(kernel)
         for (key,value) in (("length_m",design["feedback"]["length_m"]),
                             ("width_m",design["feedback"]["width_m"]),
                             ("gate_V",design["feedback"]["gate_V"]),
@@ -73,7 +81,7 @@ function fixture(dir)
         "absent_channel_policy"=>C.ABSENT_POLICY,"negative_estimate_clipping"=>false,"measured_zero_suppression"=>false,
         "results_directory"=>joinpath(dir,"published_runs"),"branches"=>[Dict("pitch_mm"=>3,"corrected_study"=>study)])
     C.write_toml(card,values)
-    (;source,parent,index,study,card,values,deck,model,calibration_card,inputs)
+    (;source,parent,index,study,card,values,deck,model,calibration_card,inputs,actualdeck,actualmodel,kernel)
 end
 
 @testset "Compact reconstructed matrices and production nodes" begin
@@ -121,7 +129,7 @@ end
     open(f.card,"a") do io;write(io,"\n# presentation-only comment\n");end
     @test C.settings(root,f.card).identity==original
     # A changed source deck or transistor model invalidates the cached calibration.
-    for resource in (f.deck,f.model,f.calibration_card)
+    for resource in (f.deck,f.model,f.calibration_card,f.actualdeck,f.actualmodel)
         body=read(resource,String)
         write(resource,body*"# changed\n")
         @test_throws ArgumentError C.settings(root,f.card)
@@ -131,6 +139,10 @@ end
     h5open(f.inputs,"r+") do h;h["changed"]=true;end
     @test_throws ArgumentError C.settings(root,f.card)
     cp(backup,f.inputs;force=true)
+    kernelbackup=read(f.kernel)
+    h5open(f.kernel,"r+") do h;h["changed"]=true;end
+    @test_throws ArgumentError C.settings(root,f.card)
+    write(f.kernel,kernelbackup)
     # A mismatched acquisition policy fails before publishing.
     bad=copy(f.values);bad["channel_selection"]="rectangle";C.write_toml(f.card,bad)
     @test_throws ArgumentError C.settings(root,f.card)

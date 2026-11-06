@@ -481,3 +481,11 @@ rogelio-notes:
 	$(PYTHON) scripts/documentation/build_report.py LTSpice/notes/calculos_para_rogelio.tex --destination latex_generated/ion_readout/rogelio_notes/calculos_para_rogelio.pdf
 	$(PYTHON) scripts/documentation/build_report.py LTSpice/notes/ramo_para_rogelio.tex --destination latex_generated/ion_readout/rogelio_notes/ramo_para_rogelio.pdf
 	$(MAKE) report-catalogue
+
+.PHONY: production-provenance-test
+production-provenance-test:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_matched_realisation.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_primary_ledger.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_pipeline.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_elm_streaming_reduction.jl
+	$(VIEWER_PYTHON) tests/test_matched_report_provenance.py

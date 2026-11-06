@@ -31,7 +31,8 @@ end
 function electron_replay_code_hash()::String
     files = ("src/event_analysis/EventAnalysis.jl", "src/event_analysis/types.jl",
              "src/event_analysis/io.jl", "src/event_analysis/production.jl",
-             "src/event_analysis/production_readout.jl", "src/event_analysis/grid_readout.jl",
+             "src/event_analysis/production_readout.jl",
+           "src/event_analysis/primary_sampling.jl","scripts/production/primary_identity.jl", "src/event_analysis/grid_readout.jl",
              "src/ion_signal/event_io.jl", "scripts/production/specs.jl",
              "scripts/production/run_detector_pilot.jl",
              "scripts/production/run_electron_250ns.jl")
@@ -64,8 +65,8 @@ end
 function check_common_realisation(file::HDF5.File, paths, expected_events::Int,
                                   seed::Int)::Nothing
     String(read(attributes(file)["schema"])) ==
-        "nausicaa.event_realisation.pilot.v1" || error("Realisation schema mismatch")
-    m = file["metadata"]
+        "nausicaa.event_realisation.v2" || error("Realisation schema mismatch")
+    m = file["metadata"];check_primary_code(ROOT,m)
     Bool(read(m["complete"])) &&
         Int(read(m["event_count"])) == expected_events ||
         error("Primary realisation is incomplete")
@@ -164,6 +165,7 @@ function run_electron_sample(spec, sample::String, code_hash::String, n::Int)
                 file=h5open(temporary[gas],"w");files[gas]=file
                 write_header(file,optics.schema,sample,paths.source,paths.source_sha,
                     paths.electron_id,code_hash,seed,gas,read(spec.realisation.path,String),read(spec.electrons.path,String))
+                file["metadata/primary_code_hash"]=primary_code_hash(ROOT)
                 file["metadata/stream_identity"]=paths.stream_identity
                 file["metadata/photon_band"]=optics.band
                 file["metadata/optical_acceptance"]=optics.acceptance
@@ -238,7 +240,7 @@ function run_electron_sample(spec, sample::String, code_hash::String, n::Int)
 
             elapsed_s=(time_ns()-started)/1e9
             for (gas,file) in files
-                m=file["metadata"]
+                m=file["metadata"];check_primary_code(ROOT,m)
                 m["initial_pairs"]=pairs_total;m["surviving_electrons"]=survivors_total
                 m["emitted_photons"]=emitted[gas];m["incident_photons"]=incident_totals[gas]
                 m["event_count"]=n;m["elapsed_s"]=elapsed_s;write(m["complete"],true)

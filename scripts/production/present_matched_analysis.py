@@ -21,11 +21,12 @@ def main():
         assert f['metadata/complete'][()]
         ion={k:f['ions'][k][()] for k in f['ions']}
         validation={k:f['validation'][k][()] for k in f['validation']}
+        electron_branch=f["metadata/electron_branch"][()].decode()
         timings=tomllib.loads(f['metadata/run_timings_toml'][()].decode())
     with h5py.File(OUT/'electron_analysis.h5') as f:
         assert f['metadata/complete'][()]
-        ele={k:f['tau_12p5/xe_he15'][k][()] for k in f['tau_12p5/xe_he15']}
-        pars={k:f['tau_12p5/parameters'][k][()] for k in f['tau_12p5/parameters']}
+        ele={k:f[electron_branch][k][()] for k in f[electron_branch]}
+        pars={k:f[electron_branch.split('/')[0]+'/parameters'][k][()] for k in f[electron_branch.split('/')[0]+'/parameters']}
     graph=tomllib.loads((OUT/'manifest.toml').read_text());n=int(ion['event_count'])
     assert n==int(ele['event_count'])==graph['event_count']
     summary=[['Matched events',n],
@@ -91,7 +92,7 @@ def main():
     sipm=(f'S14160-3015PS: 3 × 3 mm², 39,984 cells, 21,808 illuminated by the centered 2.5 mm disk, PDE 0.32, gain 360,000 and total dark rate 700 kcps. Illuminated and dark-only cell populations retain independent recovery states. The baseline uses a provisional 12.5 ns recovery constant with 128 statistical substeps per bucket. Electron electronics adds {float(pars["noise_rms_pe"]):.4f} PE RMS and clips at 1 mA ({float(pars["clip_threshold_pe"]):.2f} PE per bucket). Crosstalk, afterpulsing and gain spread remain deferred.')
     csa=('The ion arm uses the calibrated CSA v3 circuit, 5 ms averaging and the 40 ms response/noise covariance. The linear fast path is validated against transistor controls at 0.5 ENC tolerance; histories below the 0.63 V guard receive direct LTspice treatment, with adaptive controls and solver refinement. The simulator binary and circuit calibration are reused only with matching content hashes. The signed three-frame inverse reconstructs ion charge, including quiet/recovery frames and temporal noise correlations. A 50% compression diagnostic identifies events containing such a pad history; it is separate from electron ASIC clipping.')
     definitions=('Pulse tables use all input-positive channel/bucket cells, preserving those same cells through electronics. Each event contributes one mean and maximum. Signed response values remain intact. Ion total charge bias sums complete stored histories relative to collected ions. Electron energy widths are full-distribution RMS/mean after correcting known attachment survival and dividing by deposited MC energy; noisy totals subtract expected dark charge. The retained electron sample rejects an event when any electron ASIC bucket clips.')
-    timing=(f'Detector production: {timings["detector_wall_s"]:.2f} s; concurrent SiPM/ASIC: {timings["sipm_wall_s"]:.2f} s; concurrent CSA pipeline: {timings["csa_wall_s"]:.2f} s; complete paired production and validation: {timings["total_wall_s"]:.2f} s. Reduction and presentation are separate.')
+    timing=(f'Detector production: {timings["detector_wall_s"]:.2f} s; concurrent SiPM/ASIC: {timings["sipm_wall_s"]:.2f} s; concurrent CSA pipeline: {timings["csa_wall_s"]:.2f} s; complete paired production and validation: {timings["total_wall_s"]:.2f} s. Reduction and presentation are separate.') if timings else 'Workflow timing was not recorded for this run.'
     sections=[('Shared production',setup),('Electron optical and response model',optical+'\n\n'+sipm),('Ion electronics',csa),('Definitions',definitions),('Timing',timing)]
     body='<h1>ELM · matched ion and Xe–He response</h1>'+table(['Quantity','Value'],summary)+'<h2>Per-channel/bucket pulse statistics</h2>'+table(['Stage','Unit','Mean average','Mean median','Maximum average','Maximum median'],pulses)+'<h2>Electron energy widths</h2>'+table(['Stage','All-event RMS (%)','Retained RMS (%)'],widths)
     body+='<h2>Events with the largest electron ASIC loss</h2>'+table(['Event ID','Electron drift (cm)','Maximum input PE','SiPM loss (%)','ASIC loss (%)'],worst)
@@ -99,7 +100,7 @@ def main():
     figures=['matched_placement.png','matched_pulses.png','matched_photons.png','matched_electron_energy.png','matched_losses.png']
     body+=''.join(f'<img src="{name}" alt="{name}">' for name in figures)
     body+='<p><a href="../../latex_generated/electron_readout/elm_matched_production/elm_matched_production.pdf">PDF report</a> · <a href="manifest.toml">Combined manifest</a> · <a href="../../config/specs/runs/elm_matched_response_viewer.toml">Viewer card</a>.</p>'
-    cards=ele['detector_card'].decode()+'\n'+pars['sensor_card'].decode()+'\n'+pars['electronics_card'].decode()+'\n'+ion['response_card'].decode()+'\n'+ion['reconstruction_card'].decode()+'\n'+(ROOT/'config/specs/realisations/elm_matched_full.toml').read_text()
+    cards=ele['detector_card'].decode()+'\n'+pars['sensor_card'].decode()+'\n'+pars['electronics_card'].decode()+'\n'+ion['response_card'].decode()+'\n'+ion['reconstruction_card'].decode()+'\n'+ele['realisation_card'].decode()
     body+='<details><summary>Resolved cards</summary><pre>'+html.escape(cards)+'</pre></details>'
     (OUT/'elm_matched_production.html').write_text('<!doctype html><meta charset="utf-8"><title>Matched ELM response</title><style>body{font:16px system-ui;line-height:1.6;max-width:1400px;margin:35px auto;padding:0 22px;color:#17334a}table{border-collapse:collapse;margin:18px 0;width:100%}td,th{padding:8px;text-align:right;border-bottom:1px solid #ccd6de}td:first-child,th:first-child{text-align:left}img{width:100%;margin:15px 0}pre{white-space:pre-wrap}</style>'+body)
     tex=r'''\documentclass[11pt,a4paper]{article}

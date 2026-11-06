@@ -7,6 +7,7 @@ function ion_replay_code_hash()
     files=("src/event_analysis/EventAnalysis.jl","src/event_analysis/types.jl",
            "src/event_analysis/io.jl","src/event_analysis/production.jl",
            "src/event_analysis/production_readout.jl",
+           "src/event_analysis/primary_sampling.jl","scripts/production/primary_identity.jl",
            "src/event_analysis/grid_readout.jl","src/ion_signal/event_io.jl",
            "scripts/production/specs.jl","scripts/production/run_detector_pilot.jl",
            "scripts/production/run_ion_readout.jl")
@@ -29,9 +30,9 @@ end
 
 """Verify that a completed common realisation matches this source and run card."""
 function check_realisation(file::HDF5.File,paths,n::Int,seed::Int)
-    String(read(attributes(file)["schema"]))=="nausicaa.event_realisation.pilot.v1" ||
+    String(read(attributes(file)["schema"]))=="nausicaa.event_realisation.v2" ||
         error("Realisation schema mismatch")
-    m=file["metadata"]
+    m=file["metadata"];check_primary_code(ROOT,m)
     Bool(read(m["complete"])) && Int(read(m["event_count"]))==n ||
         error("Realisation is incomplete or has the wrong event count")
     String(read(m["source_sha256"]))==paths.source_sha || error("Source content mismatch")
@@ -77,6 +78,7 @@ function run_ion_sample(spec,sample::String,code_hash::String)
                 write_header(output,"nausicaa.ion_pad_file.pilot.v1",sample,
                     paths.source,paths.source_sha,paths.ion_id,code_hash,seed,
                     "ions",read(spec.realisation.path,String),read(spec.ions.path,String))
+                output["metadata/primary_code_hash"]=primary_code_hash(ROOT)
                 output["metadata/stream_identity"]=paths.stream_identity
                 for (index,raw_id) in enumerate(ids[1:n])
                     id=Int64(raw_id);key=string(id)

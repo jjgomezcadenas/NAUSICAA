@@ -9,6 +9,7 @@ include("bucket_noise_covariance.jl")
 include("../event_analysis/EventAnalysis.jl")
 include("../../scripts/production/specs.jl")
 include("ion_csa_nonlinear_io.jl")
+include("csa_resources.jl")
 include("ion_csa_correction.jl")
 const NL=IonCSANonlinearIO
 const NC=IonCSACorrection
@@ -75,10 +76,11 @@ function settings(root,runpath)
  run["selection"]=="evenly_spaced_sorted_event_ids" || error("Unknown event selection")
  all(p->p in (2,3,4),run["pitches_mm"]) && run["events_per_sample"]>0 || error("Pilot grid/event count")
  caldir=joinpath(root,c["calibration_directory"]);calfile=joinpath(caldir,"analysis.h5")
+ resources=CSAResources.verify(root,c)
  files=[@__FILE__,joinpath(@__DIR__,"pad_history_readout.jl"),joinpath(@__DIR__,"bucket_study.jl"),joinpath(@__DIR__,"averaging_scan.jl"),joinpath(@__DIR__,"discharge_calibration.jl"),joinpath(@__DIR__,"bucket_noise_covariance.jl"),joinpath(root,"src/event_analysis/production_readout.jl"),joinpath(root,"scripts/production/specs.jl"),joinpath(root,"scripts/production/run_ion_csa_pilot.py"),joinpath(root,"scripts/production/ion_csa_pilot.jl"),joinpath(@__DIR__,"spice_acquisition.py"),joinpath(@__DIR__,"spice.py")]
- append!(files,[joinpath(@__DIR__,f) for f in ("ion_csa_nonlinear.jl","ion_csa_nonlinear_io.jl","ion_csa_nonlinear_cases.jl","ion_csa_correction.jl")])
+ append!(files,[joinpath(@__DIR__,f) for f in ("ion_csa_nonlinear.jl","ion_csa_nonlinear_io.jl","ion_csa_nonlinear_cases.jl","ion_csa_correction.jl","csa_resources.jl")])
  codehash=bytes2hex(sha256(join(sha.(files),"|")))
- modelid=bytes2hex(sha256(join((S.canonical(c),sha(calfile),codehash),"|")))
+ modelid=bytes2hex(sha256(join((S.canonical(c),sha(calfile),codehash,S.canonical(resources)),"|")))
  sources=NamedTuple[]
  h5open(joinpath(root,run["ion_index"]),"r") do idx
   for sample in run["samples"],pitch in run["pitches_mm"]
@@ -382,6 +384,7 @@ function finish(root,runpath,dir)
     m["response_model"]=get(s.c,"response_model","hybrid_spice")
     m["mode"]=get(s.c,"mode","validation")
     m["model_used_codes"]="0=linear,1=SPICE,2=calibrated_nonlinear"
+    io=IOBuffer();TOML.print(io,CSAResources.verify(s.root,s.c));m["circuit_resources_toml"]=String(take!(io))
     if haskey(s.c,"nonlinear_calibration_sha256")
      m["nonlinear_calibration_sha256"]=s.c["nonlinear_calibration_sha256"]
      m["nonlinear_calibration"]=s.c["nonlinear_calibration"]

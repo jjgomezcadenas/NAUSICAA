@@ -6,52 +6,7 @@ using .ProjectPaths
 
 export load_specs, canonical, content_hash, event_seed, pair_checksum, realisation_identities
 
-"""Canonical representation of parsed TOML values, independent of key order/comments."""
-function canonical(value)
-    if value isa AbstractDict
-        return "{"*join((repr(k)*":"*canonical(value[k]) for k in sort!(collect(keys(value)))),",")*"}"
-    elseif value isa AbstractVector
-        return "["*join(canonical.(value),",")*"]"
-    elseif value isa AbstractString || value isa Number || value isa Bool
-        return repr(value)
-    end
-    throw(ArgumentError("Unsupported TOML value $(typeof(value))"))
-end
-
-"""SHA-256 hex digest of a string or file, used for source and configuration IDs."""
-content_hash(value::AbstractString;file::Bool=false)=
-    bytes2hex(sha256(file ? read(value) : codeunits(value)))
-
-"""Derive one UInt64 RNG seed from an identity, event ID and stage label."""
-function event_seed(identity::AbstractString,event_id::Int64,label::AbstractString)::UInt64
-    digest=content_hash(join((identity,string(event_id),label),"|"))
-    return parse(UInt64,digest[1:16];base=16)
-end
-
-"""Hash ordered Int64 pair counts for branch-by-branch identity checks."""
-pair_checksum(counts::Vector{Int64})=
-    bytes2hex(sha256(Vector{UInt8}(reinterpret(UInt8,counts))))
-
-"""Resolve primary RNG and common-realization identities independently of readout.
-
-A `primary_reference` card anchors the primary-pair stream to an existing
-realization. Its seed, W and Fano factor must match the new card; placement,
-chamber and event-limit changes then alter only the common-realization identity.
-Cards without a reference preserve the original stream hashing exactly.
-"""
-function realisation_identities(root,sample,source_sha,r)
-    reference=haskey(r,"primary_reference") ? TOML.parsefile(joinpath(root,r["primary_reference"])) : r
-    if reference!==r
-        haskey(reference,"primary_reference") && error("Primary references must point to an original card")
-        all(reference[k]==r[k] for k in ("seed","w_eV","fano_factor")) || error("Primary reference physics differs")
-        reference["samples"][sample]==r["samples"][sample] || error("Primary reference sample differs")
-    end
-    stream_values=Dict(k=>v for (k,v) in reference if !(k in ("samples","max_events_per_sample")))
-    stream_identity=content_hash(join((sample,source_sha,canonical(stream_values)),"|"))
-    values=Dict(k=>v for (k,v) in r if k!="samples")
-    realisation_id=content_hash(join((stream_identity,canonical(values)),"|"))
-    (;stream_identity,realisation_id)
-end
+include("primary_identity.jl")
 
 """Read the five pilot cards, check their identities and return resolved paths and values."""
 function load_specs(root::AbstractString,run_card::AbstractString)

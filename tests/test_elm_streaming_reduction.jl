@@ -18,6 +18,8 @@ const R=ELMSiPMReduction
             target=joinpath(dir,"manifest_$tag.toml")
             open(io->TOML.print(io,manifest),target,"w")
             response["manifest"]=target
+            # Report regeneration must succeed after the original cards disappear.
+            response["card"]=joinpath(dir,"missing-working-tree-card.toml")
         end
         open(io->TOML.print(io,files),joinpath(dir,"files.toml"),"w")
         R.main(output_dir=dir,report_name="streamed",store_inclusive=false)
@@ -27,6 +29,7 @@ const R=ELMSiPMReduction
                 a=fresh["tau_$tag/xe_he15"];b=prior["tau_$tag/xe_he15"]
                 @test length(read(a["sensor_paths"]))==2
                 @test read(a["ledger_checks"])==100
+                @test TOML.parse(String(read(a["realisation_card"]))) isa Dict
                 @test !haskey(a,"inclusive_detected_pe")
                 for key in ("detected_total","optical_charge_total","readout_total","event_mean_pe",
                     "event_max_pe","clip_loss","retained_fraction","corrected_readout_rms_percent",

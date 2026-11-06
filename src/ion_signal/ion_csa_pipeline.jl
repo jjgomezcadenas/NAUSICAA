@@ -3,6 +3,7 @@ module IonCSAProduction
 using HDF5, TOML, SHA, LinearAlgebra
 include("../../scripts/production/specs.jl")
 include("ion_csa_nonlinear_io.jl")
+include("csa_resources.jl")
 const NL=IonCSANonlinearIO
 include("ion_csa_response.jl")
 const R=IonCSAResponse
@@ -51,7 +52,7 @@ function check_calibration_resources(root,c,calibration_file)
                 isapprox(Float64(read(a["m4_gate_V"])),Float64(design["bias"]["m4_gate_V"])),
                 "CSA design operating point changed; regenerate calibration")
     end
-    nothing
+    CSAResources.verify(root,c)
 end
 
 """Owned frame-by-pad matrices in ion-charge units, with explicit pixel and time axes.
@@ -236,7 +237,7 @@ function settings(root::AbstractString,card::AbstractString)
         "scripts/production/run_ion_csa_correction.py","scripts/production/ion_csa_correction.jl",
         "src/ion_signal/ion_csa_response.jl","src/ion_signal/ion_csa_correction.jl",
         "src/ion_signal/ion_csa_nonlinear.jl","src/ion_signal/ion_csa_nonlinear_io.jl",
-        "src/ion_signal/ion_csa_nonlinear_cases.jl",
+        "src/ion_signal/ion_csa_nonlinear_cases.jl","src/ion_signal/csa_resources.jl",
         "src/ion_signal/ion_csa_summary.jl","src/ion_signal/pad_history_readout.jl",
         "src/ion_signal/bucket_study.jl","src/ion_signal/averaging_scan.jl",
         "src/ion_signal/discharge_calibration.jl","src/ion_signal/bucket_noise_covariance.jl",
@@ -245,11 +246,11 @@ function settings(root::AbstractString,card::AbstractString)
     codehash=S.content_hash(join(sha.(files),"|")*string(VERSION))
     calibration_file=resolve(root,joinpath(c["calibration_directory"],"analysis.h5"))
     require(isfile(calibration_file),"Selected circuit calibration is absent; generate it with the calibration card before running production")
-    check_calibration_resources(root,c,calibration_file)
+    resources=check_calibration_resources(root,c,calibration_file)
     calibration_hash=sha(calibration_file)
-    identity=S.content_hash(S.canonical(r)*S.canonical(c)*S.canonical(rc)*codehash*sha(resolve(root,r["ion_index"]))*calibration_hash)
+    identity=S.content_hash(S.canonical(r)*S.canonical(c)*S.canonical(rc)*codehash*sha(resolve(root,r["ion_index"]))*calibration_hash*S.canonical(resources))
     dir=resolve(root,joinpath(r["results_directory"],identity[1:16]))
-    (;root,path,r,cp,rp,c,rc,branches,files,codehash,calibration_file,calibration_hash,identity,dir)
+    (;root,path,r,cp,rp,c,rc,branches,files,codehash,calibration_file,calibration_hash,resources,identity,dir)
 end
 
 function write_toml(path,values)
@@ -351,6 +352,11 @@ function check_selection(s,path,ledger,pitch)
         require(S.canonical(TOML.parse(str(h["metadata"],"reconstruction_card_toml")))==S.canonical(s.rc),"Saved reconstruction card differs")
         m=h["metadata"]
         expected=S.content_hash(join((S.canonical(s.c),s.calibration_hash,str(m,"parent_code_hash")),"|"))
+        if haskey(m,"circuit_resources_toml")
+            saved=TOML.parse(str(m,"circuit_resources_toml"))
+            require(saved==s.resources,"Saved response circuit resources differ")
+            expected=S.content_hash(join((S.canonical(s.c),s.calibration_hash,str(m,"parent_code_hash"),S.canonical(saved)),"|"))
+        end
         require(expected==str(m,"physical_model_id"),"Saved response used a different circuit calibration")
     end
 end
@@ -428,7 +434,7 @@ function run(root,card;python=joinpath(root,"work/event-viewer-venv/bin/python")
     graphid=S.content_hash(s.identity*S.canonical([Dict("path"=>r["path"],"sha256"=>r["sha256"]) for r in responses]))
     manifest=Dict("schema"=>"nausicaa.ion_response_run.v1","graph_id"=>graphid,"run_identity"=>s.identity,
         "complete"=>true,"run_card"=>relpath(s.path,s.root),"run_card_toml"=>read(s.path,String),
-        "production_code_hash"=>s.codehash,"calibration_file"=>s.calibration_file,"calibration_sha256"=>s.calibration_hash,
+        "production_code_hash"=>s.codehash,"calibration_file"=>s.calibration_file,"calibration_sha256"=>s.calibration_hash,"circuit_resources"=>s.resources,
         "channel_selection"=>CHANNEL_POLICY,"absent_channel_policy"=>ABSENT_POLICY,
         "matrix_axes_hdf5"=>"pad,frame","matrix_axes_julia"=>"frame,pad","responses"=>responses)
     # Each source realisation exposes the same ion-stage manifest for final graph assembly.
