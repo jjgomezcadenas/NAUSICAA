@@ -1,0 +1,4 @@
+# Local hash inventories and HDF5 provenance snapshots.
+*.jsonl.gz
+*.h5
+preserved_acquisitions.json

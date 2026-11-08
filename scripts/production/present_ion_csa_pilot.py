@@ -6,6 +6,7 @@ import h5py,numpy as np
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 from ion_signal.project_paths import resolve_recorded_path
+from ion_signal.canonical_response import resolve_response, sha256
 ROOT=Path(__file__).resolve().parents[2]
 os.environ.setdefault('MPLCONFIGDIR',str(ROOT/'work/ion_csa_matplotlib'))
 import matplotlib
@@ -26,14 +27,25 @@ def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--results',required=True,type=Path);a=p.parse_args();directory=a.results.resolve()
  config=tomllib.loads((directory/'manifest.toml').read_text());run=tomllib.loads((ROOT/config['run_card']).read_text())
  plan_directory=ROOT/config['parent_study_directory'] if 'parent_study_directory' in config else directory
- with h5py.File(plan_directory/'plan.h5') as plan:
-  tolerance=tomllib.loads(plain(plan['response_card_toml'][()]))['linear_error_tolerance_ENC']
- tolerance_label=f'{tolerance:g} ENC'
  out=resolve_recorded_path(run['report_directory'])/config['study_id'];out.mkdir(parents=True,exist_ok=True)
  with h5py.File(directory/'summary.h5') as h:
   names=[plain(n) for n in h['groups'][:]];data={n:tree(h[n]) for n in names}
   calibration={k:tree(g) for k,g in h['calibration'].items() if isinstance(g,h5py.Group)}
   validation=tree(h['validation'])
+ for d in data.values():
+  m=d['meta'];original=m['response_path']
+  retained=resolve_response(original,m['response_sha256'])
+  if str(retained)!=original:
+   m['original_response_path']=original;m['original_response_sha256']=m['response_sha256']
+   m['response_path']=str(retained);m['response_sha256']=sha256(retained)
+ if (plan_directory/'plan.h5').is_file():
+  with h5py.File(plan_directory/'plan.h5') as plan:
+   response_card=plain(plan['response_card_toml'][()])
+ else:
+  with h5py.File(data[names[0]]['meta']['response_path']) as response:
+   response_card=plain(response['metadata/response_card_toml'][()])
+ tolerance=tomllib.loads(response_card)['linear_error_tolerance_ENC']
+ tolerance_label=f'{tolerance:g} ENC'
  first_meta=data[names[0]]['meta'];pitch_mm=float(first_meta['pitch_mm']);frame_ms=round(1000*float(first_meta['frame_s']));frame_key=f'{frame_ms}ms'
  event_count=len(data[names[0]]['event_id']);event_label=f'{event_count:,} events per sample';study_kind='production' if event_count>=1000 else 'pilot'
  geometry=f'{pitch_mm:g} mm / {frame_ms} ms'

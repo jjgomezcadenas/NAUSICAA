@@ -1,0 +1,41 @@
+[
+  {
+    "path": "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/response/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/75c52aa71fd9729b11fe72ceb46ea78e726bf36d37ba14740a0e0e2ef018317c/ion_response.h5",
+    "keep": "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/response/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/ee7f370ce0e906121b93e0002bc65d090301aa32e130bb68cf549e5838af02fb/ion_response.h5",
+    "allocated_bytes": 8793452544,
+    "status": "blocked on reference migration and payload verification; metadata differ",
+    "original_sha256": "2895a33ad1e0919f19734c7c3395299b44feaa0f4d7005225d704fa223e30363",
+    "published_sha256": "4a60905ccc64720298b556f2423ac1619044fa39f83c97710172751d7fa2da96",
+    "datasets_compared": 200815,
+    "attrs_compared": 24022,
+    "metadata_archive": "results/storage_cleanup/2026-11-08/75c52aa71fd9729b11fe72ceb46ea78e726bf36d37ba14740a0e0e2ef018317c_metadata.h5",
+    "receipt": "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/response/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/75c52aa71fd9729b11fe72ceb46ea78e726bf36d37ba14740a0e0e2ef018317c/ion_response.canonical.toml",
+    "elapsed_s": 174.26574725005776
+  },
+  {
+    "path": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/e673fc73860e95798fa2f7794ae533c13a59ee8517fd7108e2ceeb707ac3cbc8/4bdef73009cde802c5232863ab9803a2ad0f2cf839536ac16c3eef81d8f72cd7/ion_response.h5",
+    "keep": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/e673fc73860e95798fa2f7794ae533c13a59ee8517fd7108e2ceeb707ac3cbc8/ad19c620e476ff809a6bf1b4b2d8cfed49b042cefa68f15cfffb2fddcf3314f7/ion_response.h5",
+    "allocated_bytes": 3236872192,
+    "status": "blocked on reference migration and payload verification; metadata differ",
+    "original_sha256": "3ab0954395108dc013c45106ca9bbae5b28201c756cbe97c9d2750d3293fb168",
+    "published_sha256": "b234b3220e495814689100e18d38b81248536f22d3aeb6d13c3a7d4b8039c426",
+    "datasets_compared": 200639,
+    "attrs_compared": 24022,
+    "metadata_archive": "results/storage_cleanup/2026-11-08/4bdef73009cde802c5232863ab9803a2ad0f2cf839536ac16c3eef81d8f72cd7_metadata.h5",
+    "receipt": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/e673fc73860e95798fa2f7794ae533c13a59ee8517fd7108e2ceeb707ac3cbc8/4bdef73009cde802c5232863ab9803a2ad0f2cf839536ac16c3eef81d8f72cd7/ion_response.canonical.toml",
+    "elapsed_s": 67.17390850000083
+  },
+  {
+    "path": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/f521c1c516d61cdbce3ded04b438d5456b43c738a8dd6ef2c005098a73780054/ion_response.h5",
+    "keep": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/c6dc2ba776dc798aff5af786580f893ac1078db6128e63c3c791f504eebc349a/ion_response.h5",
+    "allocated_bytes": 1683120128,
+    "status": "blocked on reference migration and payload verification; metadata differ",
+    "original_sha256": "100359cc830152d4d5b6788d3bf0623612a0e816bbcb0217f8760b99a4205ea4",
+    "published_sha256": "912f2ad9d9e2c00d56993b20d195744570406f3fe27809c3e7f129abedaf6918",
+    "datasets_compared": 200535,
+    "attrs_compared": 24022,
+    "metadata_archive": "results/storage_cleanup/2026-11-08/f521c1c516d61cdbce3ded04b438d5456b43c738a8dd6ef2c005098a73780054_metadata.h5",
+    "receipt": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/f521c1c516d61cdbce3ded04b438d5456b43c738a8dd6ef2c005098a73780054/ion_response.canonical.toml",
+    "elapsed_s": 47.731758709065616
+  }
+]

@@ -4,6 +4,7 @@ using HDF5, TOML, SHA, LinearAlgebra
 include("../../scripts/production/specs.jl")
 include("ion_csa_nonlinear_io.jl")
 include("csa_resources.jl")
+include("guarded_files.jl")
 const NL=IonCSANonlinearIO
 include("ion_csa_response.jl")
 const R=IonCSAResponse
@@ -17,6 +18,33 @@ str(g,k) = String(read(g[k]))
 schema(h) = String(read(attributes(h)["schema"]))
 require(ok,message) = ok || throw(ArgumentError(message))
 resolve(root,path) = normpath(isabspath(path) ? path : joinpath(root,path))
+
+"""Resolve a retired corrected file through its checksum-verified publication receipt.
+
+The receipt records separate original and published SHA-256 identities. Saved
+summary hashes continue to identify the original file; the retained published
+file must declare that same parent and an unchanged numerical payload.
+"""
+function resolve_response(path::AbstractString; expected_sha256=nothing)
+    if isfile(path)
+        expected_sha256===nothing || require(sha(path)==expected_sha256,"Response checksum mismatch: $path")
+        return String(path)
+    end
+    receipt=splitext(path)[1]*".canonical.toml"
+    require(isfile(receipt),"Response and canonical receipt are absent: $path")
+    r=TOML.parsefile(receipt)
+    require(r["schema"]=="itaca.canonical_response.v1" && r["original_filename"]==basename(path),"Canonical response receipt mismatch")
+    expected_sha256===nothing || require(r["original_sha256"]==expected_sha256,"Original response checksum mismatch")
+    target=normpath(joinpath(dirname(path),r["published_relative_path"]))
+    require(isfile(target) && sha(target)==r["published_sha256"],"Published response checksum mismatch")
+    h5open(target,"r") do h
+        m=check_header(h)
+        require(schema(h)==PRODUCTION_SCHEMA && str(m,"parent_response_sha256")==r["original_sha256"] &&
+                basename(str(m,"parent_response_path"))==basename(path) &&
+                str(m,"numerical_payload")=="unchanged_from_corrected_parent","Published response parent mismatch")
+    end
+    target
+end
 
 """Verify every calibration resource represented by the saved v3 source hashes.
 
@@ -139,7 +167,7 @@ function read_event(h::HDF5.File,id::Integer)
 end
 
 """Read one event into independent arrays; subsequent mutation leaves the HDF5 input intact."""
-read_event(path::AbstractString,id::Integer) = h5open(h->read_event(h,id),path,"r")
+read_event(path::AbstractString,id::Integer) = h5open(h->read_event(h,id),resolve_response(path),"r")
 
 """Read the exact reconstructed temporal noise covariance, in elementary-charge squared."""
 function read_covariance(h::HDF5.File,nframes::Integer)
@@ -150,7 +178,7 @@ function read_covariance(h::HDF5.File,nframes::Integer)
     require(size(cv)==(nframes,nframes) && all(isfinite,cv) && issymmetric(cv),"Invalid frame covariance")
     cv
 end
-read_covariance(path::AbstractString,nframes::Integer) = h5open(h->read_covariance(h,nframes),path,"r")
+read_covariance(path::AbstractString,nframes::Integer) = h5open(h->read_covariance(h,nframes),resolve_response(path),"r")
 
 """Replay all source cells against a corrected response and return a compact validation ledger.
 
@@ -159,6 +187,7 @@ assignment, zero buckets, noise covariance and input charge. An optional source
 path supports relocation while preserving its content identity.
 """
 function validate_response(path::AbstractString;source_path=nothing)
+    path=resolve_response(path)
     h5open(path,"r") do h
         m=check_header(h);source=source_path===nothing ? str(m,"source_path") : String(source_path)
         require(isfile(source) && sha(source)==str(m,"source_sha256"),"Upstream ion content changed")
@@ -237,7 +266,7 @@ function settings(root::AbstractString,card::AbstractString)
         "scripts/production/run_ion_csa_correction.py","scripts/production/ion_csa_correction.jl",
         "src/ion_signal/ion_csa_response.jl","src/ion_signal/ion_csa_correction.jl",
         "src/ion_signal/ion_csa_nonlinear.jl","src/ion_signal/ion_csa_nonlinear_io.jl",
-        "src/ion_signal/ion_csa_nonlinear_cases.jl","src/ion_signal/csa_resources.jl",
+        "src/ion_signal/ion_csa_nonlinear_cases.jl","src/ion_signal/csa_resources.jl","src/ion_signal/guarded_files.jl",
         "src/ion_signal/ion_csa_summary.jl","src/ion_signal/pad_history_readout.jl",
         "src/ion_signal/bucket_study.jl","src/ion_signal/averaging_scan.jl",
         "src/ion_signal/discharge_calibration.jl","src/ion_signal/bucket_noise_covariance.jl",
@@ -267,8 +296,8 @@ function study_responses(s,study)
             g=h[name]
             g isa HDF5.Group && haskey(attributes(g),"response_path") || continue
             a=attributes(g);p=String(read(a["response_path"]))
-            require(haskey(a,"response_sha256") && isfile(p) && sha(p)==String(read(a["response_sha256"])),
-                    "Saved corrected response differs from its study summary: $p")
+            require(haskey(a,"response_sha256"),"Saved corrected response has no summary checksum: $p")
+            p=resolve_response(p;expected_sha256=String(read(a["response_sha256"])))
             push!(paths,p)
         end
         paths
@@ -337,6 +366,7 @@ function simulate_branch(s,b;python,simulator=nothing,workers=4)
 end
 
 function check_selection(s,path,ledger,pitch)
+    path=resolve_response(path)
     require(ledger.pitch_mm==pitch && ledger.sample in s.r["samples"],"Saved study sample/pitch mismatch")
     h5open(resolve(s.root,s.r["ion_index"]),"r") do h
         require(sha(str(h,"$(ledger.sample)/ions/$pitch/path"))==ledger.source_sha256,"Saved study is from a different ion index")
@@ -362,6 +392,18 @@ function check_selection(s,path,ledger,pitch)
 end
 
 function publish(s,parent,ledger)
+    # A retained production node already owns the corrected numerical arrays.
+    if h5open(h->schema(h)==PRODUCTION_SCHEMA,parent,"r")
+        manifest=joinpath(dirname(parent),"production_manifest.toml")
+        require(isfile(manifest),"Published response manifest is absent")
+        m=TOML.parsefile(manifest)
+        require(get(m,"complete",false) && m["sha256"]==sha(parent),"Published response checksum mismatch")
+        h5open(parent,"r") do h
+            require(m["response_id"]==str(h["metadata"],"response_id") &&
+                    m["parent_sha256"]==str(h["metadata"],"parent_response_sha256"),"Published response identity mismatch")
+        end
+        return parent
+    end
     parenthash=sha(parent)
     nodeid=S.content_hash(parenthash*s.codehash*CHANNEL_POLICY*ABSENT_POLICY*PRODUCTION_SCHEMA)
     # Corrected responses are response/ions/<ion_output_id>/<response_id>/ion_response.h5.
@@ -377,12 +419,13 @@ function publish(s,parent,ledger)
         validate_response(target)
         return target
     end
-    tmp=target*".tmp";cp(parent,tmp;force=true)
-    h5open(tmp,"r+") do h
+    GuardedFiles.staged_copy(parent,target;expected_sha256=parenthash) do tmp,check!
+      h5open(tmp,"r+") do h
         HDF5.delete_attribute(h,"schema");attributes(h)["schema"]=PRODUCTION_SCHEMA;m=h["metadata"];write(m["complete"],false)
         function put(k,v)
             haskey(m,k) && HDF5.delete_object(m,k)
             m[k]=v
+            flush(h);check!()
         end
         put("parent_response_path",parent);put("parent_response_sha256",parenthash)
         put("response_id",nodeid);put("production_code_hash",s.codehash)
@@ -393,8 +436,9 @@ function publish(s,parent,ledger)
         put("production_run_card_toml",read(s.path,String))
         write(m["complete"],true)
     end
-    validate_response(tmp)
-    mv(tmp,target)
+      check!()
+      validate_response(tmp)
+    end
     write_toml(joinpath(dirname(target),"production_manifest.toml"),Dict("schema"=>"nausicaa.ion_response_node.v1",
         "response_id"=>nodeid,"response_file"=>target,"sha256"=>sha(target),"parent_response"=>parent,
         "parent_sha256"=>parenthash,"channel_selection"=>CHANNEL_POLICY,"absent_channel_policy"=>ABSENT_POLICY,"complete"=>true))
@@ -424,7 +468,8 @@ function run(root,card;python=joinpath(root,"work/event-viewer-venv/bin/python")
             shared[ledger.sample]=signature
             output=publish(s,parent,ledger)
             values=Dict{String,Any}(string(k)=>v for (k,v) in pairs(ledger))
-            values["parent_corrected_response"]=parent;values["path"]=output;values["sha256"]=sha(output)
+            values["parent_corrected_response"]=h5open(output,"r") do h;str(h["metadata"],"parent_response_path");end
+            values["path"]=output;values["sha256"]=sha(output)
             h5open(output,"r") do h;values["response_id"]=str(h["metadata"],"response_id");end
             push!(responses,values)
             println("Published $(ledger.sample), $(ledger.pitch_mm) mm: $output")
@@ -442,7 +487,7 @@ function run(root,card;python=joinpath(root,"work/event-viewer-venv/bin/python")
         write_toml(joinpath(base,"runs",graphid,"ion_manifest.toml"),manifest)
     end
     for p in s.files
-        dest=joinpath(s.dir,"source_snapshot",sha(p),basename(p));mkpath(dirname(dest));cp(p,dest;force=true)
+        dest=joinpath(s.dir,"source_snapshot",sha(p),basename(p));mkpath(dirname(dest));GuardedFiles.checked_copy(p,dest;force=true)
     end
     path=write_toml(joinpath(s.dir,"manifest.toml"),manifest)
     write_toml(joinpath(dirname(s.dir),"latest.toml"),Dict("manifest"=>path,"run_identity"=>s.identity,"graph_id"=>graphid))

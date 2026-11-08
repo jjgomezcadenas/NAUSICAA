@@ -3,6 +3,7 @@ using HDF5,LinearAlgebra,Statistics,Random,SHA,TOML,Test
 include("../../scripts/production/specs.jl")
 include("ion_csa_summary.jl")
 include("ion_csa_nonlinear_io.jl")
+include("guarded_files.jl")
 const S=ProductionSpecs
 sha(p)=open(io->bytes2hex(sha256(io)),p)
 attrs(g)=Dict(k=>read(attributes(g)[k]) for k in keys(attributes(g)))
@@ -73,7 +74,7 @@ function setup(root,runpath)
  c["method"]=="three_frame_inverse" && c["noise"]=="exact_covariance_transform" || error("Unknown reconstruction")
  !c["nonnegative_constraint"] && !c["signal_to_noise_cut"] || error("This calculation preserves signed, uncut estimates")
  parent=joinpath(root,r["parent_study"]);summary=joinpath(parent,"summary.h5")
- files=[@__FILE__,joinpath(@__DIR__,"ion_csa_summary.jl"),joinpath(root,"scripts/production/specs.jl"),joinpath(root,"scripts/production/ion_csa_correction.jl")]
+ files=[@__FILE__,joinpath(@__DIR__,"guarded_files.jl"),joinpath(@__DIR__,"ion_csa_summary.jl"),joinpath(root,"scripts/production/specs.jl"),joinpath(root,"scripts/production/ion_csa_correction.jl")]
  codehash=bytes2hex(sha256(join(sha.(files),"|")))
  sources=NamedTuple[]
  h5open(summary,"r") do h
@@ -307,7 +308,7 @@ function correct(s)
  end
  end
  for p in s.files
-  target=joinpath(s.dir,"source_snapshot",sha(p),basename(p));mkpath(dirname(target));cp(p,target;force=true)
+  target=joinpath(s.dir,"source_snapshot",sha(p),basename(p));mkpath(dirname(target));GuardedFiles.checked_copy(p,target;force=true)
  end
  open(joinpath(s.dir,"manifest.toml"),"w") do io
   TOML.print(io,Dict("study_id"=>s.studyid,"model_id"=>s.modelid,"code_hash"=>s.codehash,"run_card"=>relpath(s.path,s.root),"parent_study_directory"=>s.r["parent_study"],"reconstruction_method"=>"three_frame_inverse","reconstruction_card"=>relpath(s.cp,s.root),"parent_response_paths"=>[x.parentpath for x in s.sources],"parent_response_hashes"=>[x.parenthash for x in s.sources]))

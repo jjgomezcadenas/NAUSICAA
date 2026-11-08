@@ -1,0 +1,47 @@
+[
+  {
+    "pitch_mm": 2,
+    "event_number": 1,
+    "ok": true
+  },
+  {
+    "pitch_mm": 2,
+    "event_number": 3791,
+    "ok": true
+  },
+  {
+    "pitch_mm": 2,
+    "event_number": 8000,
+    "ok": true
+  },
+  {
+    "pitch_mm": 3,
+    "event_number": 1,
+    "ok": true
+  },
+  {
+    "pitch_mm": 3,
+    "event_number": 3791,
+    "ok": true
+  },
+  {
+    "pitch_mm": 3,
+    "event_number": 8000,
+    "ok": true
+  },
+  {
+    "pitch_mm": 4,
+    "event_number": 1,
+    "ok": true
+  },
+  {
+    "pitch_mm": 4,
+    "event_number": 3791,
+    "ok": true
+  },
+  {
+    "pitch_mm": 4,
+    "event_number": 8000,
+    "ok": true
+  }
+]

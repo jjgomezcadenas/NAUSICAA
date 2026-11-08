@@ -1,0 +1,12 @@
+event_count = 8000
+recovery_wall_s = 200.212150083
+growth_percent = 5.923726130770446e-5
+source_sha256 = "2895a33ad1e0919f19734c7c3395299b44feaa0f4d7005225d704fa223e30363"
+input_ion_total = 897306359
+published_bytes = 8793456974
+published_path = "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/response/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/ee7f370ce0e906121b93e0002bc65d090301aa32e130bb68cf549e5838af02fb/ion_response.h5"
+published_sha256 = "4a60905ccc64720298b556f2423ac1619044fa39f83c97710172751d7fa2da96"
+maximum_growth_percent = 10
+source_bytes = 8793451765
+source_path = "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/response/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/75c52aa71fd9729b11fe72ceb46ea78e726bf36d37ba14740a0e0e2ef018317c/ion_response.h5"
+complete = true

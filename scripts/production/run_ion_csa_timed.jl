@@ -14,7 +14,9 @@ Run a single-pitch, production-mode CSA card against fresh filtered outputs.
 Save source/circuit preflight hashes and covariance setup time separately from
 the complete response calculation. The calculation retains all selected events
 and signed buckets. The final timing summary reports seconds per event excluding
-calibration setup and Python presentation, plus the complete measured wall time.
+calibration setup, final presentation and publication/registration, plus the
+complete measured wall time. Publication/registration includes pipeline setup
+outside the timed numerical branch.
 Existing filtered outputs cause an error so cache reuse cannot masquerade as a
 fresh-production benchmark. The run manifest and library validate output ledgers.
 """
@@ -50,14 +52,19 @@ function main(card)
     end
     before=time_ns();P.R.calibration(probe,maxframes);calibration_s=(time_ns()-before)/1e9
     println("FRESH PRODUCTION pitch=$pitch mm events=$(s.r["events_per_sample"]) covariance_setup_s=$calibration_s");flush(stdout)
+    provenance["module_loading_s"]=loaded_s;provenance["calibration_setup_s"]=calibration_s
+    provenance["maximum_frames"]=maxframes
+    P.write_toml(joinpath(s.dir,"preflight.toml"),provenance)
     before=time_ns();manifest=P.run(ROOT,card);run_s=(time_ns()-before)/1e9
     @assert P.settings(ROOT,card).codehash==s.codehash "CSA code changed during production"
     for (key,path) in inputs;@assert sha(path)==provenance[key*"_sha256"];end
-    timing=TOML.parsefile(joinpath(base,"timing.toml"));work_s=run_s-timing["presentation_s"]
+    timing=TOML.parsefile(joinpath(base,"timing.toml"));work_s=timing["numerical_s"]
+    publication_s=run_s-timing["branch_total_s"]
     n=s.r["events_per_sample"]*length(s.r["samples"])
     summary=Dict{String,Any}("complete"=>true,"manifest"=>manifest,"events"=>n,"pitch_mm"=>pitch,
         "fresh_filtered_outputs"=>true,"module_loading_s"=>loaded_s,"calibration_setup_s"=>calibration_s,
         "maximum_frames"=>maxframes,"response_run_s"=>run_s,"event_work_s"=>work_s,
+        "publication_registration_s"=>publication_s,
         "event_work_seconds_per_event"=>work_s/n,"complete_wall_s"=>(time_ns()-entry_started)/1e9)
     merge!(summary,timing)
     P.write_toml(joinpath(s.dir,"production_timing.toml"),summary)

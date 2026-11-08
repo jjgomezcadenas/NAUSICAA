@@ -1,0 +1,44 @@
+[
+  {
+    "port": 8768,
+    "pid": 82845,
+    "previous_pid": 5632,
+    "input_args": [
+      "--readout",
+      "results/grid_readout_direct_3mm_8000"
+    ],
+    "info_ok": true,
+    "event_number": 1,
+    "event_ok": true,
+    "json_bytes": 84138,
+    "log": "work/storage_cleanup/viewer_8768.log"
+  },
+  {
+    "port": 8769,
+    "pid": 82850,
+    "previous_pid": 71976,
+    "input_args": [
+      "--production",
+      "config/specs/runs/elm_matched_response_viewer.toml"
+    ],
+    "info_ok": true,
+    "event_number": 1,
+    "event_ok": true,
+    "json_bytes": 1376007,
+    "log": "work/storage_cleanup/viewer_8769.log"
+  },
+  {
+    "port": 8774,
+    "pid": 82853,
+    "previous_pid": 29122,
+    "input_args": [
+      "--production",
+      "work/elm_matched_viewer_smoke.toml"
+    ],
+    "info_ok": true,
+    "event_number": 1,
+    "event_ok": true,
+    "json_bytes": 1375822,
+    "log": "work/storage_cleanup/viewer_8774.log"
+  }
+]

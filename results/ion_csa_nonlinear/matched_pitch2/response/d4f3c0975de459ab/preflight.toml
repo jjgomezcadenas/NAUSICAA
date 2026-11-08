@@ -1,0 +1,17 @@
+production_code_hash = "b98657e19dcdeb25ed7ec274f317791f40deba2105d84f0a11536315f6c821db"
+source_sha256 = ["049ce63452dc1afd78c230af61380d8b644a2251730c3c584c37502adf208c09"]
+calibration_setup_s = 64.733484833
+actual_deck_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/csa_v3_response_calibration/decks/length_1200um/30ms_single_N100_r2.cir"
+nonlinear_calibration_sha256 = "d7a017c205a90f0aa850b32dba5ce79bf5b8f89c61a1094c9cfbb91ec74be889"
+kernel_waveform_sha256 = "49a819e0e4e7c979fd9b0624c34bd6c9983578dd0954a94ae6b2a9df33b05692"
+maximum_frames = 1433
+source_paths = ["/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/detector/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/ions.h5"]
+card = "config/specs/runs/ion_csa_nonlinear_matched_pitch2_full.toml"
+actual_deck_sha256 = "825b2ef412215a728154f0c81c8facc9a0bbecf145339a9f71287376a9029608"
+script_sha256 = "e4309cbc96e11588f854f5232c18318b21e32c2a3a8daa91bd3dd5fbd4e82d50"
+actual_model_sha256 = "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608"
+module_loading_s = 4.678864375
+nonlinear_calibration_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_nonlinear/v1/calibration.h5"
+actual_model_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/csa_v3_response_calibration/decks/length_1200um/corrected.inc"
+fresh_filtered_outputs = true
+kernel_waveform_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ltspice/csa_v3_response_calibration/variants/length_1200um.h5"

@@ -1,0 +1,289 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ITACA storage audit · 2026-11-08</title><style>
+body{max-width:1100px;margin:40px auto;padding:0 24px;font:17px/1.55 system-ui;color:#1c2835;background:#fafbfc}h1,h2{color:#163a5f}h2{margin-top:2em}table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;vertical-align:top;border-bottom:1px solid #d3dce5;padding:10px}th{background:#eaf0f6}code{font-size:.85em;overflow-wrap:anywhere}a{color:#175f9c}p,li{max-width:1000px}@media print{body{margin:0;background:white;font-size:11pt}table{font-size:9pt}}</style><main><p><strong>Approved cleanup completed:</strong> <a href="storage_cleanup_2026-11-08.html">execution report</a>. This audit records the pre-cleanup state.</p><h1>Storage audit — 2026-11-08</h1>
+<p>The project occupies <strong>233.0 GiB</strong>, including <strong>228.4 GiB in <code>results/</code></strong>.
+The external raw-event directory <code>/Users/jjgomezcadenas/NAUSICAA</code> occupies another
+<strong>2.18 GiB</strong>. It contains the original G4 files, not an obsolete project copy.
+No files were deleted during this audit.</p>
+<h2>Recommended cleanup</h2>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th style="text-align:right">Potential recovery</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prepared CSA inputs in older runs</td>
+<td style="text-align:right"><strong>22.06 GiB</strong></td>
+<td>Retain acquisitions, cards, source revision, jobs and hashes; regenerate plans/PWL before rerunning these historical studies</td>
+</tr>
+<tr>
+<td>Superseded binned diffusion/readout caches</td>
+<td style="text-align:right"><strong>5.74 GiB</strong></td>
+<td>First retain the compact legacy regression fixture</td>
+</tr>
+<tr>
+<td>Duplicate corrected parents of current published responses</td>
+<td style="text-align:right"><strong>12.77 GiB</strong></td>
+<td>First migrate registration/report references and verify retained numerical payloads</td>
+</tr>
+<tr>
+<td>Audit worktree and older Julia cache</td>
+<td style="text-align:right"><strong>about 1.22 GiB</strong></td>
+<td>Preserve two modified PDFs; confirm the old cache is unused</td>
+</tr>
+</tbody>
+</table>
+<p>The first two groups total <strong>27.80 GiB</strong>. Including response deduplication
+gives <strong>40.57 GiB</strong>, before scratch cleanup. These groups do not overlap.
+This is a cleanup proposal, not an executable deletion list. File paths and
+conditions are recorded in <a href="storage_audit_2026-11-08.json">the candidate manifest</a>.</p>
+<h2>Where the space goes</h2>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th style="text-align:right">Allocated GiB</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>results/simulations/production_pilot</code></td>
+<td style="text-align:right">96.07</td>
+<td>Detector and electronics outputs from many generations; the directory name also covers current full productions</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_0p5_enc_production_4mm</code></td>
+<td style="text-align:right">30.35</td>
+<td>Earlier completed 0.63 V production and interrupted 0.61 V attempt</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_bb0nu_3mm_production</code></td>
+<td style="text-align:right">18.50</td>
+<td>Stopped earlier 0.1 ENC workflow, including prepared inputs and acquired SPICE histories</td>
+</tr>
+<tr>
+<td><code>results/elm_matched_production</code></td>
+<td style="text-align:right">16.32</td>
+<td>Current matched production and nonlinear calibration evidence</td>
+</tr>
+<tr>
+<td><code>results/ltspice</code></td>
+<td style="text-align:right">14.08</td>
+<td>Design, history, reproduction and calibration studies</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_nonlinear</code></td>
+<td style="text-align:right">11.79</td>
+<td>Current pitch scans, plans, calibration and benchmarks</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_0p5_enc_production</code></td>
+<td style="text-align:right">9.96</td>
+<td>Earlier 3 mm production supplying nonlinear validation histories</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_0p5_enc_production_2mm</code></td>
+<td style="text-align:right">7.86</td>
+<td>Earlier 2 mm production supplying nonlinear validation histories</td>
+</tr>
+<tr>
+<td><code>work</code></td>
+<td style="text-align:right">2.20</td>
+<td>Review worktree, runtime environments and scratch studies</td>
+</tr>
+<tr>
+<td><code>.git</code></td>
+<td style="text-align:right">1.94</td>
+<td>Repository history; deleting working outputs does not remove historical Git objects</td>
+</tr>
+</tbody>
+</table>
+<p>Figures are allocated-size estimates, in GiB (2^30 bytes), from <code>du</code> and file
+metadata. APFS shared/cloned storage may make the change in free space differ.
+Rows are selected major directories rather than a complete partition.</p>
+<h2>1. Prepared inputs: first cleanup target</h2>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th style="text-align:right">GiB</th>
+<th style="text-align:right">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>results/ion_csa_0p5_enc_production_4mm</code>: plans and PWL only</td>
+<td style="text-align:right">7.22</td>
+<td style="text-align:right">54,322</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_bb0nu_3mm_production</code>: plans and PWL only</td>
+<td style="text-align:right">14.84</td>
+<td style="text-align:right">123,344</td>
+</tr>
+</tbody>
+</table>
+<p>Only files named <code>plan.h5</code> and files ending in <code>.pwl</code> are included in this group.
+None of these selected files is tracked by Git. Preserve <code>raw.h5</code>, refined and
+rejected acquisitions, model/deck inputs, <code>input.toml</code>, <code>jobs.toml</code>, cards,
+summaries, provenance and generated reports. Preserve the hash inventory before
+removing generated inputs.</p>
+<p>The stopped 3 mm workflow has 123,343 PWL files (<strong>12.45 GiB</strong>) and one plan
+(<strong>2.39 GiB</strong>). The two older 4 mm studies have 54,320 PWL files (<strong>4.74 GiB</strong>)
+and two plans (<strong>2.48 GiB</strong>). These inputs are generated by the preparation
+stage. Their removal means a historical simulation must prepare them again.</p>
+<p>These directories are outside the current nonlinear calibration card's training
+and validation roots. <code>scripts/production/run_ion_csa_pilot.py</code> copies reused
+acquisitions; it does not leave a symlink to the old raw waveform. Removing PWL
+inputs does prevent its old-case hash-matching reuse until those inputs are
+regenerated. The historical default in <code>scripts/production/run_response_case.py</code>
+still selects the stopped 3 mm workflow; update that entry point or document its
+required preparation when cleaning this group.</p>
+<p>The rest of the two older 4 mm directories contains substantial acquired data.
+Do not delete them wholesale: compare raw waveform hashes and retain unique
+histories before considering a second cleanup of those directories.</p>
+<h2>2. Superseded diffusion caches</h2>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th style="text-align:right">GiB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>results/three_clouds_8000</code></td>
+<td style="text-align:right">4.67</td>
+</tr>
+<tr>
+<td><code>results/grid_readout_8000</code></td>
+<td style="text-align:right">0.78</td>
+</tr>
+<tr>
+<td><code>results/three_cloud_sample_500</code></td>
+<td style="text-align:right">0.29</td>
+</tr>
+</tbody>
+</table>
+<p>These preserve the histogram-centre transport/readout method superseded by direct
+physical carrier assignment. See <a href="../diffusion_sampling_fix.md">the diffusion correction</a>
+and <a href="../decisions.md">the decision record</a>. Their pad/time distributions are
+historical, and current matched productions use direct assignment.</p>
+<p><code>tests/event_analysis/check_direct_replay.jl</code> still reads the old ion cloud and
+readout files for the single-electron events <strong>0 and 3790</strong>. Before removing the
+full caches, extract those event groups plus required metadata into a compact
+fixture and update the regression paths. Preserve its direct-readout comparison
+inputs as well. The legacy grid launcher also defaults to the old clouds;
+document regeneration or update that historical entry point. Reports, scripts,
+cards and recorded comparisons stay in the repository.</p>
+<p><code>results/diffused_tracks</code> occupies another <strong>1.60 GiB</strong>, but was not included in
+this recommended total: its remaining historical callers require a separate
+dependency check.</p>
+<h2>3. Duplicate current corrected responses</h2>
+<table>
+<thead>
+<tr>
+<th>Corrected parent ID prefix</th>
+<th style="text-align:right">GiB</th>
+<th>Published output to retain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>75c52aa71fd9</code></td>
+<td style="text-align:right">8.19</td>
+<td><code>ee7f370ce0e9</code></td>
+</tr>
+<tr>
+<td><code>4bdef73009cd</code></td>
+<td style="text-align:right">3.01</td>
+<td><code>ad19c620e476</code></td>
+</tr>
+<tr>
+<td><code>f521c1c516d6</code></td>
+<td style="text-align:right">1.57</td>
+<td><code>c6dc2ba776dc</code></td>
+</tr>
+</tbody>
+</table>
+<p>The complete paths are in the candidate manifest. The published files identify
+their numerical payload as unchanged from the corrected parent; publication adds
+schema and provenance metadata. They are numerical duplicates, not byte-identical
+files. Preserve the published outputs used by the current productions.</p>
+<p><code>src/ion_signal/ion_csa_pipeline.jl:publish</code> hashes and reads the parent even when
+checking an existing published output. Registration and provenance paths therefore
+still require the parent today. Before removing it, implement canonical published
+file lookup, preserve parent hashes and metadata, verify numerical equivalence,
+and test viewer loading and presentation-only regeneration. Do not replace one
+file with a symlink to a different-hash schema and claim its original hash remains
+valid.</p>
+<p>The current filtered response files occupy another <strong>10.84 GiB</strong>. They are a
+different response stage, not duplicate corrected files. Retiring those is a
+separate choice about retaining filtered/noise diagnostics and regeneration.</p>
+<h2>4. Older configurations and scratch</h2>
+<p>The earlier bb0nu realization <code>c25084b9e721…</code> contains about <strong>45.94 GiB of
+electronics responses</strong> and <strong>1.97 GiB of detector inputs</strong>. Its full 2/3/4 mm
+ion filtered/corrected responses account for <strong>24.27 GiB</strong>. This is the largest
+additional retirement opportunity once we choose which historical configurations
+to retain. It includes different optical/electronics configurations, so age or
+filename alone does not establish duplication. Keep the much smaller detector
+photon/ion inputs to permit electronics reprocessing. This optional retirement
+is separate from the recommended totals above.</p>
+<p>Preserve the <code>single_electrons</code> realization: it is the background sample, not a
+duplicate of bb0nu. Preserve earlier pure-Xe inputs when retaining gas comparisons;
+the current matched ELM production is Xe–He only.</p>
+<p><code>work/repository_review/baseline_worktree</code> occupies <strong>1.00 GiB</strong>. Its Git status
+shows modified copies of <code>manuscripts/itaca3/itaca3.pdf</code> and
+<code>latex_generated/electron_readout/elm_matched_production/elm_matched_production.pdf</code>.
+Compare or preserve these before removing the worktree with Git's worktree command.
+Keep the completed review, diagnostic logs and sub-review notes outside it.</p>
+<p><code>work/julia_depot</code> occupies <strong>0.22 GiB</strong>; current commands use <code>work/julia-depot</code>
+(hyphen). Check outstanding processes and launcher references before removing
+the older underscore cache. Keep the active depot and <code>work/event-viewer-venv</code>.
+Browser profiles and scratch benchmarks offer smaller savings after confirming
+their applications have stopped. Their space is not included in the main totals.</p>
+<h2>Protected evidence and inputs</h2>
+<p>The nonlinear training card
+<code>config/specs/response/ion_csa/nonlinear_calibration_v1.toml</code> refers to:</p>
+<ul>
+<li><code>results/elm_matched_production/ion_csa/359613d487dfeee8/execution/pitch4/filtered/5bcfd782ef02bcad</code></li>
+<li><code>results/ion_csa_0p5_enc_production/0127dbf33ad328c8</code></li>
+<li><code>results/ion_csa_0p5_enc_production_2mm/da95679c2bfc42f2</code></li>
+</ul>
+<p>The saved calibration contains <strong>9,391 validation waveform paths</strong>, all present
+at inspection: 5,991 matched-production, 2,898 older 3 mm and 502 older 2 mm
+histories. Retain the training inputs, selected raw histories, calibration,
+validation inputs and summaries needed to reproduce the validation. A small
+deployable calibration file alone does not replace this evidence.</p>
+<p>Retain current matched 2/3/4 mm published ion responses, matched Xe–He photon,
+SiPM and electronics files, detector inputs and primary ledgers. Keep the current
+manifests, exact cards and hashes. Do not remove <code>results/ltspice</code> as a unit:
+its studies include circuit/kernel and calibration dependencies.</p>
+<p>Keep all original G4 files, reduced hit files, source code, tests, TOML, notes,
+manuscripts, papers and generated HTML/TeX/PDF reports. The report tree is only
+about <strong>50 MiB</strong> and <code>papers/</code> about <strong>83 MiB</strong>. They are not the storage problem.
+The faulty 341.7 GB temporary copy was already removed before this audit and is
+not counted as a future saving.</p>
+<h2>Cleanup execution procedure</h2>
+<ol>
+<li>Select the candidate groups and preserve their path/size/hash inventory.</li>
+<li>Check for active jobs and open files immediately before deletion; this audit
+does not certify that a later cleanup has no active writers.</li>
+<li>Extract the regression fixture and migrate duplicate-response references where
+required. Verify current viewer loading and report regeneration.</li>
+<li>Delete only the enumerated generated files, retaining acquired histories and
+all scientific source/provenance artifacts. Removing a directory merely because
+its name includes “pilot” would also remove current full production files.</li>
+<li>Measure free space again and record actual recovery and retained manifests.</li>
+</ol>
+<p>The local detailed inventories and inspection scripts are under
+<code>work/storage_audit/</code>. The large-file inventory includes 3,081 files of at least
+1,000,000 bytes; directory totals also include smaller files. The dedicated
+prepared-input inventory includes all selected PWL files regardless of size.
+This audit used size inventories, HDF5 headers, cards, source references and Git
+status. It did not perform a full bytewise deduplication of all acquired histories.</p>
+</main></html>

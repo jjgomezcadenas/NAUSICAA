@@ -36,6 +36,8 @@ def main(pitch):
     rows.extend((label,timing[key]) for key,label in labels.items() if key in timing)
     rows.extend([('Event work excluding calibration and final presentation',timing['event_work_s']),
                  ('Event work per event',timing['event_work_seconds_per_event'])])
+    if 'publication_registration_s' in timing:
+        rows.append(('Publication, registration and pipeline setup',timing['publication_registration_s']))
     if 'complete_wall_s' in timing:
         rows.append(('Complete CSA wall time',timing['complete_wall_s']))
     if 'recovery_wall_s' in timing:
@@ -49,13 +51,15 @@ def main(pitch):
         f'The CSA used {stats["nonlinear_pads"]:,} nonlinear histories and {stats["direct_spice_pads"]:,} SPICE fallback histories among '
         f'{stats["pads"]:,} pad histories. Production creates no SPICE control histories. '
         'Fresh filtered outputs were asserted before the run; actual circuit-deck, model, kernel-waveform and calibration checksums are saved in preflight.toml.')
-    if timing.get('publication_recovered'):
+    if timing.get('publication_recovery_method') == 'bounded_copy_after_failed_temporary_removed':
+        summary += (' Publication initially failed in the Julia sendfile copy. The oversized temporary was removed after verification of the corrected source. A bounded, checksum-verified copy completed publication with a 10% metadata-growth limit. Numerical timing covers the original calculation; publication recovery and registration are timed separately.')
+    elif timing.get('publication_recovered'):
         summary += (' Julia sendfile reported an error after producing a byte-identical publication copy. The saved copy was verified by SHA256, its production metadata completed and its event ledgers validated before registration. Numerical timing covers the completed fresh calculation; recovery and registration are timed separately.')
     block=(r'\section{Matched production and timing}'+'\n'+summary+'\n'+
         r'\begin{center}\small\begin{tabular}{p{11cm}r}\toprule Stage & Seconds\\\midrule'+'\n'+latexrows+'\n'+
         r'\bottomrule\end{tabular}\end{center}'+'\n'+
         'The numerical timer includes screening, nonlinear response, noise, reconstruction, output writing and consistency checks. '
-        'Covariance calibration and final presentation are separated. Event work includes fallback orchestration and its internal report generation when SPICE fallbacks occur. Stage and complete times are nested; the per-event value divides measured event work by 8,000.\n')
+        'Covariance calibration, final presentation and publication are separated. Event work includes fallback orchestration and its internal report generation when SPICE fallbacks occur. Stage and complete times are nested; the per-event value divides measured event work by 8,000.\n')
     (out/'production_timing.tex').write_text(block)
     tex=source.read_text().replace(r'\begin{document}',r'\author{Generated production results}'+'\n'+r'\begin{document}')
     tex=tex.replace(r'\maketitle',r'\maketitle'+'\n'+r'\input{production_timing.tex}')

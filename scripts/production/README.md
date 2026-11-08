@@ -19,7 +19,7 @@ histories only.
 Run the full pipeline from the repository root:
 
 ```sh
-JULIA_DEPOT_PATH="$PWD/work/julia_depot:$HOME/.julia" \
+JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia" \
   PYTHON=python3.13 python3.13 scripts/production/run_grid_scan.py
 ```
 
@@ -27,7 +27,7 @@ To regenerate the scan index and report from the completed joint run and ion
 files without repeating transport:
 
 ```sh
-JULIA_DEPOT_PATH="$PWD/work/julia_depot:$HOME/.julia" \
+JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia" \
   PYTHON=python3.13 python3.13 scripts/production/run_grid_scan.py \
   --full-summary results/simulations/production_pilot/pilot_summary_238ddc5a75e0fd9b.h5
 ```
@@ -51,7 +51,7 @@ time integration is applied. Regenerate the numerical HDF5 reduction, browser
 page, figures and PDF in one command:
 
 ```sh
-JULIA_DEPOT_PATH="$PWD/work/julia_depot:$HOME/.julia" \
+JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia" \
   python3.13 scripts/production/run_readout_pulses.py
 ```
 
@@ -68,7 +68,7 @@ both samples and leaves the ion histories intact. Run from the repository
 root:
 
 ```sh
-JULIA_DEPOT_PATH="$PWD/work/julia_depot:$HOME/.julia" \
+JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia" \
   julia --project=. scripts/production/run_electron_250ns.jl \
   config/specs/runs/electron_250ns.toml
 python3.13 scripts/production/present_electron_250ns.py \

@@ -9,8 +9,9 @@ function key_counts(f,id)
 end
 
 function audit(sample,id)
-    cp="results/three_clouds_8000/$(sample)_ion.h5"
-    rp="results/grid_readout_8000/$(sample)_ion.h5"
+    sample=="electrons" || error("The retained regression fixture contains the electron sample")
+    cp="results/validation/direct_replay_fixture/cloud.h5"
+    rp="results/validation/direct_replay_fixture/readout.h5"
     h5open(cp,"r") do cf
         h5open(rp,"r") do rf
             c=cf["events/$(id)"];r=rf["events/$(id)"]

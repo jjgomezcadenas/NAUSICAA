@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>ITACA · bounded file publication</title>
+<style>body{font:17px/1.6 system-ui;max-width:1050px;margin:40px auto;padding:0 24px;color:#183247}td,th{text-align:left;padding:12px;border-bottom:1px solid #ccd8df}table{border-collapse:collapse;width:100%}code{font-size:.9em}</style>
+<h1>File-copy failure: confirmed cause and guards</h1><p>8 November 2026</p>
+<h2>Cause</h2><p>Julia 1.12.6 truncates the transferred byte count to a signed 32-bit integer in its sendfile path. The copy loop repeats when this count becomes zero. A bounded two-call experiment confirmed the failure without running the unbounded loop.</p>
+<table><tr><th>Call</th><th>Bytes written</th><th>Bytes reported</th></tr>
+<tr><td>First</td><td>4,295,032,832</td><td>65,536</td></tr>
+<tr><td>Second</td><td>4,294,967,296</td><td>0</td></tr></table>
+<p>The 341.7 GB failed temporary was removed after verifying the completed source. Our missing size guard and failure cleanup allowed the runtime failure to exhaust the disk.</p>
+<h2>Protections</h2><ul><li>Bounded 8 MiB reads/writes; exact copy length and SHA-256.</li><li>At most 10% growth for publication metadata, checked after each flushed update.</li><li>Disk-space checks and a 1 GiB reserve.</li><li>Unique temporary, cleanup on failure and atomic publication.</li></ul>
+<h2>Verified on the production output</h2><p>The guarded publication completed all 8,000 events and 897,306,359 ions. The 8,793,451,765-byte source became 8,793,456,974 bytes: only 5,209 additional metadata bytes. No numerical rerun was needed. Guard and CSA tests, 73 Python tests and physics checks passed.</p>
+<p><a href="file_copy_failure_2026-11-08.md">Technical report and source references</a> · <a href="../../latex_generated/ion_readout/ion_csa_nonlinear_pitch2/index.html">Completed 2 mm report</a></p></html>

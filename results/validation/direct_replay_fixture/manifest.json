@@ -1,0 +1,22 @@
+[
+  {
+    "source": "results/three_clouds_8000/electrons_ion.h5",
+    "fixture": "results/validation/direct_replay_fixture/cloud.h5",
+    "bytes": 86515,
+    "sha256": "49b7dfb5d5d24ece40ffc097af64881e36bdeb13d484243f714647a4e802a2ec",
+    "events": [
+      0,
+      3790
+    ]
+  },
+  {
+    "source": "results/grid_readout_8000/electrons_ion.h5",
+    "fixture": "results/validation/direct_replay_fixture/readout.h5",
+    "bytes": 42311,
+    "sha256": "91d64a886ccc3e0a7df171cb20da28ba5c607569785be5b69e8c670404f43c6d",
+    "events": [
+      0,
+      3790
+    ]
+  }
+]

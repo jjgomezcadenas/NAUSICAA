@@ -1,0 +1,7 @@
+schema = "itaca.canonical_response.v1"
+original_filename = "ion_response.h5"
+original_sha256 = "3ab0954395108dc013c45106ca9bbae5b28201c756cbe97c9d2750d3293fb168"
+published_sha256 = "b234b3220e495814689100e18d38b81248536f22d3aeb6d13c3a7d4b8039c426"
+published_relative_path = "../ad19c620e476ff809a6bf1b4b2d8cfed49b042cefa68f15cfffb2fddcf3314f7/ion_response.h5"
+verification = "all non-metadata datasets and attributes identical"
+verified_datasets = 200639

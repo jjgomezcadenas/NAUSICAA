@@ -9,6 +9,7 @@ include("bucket_noise_covariance.jl")
 include("../event_analysis/EventAnalysis.jl")
 include("../../scripts/production/specs.jl")
 include("ion_csa_nonlinear_io.jl")
+include("guarded_files.jl")
 include("csa_resources.jl")
 include("ion_csa_correction.jl")
 const NL=IonCSANonlinearIO
@@ -78,7 +79,7 @@ function settings(root,runpath)
  caldir=joinpath(root,c["calibration_directory"]);calfile=joinpath(caldir,"analysis.h5")
  resources=CSAResources.verify(root,c)
  files=[@__FILE__,joinpath(@__DIR__,"pad_history_readout.jl"),joinpath(@__DIR__,"bucket_study.jl"),joinpath(@__DIR__,"averaging_scan.jl"),joinpath(@__DIR__,"discharge_calibration.jl"),joinpath(@__DIR__,"bucket_noise_covariance.jl"),joinpath(root,"src/event_analysis/production_readout.jl"),joinpath(root,"scripts/production/specs.jl"),joinpath(root,"scripts/production/run_ion_csa_pilot.py"),joinpath(root,"scripts/production/ion_csa_pilot.jl"),joinpath(@__DIR__,"spice_acquisition.py"),joinpath(@__DIR__,"spice.py")]
- append!(files,[joinpath(@__DIR__,f) for f in ("ion_csa_nonlinear.jl","ion_csa_nonlinear_io.jl","ion_csa_nonlinear_cases.jl","ion_csa_correction.jl","csa_resources.jl")])
+ append!(files,[joinpath(@__DIR__,f) for f in ("ion_csa_nonlinear.jl","ion_csa_nonlinear_io.jl","ion_csa_nonlinear_cases.jl","ion_csa_correction.jl","csa_resources.jl","guarded_files.jl")])
  codehash=bytes2hex(sha256(join(sha.(files),"|")))
  modelid=bytes2hex(sha256(join((S.canonical(c),sha(calfile),codehash,S.canonical(resources)),"|")))
  sources=NamedTuple[]
@@ -224,7 +225,7 @@ function prepare(root,runpath)
  end
  mv(plan*".tmp",plan)
  for sourcefile in s.files
-  dest=joinpath(s.dir,"source_snapshot",sha(sourcefile),basename(sourcefile));mkpath(dirname(dest));cp(sourcefile,dest;force=true)
+  dest=joinpath(s.dir,"source_snapshot",sha(sourcefile),basename(sourcefile));mkpath(dirname(dest));GuardedFiles.checked_copy(sourcefile,dest;force=true)
  end
  open(joinpath(s.dir,"manifest.toml"),"w") do io
   TOML.print(io,Dict("study_id"=>s.studyid,"model_id"=>s.modelid,"code_hash"=>s.codehash,"run_card"=>runpath,"response_card"=>s.run["response_card"],"calibration_sha256"=>sha(joinpath(s.dir,"calibration.h5")),"source_paths"=>[x.path for x in s.sources],"source_hashes"=>[x.sourcehash for x in s.sources]))

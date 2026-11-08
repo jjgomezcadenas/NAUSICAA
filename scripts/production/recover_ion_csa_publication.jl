@@ -31,23 +31,11 @@ function main(original_card,registration_card)
     nodeid=P.S.content_hash(parenthash*s.codehash*P.CHANNEL_POLICY*P.ABSENT_POLICY*P.PRODUCTION_SCHEMA)
     target=joinpath(dirname(dirname(parent)),nodeid,"ion_response.h5");tmp=target*".tmp"
     @assert !isfile(target) && isfile(tmp)
+    P.GuardedFiles.check_size(tmp,filesize(parent))
     @assert P.sha(tmp)==parenthash "Interrupted copy differs from corrected source"
-    h5open(tmp,"r+") do h
-        HDF5.delete_attribute(h,"schema");attributes(h)["schema"]=P.PRODUCTION_SCHEMA;m=h["metadata"];write(m["complete"],false)
-        function put(k,v)
-            haskey(m,k) && HDF5.delete_object(m,k)
-            m[k]=v
-        end
-        put("parent_response_path",parent);put("parent_response_sha256",parenthash)
-        put("response_id",nodeid);put("production_code_hash",s.codehash)
-        put("channel_selection",P.CHANNEL_POLICY);put("absent_channel_policy",P.ABSENT_POLICY)
-        put("bucket_selection","complete_event_interval_with_quiet_and_recovery_frames")
-        put("measured_zero_suppression",false);put("negative_estimate_clipping",false)
-        put("numerical_payload","unchanged_from_corrected_parent")
-        put("production_run_card_toml",read(s.path,String))
-        write(m["complete"],true)
-    end
-    P.validate_response(tmp);mv(tmp,target)
+    # The original temporary is verified evidence; publication uses the bounded copier.
+    P.publish(s,parent,ledger)
+    rm(tmp)
     P.write_toml(joinpath(dirname(target),"production_manifest.toml"),Dict("schema"=>"nausicaa.ion_response_node.v1",
         "response_id"=>nodeid,"response_file"=>target,"sha256"=>P.sha(target),"parent_response"=>parent,
         "parent_sha256"=>parenthash,"channel_selection"=>P.CHANNEL_POLICY,"absent_channel_policy"=>P.ABSENT_POLICY,"complete"=>true))

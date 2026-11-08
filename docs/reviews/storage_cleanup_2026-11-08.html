@@ -1,0 +1,120 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ITACA completed storage cleanup</title><style>body{max-width:1100px;margin:40px auto;padding:0 24px;font:17px/1.55 system-ui;color:#193449}h2{margin-top:2em}table{width:100%;border-collapse:collapse}th,td{padding:10px;text-align:left;vertical-align:top;border-bottom:1px solid #ccd8df}code{font-size:.85em;overflow-wrap:anywhere}a{color:#176589}</style><main><h1>Completed storage cleanup — 2026-11-08</h1>
+<p>The approved cleanup reduced the repository from <strong>233.0 GiB to 191.3 GiB</strong>.
+Observed filesystem free space increased by <strong>42.0 GiB</strong>
+to <strong>385.0 GiB</strong>. Filesystem free-space changes include
+concurrent activity and APFS accounting; the itemized figures below are allocated-file measurements.</p>
+<h2>Removed and preserved</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th style="text-align:right">Allocated space removed</th>
+<th>Preservation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Old CSA plans and PWL current inputs</td>
+<td style="text-align:right">22.06 GiB</td>
+<td>177,666 file identities and SHA-256 hashes saved; 117,697 acquired HDF5 histories unchanged</td>
+</tr>
+<tr>
+<td>Legacy binned cloud/readout files</td>
+<td style="text-align:right">5.74 GiB</td>
+<td>18 large files retired; summaries, source metadata and hashes retained; 126 KiB event fixture extracted</td>
+</tr>
+<tr>
+<td>Duplicate corrected ion responses</td>
+<td style="text-align:right">12.77 GiB</td>
+<td>Current 2/3/4 mm published responses retained; original metadata and hashes archived; verified canonical receipts installed</td>
+</tr>
+<tr>
+<td>Obsolete review worktree</td>
+<td style="text-align:right">about 1.00 GiB</td>
+<td>Both modified PDFs preserved and checksum-verified; review notes and logs retained</td>
+</tr>
+<tr>
+<td>Old <code>work/julia_depot</code> cache</td>
+<td style="text-align:right">0.22 GiB</td>
+<td>Active <code>work/julia-depot</code> and viewer environment retained</td>
+</tr>
+</tbody>
+</table>
+<p>The old prepared-input selection was restricted to <code>plan.h5</code> and <code>.pwl</code> files
+under <code>results/ion_csa_bb0nu_3mm_production</code> and
+<code>results/ion_csa_0p5_enc_production_4mm</code>. Historical reruns must prepare those inputs
+again. Raw acquisitions, model/deck records, jobs, cards, summaries and reports
+remain available. The report presenter now reads its saved response card from
+the response file when a prepared plan has been retired.</p>
+<p>The retired binned caches were in <code>results/three_clouds_8000</code>,
+<code>results/grid_readout_8000</code> and <code>results/three_cloud_sample_500</code>. Their summary
+HDF5 files remain. The regression fixture is
+<a href="../../results/validation/direct_replay_fixture/README.md">results/validation/direct_replay_fixture</a>.
+It contains the exact original event arrays for single-electron events 0 and
+3790. The replay test now reads that fixture.</p>
+<h2>Response deduplication</h2>
+<p>All <strong>601,989 non-metadata datasets</strong> in the three
+corrected parents were compared with their published copies, including shapes,
+types, values and attributes. Every comparison passed. Original metadata were
+saved separately. Published files and their hashes are unchanged.</p>
+<p>Each removed <code>ion_response.h5</code> has an adjacent <code>ion_response.canonical.toml</code>
+receipt. The receipt records the original hash, retained-file relative path and
+retained-file hash. Julia readers and saved-study registration verify the receipt,
+the published file checksum, its declared parent and its numerical-payload
+contract. The Python presenter uses the same checks. Original summary files and
+their recorded parent hashes remain unchanged. Publication reuses an already
+validated production file, avoiding another numerical copy.</p>
+<p>The original files were first renamed within their directories. Python and Julia
+then read through the receipts, and Julia verified saved-study references and
+production-node reuse. Only after those checks passed were the renamed duplicates
+deleted. No <code>.retiring</code> files remain.</p>
+<p>Keep the receipts alongside the retained output. Copies of all three receipts,
+full paths and verification results are saved in
+<a href="../../results/storage_cleanup/2026-11-08/verified_duplicates.json">the cleanup records</a>.</p>
+<h2>Validation</h2>
+<ul>
+<li><strong>74 Python tests passed</strong>, including canonical-response hash mismatch and
+incomplete-output rejection; <code>make physics</code> passed.</li>
+<li><strong>44 Julia pipeline checks passed</strong>, including original-hash preservation,
+missing-parent lookup, repeat registration and rejection of altered receipts.</li>
+<li>Legacy replay passed for events <strong>0 and 3790</strong>, including the extended event's
+direct assignment comparison.</li>
+<li>Matched viewer data loaded at <strong>2, 3 and 4 mm</strong>, for event positions
+<strong>1, 3791 and 8000</strong>, including the electron branch: nine checks passed.</li>
+<li>Current 2/3/4 mm corrected response presentations regenerated. The 2 and 3 mm
+matched production PDF reports compiled. The older completed 4 mm presentation
+also regenerated with its prepared plan absent.</li>
+<li>All <strong>9,391 calibration validation waveform paths</strong>
+remain present; all 117,697 acquisition files checked in the affected
+old-study directories retain their original sizes and modification times.</li>
+<li>All four original G4 files, reduced hit tables, current detector inputs,
+production outputs, primary ledgers, circuit calibration evidence, manuscripts,
+papers and reports remain.</li>
+</ul>
+<p>The existing viewers on ports <strong>8768, 8769 and 8774</strong> initially closed HTTP
+connections even for <code>/api/info</code>. Their output descriptors pointed to old session
+pipes. They were restarted with the same inputs and ports, with stdout/stderr
+redirected to <code>work/storage_cleanup/viewer_&lt;port&gt;.log</code>. All three then passed
+<code>/api/info</code> and event-1 requests. The matched production remains at
+<a href="http://127.0.0.1:8769/">localhost:8769</a>.</p>
+<p><code>make note</code> remains blocked by the previously reported build failure in the
+older <code>notes/physics/nausica.tex</code> draft. Its log is in
+<code>work/storage_cleanup/make_note.log</code>; author text was preserved. The generated
+matched production PDFs build successfully.</p>
+<h2>Worktree preservation and follow-up</h2>
+<p>The two modified review-worktree PDFs were saved under
+<a href="../../results/storage_cleanup/2026-11-08/worktree_preserved/manifest.json">worktree_preserved</a>
+before removing that worktree with Git. Both differ from the main working-tree
+PDFs, which were preserved. The obsolete cache had no open files at the cleanup
+check; documented launcher examples now use the active hyphenated depot path.</p>
+<p>The broader retirement of older electronics configurations, the additional
+filtered-stage responses and <code>results/diffused_tracks</code> was <strong>not performed</strong>.
+Those require separate scientific retention decisions or dependency checks.
+Repository history was preserved; three previously tracked large pilot HDF5 files
+now appear as working-tree deletions. A future commit will record their removal,
+while their older Git versions remain in history. No commit or push was made.</p>
+<p>Full local hash inventories, metadata snapshots, receipts, preservation checks
+and disk measurements are under <code>results/storage_cleanup/2026-11-08/</code>.
+Inspection and cleanup scripts and logs are in <code>work/storage_cleanup/</code>.
+The <a href="storage_audit_2026-11-08.html">original audit</a> records the approved scope.</p>
+</main></html>

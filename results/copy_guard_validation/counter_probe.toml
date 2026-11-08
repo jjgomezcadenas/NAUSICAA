@@ -1,0 +1,6 @@
+julia_version = "1.12.6"
+source_bytes = 4295032832
+first_actual_bytes = 4295032832
+second_reported_bytes = 0
+second_actual_bytes = 4294967296
+first_reported_bytes = 65536

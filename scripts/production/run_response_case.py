@@ -30,15 +30,13 @@ def main() -> None:
     p.add_argument("--result-dir", type=Path, default=ROOT / "results/response_bb0nu_3mm")
     p.add_argument("--latex-dir", type=Path, default=ROOT / "latex_generated/production/response_bb0nu_3mm")
     a = p.parse_args()
+    if not a.present_only and a.ion_manifest is None:
+        p.error("Supply --ion-manifest for the saved ion production. The former default selected a retired 0.1 ENC study; see docs/reviews/storage_cleanup_2026-11-08.md.")
     julia = os.environ.get("JULIA", "julia")
     a.result_dir.mkdir(parents=True, exist_ok=True)
     analysis = a.result_dir / "analysis.h5"
     if not a.present_only:
-        ion = a.ion_manifest or manifest_from_run(
-            [julia, "--startup-file=no", "--project=.",
-             str(ROOT / "scripts/production/run_ion_csa.jl"),
-             "config/specs/runs/ion_csa_bb0nu_3mm_production.toml"],
-            "Ion response manifest: ")
+        ion = a.ion_manifest
         sipm = a.sipm_manifest or manifest_from_run(
             [julia, "--startup-file=no", "--project=.",
              str(ROOT / "scripts/production/run_sipm_production.jl"),

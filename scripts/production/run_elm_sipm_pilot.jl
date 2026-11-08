@@ -6,6 +6,7 @@ module Replay
 include("run_electron_250ns.jl")
 end
 include("sipm_production.jl")
+include(joinpath(@__DIR__,"../../src/ion_signal/guarded_files.jl"))
 const ROOT=Replay.ROOT
 const OUT=joinpath(ROOT,"results/elm_sipm_pilot")
 
@@ -18,7 +19,7 @@ reused through the detector configuration and are never opened for writing.
 function archive_photons(source_index)
     mkpath(OUT)
     target=joinpath(OUT,"photons_ep2.h5")
-    cp(source_index,target*".tmp";force=true)
+    GuardedFiles.checked_copy(source_index,target*".tmp";force=true)
     h5open(target*".tmp","r+") do f
         g=f["bb0nu"]
         base=dirname(String(read(g["realisation_path"])))
@@ -28,7 +29,7 @@ function archive_photons(source_index)
             if isfile(dest)
                 sha256(read(dest))==sha256(read(source)) || error("Archived photon contents differ")
             else
-                cp(source,dest)
+                GuardedFiles.checked_copy(source,dest)
             end
             delete_object(g,key);g[key]=dest
         end

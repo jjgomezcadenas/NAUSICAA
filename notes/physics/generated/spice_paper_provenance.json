@@ -5,7 +5,7 @@
     "config/studies/electronics/readout/discharge_calibration.toml": "e7c697f2d4d2770984ebc00ffe37d906b81916082f4b5a262db0ae91f4dae29b",
     "LTSpice/designs/variants/m4_x4_m3_x4/uniform_1000_ions.cir": "9b23882ffaa12fe126ecd92d31ec6231b8677f3078f398efd527f2a6e1c0c350",
     "LTSpice/designs/variants/m4_x4_m3_x4/corrected.inc": "8a9ae47544482151dfdc4085eba622f2e7b4e988803d314e6c422a12b970f608",
-    "scripts/paper/build_spice_paper.py": "03b1806e32fc41bc3a27fb2cd8cd316df21e2d3265af481a976dca64e2917f7e"
+    "scripts/paper/build_spice_paper.py": "5dbdc910a1775c355f7ad8e5eb5e098a755b95190dae05c28570b4120a69335c"
   },
   "frame_s": 0.02,
   "averaging_s": 0.0003,

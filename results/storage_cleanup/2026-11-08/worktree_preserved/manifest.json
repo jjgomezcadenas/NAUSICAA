@@ -1,0 +1,16 @@
+[
+  {
+    "path": "latex_generated/electron_readout/elm_matched_production/elm_matched_production.pdf",
+    "preserved": "results/storage_cleanup/2026-11-08/worktree_preserved/latex_generated/electron_readout/elm_matched_production/elm_matched_production.pdf",
+    "sha256": "936c20d0550de262e2875ae76c47bada14dee5d848a1c483af35d858391c7099",
+    "bytes": 542875,
+    "same_as_main_worktree": false
+  },
+  {
+    "path": "manuscripts/itaca3/itaca3.pdf",
+    "preserved": "results/storage_cleanup/2026-11-08/worktree_preserved/manuscripts/itaca3/itaca3.pdf",
+    "sha256": "a4695666753372cadb1d2e5b8ce0460a3d02658712a0f400b95135fafe359570",
+    "bytes": 946395,
+    "same_as_main_worktree": false
+  }
+]

@@ -81,8 +81,8 @@ Establish the physics before implementing electronics.
 - The active readout replays source hits and deterministic diffusion seeds when
   pitch or bucket width changes; it does not save individual carrier coordinates.
   Histogram cell centres are valid for display and historical comparison, not
-  physical pad/time assignment. Version new HDF5 readout schemas and retain old
-  binned outputs for audit. Record source contents, cards, seeds and code hashes
+  physical pad/time assignment. Version new HDF5 readout schemas and retain compact
+  binned regression fixtures and provenance for audit. Record source contents, cards, seeds and code hashes
   so the sampled realization is reproducible.
 - General analysis workflow: Julia performs physical calculations, data analysis
   and reduction, and saves numerical results and provenance to HDF5. Python
@@ -133,7 +133,21 @@ Establish the physics before implementing electronics.
   validation errors where they are part of the contract.
 - For LaTeX changes, compile and check the build log, but do not visually
   inspect the PDF unless the user explicitly requests it.
+- Bound production file copies and temporary publication files. Use the shared
+  `GuardedFiles` helper instead of `Base.cp` for production copies: bounded writes,
+  exact size/SHA-256 verification, at most 10% growth for publication metadata,
+  free-space checks with a 1 GiB reserve, atomic rename and cleanup on failure.
+  For generated datasets, derive an explicit byte budget from the output schema;
+  input-file size is not a valid universal bound. Investigate unexpected growth
+  immediately. See docs/reviews/file_copy_failure_2026-11-08.md.
 - Keep scratch files in work/.
+- Storage cleanup records live in `docs/reviews/storage_cleanup_2026-11-08.md`
+  and `results/storage_cleanup/2026-11-08/`. Retired corrected responses resolve
+  through checksum-verified `.canonical.toml` receipts to published files;
+  original and published hashes remain distinct. Keep these receipts with the
+  retained outputs. Legacy binned replay fixtures are in
+  `results/validation/direct_replay_fixture/`. Use `work/julia-depot` for the
+  active local Julia depot.
 - Cite primary sources in notes/physics/references.bib. Record user-provided
   revisions as design inputs, not as published measurements.
 - Cite physics formulas to primary papers or documented local derivations,
@@ -151,7 +165,7 @@ Establish the physics before implementing electronics.
   rather than silently omitting it.
 - Do not change the existing remote or publish/push without a user request.
 
-## Current production and active development (2026-11-05)
+## Current production and active development (2026-11-08)
 
 - Read docs/elm_matched_production.md and its linked cards/manifests for the
   completed 8,000-event bb0nu production: ions at 4 mm pitch / 40 ms, Xe–15% He
@@ -160,6 +174,11 @@ Establish the physics before implementing electronics.
   drift. Shared primary-pair counts and checksums are preserved across arms.
   Electron attachment uses the configured lifetime (currently 15 ms); ions
   receive no electron-attachment loss. These are configurable design inputs.
+- Matched 8,000-event ion productions at 3 mm / 30 ms and 2 mm / 20 ms are also
+  complete, preserving the same primary pairs and 5–145 cm drift placement.
+  See docs/matched_ion_csa_pitch_scan.md. The 2 mm publication was recovered
+  using guarded copies after a confirmed Julia 1.12.6 sendfile-counter overflow;
+  its numerical results were preserved.
 - The current ELM has 2.5 mm diameter holes/guides, 5 mm EL depth, E/P = 2
   kV/cm/bar at 15 bar, and 0.5 mm radial xenon gaps around the guides. The
   optical model includes analytical hole acceptance, TPB conversion 0.65,

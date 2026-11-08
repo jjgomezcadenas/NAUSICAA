@@ -10,6 +10,7 @@ end
 module Electrons
 include("run_electron_250ns.jl")
 end
+include(joinpath(@__DIR__,"../../src/ion_signal/guarded_files.jl"))
 const ROOT=Common.ROOT
 
 """Run shared placement, both carrier collections, and validate every paired event.
@@ -29,7 +30,7 @@ function main(kind="smoke")
     common=Common.run_common(spec,"bb0nu")
     ions=Ions.run_ion_sample(spec,"bb0nu",Ions.ion_replay_code_hash())
     index=Electrons.main_electrons(card)
-    target=joinpath(out,"detector_index.h5");cp(index,target*".tmp";force=true)
+    target=joinpath(out,"detector_index.h5");GuardedFiles.checked_copy(index,target*".tmp";force=true)
     h5open(target*".tmp","r+") do idx
         idx["bb0nu/ions/4/path"]=ions
         ph=String(read(idx["bb0nu/xe_he15_path"]))

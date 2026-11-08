@@ -1,5 +1,6 @@
 #!/usr/bin/env julia
 include("run_electron_250ns.jl")
+include(joinpath(@__DIR__,"../../src/ion_signal/guarded_files.jl"))
 const PHOTON_BENCH_OUT=joinpath(ROOT,"results/photon_production_pilot")
 
 """Read every saved event and check photon sums, identities and the electron ledger."""
@@ -104,7 +105,7 @@ function benchmark_photons(n::Int=500)
                 path=getproperty(result.paths,Symbol(gas))
                 validate_photon_pilot(path,gas,n)
                 saved=joinpath(case_dir,"photons_$(gas)_$(n).h5")
-                cp(path,saved;force=false)
+                GuardedFiles.checked_copy(path,saved;force=false)
                 gg=create_group(g,gas);gg["pilot_path"]=saved
                 gg["pilot_sha256"]=content_hash(saved;file=true)
                 gg["pilot_bytes"]=filesize(saved);gg["estimated_full_bytes"]=round(Int,filesize(saved)*target/n)

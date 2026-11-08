@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-08",
+  "deleted_files": 0,
+  "size_basis": "allocated bytes (st_blocks*512); APFS sharing may affect reclaimed space",
+  "regenerable_inputs": [
+    {
+      "path": "results/ion_csa_0p5_enc_production_4mm",
+      "selection": [
+        "basename = plan.h5",
+        "suffix = .pwl"
+      ],
+      "files": 54322,
+      "allocated_bytes": 7755661312,
+      "tracked_files": 0,
+      "status": "candidate; preserve raw acquisitions and provenance; regenerate prepared inputs before rerunning"
+    },
+    {
+      "path": "results/ion_csa_bb0nu_3mm_production",
+      "selection": [
+        "basename = plan.h5",
+        "suffix = .pwl"
+      ],
+      "files": 123344,
+      "allocated_bytes": 15935258624,
+      "tracked_files": 0,
+      "status": "candidate; preserve raw acquisitions and provenance; regenerate prepared inputs before rerunning"
+    }
+  ],
+  "legacy_binned_caches": [
+    {
+      "path": "results/three_clouds_8000",
+      "allocated_bytes": 5016530944,
+      "status": "candidate after extracting legacy regression fixture and updating references"
+    },
+    {
+      "path": "results/grid_readout_8000",
+      "allocated_bytes": 834011136,
+      "status": "candidate after extracting legacy regression fixture and updating references"
+    },
+    {
+      "path": "results/three_cloud_sample_500",
+      "allocated_bytes": 310280192,
+      "status": "candidate after extracting legacy regression fixture and updating references"
+    }
+  ],
+  "duplicate_corrected_parents": [
+    {
+      "path": "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/response/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/75c52aa71fd9729b11fe72ceb46ea78e726bf36d37ba14740a0e0e2ef018317c/ion_response.h5",
+      "keep": "results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/response/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/ee7f370ce0e906121b93e0002bc65d090301aa32e130bb68cf549e5838af02fb/ion_response.h5",
+      "allocated_bytes": 8793452544,
+      "status": "blocked on reference migration and payload verification; metadata differ"
+    },
+    {
+      "path": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/e673fc73860e95798fa2f7794ae533c13a59ee8517fd7108e2ceeb707ac3cbc8/4bdef73009cde802c5232863ab9803a2ad0f2cf839536ac16c3eef81d8f72cd7/ion_response.h5",
+      "keep": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/e673fc73860e95798fa2f7794ae533c13a59ee8517fd7108e2ceeb707ac3cbc8/ad19c620e476ff809a6bf1b4b2d8cfed49b042cefa68f15cfffb2fddcf3314f7/ion_response.h5",
+      "allocated_bytes": 3236872192,
+      "status": "blocked on reference migration and payload verification; metadata differ"
+    },
+    {
+      "path": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/f521c1c516d61cdbce3ded04b438d5456b43c738a8dd6ef2c005098a73780054/ion_response.h5",
+      "keep": "results/simulations/production_pilot/bb0nu/4bd2a52bf1b95a0f4ce0348587da828bad322378e1cea713cfe8c9b746ef59f3/response/ions/77e2c8e77f438856da81a285c550a951b9fa96375d4b46c9420d6c67ecbc662b/c6dc2ba776dc798aff5af786580f893ac1078db6128e63c3c791f504eebc349a/ion_response.h5",
+      "allocated_bytes": 1683120128,
+      "status": "blocked on reference migration and payload verification; metadata differ"
+    }
+  ],
+  "detailed_input_inventory": "work/storage_audit/regenerable_inputs.json"
+}

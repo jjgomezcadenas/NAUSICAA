@@ -1,0 +1,14 @@
+ion_replay_code_sha256 = "8a84495ff9885892864c0692ae5a66bf3d49e45008b6b7bb1715a372d03ff178"
+pitch_mm = 2
+events = 8000
+common_sha256 = "60d35b6f216b510601b9a62aaa05c765a616727ee0af4be2c45ef04267d106ed"
+total_ions = 897306359
+collection_wall_s = 40.593285875
+detector_index = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/ion_csa_nonlinear/matched_pitch2/detector_index.h5"
+common_realisation = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/realisation.h5"
+card = "config/specs/runs/elm_matched_ions_pitch2.toml"
+bucket_ms = 20
+ion_sha256 = "049ce63452dc1afd78c230af61380d8b644a2251730c3c584c37502adf208c09"
+script_sha256 = "741b7625b0cfb091071087f818cf235fceabc8dc5fc2805c4631231d1f7d46de"
+ion_path = "/Users/jjgomezcadenas/Projects/NAUSICAA/results/simulations/production_pilot/bb0nu/4d87a22175a946b4f4e674014406e54144eba27c0bd60891db05a684bf8f00b3/detector/ions/e505922a43bb69b84d97be6b6c06d13e8abd91ab2643dc34eb16158aaa301af9/ions.h5"
+complete = true

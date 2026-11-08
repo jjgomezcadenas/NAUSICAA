@@ -52,6 +52,8 @@ function fixture(dir)
     end
     h5open(parent,"w") do h
         attributes(h)["schema"]="nausicaa.ion_csa_response.pilot.v2"
+        # Keep metadata growth below the production 10% budget in this tiny fixture.
+        h["fixture_payload"]=zeros(UInt8,100_000)
         m=create_group(h,"metadata")
         values=(complete=true,signal_unit="ion_charges",time_unit="s",matrix_axes_julia="frame,pad",matrix_axes_hdf5="pad,frame",
             reconstruction_method="three_frame_inverse",source_path=source,source_sha256=C.sha(source),sample="bb0nu",source_event_count=1,
@@ -123,6 +125,23 @@ end
     end
     hash=C.sha(output)
     @test C.run(root,f.card)==manifest && C.sha(output)==hash
+    # Retiring a duplicate keeps the original summary hash and reuses publication.
+    receipt=splitext(f.parent)[1]*".canonical.toml"
+    originalhash=C.sha(f.parent)
+    values=Dict("schema"=>"itaca.canonical_response.v1","original_filename"=>basename(f.parent),
+        "original_sha256"=>originalhash,"published_sha256"=>hash,
+        "published_relative_path"=>relpath(output,dirname(f.parent)))
+    parentbytes=read(f.parent)
+    C.write_toml(receipt,values);rm(f.parent)
+    @test C.resolve_response(f.parent;expected_sha256=originalhash)==output
+    @test C.read_event(f.parent,5).input_ions==C.read_event(output,5).input_ions
+    @test C.run(root,f.card)==manifest && C.sha(output)==hash
+    @test !isfile(f.parent)
+    @test_throws ArgumentError C.resolve_response(f.parent;expected_sha256="wrong")
+    badreceipt=copy(values);badreceipt["published_sha256"]="wrong";C.write_toml(receipt,badreceipt)
+    @test_throws ArgumentError C.resolve_response(f.parent)
+    C.write_toml(receipt,values)
+    write(f.parent,parentbytes)
     @test isfile(joinpath(dirname(dirname(dirname(dirname(f.source)))),"runs",m["graph_id"],"ion_manifest.toml"))
     # Comments and key order do not change the parsed run identity.
     original=C.settings(root,f.card).identity
