@@ -21,6 +21,8 @@ class ProductionSource:
             if not index['complete']: raise ValueError('Incomplete operating point')
             self.card['sipm_manifest'] = index['sipm_manifest']
         self.ions = {str(x['pitch_mm']): resolve(x['path']) for x in self.card['ions']}
+        if self.card.get('historical_sources_retired') and any(not p.is_file() for p in self.ions.values()):
+            raise ValueError('Historical event responses were retired. Use config/specs/runs/elm_matched_response_viewer.toml for the current matched production; saved historical plots remain under results/response_overview.')
         self.label = self.card.get('label', 'Detector response')
         self.shards = {}
         manifest = tomllib.loads(resolve(self.card['sipm_manifest']).read_text())

@@ -1,0 +1,38 @@
+{
+  "files_deleted": 244812,
+  "allocated_bytes_removed": 86329675776,
+  "by_root": {
+    "results/ion_csa_0p5_enc_production_4mm": {
+      "files": 163024,
+      "bytes": 23573311377,
+      "allocated": 23924977664
+    },
+    "results/ion_csa_bb0nu_3mm_production": {
+      "files": 16760,
+      "bytes": 3257508278,
+      "allocated": 3297845248
+    },
+    "results/ion_csa_v3_pilot": {
+      "files": 34020,
+      "bytes": 4929702108,
+      "allocated": 5010321408
+    },
+    "results/ion_csa_v3_pilot_4mm": {
+      "files": 24098,
+      "bytes": 3464260507,
+      "allocated": 3523399680
+    },
+    "results/ion_csa_v3_pilot_2mm": {
+      "files": 6148,
+      "bytes": 1235928840,
+      "allocated": 1251737600
+    },
+    "results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response": {
+      "files": 762,
+      "bytes": 49319804309,
+      "allocated": 49321394176
+    }
+  },
+  "auxiliary_hdf5_retained": [],
+  "final_pass_elapsed_s": 14.41114345798269
+}

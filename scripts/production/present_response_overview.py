@@ -50,6 +50,9 @@ def render(source):
         'Ion pitches 2, 3 and 4 mm use 20, 30 and 40 ms frames. Both electron gases use 10 mm pitch and 250 ns buckets. '
         'CSA results use the corrected reconstruction and the production 0.5 ENC modelling tolerance. '
         'These pulse summaries describe the occupied input support; event energy requires the complete response history.')
+    if (source.parent/'RETIRED_SOURCES.md').is_file():
+        explanation=('Historical 10-150 cm production: event-level electronics files were retired on 2026-11-08. '
+            'This report is regenerated from the preserved numerical summary. '+explanation)
     heads=['Stage','Events','Unit','Mean: average','Mean: median','Maximum: average','Maximum: median']
     rows=''.join('<tr>'+''.join(f'<td>{html.escape(str(x) if i<3 else f"{x:.3f}")}</td>' for i,x in enumerate(row))+'</tr>' for row in table)
     document='<!doctype html><meta charset="utf-8"><title>NAUSICAA response overview</title><style>body{font:17px system-ui;max-width:1250px;margin:40px auto;color:#17334a}img{width:100%}td,th{padding:9px;border-bottom:1px solid #ddd;text-align:right}th:first-child,td:first-child{text-align:left}p{line-height:1.6}</style><h1>Ion and electron response · bb0nu</h1><p><a href="../electron_operating_points/electron_operating_points.html">Electron operating points: pre-electronics pulses and event sums</a></p><p>'+html.escape(explanation)+'</p><p><a href="../../latex_generated/production/response_overview/response_overview.pdf">PDF report</a></p><table><tr>'+''.join(f'<th>{h}</th>' for h in heads)+'</tr>'+rows+'</table>'+''.join(f'<img src="{p}" alt="{p}">' for p in plots)

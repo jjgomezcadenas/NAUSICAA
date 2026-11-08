@@ -1,0 +1,125 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ITACA historical-run retirement</title><style>body{max-width:1100px;margin:40px auto;padding:0 24px;font:17px/1.55 system-ui;color:#193449}h2{margin-top:2em}table{width:100%;border-collapse:collapse}th,td{padding:10px;text-align:left;vertical-align:top;border-bottom:1px solid #ccd8df}code{font-size:.85em;overflow-wrap:anywhere}a{color:#176589}</style><main><h1>Historical-run retirement — 2026-11-08</h1>
+<p>The approved second cleanup removed <strong>80.40 GiB</strong>
+in <strong>244,812 generated files</strong>. The repository now occupies
+<strong>111.0 GiB</strong>, compared with approximately 233 GiB before both cleanups.</p>
+<table>
+<thead>
+<tr>
+<th>Retired numerical outputs</th>
+<th style="text-align:right">Allocated GiB removed</th>
+<th style="text-align:right">Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>results/ion_csa_0p5_enc_production_4mm</code></td>
+<td style="text-align:right">22.28</td>
+<td style="text-align:right">163,024</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_bb0nu_3mm_production</code></td>
+<td style="text-align:right">3.07</td>
+<td style="text-align:right">16,760</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_v3_pilot</code></td>
+<td style="text-align:right">4.67</td>
+<td style="text-align:right">34,020</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_v3_pilot_4mm</code></td>
+<td style="text-align:right">3.28</td>
+<td style="text-align:right">24,098</td>
+</tr>
+<tr>
+<td><code>results/ion_csa_v3_pilot_2mm</code></td>
+<td style="text-align:right">1.17</td>
+<td style="text-align:right">6,148</td>
+</tr>
+<tr>
+<td><code>c25084b9…/response/</code></td>
+<td style="text-align:right">45.93</td>
+<td style="text-align:right">762</td>
+</tr>
+</tbody>
+</table>
+<p>The earlier bb0nu realization is
+<code>results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/</code>.
+Its detector inputs and primary ledger remain; the deletion scope was its
+<code>response/</code> subtree. Current matched productions, background inputs and earlier
+pure-Xe detector inputs remain available.</p>
+<h2>Preserved scientific record</h2>
+<p>Cards, source snapshots, decks/models, summaries, calibration files and generated
+reports remain in their original locations. Most retired SPICE acquisitions,
+per-case numerical responses, PWL inputs, raw simulator files, logs and obsolete
+plans were removed. Their SHA-256 identities and allocated sizes were recorded
+before each deletion. Response metadata and preparation-card datasets were saved
+in bounded HDF5 metadata archives. Tracked scientific source artifacts were
+excluded from the deletion list.</p>
+<p><strong>48 complete reference case folders</strong> remain, comprising <strong>328 checksum-verified
+files</strong>. For pilot plans still available, the retained cases span low, median and
+high predicted minimum output voltage within each sample. For historical studies
+whose preparation plans had already been retired, cases were selected by sorted
+case-key quantiles. These historical reference cases complement the complete,
+unchanged current nonlinear calibration evidence.</p>
+<p>The retained guard-boundary case is event <strong>6625</strong>, pixel <strong>(-42, 221)</strong>, including
+its raw waveform, current input, circuit, model and numerical response. Its saved
+predicted minimum is <strong>0.61713055 V</strong>. This is the case that
+justified the <strong>0.63 V</strong> guard. It remains under
+<code>results/ion_csa_v3_pilot_4mm/289ba0ab6997a94f/spice_cases/bb0nu_p4_6625_-42_221</code>;
+the corresponding other pilot/production cases were also retained.</p>
+<p>The full list and hashes are in
+<a href="../../results/storage_cleanup/2026-11-08_historical/reference_histories.json">reference_histories.json</a>.
+Each retired root has a <code>RETIRED.md</code> marker. The broad candidate pool was about
+82 GiB; retained evidence and source records account for the smaller deletion total.</p>
+<h2>Current production checks</h2>
+<ul>
+<li><strong>37,840 protected files</strong> retain their original sizes and modification times.
+These include current calibration inputs, reduced event tables and the retained
+detector inputs from the earlier realization.</li>
+<li>All <strong>9,391 validation histories and 240 fitting waveforms</strong> remain present.
+The current nonlinear calibration HDF5 has its original SHA-256 hash.</li>
+<li>All <strong>328 files</strong> in the 48 retained historical case folders match their saved
+SHA-256 hashes. Their raw time/current/voltage arrays passed dimension, ordering
+and finite-value checks.</li>
+<li>The matched viewer produced paired ion/electron event payloads at <strong>2, 3 and
+4 mm</strong>, for positions <strong>1, 3791 and 8000</strong>: nine checks passed.</li>
+<li>All three live services responded to <code>/api/info</code> and event requests: ports
+<strong>8768</strong>, <strong>8769</strong> and <strong>8774</strong>. The full services loaded event 8000 and the
+smoke service loaded event 1. No restart was needed during this retirement.</li>
+<li><strong>75 Python tests</strong>, <code>make physics</code>, and <strong>7 Julia overview checks</strong> passed.
+<code>git diff --check</code> passed.</li>
+</ul>
+<h2>Historical overview and handoffs</h2>
+<p><code>config/specs/runs/response_overview.toml</code> is now explicitly historical. Its
+reducer checks source availability before opening the saved HDF5 reduction for
+replacement. Missing retired inputs produce instructions for the saved
+presentation and current viewer. A regression test verifies that a saved
+reduction survives this error unchanged. The viewer likewise gives a current
+configuration pointer when the historical card references retired inputs.</p>
+<p>The old overview's numerical HDF5 summary, figures, HTML and PDF remain.
+<strong><code>make response-overview-present</code> regenerated the HTML and compiled PDF</strong> from
+the preserved summary. They are labelled as the historical 10–150 cm production.
+Use <strong><code>make response-viewer</code></strong> for the current matched 5–145 cm configuration.
+The older CSA/SiPM handoffs and 4 mm production note now link to this retirement
+record and the current matched production.</p>
+<h2>Exception and accounting</h2>
+<p>One old unfinished <strong>283 MiB</strong> <code>ion_response.h5.tmp</code> had an unreadable HDF5 object
+header. The first pass stopped during its metadata inspection. The file was
+confirmed to be an approved historical temporary; its original bytes were hashed,
+the error recorded, and retirement resumed using the existing deletion ledger.
+All other successfully readable response metadata were preserved. There are no
+remaining temporary files from this cleanup.</p>
+<p>Filesystem free space was <strong>477.6 GiB</strong> at the final check.
+The observed free-space increase also includes concurrent activity and filesystem
+accounting; the <strong>80.40 GiB</strong> removal figure is
+based on the enumerated deleted files, not that global change.</p>
+<p>The local full deletion inventory is
+<code>results/storage_cleanup/2026-11-08_historical/deleted_sha256.jsonl.gz</code>.
+Metadata archives and protected-file inventories remain local beside it.
+<a href="../../results/storage_cleanup/2026-11-08_historical/completed.json">Completion totals</a>,
+<a href="../../results/storage_cleanup/2026-11-08_historical/verification.json">verification results</a>
+and <a href="../../results/storage_cleanup/2026-11-08_historical/disk_measurements.json">disk measurements</a>
+are retained as compact records. Inspection, execution and verification scripts
+and logs are under <code>work/historical_retirement/</code>.</p>
+</main></html>

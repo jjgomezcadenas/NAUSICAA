@@ -1,0 +1,4 @@
+# Full inventories and source metadata remain local with simulation data.
+*.jsonl.gz
+protected_inputs.json
+metadata/

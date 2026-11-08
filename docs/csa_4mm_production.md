@@ -1,5 +1,11 @@
 # Ion CSA production at 4 mm / 40 ms
 
+Historical production. Its large event-response files and most acquired histories
+were retired on 2026-11-08. Reports, summaries, cards and selected reference cases,
+including the event-6625 guard-boundary case, remain. See
+[the retirement record](reviews/historical_retirement_2026-11-08.md).
+The current matched production is documented in [elm_matched_production.md](elm_matched_production.md).
+
 The 8,000-event bb0nu study uses `config/specs/runs/ion_csa_0p5_enc_production_4mm_guard063.toml`, `config/specs/response/ion_csa/csa_0p5_enc_4mm.toml` and the established three-frame reconstruction card. The input is the saved 4 mm ion pad history, one positive Xe₂⁺ charge per counted ion. The circuit, weighting-field approximation, stationary-noise model and charge-integral checks are specified in the generated reports and the response card.
 
 ## Guard selection

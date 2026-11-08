@@ -148,6 +148,14 @@ Establish the physics before implementing electronics.
   retained outputs. Legacy binned replay fixtures are in
   `results/validation/direct_replay_fixture/`. Use `work/julia-depot` for the
   active local Julia depot.
+- The subsequent historical retirement is recorded in
+  `docs/reviews/historical_retirement_2026-11-08.md`. Earlier bb0nu realization
+  `c25084b9…` retains detector inputs and summaries; its large electronics outputs
+  were retired. Selected historical SPICE case folders remain alongside their
+  cards and summaries. The active nonlinear calibration's training and validation
+  directories remain intact. `response-overview.toml` describes retired inputs;
+  use `make response-overview-present` for its saved plots and
+  `make response-viewer` for the current matched production.
 - Cite primary sources in notes/physics/references.bib. Record user-provided
   revisions as design inputs, not as published measurements.
 - Cite physics formulas to primary papers or documented local derivations,

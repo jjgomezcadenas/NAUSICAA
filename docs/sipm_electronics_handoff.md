@@ -1,5 +1,10 @@
 # Handoff: SiPM and electron-readout electronics
 
+Historical handoff. The earlier bb0nu realization's electronics outputs were
+retired on 2026-11-08; its detector inputs and reports remain. See
+[the retirement record](reviews/historical_retirement_2026-11-08.md) and
+[current matched production](elm_matched_production.md) before selecting inputs.
+
 **Current authorization (2026-10-30):** the user has now authorized the
 co-worker to audit this implementation and run all events. Start with
 [`sipm_production_handoff.md`](sipm_production_handoff.md), which records the

@@ -1,3 +1,7 @@
+# Historical 10–150 cm configuration. Large response files retired 2026-11-08.
+# Saved plots: make response-overview-present. Current viewer: make response-viewer.
+# See docs/reviews/historical_retirement_2026-11-08.md.
+historical_sources_retired = true
 sample = "bb0nu"
 output = "results/response_overview"
 sipm_manifest = "results/sipm_response_production/0246ff441c441632/manifest.toml"

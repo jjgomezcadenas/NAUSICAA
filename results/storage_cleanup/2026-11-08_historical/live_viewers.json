@@ -1,0 +1,32 @@
+[
+  {
+    "port": 8768,
+    "endpoint": "/api/info",
+    "ok": true
+  },
+  {
+    "port": 8768,
+    "endpoint": "/api/event?event=8000",
+    "ok": true
+  },
+  {
+    "port": 8769,
+    "endpoint": "/api/info",
+    "ok": true
+  },
+  {
+    "port": 8769,
+    "endpoint": "/api/event?event=8000",
+    "ok": true
+  },
+  {
+    "port": 8774,
+    "endpoint": "/api/info",
+    "ok": true
+  },
+  {
+    "port": 8774,
+    "endpoint": "/api/event?event=1",
+    "ok": true
+  }
+]

@@ -59,7 +59,25 @@ keys are joined exactly to SiPM response keys. Pair checksums and drift lengths
 must agree across all branches. The source card and code digest are retained.
 """
 function main(cardpath;limit=typemax(Int))
-    card=TOML.parsefile(cardpath);outdir=resolve(card["output"]);mkpath(outdir)
+    card=TOML.parsefile(cardpath)
+    # Check inputs before opening the saved reduction for replacement.
+    sources=[resolve(source["path"]) for source in card["ions"]]
+    push!(sources,resolve(card["sipm_manifest"]))
+    missing=filter(p->!isfile(p),sources)
+    if !isempty(missing)
+        advice=get(card,"historical_sources_retired",false) ?
+            "Historical response files were retired. Use make response-overview-present for saved plots or make response-viewer for the current matched production." :
+            "Supply completed response inputs before reducing."
+        throw(ArgumentError(advice*" Missing input: "*first(missing)))
+    end
+    manifest=TOML.parsefile(resolve(card["sipm_manifest"]))
+    for shard in manifest["shards"]
+        shard["sample"]==card["sample"] || continue
+        for key in ("sensor","asic")
+            isfile(resolve(shard[key])) || throw(ArgumentError("Missing $key response: $(shard[key]); saved reduction preserved"))
+        end
+    end
+    outdir=resolve(card["output"]);mkpath(outdir)
     ledger=Dict{Int,Tuple{String,Float64,Float64}}()
     function check(g,id)
         signature=(String(read(g["pair_checksum"])),Float64(read(g["ion_drift_cm"])),Float64(read(g["electron_drift_cm"])))

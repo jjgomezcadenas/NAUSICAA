@@ -1,0 +1,16 @@
+{
+  "protected_files_unchanged": 37840,
+  "calibration_unchanged": true,
+  "reference_folders": 48,
+  "reference_files_hash_verified": 328,
+  "deleted_files_verified": 244812,
+  "allocated_bytes_removed": 86329675776,
+  "unreadable_old_temporaries": [
+    {
+      "path": "results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response/ions/14d59c9436d9cdfa37465d0e788feefa4b84f153c118c1bc1ed5c937e3cd06ac/75b3d86f00ea89bd1ad50e6e4de0f8dc1280aaeea99cec2fc45eb77aac05f654/ion_response.h5.tmp",
+      "error": "incomplete temporary; unreadable HDF5: 'Unable to synchronously open object (bad object header version number)'"
+    }
+  ],
+  "free_before": 413394673664,
+  "free_after": 512784388096
+}

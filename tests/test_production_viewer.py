@@ -72,6 +72,13 @@ class MatchedProductionTest(unittest.TestCase):
             f'sipm_manifest = {json.dumps(str(self.manifest))}\n[[ions]]\npitch_mm = 4\n'
             f'path = {json.dumps(str(self.paths["ions"]))}\n')
 
+    def test_retired_inputs_have_a_current_viewer_pointer(self):
+        self.card.write_text('historical_sources_retired = true\n'+self.card.read_text())
+        self.assertEqual(ProductionSource(self.card).ids,[7,101])
+        self.paths['ions'].unlink()
+        with self.assertRaisesRegex(ValueError,'elm_matched_response_viewer.toml'):
+            ProductionSource(self.card)
+
     def test_single_gas_defaults_and_file_position(self):
         source=ProductionSource(self.card)
         self.assertEqual(source.info()['gases'],['xe_he'])

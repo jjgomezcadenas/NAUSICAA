@@ -1,5 +1,10 @@
 # Ion CSA agent handoff
 
+Historical handoff. Large files from these earlier studies were retired on
+2026-11-08; selected reference histories and reports remain. See
+[the retirement record](reviews/historical_retirement_2026-11-08.md) and
+[current matched production](elm_matched_production.md) before selecting inputs.
+
 ## Audit handoff — completed CSA work, 2026-10-30
 
 This section records the completed CSA work for the agent assembling the final

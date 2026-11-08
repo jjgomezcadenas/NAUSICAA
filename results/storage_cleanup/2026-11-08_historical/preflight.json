@@ -1,0 +1,27 @@
+{
+  "roots": [
+    "results/ion_csa_0p5_enc_production_4mm",
+    "results/ion_csa_bb0nu_3mm_production",
+    "results/ion_csa_v3_pilot",
+    "results/ion_csa_v3_pilot_4mm",
+    "results/ion_csa_v3_pilot_2mm",
+    "results/simulations/production_pilot/bb0nu/c25084b9e721e407c0688bfdba837f8f7fe5e453d8dad73034681d2d994ad95c/response"
+  ],
+  "retained_reference_folders": 48,
+  "protected_files": 37840,
+  "validation_histories": 9391,
+  "training_histories": 240,
+  "calibration_sha256": "d7a017c205a90f0aa850b32dba5ce79bf5b8f89c61a1094c9cfbb91ec74be889",
+  "free_before": 413394673664,
+  "studies": [
+    "results/ion_csa_0p5_enc_production_4mm/0e84b70bcc70c20c",
+    "results/ion_csa_0p5_enc_production_4mm/107c06e2dfe16dec",
+    "results/ion_csa_bb0nu_3mm_production/b2b632af2e01389b/execution/pitch3/filtered/e9ae37c64eaab6e0",
+    "results/ion_csa_v3_pilot/d6798a937b24dfd0",
+    "results/ion_csa_v3_pilot/fe44c7ae68e2df1f",
+    "results/ion_csa_v3_pilot/e350c80d4a1396a4",
+    "results/ion_csa_v3_pilot_4mm/fa07f78d3daa901b",
+    "results/ion_csa_v3_pilot_4mm/289ba0ab6997a94f",
+    "results/ion_csa_v3_pilot_2mm/0d8a8d4b9ddd6666"
+  ]
+}
