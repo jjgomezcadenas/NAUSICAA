@@ -2,7 +2,7 @@
 <nav><a href="#flow">Processing</a><a href="#frame">Frame and channels</a><a href="#types">Data types</a><a href="#functions">Functions</a><a href="#physics">Calculation</a><a href="#tests">Tests</a><a href="#files">Files</a></nav>
 <section id="flow"><h2>1. Processing one accepted event</h2>
 <ol>
-<li>Read the MC hits, event position and frame returned by <code>mc_fast_trigger</code>.</li>
+<li>Read the MC hits, event position and frame returned by <code>mc_fast_trigger</code>. The frame contains the primary electrons and their delta-electron descendants, with a 20 mm margin on each side.</li>
 <li>Select the hits inside the frame. Record the deposited energy outside it.</li>
 <li>Calculate the number of electron–ion pairs produced by each selected hit, including Fano fluctuations.</li>
 <li>List every pad and SiPM covered by the frame. Calculate the ion and electron arrival intervals and their time buckets.</li>
@@ -15,7 +15,7 @@
 <ol>
 <li><code>sim_ion_detector_response</code> and <code>sim_electron_detector_response</code>: ion and photon vectors.</li>
 <li><code>sim_electronics_response</code>: simulated CSA/ADC and SiPM/ASIC values, including noise on every acquired channel.</li>
-<li><code>reco_signal</code>: RI after linear or nonlinear CSA deconvolution; PE after the SiPM saturation correction.</li>
+<li><code>reco_signal</code>: RI after linear or nonlinear CSA deconvolution; PE after the SiPM saturation and attachment corrections. Correct attachment by multiplying each PE bucket by exp(drift time / lifetime).</li>
 <li><code>reco_zero_suppression</code>: select reconstructed channel vectors.</li>
 <li><code>write_event</code>: save the selected vectors, frame, channels and timing.</li>
 </ol>
@@ -51,7 +51,7 @@ Electron arrivals (μs): [L - Z_max, L - Z_min] / electron_drift_velocity_mm_us<
 <li>CSA baseline and filter-completion samples belong to the electronics acquisition settings.</li>
 </ul>
 </section>
-<section id="types"><h2>3. Data types for review</h2>
+<section id="types"><h2>3. Data types</h2>
 <p>Inputs use <a href="mc_fast_trigger.html#types">MCEventHits, MCEventInfo, EventPlacement, EventFrame and FastTriggerOutput</a>.</p>
 <h3>ReadoutGrid</h3><pre><code>struct ReadoutGrid
     pitch_mm::Float32
@@ -110,16 +110,14 @@ end</code></pre>
     time::T  # IonReadoutTime (ms) or ElectronReadoutTime (μs)
     counts::Matrix{Int64}  # time buckets × channels
 end</code></pre><p>One complete time vector per channel. A channel receiving no signal has a zero vector.</p>
-<h3>DetectorResponseCounts</h3><pre><code>struct DetectorResponseCounts
-    energy_inframe_keV::Float32
-    energy_outside_frame_keV::Float32
-    e_ion_pairs::Int64
-    ions_outside_frame::Int64
-    e_lost_attachment::Int64
-    electrons_outside_frame::Int64
-    EL_photons::Int64
-    uncollected_photons::Int64
-end</code></pre>
+<h3>ReadoutLosses</h3><pre><code>struct ReadoutLosses
+    total::Int64
+    excluded_xy::Int64
+    excluded_time::Int64
+    excluded_total::Int64
+    channels_with_signal::Int64
+    outside_channels_with_signal::Int64
+end</code></pre><p>Count a contribution lost in both XY and time once in <code>excluded_total</code>.</p>
 <h3>IonDetectorResponse</h3><pre><code>struct IonDetectorResponse
     event_id::Int64
     placement::EventPlacement
@@ -127,6 +125,8 @@ end</code></pre>
     ions::DetectorVectors{IonReadoutTime}
     e_ion_pairs::Int64
     ions_outside_frame::Int64
+    losses::ReadoutLosses
+    excluded::SparseCells
 end</code></pre>
 <h3>ElectronDetectorResponse</h3><pre><code>struct ElectronDetectorResponse
     event_id::Int64
@@ -138,8 +138,10 @@ end</code></pre>
     electrons_outside_frame::Int64
     EL_photons::Int64
     uncollected_photons::Int64
+    losses::ReadoutLosses
+    excluded::SparseCells
 end</code></pre>
-<p>The script combines these counts with the included and excluded MC energy in <code>DetectorResponseCounts</code>.</p>
+<p><code>excluded</code> contains channel indices, bucket indices and counts for the loss control plots, using the existing <code>SparseCells</code> type. <code>uncollected_photons</code> counts optical losses; <code>losses</code> counts photons reaching SiPMs outside the acquisition.</p>
 </section>
 <section id="functions"><h2>4. Function interfaces</h2>
 <pre><code>acquisition_frame(frame::EventFrame, placement::EventPlacement,
@@ -201,7 +203,7 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <tr><td><a href="../../../src/event_analysis/grid_readout.jl">grid_readout.jl</a></td><td>Reuse the EL yield and optical acceptance calculations.</td></tr>
 </table>
 <p>Physics formulas and operating parameters: <a href="../../physics/itaca_poo.pdf">principle of operation</a> and <a href="../../../docs/elm.tex">ELM note</a>.</p>
-<p>The operating note uses 300 V/cm at 15 bar. Its illustrative drift velocities are 0.15 mm/ms for ions and 0.6 mm/μs for electrons. At those velocities, 40 ms spans 6 mm and 250 ns spans 0.15 mm. Cards specify each drift velocity and bucket duration used in each calculation.</p>
+<p>The operating note uses 300 V/cm at 15 bar. Its illustrative drift velocities are 0.15 mm/ms for ions and 0.6 mm/μs for electrons. The current card uses 3 mm TopMetal pitch and 20 ms buckets, spanning 3 mm in Z. SiPMs retain 4 mm pitch and 250 ns buckets, spanning 0.15 mm in Z. Event displays sum 20 electron buckets into 3 mm Z bins. Cards specify each drift velocity and bucket duration used in each calculation.</p>
 </section>
 <section id="tests"><h2>6. Tests</h2>
 <table><tr><th>Test</th><th>What we check</th></tr>
@@ -217,7 +219,7 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <tr><td>Fluctuations</td><td>Recover the expected Fano, attachment, EL and optical means and variances over repeated events.</td></tr>
 <tr><td>Repeatability</td><td>The same event, settings and seeds give identical vectors. Changing ion pitch leaves the photon calculation unchanged.</td></tr>
 <tr><td>Existing collection</td><td>With a frame enclosing all sampled charge, reproduce the existing collection at the same settings.</td></tr>
-<tr><td>Storage</td><td>Read back channel positions, zero vectors, counts and times unchanged. Calculate the allocation and file-size limits from channels × buckets before creating arrays or datasets.</td></tr>
+<tr><td>Storage</td><td>Bound vector memory by channels × buckets. Check saved control totals and histograms. Set the control-file budget from its columns and example projections.</td></tr>
 </table>
 </section>
 <section id="files"><h2>7. Files and output</h2>
@@ -251,6 +253,11 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <li>Report excluded ions / total arriving ions and excluded photons / total photons reaching SiPMs. Show the per-event distributions, including zero loss, and the sample-wide fractions.</li>
 <li>Record losses outside the time interval separately, and count each lost contribution once in the total loss.</li>
 <li>Control plots also show excluded MC energy, event totals, channel counts and vector lengths. Annotate distributions with entries, mean and RMS.</li>
+<li>Compute event mean and maximum over positive pad/bucket counts and SiPM/bucket photon counts in one pass as each event finishes.</li>
 </ul>
 <p>Intermediate ion/photon, electronics and reconstructed vectors can optionally be saved for selected validation events. Production saves compact control statistics, cards and seeds alongside the final RI and PE files.</p>
+<h3>Run and regenerate plots</h3><pre><code>make test-detector-response
+make detector-response-bb0nu PYTHON=work/event-viewer-venv/bin/python
+make detector-response-present PYTHON=work/event-viewer-venv/bin/python</code></pre>
+<p>The detector-only study saves control statistics and selected event projections. It does not write the full event vectors.</p>
 </section></main><footer>ITACA · Event-analysis interface review</footer></body></html>

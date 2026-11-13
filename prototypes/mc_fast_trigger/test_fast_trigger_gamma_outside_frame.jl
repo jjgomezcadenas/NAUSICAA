@@ -15,8 +15,8 @@ particle(id,parent,name;primary=0)=(particle_id=Int32(id),mother_id=Int32(parent
     @test r.gammas[1].nearest_hit_max_mm==90
     @test r.event.outside_frame_energy_keV≈3
     @test r.event.total_energy_keV≈2105
-    @test_throws ErrorException gamma_roots([particle(2,9,"e-")])
-    @test_throws ErrorException gamma_roots([particle(2,3,"e-"),particle(3,2,"e-")])
+    @test_throws ArgumentError gamma_roots([particle(2,9,"e-")])
+    @test_throws ArgumentError gamma_roots([particle(2,3,"e-"),particle(3,2,"e-")])
 end
 @testset "Placement and sequential fiducial cuts" begin
     s=detector_selection(Float32[-10,0,10],100f0)

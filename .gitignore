@@ -158,3 +158,8 @@ results/ltspice/noise_audit/decks/*.db
 /results/ltspice/**/*.h5
 /results/ltspice/**/*.pwl
 /results/ltspice/**/*.csv.gz
+
+# Framed readout numerical controls and event vectors remain local.
+/results/readout/**/*.h5
+/results/readout/**/*.tmp
+/results/readout/*_first10/

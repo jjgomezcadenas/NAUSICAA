@@ -1,11 +1,11 @@
-# Compare the reviewed library with the saved full-sample 5 keV prototype.
+# Compare the main-track library selection with the current full-sample prototype.
 
 using HDF5,TOML,Test
 include(joinpath(@__DIR__,"../../src/event_analysis/EventAnalysis.jl"))
 using .EventAnalysis
 root=normpath(joinpath(@__DIR__,"../.."));c=TOML.parsefile(joinpath(root,"prototypes/mc_fast_trigger/fast_trigger_gamma_outside_frame.toml"))
-s=FastTriggerSettings(1500f0,50f0,1450f0,(10f0,10f0,10f0),5f0)
-h5open(joinpath(root,"work/fast_trigger/reference_5keV.h5"),"r") do ref
+s=FastTriggerSettings(1500f0,50f0,1450f0,ntuple(_->Float32(c["illustrative_margin_mm"]),3),Float32(c["gamma_energy_cut_keV"]))
+h5open(joinpath(root,"prototypes/mc_fast_trigger/results/fast_trigger_gamma_outside_frame.h5"),"r") do ref
  @testset "Full-sample prototype decisions" begin
   for species in c["species"]
    g=ref[species];ids=read(g["all_events/event_number"]);vertex=read(g["all_events/vertex_z_mm"])
@@ -21,9 +21,9 @@ h5open(joinpath(root,"work/fast_trigger/reference_5keV.h5"),"r") do ref
      @test o.decision==expected
      @test h.energy_keV==f["hits/energy_MeV"][f["events/first_row"][i]:f["events/first_row"][i]+f["events/n_hits"][i]-1].*1000f0
      if haskey(g["event_details"],string(id))
-      d=g["event_details/$(id)"];lo=read(d["primary_low_mm"]);hi=read(d["primary_high_mm"]);lo[3]-=vertex[i];hi[3]-=vertex[i]
-      @test all(isapprox.(collect(o.frame.lower_mm),lo.-10f0;atol=2f-4))
-      @test all(isapprox.(collect(o.frame.upper_mm),hi.+10f0;atol=2f-4))
+      d=g["event_details/$(id)"];lo=read(d["main_track_low_mm"]);hi=read(d["main_track_high_mm"]);lo[3]-=vertex[i];hi[3]-=vertex[i]
+      @test all(isapprox.(collect(o.frame.lower_mm),lo.-s.margin_mm[1];atol=2f-4))
+      @test all(isapprox.(collect(o.frame.upper_mm),hi.+s.margin_mm[1];atol=2f-4))
      end
     end
    end

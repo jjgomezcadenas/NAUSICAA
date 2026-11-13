@@ -30,7 +30,7 @@ function distributions(g,rows)
 end
 h5open(out*".tmp","w") do output
     output["card"]=read(joinpath(@__DIR__,"fast_trigger_gamma_outside_frame.toml"),String)
-    output["schema"]="itaca.mc_fast_trigger.fiducial.v4"
+    output["schema"]="itaca.mc_fast_trigger.fiducial.v5"
     codefiles=[joinpath(@__DIR__,"fast_trigger_gamma_outside_frame_functions.jl"),@__FILE__,joinpath(ROOT,"src/event_analysis/fast_trigger_types.jl"),joinpath(ROOT,"src/event_analysis/mc_fast_trigger.jl"),joinpath(ROOT,"src/event_analysis/io.jl")]
     output["implementation_files"]=relpath.(codefiles,ROOT)
     output["implementation_file_sha256"]=[bytes2hex(sha256(read(p))) for p in codefiles]
@@ -129,7 +129,7 @@ h5open(out*".tmp","w") do output
                 vertex_z=all_evs[i].vertex_z_mm
                 d=create_group(details,string(id))
                 for k in keys(r.hits);d[string(k)]=(k==:z_mm ? r.hits.z_mm.+vertex_z : getproperty(r.hits,k));end
-                d["primary_low_mm"]=r.lo.+Float32[0,0,vertex_z];d["primary_high_mm"]=r.hi.+Float32[0,0,vertex_z];d["vertex_z_mm"]=vertex_z
+                d["main_track_low_mm"]=r.lo.+Float32[0,0,vertex_z];d["main_track_high_mm"]=r.hi.+Float32[0,0,vertex_z];d["vertex_z_mm"]=vertex_z
             end
             g["calculation_seconds"]=calc
         end

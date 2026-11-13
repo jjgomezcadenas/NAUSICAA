@@ -1,3 +1,22 @@
+# Framed detector response
+
+`run_framed_detector_response.jl` applies the MC fast trigger to bb0nu, then
+calculates ion and SiPM-photon vectors for accepted events. The card is
+`config/readout/bb0nu_detector_response_3mm_mainframe20.toml`. Numerical controls and selected
+XY/XZ projections go to `results/readout/<run_label>/detector_response/`.
+The current run uses a 20 mm frame margin on each side of the primary electrons and their delta-electron descendants.
+Full event vectors remain in memory. TopMetal uses 3 mm pitch and 20 ms buckets
+(3 mm in Z). SiPMs retain 4 mm pitch and 250 ns response buckets; event-display
+projections sum 20 electron buckets into 3 mm in Z.
+
+- `make test-detector-response`: frame, collection and fluctuation tests.
+- `make detector-response-bb0nu PYTHON=work/event-viewer-venv/bin/python`: calculation and plots.
+- `make detector-response-single-electrons PYTHON=work/event-viewer-venv/bin/python`: same detector settings, single-electron sample.
+- `make detector-response-present PYTHON=work/event-viewer-venv/bin/python`: plots from saved controls.
+
+Completed outputs are preserved; use a new run label for another calculation.
+The main index is `notes/html/index.html`.
+
 # Detector-production grid scan
 
 The 8,000-event scan uses the 1 mm Geant4 hit tables for `bb0nu` and

@@ -30,7 +30,7 @@ export EventPlacement, GridSpec, SparseCells, IonPadHistory, PhotonSiPMHistory,
        collect_photon_sipm_history, write_ion_history, read_ion_history,
        write_photon_history, read_photon_history
 
-export MCEventInfo, MCEventHits, MCParticle, mc_source_frame, mc_vertex_frame, EventFrame, GammaDeposit, FastTriggerSettings, FastTriggerDecision, FastTriggerOutput, FastTriggerStatistics, trigger_accepted, outside_detector, outside_vertex_fiducial, outside_frame_gamma, gamma_map, gamma_deposits, primary_box, make_frame, gamma_veto, mc_fast_trigger, place_event, update_statistics, merge_statistics, read_mc_event, read_mc_particles
+export MCEventInfo, MCEventHits, MCParticle, mc_source_frame, mc_vertex_frame, EventFrame, GammaDeposit, FastTriggerSettings, FastTriggerDecision, FastTriggerOutput, FastTriggerStatistics, trigger_accepted, outside_detector, outside_vertex_fiducial, outside_frame_gamma, gamma_map, gamma_deposits, primary_box, main_track_box, make_frame, gamma_veto, mc_fast_trigger, place_event, update_statistics, merge_statistics, read_mc_event, read_mc_particles
 
 include("types.jl")
 include("fast_trigger_types.jl")

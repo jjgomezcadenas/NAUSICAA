@@ -161,6 +161,15 @@ Establish the physics before implementing electronics.
   Production passes event vectors in memory through detector response,
   electronics, reconstruction and zero suppression. Write RI/PE vectors after
   zero suppression; intermediate vectors are optional for validation events.
+  The MC fast-trigger frame is built from primary-electron hits and all their
+  electron descendants whose mother chain contains no gamma. Use
+  `main_track_box`, then the configured margin (currently 20 mm per side).
+  Gamma-produced tracks remain separate for the veto. Never frame only the
+  direct primary hits: delta electrons are part of the main track.
+  The framed bb0nu detector study uses 3 mm TopMetal pitch / 20 ms (3 mm Z),
+  with 4 mm SiPM pitch / 250 ns. Electron displays sum 20 buckets into 3 mm Z.
+  For production, rebin reconstructed PE by 20 before zero suppression and
+  writing; keep the fine sampling through SiPM/ASIC simulation and correction.
 - Avoid jargon, anecdotes, implementation history, defensive wording, unsolicited
   contrasts, tautologies and repeated definitions. Keep run-specific results in
   result reports and future tasks in the review index. Include details only when

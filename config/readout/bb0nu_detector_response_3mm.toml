@@ -1,0 +1,49 @@
+run_label = "bb0nu_full_ion3mm_20ms_el4mm_XeHe15_E300_tau30_seed42"
+hits = "events/0nubb_hitdf.h5"
+particles = "~/NAUSICAA/0nubb.next.h5"
+max_events = 0 # all source events; detector response only for accepted events
+seed = 42
+chamber_length_mm = 1500.0
+vertex_min_mm = 50.0
+vertex_max_mm = 1450.0
+frame_margin_mm = 10.0
+gamma_energy_cut_keV = 3.0
+W_eV = 21.9
+fano_factor = 0.15
+pressure_bar = 15.0
+gas_mixture = "Xe_85_He_15"
+drift_field_V_cm = 300.0
+temperature_K = 293.15
+ion_pitch_mm = 3.0
+EL_pitch_mm = 4.0
+ion_bucket_ms = 20.0
+electron_bucket_us = 0.25
+electron_display_rebin = 20 # display only: 5 us = 3 mm; response vectors retain 250 ns
+ion_drift_velocity_mm_ms = 0.15
+electron_drift_velocity_mm_us = 0.6
+electron_lifetime_ms = 30.0
+# Velocity estimates and optical boundary conditions: notes/physics/itaca_poo.tex.
+# Electron diffusion: ITACA Revisited, arXiv:2604.02443; fixed gas prescription.
+electron_dT_mm_sqrtbar_sqrtcm = 1.6
+electron_dL_mm_sqrtbar_sqrtcm = 0.75
+hole_diameter_mm = 2.5
+hole_depth_mm = 5.0
+EL_reduced_field_kV_cm_bar = 2.0
+EL_gain_photons_e_kV = 139.0
+EL_threshold_kV_cm_bar = 0.80
+EL_variance_ratio = 0.030
+photon_wavelength = "blue_tpb"
+tpb_efficiency = 0.65
+forward_fraction = 0.5
+guide_index = 1.5
+gap_index = 1.0
+propagation_transmission = 1.0
+coupling_transmission = 1.0
+electrode_transmission = 1.0
+max_vector_bytes = 268435456
+histogram_bins = 50
+example_events = 5
+# Keep operational electrode values explicit; no old-card potential is imported.
+ion_TPC_face_V = 8000.0
+ion_pad_face_V = 3000.0
+pads_V = 0.0

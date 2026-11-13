@@ -51,6 +51,23 @@ function primary_box(h::MCEventHits,info::MCEventInfo)::EventFrame
     hit_bounds(h,findall(id->id in ids,h.particle_id))
 end
 
+"""
+    main_track_box(hits::MCEventHits, info::MCEventInfo,
+                   particles::Vector{MCParticle})::EventFrame
+
+Find XYZ bounds of the primary electrons and their electron descendants.
+Follow particle mothers back to the primary IDs. An electron whose chain passes
+through any gamma belongs to that gamma deposit and does not set the main-track
+bounds. Validate the particle table with gamma_map and preserve hit order/values.
+"""
+function main_track_box(h::MCEventHits,info::MCEventInfo,particles::Vector{MCParticle})::EventFrame
+    h.event_id==info.event_id || throw(ArgumentError("Mismatched event numbers"))
+    roots=gamma_map(particles,info)
+    all(id->haskey(roots,id),h.particle_id) || throw(ArgumentError("Hit particle missing from MC table"))
+    ids=Set(p.particle_id for p in particles if p.particle_name=="e-" && roots[p.particle_id]==0)
+    hit_bounds(h,findall(id->id in ids,h.particle_id))
+end
+
 """For each gamma, sum deposited energy in Float32 keV and calculate hit bounds.
 
 Descendant gammas remain with their first gamma. Return positive-energy
@@ -98,7 +115,7 @@ function mc_fast_trigger(h::MCEventHits,info::MCEventInfo,particles::Vector{MCPa
     h.event_id==info.event_id==p.event_id || throw(ArgumentError("Mismatched event numbers"))
     h.frame==mc_vertex_frame || throw(ArgumentError("Expected vertex-centred hits"))
     isapprox(10f0*(p.ion_drift_cm+p.electron_drift_cm),s.chamber_length_mm;rtol=4eps(Float32)) || throw(ArgumentError("Drift lengths do not sum to chamber length"))
-    gs=gamma_deposits(h,gamma_map(particles,info));frame=make_frame(primary_box(h,info),s.margin_mm)
+    gs=gamma_deposits(h,gamma_map(particles,info));frame=make_frame(main_track_box(h,info,particles),s.margin_mm)
     z=10f0*p.ion_drift_cm
     decision=if !all(v->0<=v+z<=s.chamber_length_mm,h.z_mm)
         outside_detector

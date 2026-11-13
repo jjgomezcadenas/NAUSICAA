@@ -88,7 +88,7 @@ function mc_fast_trigger(hits, particles; margin_mm::Float32=20f0,expected_prima
     root=Int32[roots[id] for id in hits.particle_id]
     direct=map(id->id in primary_ids,hits.particle_id);free=root.==0
     any(direct) || error("No primary-electron hits")
-    core=Float64.(xyz[:,direct]);lo=vec(minimum(core;dims=2));hi=vec(maximum(core;dims=2))
+    core=Float64.(xyz[:,direct]);main=Float64.(xyz[:,free]);lo=vec(minimum(main;dims=2));hi=vec(maximum(main;dims=2))
     outside=max.(lo.-xyz,xyz.-hi,0.0)
     framed=vec(any((xyz.<(lo.-margin_mm)).|(xyz.>(hi.+margin_mm));dims=1))
     nearest=zeros(Float64,length(energy));nearest_z=similar(nearest);nearest_r=similar(nearest)
@@ -98,7 +98,8 @@ function mc_fast_trigger(hits, particles; margin_mm::Float32=20f0,expected_prima
     end
     mh=EA.MCEventHits(Int64(0),EA.mc_vertex_frame,xyz[1,:],xyz[2,:],xyz[3,:],Float32.(energy),Int32.(hits.particle_id),Int32.(1:length(energy)))
     mi=EA.MCEventInfo(Int64(0),(0f0,0f0,0f0),collect(primary_ids))
-    box=EA.primary_box(mh,mi);frame=EA.make_frame(box,(margin_mm,margin_mm,margin_mm))
+    mp=EA.MCParticle[EA.MCParticle(p.particle_id,p.mother_id,String(p.particle_name)) for p in particles]
+    box=EA.main_track_box(mh,mi,mp);frame=EA.make_frame(box,(margin_mm,margin_mm,margin_mm))
     deposits=Dict(g.gamma_particle_id=>g for g in EA.gamma_deposits(mh,roots))
     families=NamedTuple[]
     byid=Dict(Int32(p.particle_id)=>p for p in particles)
@@ -125,7 +126,7 @@ function mc_fast_trigger(hits, particles; margin_mm::Float32=20f0,expected_prima
       primary_dx_mm=pr[1],primary_dy_mm=pr[2],primary_dz_mm=pr[3],
       gamma_free_dx_mm=gf[1],gamma_free_dy_mm=gf[2],gamma_free_dz_mm=gf[3],
       full_dx_mm=full[1],full_dy_mm=full[2],full_dz_mm=full[3],
-      frame_dx_mm=pr[1]+2margin_mm,frame_dy_mm=pr[2]+2margin_mm,frame_dz_mm=pr[3]+2margin_mm,
+      frame_dx_mm=gf[1]+2margin_mm,frame_dy_mm=gf[2]+2margin_mm,frame_dz_mm=gf[3]+2margin_mm,
       n_gamma_families=Int64(length(families)),n_primary_hits=Int64(count(direct)),
       n_nongamma_secondary_hits=Int64(count(free .& .!direct)),
       outside_frame_energy_keV=sum(energy[framed]),

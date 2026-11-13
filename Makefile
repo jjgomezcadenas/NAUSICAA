@@ -490,3 +490,25 @@ production-provenance-test:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_ion_csa_pipeline.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/test_elm_streaming_reduction.jl
 	$(VIEWER_PYTHON) tests/test_matched_report_provenance.py
+
+.PHONY: test-detector-response detector-response-bb0nu detector-response-present
+test-detector-response:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/detector_response/runtests.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/detector_response/test_gaussian_peak.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/detector_response/test_display_rebin.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/detector_response/test_event604.jl
+
+detector-response-bb0nu:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl config/readout/bb0nu_detector_response_3mm_mainframe20.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_detector_energy.jl
+	$(PYTHON) scripts/production/present_framed_detector_response.py
+
+detector-response-present:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_detector_energy.jl
+	$(PYTHON) scripts/production/present_framed_detector_response.py
+
+.PHONY: detector-response-single-electrons
+detector-response-single-electrons:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl config/readout/single_electrons_detector_response_3mm_mainframe20.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_detector_energy.jl results/readout/single_electrons_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5
+	$(PYTHON) scripts/production/present_framed_detector_response.py results/readout/single_electrons_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5
