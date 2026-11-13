@@ -147,6 +147,20 @@ Establish the physics before implementing electronics.
   define types before functions that use them. Show signatures and state briefly
   what each function does. Explain processing as numbered steps, including what
   is read, calculated and saved.
+- Also follow `notes/html/event_analysis/sim_detector_response.html`: short
+  numbered processing steps, explicit physical names and units, and brief
+  comments for generic types. Do not repeat what a field name or earlier rule
+  already explains. Document event selections and distance definitions directly
+  in plot titles. Preserve reviewed wording when extending a page.
+- The reviewed detector-response plan acquires whole channels overlapping the
+  event frame. Record and discard diffusion signal reaching unacquired channels;
+  retain signal throughout acquired channels within the acquisition interval.
+  Itrack and etrack share event t0, with ion times in ms and electron times in us.
+  New detector-response defaults use an electron lifetime of 30 ms, configurable
+  by TOML; historical productions retain their recorded lifetime.
+  Production passes event vectors in memory through detector response,
+  electronics, reconstruction and zero suppression. Write RI/PE vectors after
+  zero suppression; intermediate vectors are optional for validation events.
 - Avoid jargon, anecdotes, implementation history, defensive wording, unsolicited
   contrasts, tautologies and repeated definitions. Keep run-specific results in
   result reports and future tasks in the review index. Include details only when
