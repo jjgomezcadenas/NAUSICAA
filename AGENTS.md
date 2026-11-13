@@ -49,6 +49,11 @@ Establish the physics before implementing electronics.
   proposed numerical baseline and validate reduction errors against Float64
   references before finalising accumulators; the energy-resolution scale is
   0.5% at 2.5 MeV (12.5 keV).
+- The reviewed MC fast-trigger API uses `MCEventInfo`, `MCParticle` and
+  `MCEventHits`, with `energy_keV::Vector{Float32}` and no MC-time field.
+  `read_mc_event` converts MeV to keV at input. Original HDF5 hit tables retain
+  their MeV energies and G4 times. The earlier EventHits/read_event API remains
+  available to existing transport callers. See notes/html/event_analysis/mc_fast_trigger.html.
 - Store MC time, actual primary IDs and the common primary generation vertex in
   reduced HDF5 files. Keep hits in source coordinates through ion diffusion.
   Distinguish reconstruction A on pure MC, B after diffusion before pad
@@ -89,11 +94,19 @@ Establish the physics before implementing electronics.
   reads these results to produce final figures, tables and LaTeX macros without
   repeating the physical calculations. Presentation can be regenerated without
   rerunning the analysis; provide a command to run the complete pipeline too.
-- Always present analysis results in a generated, self-contained LaTeX report
-  that compiles to PDF and gathers the relevant figures, tables, parameters,
-  assumptions and validation results. Generate values from the saved results;
-  do not transcribe numbers by hand. Keep numerical outputs in results/ and
-  generated analysis reports in latex_generated/.
+- Software documentation and computational reports use HTML with indexes. Keep
+  design/interface pages in notes/html/ and new readout run reports beside
+  their numerical outputs under results/readout/. LaTeX is for physics notes.
+  Generate plotted summaries from saved numerical results. Include relevant
+  numerics (entries, mean, standard deviation, median, bias or RMS residual)
+  inside plots, with units and selections stated.
+- Use plain terminology in readout documentation: event number, itrack, etrack,
+  ion/photon vectors, ADC counts and reconstructed signal vectors. Avoid
+  "charge draws", "shared realisation" and "detector branches" in explanations.
+  Run labels include both ion and EL pitch. See notes/html/readout_plan.html.
+- Change physical design parameters only with explicit user approval. Preserve
+  established manuscript/card values when porting material; if discussion
+  conflicts with them, ask before treating it as an approved revision.
 - When requirements, physical assumptions or analysis choices are unclear,
   consult the user before proceeding with the uncertain part of the work.
 - Evaluate user-proposed methods on their merits. Offer a better alternative
@@ -104,8 +117,11 @@ Establish the physics before implementing electronics.
   its callers before proposing types or algorithms. Present existing behaviour,
   types/interfaces and the justified adaptation in the HTML review guide first.
   Review those prerequisites together before implementing the next interfaces.
-- The revised design has 5 kV across the 10 mm IFG and 3 kV across the 5 mm
-  pad gap, with 200 V/cm in the bulk. Older paper voltage schemes are superseded.
+- The ion collection potentials remain 8/3/0 kV (TPC-facing IFG face,
+  pad-facing IFG face, pads), as in the itaca3 manuscript: 5 kV across
+  the 10 mm IFG and 3 kV across the 5 mm pad gap. The explicitly approved
+  new operating-note default is 300 V/cm in the drift region at 15 bar
+  (20 V/cm/bar); historical production cards retain their recorded fields.
 - Physical electric fields and weighting fields are different boundary-value
   problems. Fixed geometry weighting potentials do not depend on applied bias.
 - State boundary conditions and approximations alongside every numerical result.
@@ -125,12 +141,17 @@ Establish the physics before implementing electronics.
 - Correct clear typos automatically. Keep prose edits small and show wording
   changes for review; preserve the author's voice and avoid substantial
   reformulation unless explicitly requested.
-- In documentation, review pages and explanations, state what each type or
-  function represents and does. Remove defensive exclusions and unsolicited
-  contrasts (for example, "It does not contain the hit cloud"). Keep wording
-  focused on purpose, data, units, behaviour and relevant interface contracts.
-  Express input preservation and array ownership directly; document concrete
-  validation errors where they are part of the contract.
+- Documentation should follow the reviewed example in
+  `notes/html/event_analysis/mc_fast_trigger.html`. Use clear, concise language,
+  concrete names and short items. Group data types together in a logical order;
+  define types before functions that use them. Show signatures and state briefly
+  what each function does. Explain processing as numbered steps, including what
+  is read, calculated and saved.
+- Avoid jargon, anecdotes, implementation history, defensive wording, unsolicited
+  contrasts, tautologies and repeated definitions. Keep run-specific results in
+  result reports and future tasks in the review index. Include details only when
+  they help understand the types, functions or calculation. Preserve the user's
+  edited wording and format when updating documentation.
 - For LaTeX changes, compile and check the build log, but do not visually
   inspect the PDF unless the user explicitly requests it.
 - Bound production file copies and temporary publication files. Use the shared

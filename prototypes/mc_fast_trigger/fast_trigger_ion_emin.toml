@@ -1,0 +1,7 @@
+energies_keV = [1.0, 3.0, 5.0, 10.0]
+summed_pad_buckets = [1, 2, 4, 8, 32, 128]
+production_manifest = "results/elm_matched_production/manifest.toml"
+realisation_card = "config/specs/realisations/elm_matched_full.toml"
+covariance_frames = 160
+expected_pitch_mm = 4.0
+expected_frame_s = 0.04

@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>ITACA — MC fast-trigger prototype</title><style>ul{max-width:1100px;line-height:1.6}body{font:16px system-ui;max-width:1500px;margin:35px auto;padding:0 25px;color:#203047}h1,h2{color:#16365c}img{width:100%;margin:18px 0;border:1px solid #ddd}table{border-collapse:collapse}td,th{padding:9px 18px;border:1px solid #ddd}p{max-width:1100px;line-height:1.6}</style><h1>Fast trigger: full-sample pre-selection</h1><ul><li>Full bb0nu and single-electron NEXUS samples with 1 mm hits.</li><li>Sample the primary vertex uniformly in Z from 0 to 1500 mm (seed 42). Apply the same translation to every hit.</li><li>Require all deposited hits inside the detector Z interval.</li><li>Require the primary vertex in 50–1450 mm.</li><li>The first distributions use events passing these two cuts.</li><li>Apply the gamma veto: reject an event if any gamma deposit outside the 10 mm frame has total deposited energy above the threshold set by TOML.</li><li>The surviving-deposit distribution and examples apply all three cuts.</li></ul><p>Definitions.</p><ul><li>Primary track: hits of the primary electron or electrons.</li><li>Main track: the primary track plus its delta rays.</li><li>Gamma deposit: all the energy deposited by a gamma and its descendants.</li><li>Distance to track: minimum 3D distance between a gamma hit and a primary hit.</li><li>Distance outside frame: maximum separation beyond the frame in R or Z, with R = √(dx² + dy²).</li></ul><p>In the event plots the dashed frame is the primary bounding box enlarged by 10 mm on each side.</p><h2>bb0nu (two electrons)</h2>
+<ul><li><strong>Input:</strong> 8,995 events.</li><li><strong>Inside detector:</strong> 8,486 events.</li><li><strong>Vertex within 50–1450 mm:</strong> 8,174 events, containing 13,745 gamma deposits.</li></ul>
+<p>Normalization: only the 8486 events with all deposits inside the detector box enter efficiency numerators and denominators. The 509 events outside it are excluded from the sample.</p>
+<h3>Selection</h3><table><tr><th>Step</th><th>Accepted</th><th>Rejected at this step</th><th>Efficiency</th></tr>
+<tr><td>All deposits inside Z = 0–1500 mm</td><td>8486</td><td>509</td><td>100% (normalization sample)</td></tr>
+<tr><td>Primary vertex in Z = 50–1450 mm</td><td>8174</td><td>312</td><td>96.32% of contained</td></tr>
+<tr><td>Reject gamma veto (gamma deposits outside the frame above 3 keV)</td><td>5683</td><td>2491</td><td>66.97% of contained</td></tr></table>
+<img src="fast_trigger_gamma_outside_frame/bb0nu_gammas.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/bb0nu_scatter.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/bb0nu_extents.png" loading="lazy">
+<p>Extent of the main track per event. The statistics box in each extent plot refers to the main track.</p><table><tr><th>Axis</th><th>Mean (mm)</th><th>RMS (mm)</th><th>95th percentile (mm)</th><th>Maximum (mm)</th></tr>
+<tr><td>X</td><td>38.16</td><td>41.28</td><td>67.74</td><td>115.34</td></tr>
+<tr><td>Y</td><td>38.01</td><td>40.99</td><td>67.03</td><td>115.98</td></tr>
+<tr><td>Z</td><td>38.11</td><td>41.14</td><td>67.22</td><td>119.01</td></tr>
+</table>
+<h3>Outside-frame gamma deposits surviving the energy cut</h3>
+<p>No outside-frame gamma deposits survive in this sample.</p>
+<h3>Five examples before the gamma cut</h3>
+<img src="fast_trigger_gamma_outside_frame/bb0nu_example_event_numbers_event_7870.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/bb0nu_example_event_numbers_event_3646.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/bb0nu_example_event_numbers_event_2738.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/bb0nu_example_event_numbers_event_303.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/bb0nu_example_event_numbers_event_7418.png" loading="lazy"><h2>Single electrons</h2>
+<ul><li><strong>Input:</strong> 8,483 events.</li><li><strong>Inside detector:</strong> 7,817 events.</li><li><strong>Vertex within 50–1450 mm:</strong> 7,531 events, containing 13,128 gamma deposits.</li></ul>
+<p>Normalization: only the 7817 events with all deposits inside the detector box enter efficiency numerators and denominators. The 666 events outside it are excluded from the sample.</p>
+<h3>Selection</h3><table><tr><th>Step</th><th>Accepted</th><th>Rejected at this step</th><th>Efficiency</th></tr>
+<tr><td>All deposits inside Z = 0–1500 mm</td><td>7817</td><td>666</td><td>100% (normalization sample)</td></tr>
+<tr><td>Primary vertex in Z = 50–1450 mm</td><td>7531</td><td>286</td><td>96.34% of contained</td></tr>
+<tr><td>Reject gamma veto (gamma deposits outside the frame above 3 keV)</td><td>5069</td><td>2462</td><td>64.85% of contained</td></tr></table>
+<img src="fast_trigger_gamma_outside_frame/single_electrons_gammas.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/single_electrons_scatter.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/single_electrons_extents.png" loading="lazy">
+<p>Extent of the main track per event. The statistics box in each extent plot refers to the main track.</p><table><tr><th>Axis</th><th>Mean (mm)</th><th>RMS (mm)</th><th>95th percentile (mm)</th><th>Maximum (mm)</th></tr>
+<tr><td>X</td><td>49.67</td><td>53.79</td><td>88.52</td><td>146.40</td></tr>
+<tr><td>Y</td><td>49.83</td><td>53.89</td><td>88.87</td><td>143.91</td></tr>
+<tr><td>Z</td><td>49.19</td><td>53.14</td><td>86.84</td><td>151.63</td></tr>
+</table>
+<h3>Outside-frame gamma deposits surviving the energy cut</h3>
+<img src="fast_trigger_gamma_outside_frame/single_electrons_surviving_outside_energy.png" loading="lazy">
+<h3>Five examples before the gamma cut</h3>
+<img src="fast_trigger_gamma_outside_frame/single_electrons_example_event_numbers_event_5476.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/single_electrons_example_event_numbers_event_7238.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/single_electrons_example_event_numbers_event_5667.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/single_electrons_example_event_numbers_event_8405.png" loading="lazy">
+<img src="fast_trigger_gamma_outside_frame/single_electrons_example_event_numbers_event_6412.png" loading="lazy">
+<h3>Surviving events with gamma deposits outside the frame</h3>
+<p>MC event 3754: outside-frame gamma deposited energies = 2.88 keV.</p>
+<img src="fast_trigger_gamma_outside_frame/single_electrons_surviving_outside_example_numbers_event_3754.png" loading="lazy"></html>

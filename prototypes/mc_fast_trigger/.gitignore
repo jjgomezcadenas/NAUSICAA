@@ -1,0 +1,4 @@
+/results/*.h5
+/results/*.tmp
+*.log
+__pycache__/

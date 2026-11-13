@@ -1,0 +1,121 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Readout implementation plan · ITACA</title><style>
+:root{color-scheme:light;--ink:#203343;--muted:#526776;--line:#d8e3e8;--blue:#185b83;--ion:#146955;--paper:#fff;--bg:#f3f6f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 system-ui,-apple-system,sans-serif}a{color:var(--blue);text-underline-offset:3px}a:hover{color:#103b56}a:focus-visible{outline:3px solid #d99526;outline-offset:4px}header{background:#17394b;color:white;padding:34px max(24px,calc((100vw - 1080px)/2));}header a{color:#d4ecf6}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:750}h1{font-size:clamp(29px,4vw,44px);line-height:1.16;margin:12px 0}header p{max-width:760px;margin:14px 0 0;color:#e1ebf0}main{max-width:1130px;margin:auto;padding:30px 24px 60px}h2{font-size:26px;line-height:1.25;margin:0 0 16px}h3{font-size:19px;margin:0 0 10px}p{margin:10px 0 16px}.meta{color:var(--muted);font-size:14px}.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:28px;margin:0 0 26px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{border:1px solid var(--line);border-radius:9px;padding:22px;background:#fff}.tag{display:inline-block;font-size:12px;letter-spacing:.04em;border-radius:4px;background:#e8f1f6;padding:3px 9px;margin-bottom:12px;font-weight:700}.tag.ion{background:#e7f3ed;color:var(--ion)}nav.toc{display:flex;gap:10px 22px;flex-wrap:wrap;margin:0 0 28px;padding:16px 20px;border:1px solid var(--line);background:white;border-radius:8px}nav.toc a{font-size:14px}.stage{border-left:5px solid var(--blue)}.number{font-size:13px;font-weight:750;color:var(--blue);letter-spacing:.08em;text-transform:uppercase}.stage h2{margin-top:6px}.out{background:#f3f7f9;border-radius:6px;padding:12px 16px;margin-top:14px}.arrow{text-align:center;color:var(--muted);margin:-17px 0 10px;font-size:14px;font-weight:650}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#eef4f7}code{font: .87em ui-monospace,SFMono-Regular,monospace;background:#eef3f6;padding:2px 5px;border-radius:3px;overflow-wrap:anywhere}ul,ol{padding-left:23px}li{margin:6px 0}.scroll{overflow-x:auto}.note{padding:14px 18px;background:#edf5f4;border-left:3px solid var(--ion)}footer{max-width:1080px;margin:auto;border-top:1px solid var(--line);padding:22px 0;color:var(--muted);font-size:14px}section{scroll-margin-top:20px}@media(max-width:700px){.grid{grid-template-columns:1fr}.panel{padding:20px}main{padding:24px 16px}footer{margin:0 16px}th,td{padding:9px}header{padding:26px 20px}}@media print{body{background:white;font-size:11pt}header{background:white;color:#203343;padding:0}header p,header a{color:#203343}nav.toc{display:none}main{padding:20px 0}.panel{break-inside:avoid}a{color:inherit}footer{padding:10px 0}}
+
+pre{background:#f1f5f7;border:1px solid var(--line);border-radius:8px;padding:18px;overflow-x:auto;font:14px/1.65 ui-monospace,SFMono-Regular,monospace}pre code{padding:0;background:none}.lead{font-size:19px}.flow{font-weight:650;color:var(--blue)}</style></head><body><header><div class="eyebrow">ITACA · Detector documentation</div><p><a href="index.html">← Documentation index</a></p><h1>Readout implementation plan</h1><p>Responsibilities, files and control plots from Monte Carlo events to itrack and etrack hits.</p></header><main>
+<p class="meta">Agreed plan · 9 November 2026 · Implementation starts after the data types and function interfaces are reviewed.</p>
+<nav class="toc" aria-label="Plan contents"><a href="#run">Run definition</a><a href="#flow">Data flow</a><a href="#code">Code directories</a><a href="#files">Output directories</a><a href="#controls">Control plots</a><a href="#docs">HTML organisation</a><a href="#work">Implementation order</a></nav>
+<section id="run" class="panel"><h2>1. Run definition and naming</h2>
+<p class="lead">For each energy deposit in a Monte Carlo event, we calculate the number of electron–ion pairs produced, including Fano fluctuations. We also assign one position to the event. The electron and ion drift distances are complementary.</p>
+<p>A run specifies the Monte Carlo input, event numbers, detector parameters, electronics settings and reconstruction settings. The etrack and itrack use the same Monte Carlo events.</p>
+<p>The run label includes, at minimum, the ion pitch and EL pitch. A proposed first pilot is:</p>
+<pre><code>bb0nu_100events_ion4mm_el4mm_XeHe15_E300_seed2026</code></pre>
+<p>This identifies the species, event count, both pitches, gas, drift field in V/cm and random seed. <code>run.toml</code> records the complete settings and selected input/output files. Further runs with different settings receive distinct labels; existing results are preserved.</p>
+<p><code>events.h5</code> records the event numbers, assigned positions and information needed to reproduce primary electron and ion counts. Individual carrier positions are not saved.</p>
+</section>
+<section id="flow" class="panel"><h2>2. Data flow</h2>
+<p>Stage 2 reads detector-response HDF5 files from Stage 1. Stage 3 reads the measured response from Stage 2 and produces reconstructed signal vectors. Hit construction reads those reconstructed vectors. Track reconstruction starts from the saved itrack and etrack hits.</p>
+<div class="grid"><article class="card"><span class="tag ion">Itrack</span><p class="flow">MC events<br>↓<br>Ion vectors<br>↓<br>ADC-count vectors<br>↓<br>Reconstructed ion vectors<br>↓<br>Itrack hits<br>↓<br>Track reconstruction, later</p></article><article class="card"><span class="tag">Etrack</span><p class="flow">MC events<br>↓<br>Photon vectors<br>↓<br>ASIC PE-response vectors<br>↓<br>Reconstructed PE vectors<br>↓<br>Etrack hits<br>↓<br>Track reconstruction, later</p></article></div>
+<div class="scroll"><table><thead><tr><th scope="col">Step</th><th scope="col">Itrack</th><th scope="col">Etrack</th></tr></thead><tbody>
+<tr><th scope="row">1. Detector response</th><td>Transport and collection → ions per pad and time bucket</td><td>Transport, attachment, EL production and optical collection → photons per SiPM and time bucket</td></tr>
+<tr><th scope="row">2. Electronics</th><td>Induced current, CSA response and noise, ADC → ADC-count vectors</td><td>PDE sampling, SiPM occupancy/recovery, dark activity and ASIC → PE-equivalent response vectors</td></tr>
+<tr><th scope="row">3. Signal reconstruction</th><td>Baseline, filtering, linear or nonlinear inversion → reconstructed ion vectors</td><td>Channel calibration and SiPM/ASIC corrections → reconstructed PE vectors</td></tr>
+<tr><th scope="row">4. Hit construction</th><td>Pad/time coordinates and reconstructed ions → itrack hits and event ion total</td><td>SiPM/time coordinates and reconstructed PEs → etrack hits and event PE total</td></tr>
+<tr><th scope="row">5. Track reconstruction</th><td colspan="2">Hits → voxels, connected components, backbone, length and endpoint charge. This work comes later.</td></tr>
+</tbody></table></div>
+<p>Energy observables begin with sums of reconstructed ions and PEs. Conversion to MeV uses the respective calibration. Each step preserves the event number.</p>
+<p class="note">Fast-trigger implementation is postponed. The acquisition region and time window are supplied as assumed trigger inputs. Their values are recorded with the run.</p>
+</section>
+<section id="code" class="panel"><h2>3. Code responsibilities</h2>
+<pre><code>src/
+  detector_response/
+    ions/
+    electrons/
+  electronics/
+    ion_signal/
+    electron_signal/
+  reconstruction/
+    ions/
+    electrons/
+  hits/
+    itracks/
+    etracks/
+  track_reconstruction/          # later</code></pre>
+<p>Each part has documented Julia functions and corresponding tests. Functions take explicitly defined data and parameters and return their results. Scripts read TOML, manage HDF5 files and execute workflows.</p>
+<p><strong>Reuse:</strong> existing primary-charge, transport and collection calculations in <code>src/event_analysis</code>; CSA forward models, statistical SiPM response and ASIC response in <code>src/ion_signal</code>; existing voxel and graph algorithms when track reconstruction begins.</p>
+<p><strong>Adapt:</strong> separate CSA voltage generation from charge reconstruction, introduce ADC-count vectors, and provide separate ion and electron reconstruction functions and files. Existing routines move as their callers are updated and their numerical behaviour is checked. Historical workflows retain their recorded settings.</p>
+<p>Existing calibration and nonlinear CSA models must be checked at the new sampling interval and selected current waveform. A change of collection geometry or circuit requires the relevant validation.</p>
+</section>
+<section id="files" class="panel"><h2>4. Numerical outputs and file connections</h2>
+<pre><code>results/readout/
+  index.html
+  &lt;run_label&gt;/
+    run.toml
+    events.h5
+    index.html
+
+    detector_response/
+      itrack/ion_vectors.h5
+      etrack/photon_vectors.h5
+
+    electronics/
+      itrack/adc_vectors.h5
+      etrack/asic_vectors.h5
+
+    reconstruction/
+      itrack/reconstructed_ion_vectors.h5
+      etrack/reconstructed_pe_vectors.h5
+
+    hits/
+      itrack/itracks.h5
+      etrack/etracks.h5
+
+    track_reconstruction/       # later
+      itrack/
+      etrack/</code></pre>
+<p>Each itrack/etrack directory also contains <code>settings.toml</code>, <code>controls.h5</code>, <code>index.html</code> and a <code>plots/</code> directory. Settings record the input file, parameters, calibration and code version. The run page links to every stage.</p>
+<h3>What is in a vector file?</h3>
+<p>Within each event: channel numbers and positions, vector values, time origin, sample or bucket duration, units and acquisition information. Values are integer ion counts, integer photon counts, ADC counts, or calibrated charge, according to the stage. Ion ADC counts use compressed <code>UInt16</code>. Reconstructed charge retains signed values and its uncertainty information.</p>
+<h3>What is in a hit file?</h3>
+<p><code>itracks.h5</code> contains event-numbered hits with <code>x_mm</code>, <code>y_mm</code>, <code>z_mm</code> and reconstructed ions. <code>etracks.h5</code> contains the corresponding positions and reconstructed PEs. Preserve the originating channel and bucket so each hit can be traced to its signal vector. Event totals accompany the hits. The hit builder checks that their sums equal the reconstructed-vector sums.</p>
+<h3>Reusing an existing calculation</h3>
+<p>Changing ion electronics reuses detector-response files. Changing signal reconstruction reuses electronics files. Changing hit coordinates or track algorithms reuses the preceding products as appropriate.</p>
+<p>When a file is reused, <code>run.toml</code> points to its existing location and records a checksum. The expected new-run output is then a reference rather than a duplicate file. The HTML page shows the actual input location. Settings and code checks determine whether reuse is valid.</p>
+<p>Gas, coordinate convention and photon band are explicit in the files. Separate pure-Xe and Xe–He runs have distinct labels. File schemas are versioned so readers can identify the quantities they contain.</p>
+</section>
+<section id="controls" class="panel"><h2>5. Intermediate control plots</h2>
+<p>Control calculations save their numerical results in <code>controls.h5</code>. Python generates plots and HTML from those saved results. Comparisons with Monte Carlo truth explicitly read the relevant source; reconstruction itself uses measured response and calibration.</p>
+<div class="scroll"><table><thead><tr><th scope="col">Step</th><th scope="col">Control plots and checks</th></tr></thead><tbody>
+<tr><th scope="row">Detector response</th><td>Event totals; charge/photon accounting; mean and maximum per channel/bucket; arrival duration and number of channels; representative XY, XZ, YZ and 3D displays.</td></tr>
+<tr><th scope="row">Electronics</th><td>Input and output vectors for representative events; CSA voltage and ADC counts; SiPM charge before and after ASIC; noise distributions and correlations; affected-event and affected-sample saturation fractions.</td></tr>
+<tr><th scope="row">Signal reconstruction</th><td>Reconstructed versus reference charge; bias and residual spread versus signal size; linear/nonlinear ion comparison; event totals and propagated uncertainties; representative reconstructed vectors.</td></tr>
+<tr><th scope="row">Hit construction</th><td>Vector/hit total agreement; coordinate and time conversion checks; itrack and etrack projections and 3D displays in the same coordinate system.</td></tr>
+<tr><th scope="row">Track reconstruction, later</th><td>Connected components, backbone and length; endpoint charge; selection efficiencies and comparisons with the reference tracks.</td></tr>
+</tbody></table></div>
+<p><strong>Relevant numbers appear inside each plot.</strong> Histograms include entry count, mean and standard deviation, with median where useful. Residual plots include bias and RMS residual; saturation plots include the affected fraction. Standard deviation and RMS are labelled distinctly. Event displays show event number, configuration, drift distances and charge totals.</p>
+<p>Axes include units. Captions and plot annotations identify the selection and whether entries represent events, channels or channel/bucket cells. Response mean/max comparisons use the same positive-input cells at each response stage and retain signed reconstructed values.</p>
+</section>
+<section id="docs" class="panel"><h2>6. HTML indexes and physics notes</h2>
+<pre><code>notes/html/
+  index.html
+  readout_plan.html              # this plan
+  readout_stages.html            # overview
+  detector_response/index.html  # to be added
+  electronics/index.html        # to be added
+  reconstruction/index.html     # to be added
+  hits/index.html               # to be added</code></pre>
+<p>These pages document code responsibilities, data types, functions, settings, file contents and tests. Each page links back to the documentation index. Future pages are added as their interfaces are reviewed.</p>
+<p><code>results/readout/index.html</code> lists completed runs. Each run has its own index with the configuration, event count, processing status and links to its control pages. Every control page links back to that run index.</p>
+<p><strong>Software documentation and computational reports are HTML. LaTeX is for physics notes.</strong> The <a href="../physics/itaca_poo.pdf">principle-of-operation note</a> supplies the physical explanation and derivations; its <a href="../physics/itaca_poo.tex">LaTeX source</a> remains separate from this implementation plan.</p>
+</section>
+<section id="work" class="panel"><h2>7. Implementation order</h2>
+<ol><li><strong>Review interfaces:</strong> event and vector types, file contents, function signatures, units and tests. Document each in HTML before coding.</li>
+<li><strong>Detector outputs:</strong> adapt the existing producers and readers to the agreed organisation, checking the configured drift velocities, field, bucket durations and event matching.</li>
+<li><strong>Electronics outputs:</strong> reuse the EL response; separate the ion forward model and add voltage noise and ADC counts. Validate device response, quantisation and temporal sampling.</li>
+<li><strong>Signal reconstruction:</strong> implement separate ion and electron functions. Establish linear ion reconstruction, then test the nonlinear inverse against independent reference signals.</li>
+<li><strong>Hit construction:</strong> produce itrack and etrack hits and event totals, verifying charge sums and positions.</li>
+<li><strong>Complete pilot:</strong> produce every intermediate HDF5 file and its control page. Measure time per event, file size and numerical performance before larger production.</li></ol>
+<p>The first milestone ends at <code>itracks.h5</code> and <code>etracks.h5</code>. Fast-trigger implementation and track reconstruction remain subsequent work.</p>
+<p class="meta">This page specifies proposed paths and interfaces. It does not claim that the new directories, readers or ADC implementation already exist.</p>
+</section>
+</main><footer>ITACA · Agreed implementation plan · Updated 9 November 2026</footer></body></html>

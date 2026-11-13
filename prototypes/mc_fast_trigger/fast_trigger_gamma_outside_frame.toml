@@ -1,0 +1,22 @@
+events_per_species = "all"
+gamma_energy_cut_keV = 3.0
+species = ["bb0nu", "single_electrons"]
+placement_seed = 42
+detector_length_mm = 1500.0
+vertex_fiducial_min_mm = 50.0
+vertex_fiducial_max_mm = 1450.0
+particle_block_rows = 8192
+illustrative_margin_mm = 10.0
+histogram_bins = 35
+maximum_output_bytes = 50000000
+# Detector containment, vertex fiducial and outside-frame gamma energy cuts.
+
+[bb0nu]
+hits = "events/0nubb_hitdf.h5"
+particles = "~/NAUSICAA/0nubb.next.h5"
+expected_primary_electrons = 2
+
+[single_electrons]
+hits = "events/electron_0nubb_energy_hitdf.h5"
+particles = "~/NAUSICAA/electron_0nubb_energy.next.h5"
+expected_primary_electrons = 1

@@ -1,0 +1,8 @@
+energies_keV = [1.0, 3.0, 5.0, 10.0]
+electron_drift_mm = [0.0, 750.0, 1500.0]
+summed_sipm_buckets = [1, 2, 4, 8, 32, 128]
+gas = "xe_he15"
+realisation_card = "config/specs/realisations/elm_matched_full.toml"
+detector_card = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"
+sipm_card = "config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns.toml"
+electronics_card = "config/specs/response/sipm_electronics/readout_s14160_1315ps.toml"
