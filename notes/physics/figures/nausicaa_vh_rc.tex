@@ -1,0 +1,24 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath}
+\usepackage[american]{circuitikz}
+\begin{document}
+\begin{circuitikz}[font=\small]
+% left: physical RC pair
+\draw (0,0) to[R, l=$R$] (0,2.4) -- (2.2,2.4) to[C, l=$C$] (2.2,0) -- (0,0);
+\draw (2.2,0) node[ground]{};
+\draw[->] (3.0,0.4) -- (3.0,2.0);
+\node[right] at (3.0,1.2) {$v(t)$};
+\filldraw (2.2,2.4) circle (1.2pt); \filldraw (2.2,0) circle (1.2pt);
+\node[align=center,font=\footnotesize] at (1.4,-0.9) {resistor and capacitor\\at temperature $T_{\rm K}$};
+% right: model
+\begin{scope}[xshift=6.6cm]
+\draw (0,0) to[sV, l=$e_R$] (0,1.3) to[R, l=$R$] (0,2.4) -- (2.2,2.4) to[C, l=$C$] (2.2,0) -- (0,0);
+\draw (2.2,0) node[ground]{};
+\draw[->] (3.0,0.4) -- (3.0,2.0);
+\node[right] at (3.0,1.2) {$v(t)$};
+\filldraw (2.2,2.4) circle (1.2pt); \filldraw (2.2,0) circle (1.2pt);
+\node[align=center,font=\footnotesize] at (1.4,-0.9) {model: noiseless $R$ in series\\with the noise source $e_R$};
+\end{scope}
+\end{circuitikz}
+\end{document}

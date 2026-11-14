@@ -1,0 +1,24 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath}
+\usepackage[american]{circuitikz}
+\begin{document}
+\begin{circuitikz}[font=\small,scale=1]
+\draw (0,0) node[ground]{} to[R, l=$R$] (0,1.6);
+\draw (0,1.6) node[nmos, anchor=S](M1){} ;
+\node[right=2pt] at (M1.D) {};
+\node[left] at (M1.G) {$v_i$};
+\node[right] at ($(M1.D)+(0.1,-0.3)$) {M1};
+\draw (M1.D) node[nmos, anchor=S](M2){};
+\node[right] at ($(M2.D)+(0.1,-0.3)$) {M2 (cascode)};
+\node[left] at (M2.G) {$V_{b2}$};
+\draw (M2.D) node[pmos, anchor=D](M4){};
+\node[right] at ($(M4.S)+(0.1,-0.3)$) {M4};
+\node[left] at (M4.G) {$V_{b4}$};
+\draw (M4.S) node[pmos, anchor=D](M5){};
+\node[right] at ($(M5.S)+(0.1,-0.3)$) {M5};
+\node[left] at (M5.G) {$V_{b5}$};
+\draw (M5.S) -- ++(0,0.4) node[vcc]{$V_{DD}$};
+\draw (M2.D) -- ++(1.6,0) node[right]{$v_o$};
+\end{circuitikz}
+\end{document}

@@ -1,0 +1,51 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath}
+\usepackage[american]{circuitikz}
+\newcommand{\amp}[3]{%
+  \draw[thick] (#1,#2+0.8) -- (#1+1.8,#2) -- (#1,#2-0.8) -- cycle;
+  \node at (#1+0.65,#2) {#3};}
+% \panel{x0}{title}{parked cap label}{feedback cap label}
+\begin{document}
+\begin{circuitikz}[font=\small]
+% ---------- Reset ----------
+\begin{scope}[shift={(0,0)}]
+\node[font=\bfseries] at (2.8,6.1) {Reset};
+\draw (0.6,2) to[C, l_=$C_T$] (0.6,0) node[ground]{};
+\draw (0.6,2) -- (3.0,2);
+\amp{3.0}{2}{$-A$}
+\draw (4.8,2) -- (6.2,2) node[right]{$v_o$};
+\draw (1.0,2) -- (1.0,3.2) to[C, l=$C_{f1}$] (1.0,4.6) node[vcc]{$V_{\rm REF}$};
+\draw (2.6,2) -- (2.6,3.2) to[C, l_=$C_{f2}$] (2.6,4.6) node[vcc]{$V_{\rm REF}$};
+\draw (3.0,2) -- (3.0,0.8) -- (5.6,0.8) -- (5.6,2);
+\node[below] at (4.3,0.8) {reset switch closed};
+\filldraw (1.0,2) circle (1.2pt); \filldraw (2.6,2) circle (1.2pt);
+\filldraw (3.0,2) circle (1.2pt) node[below right]{$Q_X$}; \filldraw (5.6,2) circle (1.2pt);
+\end{scope}
+% ---------- Frame 1 ----------
+\begin{scope}[shift={(7.4,0)}]
+\node[font=\bfseries] at (2.8,6.1) {Frame 1};
+\draw (0.6,2) to[C, l_=$C_T$] (0.6,0) node[ground]{};
+\draw (0.6,2) -- (3.0,2);
+\amp{3.0}{2}{$-A$}
+\draw (4.8,2) -- (6.2,2) node[right]{$v_{o1}$};
+\draw (1.6,2) -- (1.6,3.2) to[C, l=$C_{f2}$] (1.6,4.6) node[vcc]{$V_{\rm REF}$};
+\draw (3.0,2) -- (3.0,3.5) to[C, l=$C_{f1}$] (5.6,3.5) -- (5.6,2);
+\filldraw (1.6,2) circle (1.2pt);
+\filldraw (3.0,2) circle (1.2pt) node[below right]{$Q_X$}; \filldraw (5.6,2) circle (1.2pt);
+\end{scope}
+% ---------- Frame 2 ----------
+\begin{scope}[shift={(14.8,0)}]
+\node[font=\bfseries] at (2.8,6.1) {Frame 2};
+\draw (0.6,2) to[C, l_=$C_T$] (0.6,0) node[ground]{};
+\draw (0.6,2) -- (3.0,2);
+\amp{3.0}{2}{$-A$}
+\draw (4.8,2) -- (6.2,2) node[right]{$v_{o2}$};
+\node at (7.6,2) {};
+\draw (1.6,2) -- (1.6,3.2) to[C, l=$C_{f1}$] (1.6,4.6) node[vcc]{$V_{\rm REF}$};
+\draw (3.0,2) -- (3.0,3.5) to[C, l=$C_{f2}$] (5.6,3.5) -- (5.6,2);
+\filldraw (1.6,2) circle (1.2pt);
+\filldraw (3.0,2) circle (1.2pt) node[below right]{$Q_X$}; \filldraw (5.6,2) circle (1.2pt);
+\end{scope}
+\end{circuitikz}
+\end{document}

@@ -1,0 +1,27 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath}
+\usepackage[american]{circuitikz}
+\newcommand{\amp}[3]{%
+  \draw[thick] (#1,#2+0.8) -- (#1+1.8,#2) -- (#1,#2-0.8) -- cycle;
+  \node at (#1+0.65,#2) {#3};}
+\begin{document}
+\begin{circuitikz}[font=\small]
+\draw (-0.2,2) to[C, l_=$C_D$] (-0.2,0) node[ground]{};
+\draw (-0.2,2) -- (1.0,2) to[sV, l=$e_t$] (2.8,2) to[sV, l=$e_f$] (4.6,2) -- (5.2,2);
+\node[font=\footnotesize,align=center] at (1.9,1.25) {thermal\\$4kT_{\rm K}\gamma/g_m$};
+\node[font=\footnotesize,align=center] at (3.7,1.25) {flicker\\$A_f/f$};
+\amp{5.2}{2}{$-A$}
+\draw (7.0,2) -- (8.6,2) node[right]{$v_o$};
+\draw (1.0,2) -- (1.0,3.4) to[C, l=$C_f$] (7.8,3.4) -- (7.8,2);
+\draw (1.0,3.4) -- (1.0,4.6) to[R, l=$R_f$] (7.8,4.6) -- (7.8,3.4);
+\draw (1.0,4.6) -- (1.0,5.8) to[isource, l=$i_R$] (7.8,5.8) -- (7.8,4.6);
+\node[font=\footnotesize,anchor=west] at (8.1,5.8) {$4kT_{\rm K}/R_f$};
+\node[font=\footnotesize,anchor=west] at (8.1,4.6) {if present};
+\filldraw (1.0,2) circle (1.2pt) node[below left,font=\footnotesize,align=right]{gate\\of M1};
+\filldraw (5.2,2) circle (1.2pt) node[below right]{$v_i$};
+\filldraw (7.8,2) circle (1.2pt);
+\filldraw (-0.2,2) circle (1.2pt);
+\node[font=\footnotesize,anchor=north,align=center] at (6.1,1.1) {amplifier,\\noise removed};
+\end{circuitikz}
+\end{document}

@@ -1,0 +1,20 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath}
+\usepackage[american]{circuitikz}
+\newcommand{\amp}[3]{% x y label : triangle with left side at x, centre y
+  \draw[thick] (#1,#2+0.8) -- (#1+1.8,#2) -- (#1,#2-0.8) -- cycle;
+  \node at (#1+0.65,#2) {#3};}
+\begin{document}
+\begin{circuitikz}[font=\small]
+\draw (0,0) node[ground]{} to[isource, l=$i(t)$] (0,2) -- (3.2,2);
+\draw (1.6,2) to[C, l_=$C_D$] (1.6,0) node[ground]{};
+\amp{3.2}{2}{$-A$}
+\draw (5,2) -- (6.6,2) node[right]{$v_o=-A\,v_i$};
+\draw (3.2,2) -- (3.2,3.5) to[C, l=$C_f$] (5.8,3.5) -- (5.8,2);
+\draw[dashed] (3.2,3.5) -- (3.2,4.6) to[R, l=$R_f$] (5.8,4.6) -- (5.8,3.5);
+\filldraw (3.2,2) circle (1.2pt) node[below left]{$v_i$};
+\filldraw (5.8,2) circle (1.2pt);
+\filldraw (1.6,2) circle (1.2pt);
+\end{circuitikz}
+\end{document}
