@@ -49,6 +49,65 @@ function prepared_ion_current(counts,t,p::PreparedBucketCurrent,a)
     end
     IonCurrentPulse(times,vals)
 end
+"""Common current knots and interpolation weights for every pad in one event.
+Each row stores only overlapping bucket contributions, in bucket order.
+"""
+struct EventCurrentPlan
+    time_s::Vector{Float64}
+    bucket_rows::Vector{Vector{Int}}
+    selected::BitVector
+    pulse::IonCurrentPulse
+    row_start::Vector{Int}
+    bucket::Vector{Int}
+    weight::Vector{Float64}
+end
+
+"""Prepare all bucket shifts once. The returned current buffer is reused per pad."""
+function prepare_event_current(t,p::PreparedBucketCurrent,a)
+    dt=Float64(t.bucket_ms)*.001;offset=(Float64(t.start_ms)-a.start_ms)*.001
+    max_rows=Int128(2)+Int128(t.bucket_count)*length(p.time_s)
+    overlaps=ceil(Int,(last(p.time_s)-first(p.time_s))/dt)+3
+    max_rows*(160+16overlaps)<=64*1024^2||throw(ArgumentError("Current preparation exceeds 64 MiB budget"))
+    stop=(a.sample_count-1)*Float64(a.sample_us)*1e-6
+    times=sort!(unique(vcat(0.,stop,[offset+(j-1)*dt+x for j in 1:t.bucket_count for x in p.time_s])))
+    first(times)>=-1e-10 && last(times)<=stop+1e-10||throw(ArgumentError("ADC interval misses current"))
+    starts=Int[1];buckets=Int[];weights=Float64[]
+    for x in times
+        low=max(1,floor(Int,(x-offset-last(p.time_s))/dt)+1)
+        high=min(t.bucket_count,ceil(Int,(x-offset-first(p.time_s))/dt)+1)
+        for j in low:high
+            u=x-offset-(j-1)*dt
+            if first(p.time_s)<=u<=last(p.time_s)
+                push!(buckets,j);push!(weights,interpolate(p.time_s,p.current_A,u))
+            end
+        end
+        push!(starts,length(buckets)+1)
+    end
+    row_lookup=Dict(x=>k for (k,x) in enumerate(times))
+    bucket_rows=[[row_lookup[offset+(j-1)*dt+x] for x in p.time_s] for j in 1:t.bucket_count]
+    EventCurrentPlan(times,bucket_rows,falses(length(times)),IonCurrentPulse(Float64[],Float64[]),starts,buckets,weights)
+end
+
+"""Fill the shared current buffer from one pad's ion counts; consume before reuse."""
+function event_current!(p::EventCurrentPlan,counts)
+    fill!(p.selected,false);p.selected[1]=true;p.selected[end]=true
+    for j in eachindex(counts)
+        if counts[j]>0
+            for k in p.bucket_rows[j];p.selected[k]=true;end
+        end
+    end
+    n=count(p.selected);resize!(p.pulse.time_s,n);resize!(p.pulse.current_A,n);i=0
+    for k in eachindex(p.time_s)
+        p.selected[k]||continue
+        value=0.
+        for q in p.row_start[k]:p.row_start[k+1]-1
+            value+=counts[p.bucket[q]]*p.weight[q]
+        end
+        i+=1;p.pulse.time_s[i]=p.time_s[k];p.pulse.current_A[i]=value
+    end
+    p.pulse
+end
+
 """
     ion_current(counts, time, pulse, adc_time)
 
@@ -247,13 +306,14 @@ function sim_ion_electronics_prepared(noise_rng,adc_rng,d,s,w::CSAWorkspace)
     for i in 1:n;w.times[i]=(i-1)*Float64(at.sample_us)*1e-6;end
     last(s.csa.linear_response.time_s)>=last(w.times)||throw(ArgumentError("Linear calibration duration"))
     fill!(w.peak_current_A,0.)
+    current_plan=prepare_event_current(v.time,w.packet,at)
     out=Matrix{UInt16}(undef,n,nc);lin=0;nonlin=0;lo=0;hi=0
     for j in axes(v.counts,2)
         counts=view(v.counts,:,j);voltage=w.voltage
         if all(iszero,counts)
             fill!(voltage,s.csa.linear_response.baseline_V);lin+=1
         else
-            current=prepared_ion_current(counts,v.time,w.packet,at)
+            current=event_current!(current_plan,counts)
             w.peak_current_A[j]=maximum(current.current_A)
             if w.exponential===nothing
                 w.convolution===nothing && (w.convolution=prepare_csa_convolution(w.times,s.csa.linear_response))

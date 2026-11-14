@@ -182,3 +182,17 @@ Framed SiPM runs now select fully recovered initial microcells through
 dark initialization. `scripts/validation/benchmark_sipm_initialisation.jl`
 compares both settings on the same ten photon events, timing the complete SiPM
 and ASIC calculation. Results are under `electronics_sipm_initialisation/`.
+
+### Complete readout timing
+
+Run 100 accepted bb0nu events through detector simulation, CSA/ADC, SiPM/ASIC,
+ion reconstruction and SiPM reconstruction/rebinning. One warm-up event is
+excluded. Save timings and checks; event vectors remain in memory.
+
+```sh
+julia --startup-file=no --project=. scripts/validation/benchmark_readout_chain.jl readout_timing_100_optimised
+julia --startup-file=no --project=. scripts/validation/summarize_readout_timing.jl <run-directory>/controls.h5
+python scripts/production/present_readout_timing.py <run-directory>/controls.h5 [previous-run/controls.h5]
+```
+
+The output name must be new; existing results are preserved.

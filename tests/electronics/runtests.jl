@@ -162,3 +162,22 @@ end
  counts[j]*ER.interpolate(packet.time_s,packet.current_A,x-offset-(j-1)*dt) : 0.) for j in eachindex(counts)) for x in current.time_s]
  @test current.current_A==direct
 end
+@testset "Common event current grid" begin
+ pulse=IonCurrentPulse([-.001,-.0003,0.],[1e-17,3e-16,8e-16])
+ for bucket in (2f0,20f0,40f0)
+  t=IonReadoutTime(2354f0,bucket,8)
+  at=ion_adc_time(t,pulse,IonAcquisitionSettings(10f0,5f0),ADCSettings(12,0f0,1.8f0,100f0,0f0))
+  packet=ER.prepare_bucket_current(pulse,t.bucket_ms);plan=ER.prepare_event_current(t,packet,at)
+  for counts in (Int64[0,7,13,0,0,100,3,0],zeros(Int64,8),fill(Int64(21),8))
+   ref=ER.prepared_ion_current(counts,t,packet,at);actual=ER.event_current!(plan,counts)
+   @test actual.time_s==ref.time_s
+   @test actual.current_A==ref.current_A
+   expected=[ER.interpolate(ref.time_s,ref.current_A,x) for x in actual.time_s]
+   @test actual.current_A≈expected rtol=1e-10 atol=1e-27
+   ts=collect(0:at.sample_count-1).*(Float64(at.sample_us)*1e-6)
+   model=ER.ExponentialCSA(1e12,.1,.9)
+   @test ER.exponential_voltage!(similar(ts),actual,ts,model)≈ER.exponential_voltage!(similar(ts),ref,ts,model) atol=2e-12
+   @test ER.primitive(actual.time_s,actual.current_A)(last(ts))≈ER.primitive(ref.time_s,ref.current_A)(last(ts)) rtol=1e-10 atol=1e-27
+  end
+ end
+end

@@ -6,14 +6,14 @@ include("../production/run_framed_reconstruction.jl")
 Save stage times and response checks; do not save event vectors or perform ZS.
 Existing detector controls supply the selected events, positions and frames.
 """
-function benchmark_chain()
+function benchmark_chain(;output_subdir="readout_timing_100")
  BLAS.set_num_threads(1)
  rcpath=joinpath(ROOT,"config/readout/bb0nu_reconstruction_100.toml")
  rc=TOML.parsefile(rcpath);ec=TOML.parsefile(joinpath(ROOT,rc["electronics_card"]))
  dc=TOML.parsefile(joinpath(ROOT,ec["detector_card"]))
  base=joinpath(ROOT,"results/readout",dc["run_label"])
  source=joinpath(base,"detector_response/controls.h5")
- outdir=joinpath(base,"readout_timing_100");mkpath(outdir)
+ outdir=joinpath(base,output_subdir);mkpath(outdir)
  target=joinpath(outdir,"controls.h5");isfile(target)&&error("Preserve existing benchmark")
  input_started=time();hp=joinpath(ROOT,dc["hits"]);sha=bytes2hex(open(sha256,hp))
  ids,ps,fs=h5open(source,"r") do f
@@ -83,4 +83,4 @@ function benchmark_chain()
  catch;isfile(tmp)&&rm(tmp);rethrow();end
  println("FINISHED $target; elapsed $(time()-PROCESS_STARTED) s")
 end
-benchmark_chain()
+benchmark_chain(;output_subdir=isempty(ARGS) ? "readout_timing_100" : ARGS[1])

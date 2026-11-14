@@ -90,3 +90,16 @@ end
     @test abs(mean(dark.dark_pulses)-.175)<.015
     @test sum(dark.dark_charge_C)>0
 end
+@testset "Reusable SiPM buffers preserve seeded response" begin
+ for state in (:fully_recovered,:stationary_dark), cells in (1,100,21808)
+  sensor=P.Sensor(.32,cells,360000.,12.5e-9,700000.)
+  options=P.StatisticalOptions(64,16;initial_state=state)
+  values=Int64[0,1,10,16,17,50,100,3000,22000,0,0,9000]
+  buffers=P.StatisticalBuffers(length(values))
+  for seed in 1:4
+   expected=P.simulate_channel_statistical(Xoshiro(seed),values,250e-9,sensor;options)
+   actual=P.simulate_channel_statistical(Xoshiro(seed),values,250e-9,sensor;options,buffers)
+   @test actual==expected
+  end
+ end
+end

@@ -21,7 +21,11 @@ end
 R and S are sums over M cells. This affine update is exact between triggers.
 """
 function recover_totals(R,S,M,duration_over_tau)
-    d=exp(-duration_over_tau)
+    recover_totals_factor(R,S,M,exp(-duration_over_tau))
+end
+
+"""Recover using a precomputed exponential factor for a fixed interval."""
+function recover_totals_factor(R,S,M,d)
     deficit=M-R;second_deficit=M-2R+S
     nextR=M-d*deficit
     nextS=M-2d*deficit+d*d*second_deficit
@@ -36,13 +40,14 @@ probability is p=1-(1-1/M)^k. The covariance of two occupancy indicators is
 state. Returns mean charge, charge variance and expected squared charge sum.
 This calculation preserves the finite trigger count, including k=1.
 """
-function occupancy_moments(R::Real,S::Real,M::Integer,k::Integer)
+function occupancy_moments(R::Real,S::Real,M::Integer,k::Integer,
+    log_one=log1p(-1/Float64(M)),log_two=M<=2 ? -Inf : log1p(-2/Float64(M)))
     M>0 && k>=0 || throw(ArgumentError("Invalid cell/trigger count"))
     k==0 && return (mean=0.,variance=0.,squared_charge=0.,survival=1.)
     M==1 && return (mean=Float64(R),variance=0.,squared_charge=Float64(S),survival=0.)
     k==1 && return (mean=R/M,variance=max(0.,S/M-(R/M)^2),squared_charge=S/M,survival=1-1/M)
-    la=k*log1p(-1/Float64(M));a=exp(la);p=-expm1(la)
-    lb=M==2 ? -Inf : k*log1p(-2/Float64(M));b=exp(lb)
+    la=k*log_one;a=exp(la);p=-expm1(la)
+    lb=M==2 ? -Inf : k*log_two;b=exp(lb)
     cov=exp(2la)*expm1(lb-2la)
     occupied_variance=max(0.,M*a*p+M*(M-1)*cov)
     variance=max(0.,(a-b)*max(0.,S-R*R/M)+(R/M)^2*occupied_variance)
@@ -69,6 +74,17 @@ function bounded_moment_draw(rng,mu,variance,lo,hi)
     (lo+span*rand(rng,Beta(p*concentration,(1-p)*concentration)),limited)
 end
 
+"""Reusable count, charge and arrival arrays for one SiPM population."""
+mutable struct StatisticalBuffers
+    optical::Vector{Int64}
+    dark::Vector{Int64}
+    optical_charge::Vector{Float64}
+    dark_charge::Vector{Float64}
+    charge::Vector{Float64}
+    arrivals::Vector{Tuple{Float64,Bool}}
+end
+StatisticalBuffers(n)=StatisticalBuffers(zeros(Int64,n),zeros(Int64,n),zeros(n),zeros(n),zeros(n),Tuple{Float64,Bool}[])
+
 """Simulate a channel using conditional count moments and a compact recovery state.
 
 Returns the microscopic simulator's count/charge arrays plus numerical
@@ -85,31 +101,41 @@ a batch using Q*S/R, whose expectation is the exact occupancy loss p*S. Optical/
 
 The beta sampling law approximates higher moments. State feasibility repairs
 and variance limiting are counted explicitly; they are validation diagnostics.
-The input vector is preserved and all returned arrays are owned.
+The input vector is preserved. Without buffers, returned arrays are owned.
+With internal buffers, count and charge arrays are overwritten by the next call.
 """
 function simulate_channel_statistical(rng::AbstractRNG,incident::AbstractVector{<:Integer},
                                       dt::Real,sensor::Sensor;
-                                      options::StatisticalOptions=StatisticalOptions())
+                                      options::StatisticalOptions=StatisticalOptions(),buffers::Union{Nothing,StatisticalBuffers}=nothing)
     isfinite(dt) && dt>0 && all(>=(0),incident) || throw(ArgumentError("Require positive duration and nonnegative counts"))
-    n=length(incident);optical=zeros(Int64,n);dark=zeros(Int64,n)
-    oq=zeros(n);dq=zeros(n);M=sensor.microcells;tau=sensor.recovery_s;q0=charge_per_pe_C(sensor)
+    n=length(incident);buf=buffers===nothing ? StatisticalBuffers(n) : buffers
+    length(buf.optical)==n||throw(DimensionMismatch("SiPM buffers"))
+    optical=buf.optical;dark=buf.dark;oq=buf.optical_charge;dq=buf.dark_charge
+    fill!(oq,0.);fill!(dq,0.)
+    M=sensor.microcells;tau=sensor.recovery_s;q0=charge_per_pe_C(sensor)
     R=Float64(M);S=Float64(M)
     if options.initial_state==:stationary_dark && tau>0 && sensor.dark_rate_Hz>0
         r=rand(rng,Beta(1.,sensor.dark_rate_Hz*tau/M),M)
         R=sum(r);S=sum(abs2,r)
     end
+    full_recovery=tau>0 ? exp(-dt/tau) : 0.
+    half_recovery=tau>0 ? exp(-(dt/options.substeps)/(2tau)) : 0.
+    log_one=log1p(-1/Float64(M));log_two=M<=2 ? -Inf : log1p(-2/Float64(M))
+    dark_distribution=Poisson(sensor.dark_rate_Hz*dt)
     repairs=0;limited=0;label_limits=0;maxrepair=0.;batches=0
     for bucket in eachindex(incident)
-        ns=rand(rng,Binomial(incident[bucket],sensor.pde));nd=rand(rng,Poisson(sensor.dark_rate_Hz*dt))
+        ns=rand(rng,Binomial(incident[bucket],sensor.pde));nd=rand(rng,dark_distribution)
         optical[bucket]=ns;dark[bucket]=nd;N=ns+nd
         if tau==0
             oq[bucket]=ns*q0;dq[bucket]=nd*q0;continue
         end
         if N==0
-            R,S=recover_totals(R,S,M,dt/tau);continue
+            R,S=recover_totals_factor(R,S,M,full_recovery);continue
         end
         if N<=options.sparse_trigger_limit
-            arrivals=sort!([(rand(rng)*dt,i>ns) for i in 1:N];by=first)
+            arrivals=buf.arrivals;resize!(arrivals,N)
+            for i in 1:N;arrivals[i]=(rand(rng)*dt,i>ns);end
+            sort!(arrivals;by=first)
             previous=0.
             for (time,is_dark) in arrivals
                 R,S=recover_totals(R,S,M,(time-previous)/tau)
@@ -132,9 +158,9 @@ function simulate_channel_statistical(rng::AbstractRNG,incident::AbstractVector{
                 ks=left==1 ? remaining_s : rand(rng,Binomial(remaining_s,1/left))
                 kd=left==1 ? remaining_d : rand(rng,Binomial(remaining_d,1/left))
                 remaining_s-=ks;remaining_d-=kd;k=ks+kd
-                R,S=recover_totals(R,S,M,h/(2tau))
+                R,S=recover_totals_factor(R,S,M,half_recovery)
                 if k>0
-                    moments=occupancy_moments(R,S,M,k)
+                    moments=occupancy_moments(R,S,M,k,log_one,log_two)
                     cell_mean=R/M;cell_spread=sqrt(max(0.,(M-1)*(S/M-cell_mean^2)))
                     low=clamp(cell_mean-cell_spread,0.,1.)
                     high=min(R,k*min(1.,cell_mean+cell_spread))
@@ -160,12 +186,13 @@ function simulate_channel_statistical(rng::AbstractRNG,incident::AbstractVector{
                     fixed=clamp(S,R^2/M,R);correction=abs(fixed-S)
                     repairs+=correction>1e-9;maxrepair=max(maxrepair,correction);S=fixed;batches+=1
                 end
-                R,S=recover_totals(R,S,M,h/(2tau))
+                R,S=recover_totals_factor(R,S,M,half_recovery)
             end
         end
     end
-    (;incident_photons=Int64.(incident),detected_pe=optical,dark_pulses=dark,
-      optical_charge_C=oq,dark_charge_C=dq,charge_C=oq+dq,
+    buf.charge .= oq .+ dq
+    (;incident_photons=buffers===nothing ? Int64.(incident) : incident,detected_pe=optical,dark_pulses=dark,
+      optical_charge_C=oq,dark_charge_C=dq,charge_C=buf.charge,
       state_repairs=repairs,maximum_state_repair=maxrepair,variance_limits=limited+label_limits,charge_variance_limits=limited,
       label_variance_limits=label_limits,batches)
 end

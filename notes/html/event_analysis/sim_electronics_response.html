@@ -297,7 +297,7 @@ end</code></pre>
 <li>Load the linear gain, decay time, baseline voltage and nonlinear gain/recovery tables.</li>
 <li>Prepare the single-ion current pulse and its integral. For each ion bucket duration, prepare the current produced by uniform collection within one bucket.</li>
 <li>Load the CSA voltage-noise spectrum and ADC settings.</li>
-</ol>
+</ol><h3>SiPM calculation buffers</h3><ul><li>Prepare fixed recovery factors, occupancy constants and the dark-count distribution before processing a channel.</li><li>Reuse count, charge and arrival-time arrays across channels. Start each channel with its configured initial recovery.</li><li>Write ASIC output and clipping flags directly into the event arrays. Accumulate the required charge and count totals.</li></ul>
 <h3>Reuse calculations and arrays</h3>
 <ul>
 <li>Events with the same number of ADC samples can share the prepared noise calculation.</li>
@@ -307,6 +307,13 @@ end</code></pre>
 <li>Keep at most 64 MiB of event-length tables and 64 MiB of prepared noise arrays. Release cached entries when a new entry would exceed the limit. ADC output remains limited to 256 MiB per event.</li>
 </ul>
 <p>Each pad still receives its own independent random noise.</p>
+<h3>Prepare the event current</h3>
+<ol>
+<li>Build the common current times and interpolation weights once for the event.</li>
+<li>For each pad, select the times belonging to buckets with charge.</li>
+<li>Fill a reusable current vector by multiplying the prepared weights by the bucket counts.</li>
+</ol>
+<p>Preparation is limited to 64 MiB. The current times and values match the separate per-pad calculation.</p>
 <h3>Calculate each pad</h3>
 <ol>
 <li>For an empty pad, use the baseline voltage.</li>
