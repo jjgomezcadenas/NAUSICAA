@@ -68,8 +68,8 @@ def nodeset(op):
     return '.nodeset ' + ' '.join(f'V({k})={op[k]:.6f}' for k in keys if k in op) + '\n'
 
 
-def op_deck(p, ns=''):
-    return core(p) + ns + f"""Cf out x 3f
+def op_deck(p, ns='', cf='3f'):
+    return core(p) + ns + f"""Cf out x {cf}
 Vshift out r {VSHIFT:.6f}
 Rrs r in 1k
 .op
@@ -77,11 +77,11 @@ Rrs r in 1k
 """
 
 
-def ac_deck(p, ns, cd=None):
+def ac_deck(p, ns, cd=None, cf='3f'):
     q = dict(p)
     if cd is not None:
         q['Cd'] = cd
-    return core(q) + ns + f"""Cf out x 3f
+    return core(q) + ns + f"""Cf out x {cf}
 Vshift out r {VSHIFT:.6f}
 Rdc r x 1e15 noiseless
 Is1 0 x 0 AC 1
@@ -91,8 +91,8 @@ Is1 0 x 0 AC 1
 """
 
 
-def noise_deck(p, ns):
-    return core(p) + ns + f"""Cf out x 3f
+def noise_deck(p, ns, cf='3f'):
+    return core(p) + ns + f"""Cf out x {cf}
 Vshift out r {VSHIFT:.6f}
 Rdc r x 1e15 noiseless
 Is1 0 x 0 AC 1

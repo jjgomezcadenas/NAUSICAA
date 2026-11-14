@@ -1,0 +1,41 @@
+{
+ "3f": {
+  "Cf_F": 3e-15,
+  "A0": 9269.226949291306,
+  "charge_fraction": 0.8775081791426056,
+  "gain_uV_per_ion": 46.864103358872285,
+  "enc": {
+   "frame difference of point samples": 83.82306039967645,
+   "frame difference of 5 ms averages": 28.340785616669088,
+   "frame difference of 20 ms averages": 19.703637492730188
+  },
+  "Vnmos": 1.7053925238277774,
+  "Vnload": 0.5798859525538717
+ },
+ "10f": {
+  "Cf_F": 1e-14,
+  "A0": 9269.226949291306,
+  "charge_fraction": 0.9599659724947918,
+  "gain_uV_per_ion": 15.380350505662419,
+  "enc": {
+   "frame difference of point samples": 107.05382480880156,
+   "frame difference of 5 ms averages": 28.438773513339797,
+   "frame difference of 20 ms averages": 19.771732863832206
+  },
+  "Vnmos": 1.7053925238277774,
+  "Vnload": 0.5798859525538717
+ },
+ "30f": {
+  "Cf_F": 3e-14,
+  "A0": 9269.226949291307,
+  "charge_fraction": 0.9862453610898512,
+  "gain_uV_per_ion": 5.267130909763508,
+  "enc": {
+   "frame difference of point samples": 120.64123210848616,
+   "frame difference of 5 ms averages": 28.792813869336022,
+   "frame difference of 20 ms averages": 20.016885356822858
+  },
+  "Vnmos": 1.7053925238277774,
+  "Vnload": 0.5798859525538717
+ }
+}
