@@ -1,0 +1,27 @@
+* VH1 variant
+M1 s in med Vdda 180nmP l=5e-07 w=0.00022 m=1
+Vdd Vdda 0 1.8
+M2 Vdda Vnmos s 0 180nmN l=5e-07 w=2.7e-05 m=3
+Vnmos Vnmos 0 1.600107
+M3 med Vnload 0 0 180nmN l=2e-06 w=0.0002 m=1
+Vnload Vnload 0 0.538103
+M4 med Vncasc out 0 180nmN l=1.44e-06 w=5.76e-06 m=1
+M5 vd6 Vp5 out Vdda 180nmP l=0.5u w=220u m=1
+M6 Vdda Vp6 vd6 Vdda 180nmP l=6u w=1u m=1
+Vp6 Vp6 0 1.1
+Vp5 Vp5 0 0.8
+Vp1 Vncasc 0 0.6621
+Cd1 x 0 1.25p
+Voff in x 0.0
+.lib corrected.inc
+.temp 20
+.options reltol=1e-6 abstol=1e-19 vntol=1e-10 numdgt=15 plotwinsize=0
+.options gmin=1e-18
+.nodeset V(in)=0.001349 V(x)=0.001349 V(out)=0.886361 V(med)=0.206921 V(s)=0.836282 V(vd6)=1.250169
+Cf out x 3f
+Vshift out r 0.885012
+Rdc r x 1e15 noiseless
+Is1 0 x 0 AC 1
+.ac dec 40 1e-3 1e9
+.save V(x) V(in) V(out)
+.end

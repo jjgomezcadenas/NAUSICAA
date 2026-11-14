@@ -1,0 +1,40 @@
+* VH1 reset CSA prototype: csa_v3 amplifier core (M1-M6 and biases) without Mf
+M1 s in med Vdda 180nmP l=0.5u w=220u m=1
+Vdd Vdda 0 1.8
+M2 Vdda Vnmos s 0 180nmN l=0.5u w=27u m=3
+Vnmos Vnmos 0 1.6
+M3 med Vnload 0 0 180nmN l=2u w=200u m=1
+Vnload Vnload 0 0.538477478921
+M4 med Vncasc out 0 180nmN l=1.44u w=2.88u m=1
+M5 vd6 Vp5 out Vdda 180nmP l=0.5u w=220u m=1
+M6 Vdda Vp6 vd6 Vdda 180nmP l=6u w=1u m=1
+Vp6 Vp6 0 1.1
+Vp5 Vp5 0 0.8
+Vp1 Vncasc 0 0.6621
+Cd1 x 0 1.25p
+Voff in x 0.0
+.lib corrected.inc
+.temp 20
+.options reltol=1e-6 abstol=1e-19 vntol=1e-10 numdgt=15 plotwinsize=0
+* gmin=1e-12 would put 1 Tohm across every off switch: 3 ms leak on 3 fF
+.options gmin=1e-18
+.nodeset V(in)=0.00135 V(x)=0.00135 V(out)=0.886 V(med)=0.184 V(s)=0.836 V(vd6)=1.25
+Cf1 x a1 3e-15
+Cf2 x a2 3e-15
+S1r a1 vref p1r 0 SWM
+S1o a1 out p1o 0 SWM
+S2r a2 vref p2r 0 SWM
+S2o a2 out p2o 0 SWM
+Vshift out r 0.885012
+Srs r in prs 0 SWM
+Vref vref 0 0.8863611214728842
+.model SWM SW(Ron=1k Roff=1e18 Vt=0.5 Vh=0.05)
+Vprs prs 0 PWL(0 1 0.000999 1 0.0009991 0)
+Vp1o p1o 0 PWL(0 0 0.001001 0 0.0010011 1 0.021 1 0.0210001 0 0.041001 0 0.0410011 1 0.061 1 0.0610001 0)
+Vp1r p1r 0 PWL(0 1 0.001 1 0.0010001 0 0.021001 0 0.0210011 1 0.041 1 0.0410001 0)
+Vp2o p2o 0 PWL(0 0 0.021001 0 0.0210011 1 0.041 1 0.0410001 0)
+Vp2r p2r 0 PWL(0 1 0.021 1 0.0210001 0 0.041001 0 0.0410011 1 0.061 1 0.0610001 0)
+Is1 0 x PWL(0 0 0.006 0 0.006001 1.60218e-15 0.015999 1.60218e-15 0.016 0 0.026 0 0.026001 3.20435e-15 0.035999 3.20435e-15 0.036 0)
+.tran 0 0.061 0 1e-05
+.save V(x) V(in) V(out) V(a1) V(a2) I(Is1)
+.end
