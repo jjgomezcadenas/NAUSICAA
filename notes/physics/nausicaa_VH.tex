@@ -21,8 +21,8 @@
 \setlength{\parskip}{5pt plus 1pt}
 \setlength{\emergencystretch}{3em}
 \title{NAUSICAA v2\\[4pt]\large The charge-sensitive amplifier: noise, filtering and architecture}
-\author{V. Herrero \and J. Garc\'ia (J.J. Gómez-Cadenas as student and scribe)}
-\date{13 November 2026}
+\author{V. Herrero \and J. Garc\'ia \and J.J. G\'omez-Cadenas}
+\date{14 November 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -1255,6 +1255,247 @@ straddles frame boundaries.
   together, and a cleaner phase margin; the price is converter resolution,
   Section~\ref{sec:conclusions}.
 \end{itemize}
+
+% ----------------------------------------------------------------------
+\section{Simulation of the VH1 readout}
+\label{sec:vh1sim}
+%
+The VH1 readout has been implemented in the ITACA simulation chain as an
+alternative to the present amplifier, so that complete events can be
+processed with it and compared with the present chain pad by pad. The code
+is \code{src/vh1/VH1Readout.jl}; it reuses the current, noise, converter and
+least-squares pieces of the existing modules without modifying them. This
+section explains what is simulated, how the noise is generated, how the ion
+counts are recovered, and what noise the recovered counts carry.
+
+% ----------------------------------------------------------------------
+\subsection{From ions to readings}
+\label{sec:vh1signal}
+%
+The input of the simulation is the output of the detector response: for
+every pad, the number of ions collected in each \SI{20}{ms} bucket. The
+readout turns these counts into converter readings in five steps.
+%
+\begin{itemize}
+\item \textbf{Single-ion current.} An ion that reaches the pad induces a
+  current while it crosses the last \SI{5}{mm} in front of it, at \SI{3}{m/s},
+  over \SI{1.67}{ms}. The current is $e$ times the time derivative of the
+  weighting potential of a central \SI{0.5}{mm} pad in a grounded plane. Its
+  integral is $e\,[1-\phi_w(g)]=0.9984\,e$, the charge induced over the finite
+  path; the missing fraction was induced earlier, on other electrodes, and
+  is not restored. This prescription is the one of the present calibration.
+\item \textbf{Arrival within a bucket.} Ions of one bucket are taken to
+  arrive uniformly during it. The single-ion current is therefore averaged
+  over one bucket length, giving a pulse that rises over \SI{1.67}{ms},
+  stays flat for most of the bucket, and falls over \SI{1.67}{ms} after it.
+  The pad current is the sum of these pulses, one per bucket, scaled by
+  the counts; it is a piecewise-linear function of time.
+\item \textbf{Cumulative charge and output.} The charge on the feedback
+  capacitor is the integral of the pad current from the reset. The output is
+  \[
+   v_o(t) = V_{\rm REF} - g\,\frac{Q(t)}{e},
+   \qquad g=\SI{46.9}{\micro V}\ \text{per ion},
+  \]
+  with $g$ the charge fraction of Section~\ref{sec:vh1transfer} times
+  $e/\Cf$. There is no discharge term. The output is linear while it stays
+  between \SI{0.4}{} and \SI{0.95}{V}; a pad whose noiseless output leaves
+  this window is flagged and not reconstructed.
+\item \textbf{Frames and readings.} Frames of \SI{20}{ms} start one frame
+  before the earliest induced current of the first bucket, so that the first
+  frame carries no signal and serves as the reference. Each frame is read
+  twice: the converter integrates the output over two contiguous
+  \SI{10}{ms} windows and delivers one value per window. In the simulation a
+  reading is the mean of $v_o$ at the midpoints of \SI{100}{\micro s} cells
+  inside its window. The reference reading is the last reading of the
+  reference frame.
+\item \textbf{Converter.} Each reading is quantised to 16 bits over
+  \SI{1.8}{V}, a step of \SI{27}{\micro V}, about half an ion. Codes at
+  either end of the range invalidate the pad.
+\end{itemize}
+
+% ----------------------------------------------------------------------
+\subsection{How the noise is generated}
+\label{sec:vh1noisegen}
+%
+The noise of the readout is not computed from the formulas of
+Sections~\ref{sec:noise} to~\ref{sec:total}; it is drawn from the SPICE
+spectrum of the circuit, so that every noise source of the transistor model
+enters with its actual shape. The construction goes from a spectrum to
+random time series in four steps, each of which answers one question.
+
+\paragraph{What does the spectrum say?} SPICE gives the one-sided spectral
+density of the output voltage noise, $S(f)$ in \si{V^2/Hz}, at frequencies
+from \SI{0.1}{mHz} to \SI{1}{MHz} (Fig.~\ref{fig:vh1ac}, right). Its meaning
+is the one of Section~\ref{sec:noise}: the mean square of the output noise in
+a band $\dd f$ is $S(f)\,\dd f$, and the total mean square is the integral of
+$S$ over all frequencies.
+
+\paragraph{From the spectrum to correlations in time.} The simulation needs
+noise values at discrete times, every $\Delta t=\SI{100}{\micro s}$. Two
+values a time $\tau$ apart are correlated, and their correlation is fixed
+by the spectrum: the covariance at lag $\tau$ is
+\[
+ C(\tau)=\langle n(t)\,n(t+\tau)\rangle=\int_0^\infty S(f)\cos(2\pi f\tau)\,\dd f ,
+\]
+the Wiener--Khinchin relation. At $\tau=0$ it is the total mean square;
+at large $\tau$ it decays as the fast components average out, while the
+slow components, flicker noise, keep distant samples correlated. The
+spectrum is tabulated at discrete frequencies, so the integral is done piece
+by piece: between two tabulated frequencies the density is interpolated as a
+power law, which it follows closely on a logarithmic grid, and the integral
+of each piece is taken analytically.
+
+\paragraph{Sampling folds the high frequencies.} A series sampled every
+$\Delta t$ cannot distinguish a frequency $f$ from $f_s-f$, where
+$f_s=1/\Delta t=\SI{10}{kHz}$ is the sampling rate. Noise above the Nyquist
+frequency $f_s/2=\SI{5}{kHz}$ does not disappear: it appears in the samples
+at the lower frequency it is confused with. The construction therefore
+assigns the power of each spectral piece to the frequency it aliases to.
+Nothing is filtered away; the full band to \SI{1}{MHz} is kept, as a
+converter sampling the raw output would see it. The averaging over the
+\SI{10}{ms} windows, applied afterwards, removes most of it.
+
+\paragraph{Generating the series.} A Gaussian series with a prescribed
+covariance is generated with the discrete Fourier transform. The covariance
+of $N$ samples is arranged as a circulant matrix, one whose rows are cyclic
+shifts of the first, by extending the covariance sequence periodically; its
+eigenvectors are the Fourier modes and its eigenvalues are the binned
+spectral powers of the previous step. Independent Gaussian numbers, one per
+Fourier mode, scaled by the square root of the corresponding eigenvalue and
+transformed back to time, give a series with exactly the wanted covariance.
+The period is chosen at least twice the number of samples of the event, and
+doubled if needed until all eigenvalues are nonnegative, which a covariance
+sequence of a physical spectrum guarantees. One such series is drawn for
+every pad, independently: pads do not share noise.
+
+The noise series is then treated exactly as the signal: averaged over the
+same \SI{10}{ms} windows at the same cell midpoints, added to the noiseless
+readings, and quantised with them. The noise of a reading is therefore the
+window average of the output noise, with the correlations between windows
+and between frames that the spectrum implies. No white-noise or
+flicker-noise approximation is made at this stage.
+
+% ----------------------------------------------------------------------
+\subsection{Recovering the ion counts}
+\label{sec:vh1reco}
+%
+The readings depend linearly on the counts, so the reconstruction is a
+linear least-squares problem. Let $y_i$ be the drop of reading $i$ below the
+reference reading, and $q_k$ the number of ions in bucket $k$. Then
+\[
+ y_i = \sum_k A_{ik}\,q_k + n_i ,
+\]
+where $A_{ik}$ is the drop that one ion in bucket $k$ produces in reading
+$i$, and $n_i$ is the noise of the reading. The matrix $A$ is built by
+running one ion through the same steps as the simulation, so that noiseless
+readings are inverted exactly. The covariance $\Sigma$ of the $n_i$ follows
+from the covariance of the noise series, averaged over the windows, with the
+reference reading subtracted from all of them, plus the quantisation
+variance. The estimate is the weighted least squares
+\[
+ \hat q = (A^{\rm T}\Sigma^{-1}A)^{-1}A^{\rm T}\Sigma^{-1}\,y ,
+\]
+computed by whitening with the Cholesky factor of $\Sigma$ and a QR
+factorisation. The covariance of $\hat q$ is $(A^{\rm T}\Sigma^{-1}A)^{-1}$;
+its diagonal is the noise per bucket quoted below. The estimate is signed
+and uncut. This is the same solve as the linear path of the present
+reconstruction; what differs is the content of $A$ and $\Sigma$.
+
+The matrix $A$ expresses two spreads. Ions of bucket $k$ arrive during
+bucket $k$, so a reading that integrates a window during which they arrive
+sees only the charge accumulated up to each instant of the window, about
+half of what arrives in the window. With one reading per frame integrating
+the whole frame, a bucket contributes \SI{42}{\percent} of its charge to its
+own frame, \SI{57}{\percent} to the next and \SI{0.3}{\percent} to the one
+after. Two adjacent buckets are then nearly interchangeable in the readings,
+and separating them amplifies the noise. The second spread is the
+\SI{1.67}{ms} of the induced current, which shifts a small part of a bucket
+into the previous frame. Both are in $A$ and are inverted; the price is the
+amplification of the noise, which is why the readings per frame matter.
+
+% ----------------------------------------------------------------------
+\subsection{Noise of the recovered counts}
+\label{sec:vh1result}
+%
+Table~\ref{tab:vh1readings} gives the noise per bucket of the recovered
+counts, from the covariance above, for a 30-bucket pad and the improved
+circuit of Section~\ref{sec:vh1devices}, against the number of readings per
+frame and the integration window of each reading. The last row is the
+present chain on its own events, from the predicted covariance saved with
+the 100-event reconstruction.
+%
+\begin{table}[htbp]\centering
+\caption{Noise per bucket of the reconstructed ion counts, \SI{20}{ms}
+buckets, VH1 with the device changes of Section~\ref{sec:vh1devices}. Each
+reading integrates the output over its window; readings are at the ends of
+equal sub-intervals of the frame.}
+\begin{tabular}{ccc}
+\toprule
+Readings per frame & Window of each reading & Ions per bucket\\
+\midrule
+1 & \SI{20}{ms} (whole frame) & 59\\
+1 & \SI{5}{ms} & 43\\
+2 & \SI{10}{ms} & 31\\
+4 & \SI{5}{ms} & 30\\
+10 & \SI{2}{ms} & 30\\
+20 & \SI{1}{ms} & 30\\
+\midrule
+Present chain & 200 samples per frame & 50\\
+\bottomrule
+\end{tabular}
+\label{tab:vh1readings}
+\end{table}
+%
+Three things follow.
+%
+\begin{itemize}
+\item The \SI{20}{} ions of Table~\ref{tab:vh1enc} are the noise of a frame
+  difference. They are not reached per bucket, because the charge of a
+  bucket is not complete when the frame is read; unmixing it from its
+  neighbours costs a factor that depends on how the frame is read.
+\item One reading per frame is the worst case. Integrating the whole frame
+  gives \SI{59}{} ions; a short window at the frame end mixes less but keeps
+  more high-frequency noise, and the best compromise, \SI{5}{ms}, gives
+  \SI{43}{}.
+\item A second reading per frame restores the information about where in
+  the frame the charge arrived and brings the noise to \SI{31}{} ions.
+  Further readings add nothing. This is why the present \SI{100}{\micro s}
+  oversampling is not wasted: its 200 samples per frame carry the same
+  information, which the present reconstruction uses through its four
+  \SI{5}{ms} averages per frame.
+\end{itemize}
+%
+The adopted readout is therefore two contiguous \SI{10}{ms} integrations per
+\SI{20}{ms} frame, one 16-bit value each: \SI{31}{} ions per bucket against
+\SI{50}{} for the present chain, with a hundred times fewer conversions. The
+swap of the capacitors stays at \SI{20}{ms}; only the converter reads twice.
+For the amplifier as it is today, without the device changes, the same
+readout gives about \SI{45}{} ions.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{vh1_example_pad.pdf}
+\caption{One simulated pad with the adopted readout. Left: readings without
+noise and with the simulated noise and 16-bit quantisation, two per
+\SI{20}{ms} frame; the first frame is the reference. Right: ions collected
+per bucket and the reconstructed counts with the noise predicted by the
+reconstruction covariance.}
+\label{fig:vh1pad}
+\end{figure}
+%
+Figure~\ref{fig:vh1pad} shows one pad through the chain: a profile of
+\SI{4870}{} ions over eight buckets, the readings with and without noise, and
+the recovered counts with their predicted noise of \SI{31}{} ions per bucket.
+The checks that the implementation passes are: exact recovery of arbitrary
+counts from noiseless readings; recovery within quantisation through the
+converter; the increments of one ion per frame sum to its finite-path charge
+and fall in the expected frames; the window flag on a \SI{20000}{}-ion pad;
+and, on \SI{1500}{} pads with noise and no ions, the sample covariance of the
+recovered counts agrees with the predicted one within \SI{3}{\percent}.
+
+Not in the simulation: switch charge injection, clock feedthrough and the
+reset noise, which need transistor switches and a transient noise study, and
+the saturation of pads with more than about \SI{10000}{} ions, which the
+present \SI{3}{fF} leaves to a larger feedback capacitor.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}
