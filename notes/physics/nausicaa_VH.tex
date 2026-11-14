@@ -1250,10 +1250,9 @@ straddles frame boundaries.
 \item The last row of Table~\ref{tab:vh1enc} requires a converter that
   integrates over the frame. A converter that samples briefly at the swap
   realises the first row instead.
-\item A feedback capacitor of \SI{30}{fF} would give ten times the range at
-  the same ENC in ions, since signal and noise at the output scale
-  together, and a cleaner phase margin; the price is converter resolution,
-  Section~\ref{sec:conclusions}.
+\item The range of \SI{3}{fF}, about \SI{10000}{} ions per pad, is too
+  small for the busiest pads of a bb0nu event. Section~\ref{sec:vh1range}
+  measures the need and settles the capacitor.
 \end{itemize}
 
 % ----------------------------------------------------------------------
@@ -1493,9 +1492,84 @@ and, on \SI{1500}{} pads with noise and no ions, the sample covariance of the
 recovered counts agrees with the predicted one within \SI{3}{\percent}.
 
 Not in the simulation: switch charge injection, clock feedthrough and the
-reset noise, which need transistor switches and a transient noise study, and
-the saturation of pads with more than about \SI{10000}{} ions, which the
-present \SI{3}{fF} leaves to a larger feedback capacitor.
+reset noise, which need transistor switches and a transient noise study.
+
+% ----------------------------------------------------------------------
+\subsection{Range and the feedback capacitor}
+\label{sec:vh1range}
+%
+The first pilot on \SI{100}{} bb0nu events at \SI{4}{mm} pitch confirmed the
+noise, \SI{30.9}{} ions per bucket against the predicted \SI{30.9}{} and
+\SI{49.8}{} for the present chain, and showed the limit of \SI{3}{fF}: with
+$V_{\rm REF}=\SI{0.886}{V}$, the lower edge of the window at \SI{0.4}{V} and
+\SI{46.9}{\micro V} per ion, one pad holds \SI{10370}{} ions before the
+output leaves its linear range. \SI{108}{} pads in \SI{68}{} of the events
+exceeded it, carrying \SI{12.7}{\percent} of the ions of the sample.
+Table~\ref{tab:vh1pads} gives the ions per pad over the same events, from
+the detector response alone, at the two pitches in use.
+%
+\begin{table}[htbp]\centering
+\caption{Ions collected per pad over \SI{100}{} bb0nu events, pads with
+at least one ion.}
+\begin{tabular}{lcc}
+\toprule
+ & \SI{4}{mm} pitch & \SI{3}{mm} pitch\\
+\midrule
+Pads with ions & 7485 & 11944\\
+Median & 588 & 348\\
+\SI{99.9}{\percent} & 16862 & 12468\\
+Maximum & 24162 & 17799\\
+Pads above \SI{10370}{} ions & \SI{1.5}{\percent} & \SI{0.3}{\percent}\\
+Ions on those pads & \SI{12.8}{\percent} & \SI{4.2}{\percent}\\
+\bottomrule
+\end{tabular}
+\label{tab:vh1pads}
+\end{table}
+%
+The remedy is the larger feedback capacitor of Section~\ref{sec:vh1open}.
+The improved circuit was simulated again with \SIlist{10;20;30}{fF}, giving
+the charge fraction and the noise spectrum of each value, and a readout
+card was built for each (Table~\ref{tab:vh1cf}). The converter range was
+narrowed to \SIrange{0.3}{1.0}{V}, the output window with margin, so that
+its step stays small in ions. The noise per bucket rises by \SI{2}{} ions
+from \SIrange{3}{30}{fF}: signal and input-referred noise scale together,
+as Section~\ref{sec:vh1open} argued, and the residual rise comes from the
+output noise that does not.
+%
+\begin{table}[htbp]\centering
+\caption{Readout against the feedback capacitor, improved circuit, two
+\SI{10}{ms} readings per \SI{20}{ms} frame. Range is the number of ions
+between $V_{\rm REF}$ and the lower edge of the window; the converter step
+is one code of \SI{16}{} bits over the \SIrange{0.3}{1.0}{V} span.}
+\begin{tabular}{ccccc}
+\toprule
+$\Cf$ & Gain per ion & Range (ions) & Converter step (ions) & Noise per bucket\\
+\midrule
+\SI{3}{fF} & \SI{46.9}{\micro V} & 10370 & 0.6 & 31.1\\
+\SI{10}{fF} & \SI{15.4}{\micro V} & 31600 & 0.7 & 32.2\\
+\SI{20}{fF} & \SI{7.9}{\micro V} & 61900 & 1.4 & 32.8\\
+\SI{30}{fF} & \SI{5.3}{\micro V} & 92300 & 2.0 & 33.2\\
+\bottomrule
+\end{tabular}
+\label{tab:vh1cf}
+\end{table}
+%
+Two configurations were then run on the same \SI{100}{} events:
+\SI{4}{mm} pitch with \SI{30}{fF}, and \SI{3}{mm} pitch with \SI{20}{fF}.
+Each leaves a factor \SI{3.5}{} between the busiest pad seen and its range.
+Neither saturated a pad. The noise per bucket was \SI{32.9}{} and
+\SI{32.6}{} ions. The mean signal-to-noise per pad and bucket, reconstructed
+ions over predicted noise on cells with ions, was \SI{10.1}{} at \SI{4}{mm}
+and \SI{6.8}{} at \SI{3}{mm}: the noise is a property of the pad and does
+not depend on the pitch, so spreading the charge over more pads lowers the
+signal per pad by the area ratio. With \SI{22}{eV} per pair a \SI{1}{keV}
+deposit is \SI{45}{} ions, \SI{1.4}{} standard deviations of the noise per
+bucket, against \SI{0.9}{} for the present chain. The choice of pitch is
+therefore a tracking choice, sampling against signal-to-noise per pad, and
+the readout supports both with the two cards. The price of the larger
+capacitor is at the converter: \SI{5}{} to \SI{8}{\micro V} per ion leaves
+no margin on the \SI{16}{} bits, so converter noise and drift must stay at
+the microvolt level.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}

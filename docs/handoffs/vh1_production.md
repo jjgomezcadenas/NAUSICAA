@@ -106,9 +106,9 @@ presentation (`index.html`, plots) in the style of
 ## Policies
 
 - Saturated pads are invalid (NaN), as nonlinear failures are today; report
-  the count and the maximum noiseless drop. If saturation is frequent, the
-  remedy is a larger feedback capacitor; that needs a SPICE number for the
-  charge fraction at the new value and is not in the cards.
+  the count and the maximum noiseless drop. The 3 fF card saturates 1.5 % of
+  the pads at 4 mm pitch (12.7 % of the ions); production uses the larger
+  capacitors below, which left no saturated pad in the 100-event pilots.
 - Reference frame: the module places it so that it ends where the earliest
   induced current of the first bucket begins. No baseline estimate is needed.
 - Out-of-range converter codes make the pad invalid (same rule as today).
@@ -116,7 +116,14 @@ presentation (`index.html`, plots) in the style of
 
 ## Cards
 
-Keys, with the defaults of `vh1_device_changes.toml`: `gain_V_per_ion`
+Production cards (2026-11-14 pilots, zero saturated pads, about 33 ions per
+bucket): `vh1_device_changes_cf30f.toml` for 4 mm pitch (30 fF, 5.3 uV per
+ion, range 92 300 ions) and `vh1_device_changes_cf20f.toml` for 3 mm pitch
+(20 fF, 7.9 uV per ion, range 61 900 ions); both span the converter over
+0.3 to 1.0 V. `vh1_device_changes.toml` (3 fF) is the SPICE-study baseline
+and saturates busy pads; `vh1_device_changes_cf10f.toml` is intermediate.
+
+Keys, with the values of `vh1_device_changes.toml`: `gain_V_per_ion`
 (4.686e-5), `charge_fraction` (0.8775), `feedback_capacitance_F` (3e-15),
 `v_ref_V` (0.886), `output_window_V` ([0.4, 0.95]), `frame_ms` (20),
 `conversions_per_frame` (2), `conversion_window_ms` (10), `reference_frames`
@@ -147,6 +154,5 @@ per ion, about 45 ions per bucket) for comparison runs.
 ## Open items (not blocking)
 
 - Switch charge injection, reset noise and clock feedthrough are not modelled.
-- A 30 fF feedback variant needs its SPICE charge fraction.
-- The window flag policy for large deposits (invalidate versus clip) can be
-  revisited once the pilot shows how often it triggers.
+- Whether the signal-to-noise per pad-bucket at 3 mm pitch (6.8 mean) is
+  sufficient for tracking is to be settled with the hit-cut studies.
