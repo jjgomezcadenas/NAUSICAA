@@ -2,7 +2,7 @@ schema = "nausicaa.vh1_csa_spec.v1"
 label = "VH1 with device changes and Cf = 30 fF: M2 2 um, M3 4 um, M1 110 um, M4 23 um"
 # SPICE sources (LTSpice/designs/VH1, scripts/electronics/design/vh1_*.py)
 spice_summary = "results/ltspice/design/VH1/improvements/combined_cf_scan.json"
-spice_summary_sha256 = "c2aba6474076018b5a75542fe9789c8f46ef26895a6aa3f595a47c3e3e01bf20"
+spice_summary_sha256 = "a4861ca7a87c147ca1ed7d3039e05cef684c98f2677c9248f8222e28bcc4de94"
 spice_variant = "30f"
 noise_spectrum_csv = "results/ltspice/design/VH1/improvements/noise_combined_W4_23u_cf30f.csv"
 noise_spectrum_sha256 = "2c56450a290581c29ac35ca7df127ef5cd989188d4f0b96d82fb5240742774a7"

@@ -37,5 +37,18 @@
   },
   "Vnmos": 1.7053925238277774,
   "Vnload": 0.5798859525538717
+ },
+ "20f": {
+  "Cf_F": 2e-14,
+  "A0": 9269.22694929131,
+  "charge_fraction": 0.9795509364317173,
+  "gain_uV_per_ion": 7.847068110818583,
+  "enc": {
+   "frame difference of point samples": 117.01943504486967,
+   "frame difference of 5 ms averages": 28.61482146140681,
+   "frame difference of 20 ms averages": 19.893647512493597
+  },
+  "Vnmos": 1.7053925238277774,
+  "Vnload": 0.5798859525538717
  }
 }
