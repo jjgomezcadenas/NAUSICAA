@@ -1,0 +1,35 @@
+selection_controls = "results/readout/bb0nu_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5"
+electronics_card = "config/readout/bb0nu_electronics_ion4mm_20ms_100.toml"
+accepted_events = 500
+example_events = 0
+output_subdir = "tracks_500_cut1keV_ion7sigma"
+
+[ions]
+baseline_ms = 10.0
+average_ms = 5.0
+nonlinear_below_V = 0.63
+max_iterations = 20
+convergence_ions = 0.05
+
+[electrons]
+subtract_mean_dark = true
+rebin_factor = 20
+
+[zs_controls]
+ion_threshold_step = 5.0
+ion_threshold_maximum = 300.0
+pe_threshold_step = 0.5
+pe_threshold_maximum = 50.0
+histogram_bins = 100
+
+[track_analysis]
+example_every = 50
+hit_energy_bin_keV = 0.25
+hit_energy_max_keV = 200.0
+ion_hit_cut_keV = 1.0
+electron_hit_cut_keV = 1.0
+check_connectivity = true
+graph_k = 10
+edge_sigma_scale = 6.0
+graph_k_scan = [10, 20]
+ion_edge_sigma_scale = 7.0

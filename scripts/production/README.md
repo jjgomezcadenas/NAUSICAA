@@ -156,7 +156,7 @@ The earlier 100-event comparison remains in `electronics_100events/`.
 `make reconstruction-bb0nu PYTHON=work/event-viewer-venv/bin/python` runs the
 reconstruction tests, validates the PE inverse, and processes the same 100
 accepted bb0nu events through detector response, electronics and reconstruction.
-The card is `config/readout/bb0nu_reconstruction_100.toml`.
+The card is `config/readout/bb0nu_reconstruction_bucket_histograms_100.toml`.
 
 `src/reconstruction/` provides separate ion and electron reconstruction functions.
 Ions use measured ADC vectors, baseline subtraction, covariance-weighted linear
@@ -164,12 +164,12 @@ inversion and the direct nonlinear integral when selected by measured voltage. P
 use the stationary mean correction and are rebinned by 20. ASIC clipping remains
 marked. All estimates remain signed.
 
-Outputs are `reconstruction/controls.h5`, `plot_controls.h5`, `index.html` and
-`plots/` under the detector run directory. The HTML event selector shows signal
-and noise distributions and threshold scans. Truth labels are used only for
-these controls; no zero suppression is applied. Full event vectors stay in memory.
-`make reconstruction-present` regenerates numerical summaries and presentation
-without repeating detector or electronics simulation.
+Outputs are `reconstruction_bucket_histograms_100/controls.h5`, `index.html`
+and `plots/` under the detector run directory. Each event has four histograms:
+pads with signal, pads without signal, SiPMs with signal, SiPMs without signal.
+Each entry is classified by the input signal in that bucket. Values remain
+signed; no zero suppression is applied. Full event vectors stay in memory.
+`make reconstruction-present` regenerates the plots from saved numerical results.
 
 The direct inverse is checked with `scripts/validation/validate_direct_ion_inverse.jl`.
 Its saved comparison is under `reconstruction/direct_inverse/`; regenerate that
@@ -196,3 +196,45 @@ python scripts/production/present_readout_timing.py <run-directory>/controls.h5 
 ```
 
 The output name must be new; existing results are preserved.
+
+### Event charge and tracks
+
+`run_framed_reconstruction.jl config/readout/bb0nu_tracks_ion4mm_20ms_500.toml`
+processes 500 accepted events. It saves signed ion/PE charge estimates, corrected
+energy estimates, positive-hit energy histograms and XY/XZ projections every 50
+events under `tracks_500/`. Run `present_tracks.py <run-directory>/controls.h5`
+to regenerate the HTML. Full event vectors remain in memory.
+
+The 3 keV comparison uses `bb0nu_tracks_ion4mm_20ms_500_cut3keV.toml` and
+`tracks_500_cut3keV/`. Run `reduce_hit_cut.jl <controls.h5>` before
+`present_tracks.py`. The existing kNN graph is rebuilt before and after the
+cut, with k = 10 and distance = 6 times each carrier's transverse diffusion
+width. Signal-only endpoint checks use the existing MST-diameter routine.
+
+The k scan uses `bb0nu_tracks_ion4mm_20ms_500_cut1keV_kscan.toml`:
+1 keV hit cuts, k = 10, 15, 20, 25, 30, and the same 6σₜ distance limit.
+After the run, use `reduce_knn_scan.jl <controls.h5>` and
+`present_knn_scan.py <knn_scan.h5>`. Each k uses its own before-cut connected
+sample as the denominator for the broken-track fraction.
+
+## Compact reconstructed hits
+
+Main documentation: `notes/html/index.html`, step 5. The current card is
+`config/readout/bb0nu_hit_output_100.toml`. `controls.mode = "none"` writes
+only retained hits, pre-cut event totals and metadata in `hits.h5`.
+
+```sh
+julia --project=. scripts/production/run_hit_production.jl config/readout/bb0nu_hit_output_100.toml
+julia --project=. scripts/production/prepare_hit_presentation.jl /path/to/hits.h5
+python scripts/production/present_tracks.py /path/to/presentation/controls.h5
+```
+
+The second command computes graphs and projections from saved hits. The third
+only renders the page. Do not rerun the simulation for plotting changes.
+For another graph configuration, pass a TOML containing `[track_analysis]`
+and a new output directory as the second and third arguments to
+`prepare_hit_presentation.jl`. Existing completed outputs are preserved.
+
+`validate_hit_production.jl` runs with control-histogram routines disabled and
+checks every event against its writer input. `validate_hit_debug.jl` checks
+selected diagnostics, their event limit and agreement with production output.

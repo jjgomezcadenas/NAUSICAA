@@ -1,0 +1,22 @@
+electronics_card = "config/readout/bb0nu_electronics_pilot_100.toml"
+accepted_events = 100
+example_events = 0
+output_subdir = "reconstruction_bucket_histograms_100"
+
+[ions]
+baseline_ms = 10.0
+average_ms = 5.0
+nonlinear_below_V = 0.63
+max_iterations = 20
+convergence_ions = 0.05
+
+[electrons]
+subtract_mean_dark = true
+rebin_factor = 20
+
+[zs_controls]
+ion_threshold_step = 5.0
+ion_threshold_maximum = 300.0
+pe_threshold_step = 0.5
+pe_threshold_maximum = 50.0
+histogram_bins = 100

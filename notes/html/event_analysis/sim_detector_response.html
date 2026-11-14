@@ -11,16 +11,7 @@
 <li>Return ion and photon vectors, channel positions, timing and the counts lost outside the frame.</li>
 </ol>
 <p><strong>Invisible deposits:</strong> an accepted event can contain a gamma depositing at most the veto threshold outside the frame. Those outside hits are ignored. Hits inside the frame remain included. The current threshold is 3 keV, configurable by TOML.</p>
-<h3>Connection to the following modules</h3>
-<ol>
-<li><code>sim_ion_detector_response</code> and <code>sim_electron_detector_response</code>: ion and photon vectors.</li>
-<li><code>sim_electronics_response</code>: simulated CSA/ADC and SiPM/ASIC values, including noise on every channel in the frame.</li>
-<li><code>reco_signal</code>: RI after linear or nonlinear CSA deconvolution; PE after the SiPM saturation and attachment corrections. Correct attachment by multiplying each PE bucket by exp(drift time / lifetime).</li>
-<li><code>reco_zero_suppression</code>: select reconstructed channel vectors.</li>
-<li><code>write_event</code>: save the selected vectors, frame, channels and timing.</li>
-</ol>
-<p>Production processes each event in memory through detector response, electronics, signal reconstruction and zero suppression. Event vectors are written only after zero suppression. Signal reconstruction uses measured values and calibration parameters.</p>
-</section>
+<h3>Following calculations</h3><ol><li>Pass ion and photon vectors to electronics.</li><li>Reconstruct signed ion and PE vectors.</li><li>Calculate event energies, form hits and apply the hit-energy cuts.</li><li>Write event totals and retained hits using the <a href="reco_hits.html#storage">agreed output format</a>.</li></ol></section>
 <section id="frame"><h2>2. Frame, channels and time</h2>
 <h3>Coordinates</h3><ul>
 <li>Hits and the event frame use <code>mc_vertex_frame</code>.</li>
@@ -183,9 +174,9 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <li>Call <code>sample_fano_pairs</code>.</li>
 <li>Call <code>sim_ion_detector_response</code>.</li>
 <li>Call <code>sim_electron_detector_response</code> with the same pair counts, event position and frame.</li>
-<li>Pass the vectors to electronics, signal reconstruction and zero suppression. Write the retained RI and PE channel vectors.</li>
+<li>Pass the vectors to electronics and signal reconstruction, then calculate event totals and retained hits.</li>
 </ol>
-<p>Use separate random-number generators for pair production, ion transport and electron response. Either response calculation can be repeated using the saved pair counts and event position.</p>
+<p>Use separate random-number generators for pair production, ion transport and electron response. Reproduce either response using the source hits, saved settings, event position and seeds.</p>
 <p>The script reads TOML, constructs the settings and records the seeds.</p>
 </section>
 <section id="physics"><h2>5. Calculation and existing code</h2>
@@ -203,7 +194,7 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <tr><td><a href="../../../src/event_analysis/grid_readout.jl">grid_readout.jl</a></td><td>Reuse the EL yield and optical acceptance calculations.</td></tr>
 </table>
 <p>Physics formulas and operating parameters: <a href="../../physics/itaca_poo.pdf">principle of operation</a> and <a href="../../../docs/elm.tex">ELM note</a>.</p>
-<p>The operating note uses 300 V/cm at 15 bar. Its illustrative drift velocities are 0.15 mm/ms for ions and 0.6 mm/μs for electrons. The current card uses 3 mm TopMetal pitch and 20 ms buckets, spanning 3 mm in Z. SiPMs retain 4 mm pitch and 250 ns buckets, spanning 0.15 mm in Z. Event displays sum 20 electron buckets into 3 mm Z bins. Cards specify each drift velocity and bucket duration used in each calculation.</p>
+<p>The operating note uses 300 V/cm at 15 bar. Its illustrative drift velocities are 0.15 mm/ms for ions and 0.6 mm/μs for electrons. The detector-only study uses 3 mm TopMetal pitch and 20 ms buckets, spanning 3 mm in Z. SiPMs retain 4 mm pitch and 250 ns buckets, spanning 0.15 mm in Z. The current 500-event reconstruction uses 4 mm TopMetal pitch and 20 ms buckets. Electron reconstruction sums 20 electron buckets into 3 mm Z bins. Cards specify each drift velocity and bucket duration used in each calculation.</p>
 </section>
 <section id="tests"><h2>6. Tests</h2>
 <table><tr><th>Test</th><th>What we check</th></tr>
@@ -215,7 +206,7 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <tr><td>Bucket edges</td><td>Assign a count on an internal edge to the next bucket; include the final frame edge in the last bucket.</td></tr>
 <tr><td>No diffusion</td><td>Known hit positions give the expected channels and times.</td></tr>
 <tr><td>Diffusion at the frame edge</td><td>Retain signal on both sides of the XY frame boundary when it reaches a channel in the frame. Record and discard signal reaching a channel outside the frame.</td></tr>
-<tr><td>Charge and photon totals</td><td>Collected ions + excluded ions = initial pairs. Collected photons + uncollected photons = emitted photons.</td></tr>
+<tr><td>Charge and photon totals</td><td>Collected ions + excluded ions = initial pairs. Collected photons + photons excluded by acquisition + uncollected photons = emitted photons.</td></tr>
 <tr><td>Fluctuations</td><td>Recover the expected Fano, attachment, EL and optical means and variances over repeated events.</td></tr>
 <tr><td>Repeatability</td><td>The same event, settings and seeds give identical vectors. Changing ion pitch leaves the photon calculation unchanged.</td></tr>
 <tr><td>Existing collection</td><td>With a frame enclosing all sampled charge, reproduce the existing collection at the same settings.</td></tr>
@@ -233,29 +224,8 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <tr><td><code>tests/detector_response/</code></td><td>Test frame handling, collection and vector output.</td></tr>
 <tr><td><code>scripts/production/</code></td><td>Read cards and MC events, run the functions and save results.</td></tr>
 </table>
-<pre><code>results/readout/&lt;run_label&gt;/
-    run.toml
-    events.h5
-    index.html
-    itrack/ri_vectors.h5
-    etrack/pe_vectors.h5
-    detector_response/
-        controls.h5
-        index.html
-        plots/</code></pre>
-<ul>
-<li>The run label includes the ion and EL pitches.</li>
-<li>Each event records its number, position, acquisition frame, complete list of channels in the frame, time bounds and ZS settings. Save reconstructed vectors only for channels retained by zero suppression.</li>
-<li>RI and PE files are separate. Both identify the same MC event and placement. The channel lists distinguish suppressed channels from channels outside the acquisition.</li>
-<li>Save gas, photon band, units, cards, calculated parameters, seeds and input/code checksums.</li>
-<li>For ions and SiPM photons separately, report the number and fraction of events with signal reaching channels outside the frame.</li>
-<li>Report the number of channels outside the frame receiving signal divided by all channels receiving signal before the channel cut.</li>
-<li>Report excluded ions / total arriving ions and excluded photons / total photons reaching SiPMs. Show the per-event distributions, including zero loss, and the sample-wide fractions.</li>
-<li>Record losses outside the time interval separately, and count each lost contribution once in the total loss.</li>
-<li>Control plots also show excluded MC energy, event totals, channel counts and vector lengths. Annotate distributions with entries, mean and RMS.</li>
-<li>Compute event mean and maximum over positive pad/bucket counts and SiPM/bucket photon counts in one pass as each event finishes.</li>
-</ul>
-<p>Intermediate ion/photon, electronics and reconstructed vectors can optionally be saved for selected validation events. Production saves compact control statistics, cards and seeds alongside the final RI and PE files.</p>
+<h3>Production output</h3><p>Pass the vectors in memory to electronics and reconstruction. Save event totals and retained hits as described in <a href="reco_hits.html">Event energy and hit output</a>.</p>
+<h3>Optional detector controls</h3><ul><li>Ion and photon totals, including acquisition losses.</li><li>Events and channels with signal outside the frame.</li><li>Lost charge fraction, with XY and time losses recorded separately.</li><li>Mean and maximum positive channel/bucket counts per event.</li><li>Channel counts, vector lengths and selected projections.</li></ul><p>The detector-only study writes these controls under <code>results/readout/&lt;run_label&gt;/detector_response/</code>. Production must not create or fill them unless debugging is enabled; the production script applies this switch.</p>
 <h3>Run and regenerate plots</h3><pre><code>make test-detector-response
 make detector-response-bb0nu PYTHON=work/event-viewer-venv/bin/python
 make detector-response-present PYTHON=work/event-viewer-venv/bin/python</code></pre>

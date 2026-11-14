@@ -10,7 +10,7 @@
 <li>Return reconstructed-ion and PE vectors, together with reconstruction checks.</li>
 </ol>
 <p>Reconstruction uses measured vectors, acquisition settings and calibration. Monte Carlo inputs are used separately for control plots.</p>
-<ul><li>Keep signed reconstructed values.</li><li>Keep all channels until zero suppression.</li><li>Ion and electron times share the event t0. Ion vectors use ms; electron vectors use μs.</li></ul>
+<ul><li>Keep signed reconstructed values.</li><li>Keep all channels when calculating signed event totals.</li><li>Ion and electron times share the event t0. Ion vectors use ms; electron vectors use μs.</li></ul>
 </section>
 <section id="types"><h2>2. Data types</h2>
 <h3>Input vectors and timing</h3>
@@ -77,7 +77,7 @@ end</code></pre>
     valid::BitMatrix
     checks::IonReconstructionChecks
 end</code></pre>
-<p>Rows are collection buckets; columns are pads. <code>valid</code> records whether reconstruction produced a usable estimate. Failed estimates are NaN and excluded from energy sums with an explicit count.</p>
+<p>Rows are collection buckets; columns are pads. <code>valid</code> records whether reconstruction produced a usable estimate. </p>
 <h3>ElectronReconstructionSettings</h3>
 <pre><code>struct ElectronReconstructionSettings
     sipm::SiPM
@@ -191,20 +191,10 @@ Q(t)/e = F(x(t)) − F(x(0)) + integral from 0 to t of r(x)/g(x)</code></pre>
 <tr><td>ASIC clipping</td><td>A clipped bucket remains identified after correction and rebinning.</td></tr>
 <tr><td>Rebinning</td><td>Preserve total PE and time origin, including a final incomplete group. Combine flags from every contributing bucket.</td></tr>
 </table>
-<h3>100-event controls</h3>
-<ul>
-<li>Input and reconstructed ion vectors for representative pads.</li>
-<li>Measured and fitted voltage averages, with voltage residuals.</li>
-<li>Ion residuals versus input charge, separating linear and nonlinear pads.</li>
-<li>Reconstructed total ions per event versus collected ions.</li>
-<li>Corrected PE versus expected detected PE, before and after rebinning.</li>
-<li>For every event: reconstructed ion and PE histograms over all valid channel–bucket cells, with signed values.</li>
-<li>Separate cells with input signal, zero-input cells and channels with zero input throughout the event.</li>
-<li>Scan proposed thresholds. Plot the fraction of zero-input cells retained and the fraction of input charge below the cut. Report input charge in invalid cells separately.</li>
-<li>Reconstruction failures and clipped samples.</li>
-<li>Time per event and memory used for ion and electron reconstruction.</li>
-</ul>
-<p>Plots show entries, mean, standard deviation or RMS residual as appropriate. Comparisons use the same positive-input cells at each stage. Noise plots include zero-input channels.</p>
+<h3>Optional reconstruction controls</h3>
+<p>For each event, classify each pad–bucket and SiPM–bucket by whether it received input signal. Show four histograms:</p>
+<ol><li>Pad–buckets with signal.</li><li>Pad–buckets without signal.</li><li>SiPM–buckets with signal.</li><li>SiPM–buckets without signal.</li></ol>
+<p>Keep signed reconstructed values. Use rebinned PE vectors for SiPMs. Show bucket counts, mean and standard deviation. Report invalid buckets separately.</p>
 </section>
 <section id="files"><h2>7. Code and output</h2>
 <pre><code>src/reconstruction/
@@ -220,5 +210,5 @@ tests/reconstruction/runtests.jl</code></pre>
     controls.h5
     index.html
     plots/</code></pre>
-<p>The pilot passes detector vectors, electronics vectors and reconstructed vectors in memory. Save summaries and selected examples. Full event output follows zero suppression. The control page provides an event selector; no ZS cut is applied.</p>
+<p>The diagnostic pilot passes event vectors in memory and saves selected controls. Production output is specified in <a href="reco_hits.html">Event energy and hit output</a>: signed event totals before cuts and retained hits after the configured cut.</p>
 </section></main></body></html>

@@ -429,7 +429,7 @@ output_V = baseline_V − x</code></pre>
 <tr><td>Memory</td><td>Check channels × samples before allocation. Release temporary pad vectors as each pad completes.</td></tr>
 </table>
 </section>
-<section id="files"><h2>7. Files and control plots</h2>
+<section id="files"><h2>7. Files and optional control plots</h2>
 <table><tr><th>Directory</th><th>Contents</th></tr>
 <tr><td><code>src/electronics/</code></td><td>Settings and output types.</td></tr>
 <tr><td><code>src/electronics/ion_signal/</code></td><td>Current, CSA voltage, noise and ADC functions.</td></tr>
@@ -450,6 +450,6 @@ output_V = baseline_V − x</code></pre>
 <li>Fractions of events, channels and samples affected by ADC range or ASIC clipping.</li>
 <li>Time per event, channels in the frame, samples and peak memory.</li>
 </ul>
-<p>Plots include entries and relevant means, standard deviations or residuals. Full intermediate event vectors stay in memory; save selected validation examples.</p>
+<p>These controls belong to debugging runs. Production passes electronics vectors in memory to signal reconstruction. The production/debug switch is part of the <a href="reco_hits.html#controls">output implementation</a>.</p>
 </section>
 </main><footer>ITACA · Event-analysis interface review</footer></body></html>

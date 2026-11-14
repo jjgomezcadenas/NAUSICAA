@@ -102,16 +102,21 @@ end
  @test !any(reconstructed.checks.nonlinear)
 end
 include("../../scripts/production/reconstruction_controls.jl")
-@testset "ZS control denominators and empty-channel labels" begin
+@testset "Bucket signal and noise histograms" begin
  input=Float64[10 0 0;0 5 0;0 0 0]
  reco=Float32[3 -1 .2;-2 NaN .3;1 2 -1];valid=isfinite.(reco)
- result=zs_controls(reco,valid,input,[0.,5.],10)
- @test result["input_total"]==15
- @test result["input_invalid"]==5
- @test result["input_below"]==[0.,10.]
- @test result["noise_cells"]==7
- @test result["quiet_cells"]==3
- @test result["quiet_above"]==[2,0]
- @test sum(result["histograms"]["all"]["counts"])==8
- @test result["histograms"]["quiet_channels"]["entries"]==3
+ result=channel_histograms(reco,valid,input,10)["histograms"]
+ signal=result["buckets_with_signal"];noise=result["buckets_without_signal"]
+ @test signal["entries"]==1
+ @test signal["invalid_buckets"]==1
+ @test signal["mean"]==3
+ @test noise["entries"]==7
+ @test noise["invalid_buckets"]==0
+ @test first(noise["edges"])==-2
+ @test sum(signal["counts"])+sum(noise["counts"])==count(valid)
+ allsignal=channel_histograms(reco,valid,ones(3,3),10)["histograms"]
+ @test allsignal["buckets_without_signal"]["entries"]==0
+ @test allsignal["buckets_with_signal"]["entries"]==8
 end
+
+include("hit_output.jl")

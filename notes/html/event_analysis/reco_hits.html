@@ -1,0 +1,153 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ITACA · Event energy and hit output</title><style>body{font:17px/1.6 system-ui;max-width:1050px;margin:30px auto;padding:0 20px;color:#203343}pre{background:#eef3f6;padding:16px;overflow:auto}a{color:#185b83}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8}section{margin:30px 0}li{margin:7px 0}</style></head><body><a href="../index.html">ITACA index</a> · <a href="index.html">Event analysis</a><h1>Event energy and hit output</h1>
+<section><h2>Processing one event</h2><ol>
+<li>Read the signed reconstructed ion and PE vectors.</li>
+<li>Correct PE for mean attachment using the event drift distance and electron lifetime.</li>
+<li>Sum all signed charges to obtain the total reconstructed ions and corrected PE.</li>
+<li>Calculate the two event energies: ions × W; corrected PE × W / (PDE × EL yield × optical acceptance).</li>
+<li>Rebin the electron vectors to the spatial resolution set in TOML.</li>
+<li>Form itrack and etrack hits. Apply the hit-energy cuts, with an absolute minimum of 1 keV.</li>
+<li>Write the event totals and retained hits. Release the event vectors.</li>
+</ol><p>The event energies are calculated before the hit cuts. The saved hits support new graph calculations and plots without repeating the detector or electronics simulation.</p></section>
+<section id="types"><h2>Data types</h2>
+<h3>SavedHits</h3><pre>struct SavedHits
+    x_mm::Vector{Float32}
+    y_mm::Vector{Float32}
+    z_mm::Vector{Float32}
+    energy_keV::Vector{Float32}
+end</pre><p>Retained itrack or etrack hits in vertex-relative coordinates. The existing <code>ReconstructedHits</code> calculation also carries charge; the saved type contains these four columns.</p>
+<h3>EventEnergy</h3><pre>struct EventEnergy
+    ions::Float32
+    corrected_pe::Float32
+    ion_energy_keV::Float32
+    electron_energy_keV::Float32
+    invalid_ion_buckets::Int64
+    invalid_electron_buckets::Int64
+end</pre><p>Signed event totals before hit cuts. Convert the existing calculation results to Float32 for storage.</p>
+<h3>HitEventInfo</h3><pre>struct HitEventInfo
+    event_number::Int64
+    ion_drift_cm::Float32
+    electron_drift_cm::Float32
+    frame::EventFrame
+    ion_sigma_t_mm::Float32
+    electron_sigma_t_mm::Float32
+end</pre><p><a href="mc_fast_trigger.html#types">EventFrame</a> supplies the acquisition bounds in <code>mc_vertex_frame</code>. The diffusion widths allow later kNN calculations to use the same distance limits.</p>
+<h3>HitEvent</h3><pre>struct HitEvent
+    info::HitEventInfo
+    energy::EventEnergy
+    itrack::SavedHits
+    etrack::SavedHits
+end</pre>
+<h3>HitOutputSettings</h3><pre>struct HitOutputSettings
+    ion_hit_cut_keV::Float32
+    electron_hit_cut_keV::Float32
+    compression_level::Int64
+    chunk_hits::Int64
+    max_output_bytes::Int64
+end</pre><p>Both cuts must be at least 1 keV. Retain hits whose energy is greater than the selected cut.</p>
+<h3>HitFileMetadata</h3><pre>struct HitFileMetadata
+    run_label::String
+    species::String
+    gas_mixture::GasMixture
+    cards::Dict{String,String}
+    checksums::Dict{String,String}
+end</pre><p><a href="sim_detector_response.html#types">GasMixture</a> identifies Xe or Xe–He. Store complete TOML card text and labelled source, code and calibration checksums.</p>
+<h3>HitWriter and HitReader</h3><pre>mutable struct HitWriter
+    file::HDF5.File
+    temporary_path::String
+    output_path::String
+    settings::HitOutputSettings
+    event_count::Int64
+    ion_hit_count::Int64
+    electron_hit_count::Int64
+    event_numbers::Set{Int64}
+end
+
+struct HitReader
+    file::HDF5.File
+    event_rows::Dict{Int64,Int64}
+end</pre><p>The writer appends events. The reader maps MC event numbers to their saved rows.</p></section>
+<section><h2>Calculation functions</h2><pre>event_charge_estimates(ions, pe, placement, detector, pde)</pre><p>Calculate the signed event totals, energies and attachment correction.</p><pre>reconstruct_hits(signal, placement, detector;
+                 charge_correction, keV_per_count, minimum_energy_keV)</pre><p>Return hits above the configured cut. Obtain X and Y from channel centres and Z from bucket times, reversing the electron drift direction.</p></section>
+<section id="storage"><h2>Production HDF5 output</h2><p>One file per selected detector and electronics configuration, containing itrack and etrack for every event.</p>
+<table><tr><th>Group</th><th>Saved values</th></tr>
+<tr><td>events</td><td>MC event number, ion and electron drift distances, acquisition frame.</td></tr>
+<tr><td>events</td><td>Total reconstructed ions, corrected PE, ion energy and electron energy before hit cuts; reconstruction status.</td></tr>
+<tr><td>itrack</td><td>x_mm, y_mm, z_mm, energy_keV and event offsets.</td></tr>
+<tr><td>etrack</td><td>x_mm, y_mm, z_mm, energy_keV and event offsets.</td></tr>
+<tr><td>configuration</td><td>Cards, units, coordinate convention, hit cuts, source checksums and code identifiers.</td></tr></table>
+<ul><li>Hit columns use Float32. Event offsets use Int64.</li><li>Concatenate the hits in event order. The offsets delimit each event in the four arrays.</li><li>Use chunked, compressed datasets and bounded writes.</li><li>Raising the hit cut or changing kNN settings uses the saved hits. Lowering the saved cut requires reconstruction again.</li></ul>
+<h3>HDF5 layout</h3><pre>hits.h5
+  schema = "itaca.reconstructed_hits.v1"
+  events/
+    event_number                        Int64[N]
+    ion_drift_cm, electron_drift_cm      Float32[N]
+    frame_x_min_mm, frame_x_max_mm       Float32[N]
+    frame_y_min_mm, frame_y_max_mm       Float32[N]
+    frame_z_min_mm, frame_z_max_mm       Float32[N]
+    ion_sigma_t_mm, electron_sigma_t_mm  Float32[N]
+    ions, corrected_pe                  Float32[N]
+    ion_energy_keV, electron_energy_keV  Float32[N]
+    invalid_ion_buckets                  Int64[N]
+    invalid_electron_buckets             Int64[N]
+  itrack/
+    offsets                             Int64[N+1]
+    x_mm, y_mm, z_mm, energy_keV          Float32[ion_hit_count]
+  etrack/
+    offsets                             Int64[N+1]
+    x_mm, y_mm, z_mm, energy_keV          Float32[electron_hit_count]
+  configuration/
+    run_label, species, gas_mixture
+    coordinate_frame = "mc_vertex_frame"
+    position_unit = "mm"
+    energy_unit = "keV"
+    cards/, checksums/
+    ion_hit_cut_keV, electron_hit_cut_keV
+    compression_level, chunk_hits, max_output_bytes</pre>
+<ul><li>Offsets are zero-based cumulative hit counts. Event row j uses Julia array indices <code>offsets[j]+1:offsets[j+1]</code>, or the corresponding Python slice.</li><li>An empty track has equal successive offsets.</li><li>Append events in input order. Event numbers need not be consecutive.</li><li>Chunk and compress numeric datasets using shuffle and deflate. Initial settings: 65,536 hits per chunk, compression level 4.</li><li>Write <code>hits.h5.tmp</code>, check it and atomically rename it to <code>hits.h5</code>. An existing completed file is preserved.</li></ul>
+<h3>Output functions</h3><pre>saved_hits(hits::ReconstructedHits)::SavedHits</pre><p>Return the four hit columns to write.</p>
+<pre>open_hit_output(path::AbstractString,
+                metadata::HitFileMetadata,
+                settings::HitOutputSettings)::HitWriter</pre><p>Create extendible datasets, initial zero offsets and configuration records.</p>
+<pre>write_hit_event(output::HitWriter, event::HitEvent)::Nothing</pre><p>Append the totals, event information and both hit sets. Update offsets and check the byte budget. Reject duplicate event numbers.</p>
+<pre>finish_hit_output(output::HitWriter)::String</pre><p>Check column lengths and offsets, close and publish the file. Return its path.</p>
+<pre>abort_hit_output(output::HitWriter)::Nothing</pre><p>Close and remove the temporary file after a failed run.</p>
+<pre>open_hit_input(path::AbstractString)::HitReader
+read_hit_event(input::HitReader, event_number::Int64)::HitEvent
+close_hit_input(input::HitReader)::Nothing</pre><p>Read one event by MC event number, including both tracks and its pre-cut energy estimates.</p>
+<h3>Output location</h3><pre>results/readout/&lt;run_label&gt;/
+    hits.h5
+    debug/        # only when requested
+    presentation/ # generated later from saved data</pre><p>The run label includes the ion and EL pitches. Graph calculations and presentation do not modify <code>hits.h5</code>.</p>
+<h3>Size</h3><p>At the current 1 keV cut, itrack and etrack together require approximately <strong>40 MiB per 1,000 events before compression</strong>, or 320 MiB for 8,000 events. Event totals and offsets add less than 1 MiB per 1,000 events.</p></section>
+<section id="controls"><h2>Production and debugging</h2><pre>[hit_output]
+ion_hit_cut_keV = 1.0
+electron_hit_cut_keV = 1.0
+compression_level = 4
+chunk_hits = 65536
+max_output_bytes = 16777216  # 16 MiB for the 100-event validation
+
+[controls]
+mode = "none"</pre>
+<p>With <code>mode = "none"</code>, write only <code>hits.h5</code>. Keep event counts, timing and failures in the run log. Do not allocate, fill or save control histograms, projection matrices, endpoint comparisons or graph scans.</p>
+<pre>[controls]
+mode = "debug"
+event_limit = 10
+diagnostics = ["noise", "hit_cut"]</pre>
+<p>Allowed diagnostic selections: <code>noise</code>, <code>hit_cut</code>, <code>graph_scan</code> and <code>electronics_examples</code>. Construct only the requested controls, for at most the specified number of events. Save them under <code>debug/</code>.</p>
+<p>Energy distributions and event views are generated separately from <code>hits.h5</code>. They require no production control histograms.</p>
+<h3>File-size guard</h3><ul><li>Each retained hit contributes 16 uncompressed bytes. Per-event columns and both offsets contribute approximately 100 bytes per event.</li><li>Allow an explicit reserve for configuration text, compression chunks and HDF5 metadata.</li><li>The 100-event validation uses a 16 MiB cap, compared with approximately 4 MiB of expected hit data.</li><li>Check free space and the output size while appending. Stop and remove the temporary file if the cap is exceeded.</li><li>Use the existing guarded-file checks and 1 GiB free-space reserve.</li></ul></section>
+
+
+<section id="tests"><h2>Tests</h2><table><tr><th>Test</th><th>Check</th></tr>
+<tr><td>Energy before cuts</td><td>Changing the hit cut leaves the saved totals unchanged. Compare with the original signed sums converted to Float32.</td></tr>
+<tr><td>Hit cut</td><td>At a 1 keV cut, exclude a hit at 1 keV and retain one above it. Reject a configured cut below 1 keV.</td></tr>
+<tr><td>Event lookup</td><td>Read nonconsecutive MC event numbers in any order. Report missing or duplicate numbers.</td></tr>
+<tr><td>Offsets</td><td>Read empty tracks, one-hit tracks and events crossing chunk boundaries correctly.</td></tr>
+<tr><td>Read-back</td><td>Preserve all stored Float32 values, event totals, frame bounds and diffusion widths exactly.</td></tr>
+<tr><td>Compression</td><td>Compressed and uncompressed files return identical data.</td></tr>
+<tr><td>Controls disabled</td><td>Make diagnostic constructors and fill routines fail if called. Complete a production-mode test without calling them; check the exact permitted HDF5 groups.</td></tr>
+<tr><td>Debug selection</td><td>Only selected diagnostics run, and only up to the event limit. Production hits and totals remain identical for the same seeds.</td></tr>
+<tr><td>Publication</td><td>Test budget failure, interrupted output cleanup and refusal to overwrite a completed file.</td></tr>
+</table>
+<h3>100-event validation</h3><ol><li>Run 100 bb0nu events with the current detector and electronics settings and <code>controls.mode = "none"</code>.</li><li>Check that the output contains only events, itrack, etrack, configuration and the schema identifier.</li><li>Read every event back and compare its retained hits and totals with the values passed to the writer.</li><li>Report event count, hit count, compressed size and simulation, writing and reading times.</li><li>Generate plots afterwards from the completed file.</li></ol></section>
+<p>Writer and reader: <a href="../../../src/reconstruction/hit_output.jl">hit_output.jl</a>. Tests: <a href="../../../tests/reconstruction/hit_output.jl">hit_output.jl</a>.</p><p>Existing calculations: <a href="../../../src/reconstruction/hits.jl">hits.jl</a>.</p></body></html>
