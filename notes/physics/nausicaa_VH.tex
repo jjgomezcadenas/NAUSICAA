@@ -16,6 +16,7 @@
 \newcommand{\Tcds}{T_{\rm CDS}}
 \newcommand{\Vref}{V_{\rm REF}}
 \newcommand{\Voff}{V_{\rm OFF}}
+\input{generated/vh1_numbers}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt plus 1pt}
 \setlength{\emergencystretch}{3em}
@@ -977,9 +978,284 @@ If the two-capacitor architecture is adopted, the itrack stage~2 of the
 readout description changes from feedback discharge and digital filtering to
 reset, swap and one conversion per frame, and the calibration must be
 repeated for the new circuit. The nonlinear model and its guard become
-unnecessary; the range limit becomes a reset.
+unnecessary; the range limit becomes a reset. Section~\ref{sec:vh1}
+reports a SPICE prototype of the reset architecture built on the present
+amplifier.
 
 % ----------------------------------------------------------------------
+% ----------------------------------------------------------------------
+\section{A SPICE prototype of the reset architecture}
+\label{sec:vh1}
+%
+The architecture of Section~\ref{sec:swap} was simulated with the amplifier
+of the present NAUSICAA circuit, so that the two readouts can be compared
+with the same transistors, the same bias and the same device models. The
+prototype is called VH1; its decks are in \code{LTSpice/designs/VH1} and
+every number in this section is written by the scripts that run them.
+
+% ----------------------------------------------------------------------
+\subsection{The prototype}
+\label{sec:vh1circuit}
+%
+\begin{figure}[htbp]\centering
+\includegraphics[width=.8\linewidth]{nausicaa_vh_vh1.pdf}
+\caption{The VH1 prototype. The amplifier is the single stage of the
+present circuit (M1 to M6 of Fig.~\ref{fig:cascode}, without the resistor
+$R$); the discharge transistor is removed. The two feedback capacitors
+alternate between the output and $V_{\rm REF}$ through the switches
+$\phi_{1,2}$ and $\bar\phi_{1,2}$. The reset switch $\phi_{\rm r}$ closes
+the loop through a level shift of \SI{0.885}{V}, a resistor carrying
+\SI{0.1}{\micro A}.}
+\label{fig:vh1}
+\end{figure}
+%
+Figure~\ref{fig:vh1} shows the circuit.
+%
+\begin{itemize}
+\item The amplifier is M1 to M6 of the frozen \texttt{csa\_v3} release with
+  their sizes and biases: PMOS input M1 (\SI{220}{\um}/\SI{0.5}{\um},
+  \SI{210}{\micro A}), NMOS cascode M4, load M3, current source M2 and a
+  PMOS cascode pair M5, M6 at the output. The pad capacitance is
+  \SI{1.25}{pF} and the feedback capacitors are \SI{3}{fF}, as in the
+  present circuit. The discharge transistor Mf is removed.
+\item The capacitors park at $V_{\rm REF}=\SI{0.886}{V}$, the output
+  baseline of the present circuit, so that the output starts each cycle
+  where it does today.
+\item The reset closes the loop through a level shift. In the present
+  circuit the gate of M1 sits at \SI{1.3}{mV} and the output at
+  \SI{0.886}{V}. A plain short of output to input would force the two to be
+  equal, which this amplifier can only satisfy at \SI{56}{mV}, outside its
+  working range. The analysis of Section~\ref{sec:swap} needs the gate held
+  at $\Voff$ with the loop closed and says nothing about the output value
+  during reset, so any closed loop that holds the gate will do. A resistor
+  of \SI{8.85}{M\ohm} carrying \SI{0.1}{\micro A} provides the shift; the
+  current must stay well below the \SI{0.38}{\micro A} of the output stage.
+  With it the output sits at \SI{\vhResetOutV}{V} and the gate at
+  \SI{\vhResetGatemV}{mV} during reset.
+\item The switches are ideal.\footnote{Ideal switches have no charge
+  injection, clock feedthrough or capacitance, and the reset noise $kT_{\rm
+  K}C$ of Section~\ref{sec:swap} is not accessible to a small-signal noise
+  analysis. The simulator's default leakage conductance of \SI{1}{pS} across
+  every open switch would discharge \SI{3}{fF} in \SI{3}{ms}; it is set to
+  \SI{e-18}{S}.}
+\end{itemize}
+
+% ----------------------------------------------------------------------
+\subsection{Transfer function, charge sharing and range}
+\label{sec:vh1transfer}
+%
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{vh1_ac_noise.pdf}
+\caption{Left: open-loop gain of the amplifier, obtained in closed loop as
+$-v_o/v_i$. Right: output noise spectral density of the present circuit,
+of VH1 as built and of VH1 with the device changes of
+Section~\ref{sec:vh1devices}.}
+\label{fig:vh1ac}
+\end{figure}
+%
+The open-loop gain (Fig.~\ref{fig:vh1ac}, left) is $A_0=\vhAzero$ with a
+dominant pole at \SI{\vhPolekHz}{kHz} and unity gain at
+\SI{\vhUnityMHz}{MHz}. The closed-loop bandwidth is \SI{\vhClBwkHz}{kHz}
+with \SI{3}{fF} and \SI{\vhClBwThirtyMHz}{MHz} with \SI{30}{fF}, both far
+above anything a \SI{20}{ms} frame needs. The input impedance has the
+plateau of Section~\ref{sec:cd} at \SI{\vhZinOhm}{\ohm}, that is
+$G_m=\SI{\vhGmmS}{mS}$.
+
+The charge sharing of Eq.~\eqref{eq:sharing} is larger than the pad alone
+would give. The input of the amplifier adds \SI{\vhCamp}{pF} to the
+\SI{1.25}{pF} of the pad, \SI{\vhCtot}{pF} in all, against a Miller
+capacitance $(1+A_0)\Cf$ of \SI{22.8}{pF}. The fraction of the charge that
+reaches the feedback capacitor is therefore \vhFraction, and the output
+moves by \SI{\vhGain}{\micro V} per ion instead of
+$e/\Cf=\SI{\vhIdealGain}{\micro V}$. The calibrated \SI{40.2}{\micro V} per
+ion of the present circuit has the same origin. The added capacitance grows
+faster than linearly with the width of M1 and also with the width of the
+cascode M4, so it is a Miller term through the cascode node rather than the
+gate oxide of M1 alone.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{vh1_transients.pdf}
+\caption{Left: reset at \SI{1}{ms}, then 100 ions during frame 1, 200
+during frame 2 and none during frame 3. Right: 2000 ions in each of six
+frames; the gate node stays at its bias while the output accumulates.}
+\label{fig:vh1tran}
+\end{figure}
+%
+The transients (Fig.~\ref{fig:vh1tran}) confirm the charge bookkeeping of
+Section~\ref{sec:swap}.
+%
+\begin{itemize}
+\item The output drops by \SI{\vhDropOne}{mV} after frame 1 and
+  \SI{\vhDropTwo}{mV} after frame 2, the same \SI{\vhGain}{\micro V} per ion
+  in both, and holds \SI{\vhDropThree}{mV} through frame 3: the frame
+  charge is the difference of two consecutive readings, Eq.~\eqref{eq:vo2}.
+\item An offset of \SI{50}{mV} inserted at the input changes none of these
+  numbers, to the last digit printed. With $V_{\rm REF}=\SI{1.0}{V}$ the
+  first frame is distorted: the working window of this output stage is
+  about \SIrange{0.4}{0.95}{V}.
+\item With 2000 ions per frame the output reaches \SI{\vhRangeOutV}{V}
+  after 12\,000 ions, a drop of \SI{\vhRangeDropV}{V}, with the gain
+  per ion lower by \SI{\vhRangeDev}{\percent} at the end. There is no
+  discharge, no guard and no nonlinear model to calibrate; the limit is the
+  swing of the output stage.
+\end{itemize}
+
+% ----------------------------------------------------------------------
+\subsection{Noise}
+\label{sec:vh1noise}
+%
+The output noise spectra (Fig.~\ref{fig:vh1ac}, right) are identical above
+\SI{10}{Hz}, where the transistors of the shared amplifier dominate. Below
+it the present circuit rises as $1/f^2$, to \SI{1}{V/\sqrt{Hz}} at
+\SI{0.1}{mHz}: the current noise of the discharge transistor integrated by
+$\Cf$, the resistor term of Section~\ref{sec:gated}. In VH1 that term is
+absent and the spectrum flattens.
+
+Table~\ref{tab:vh1enc} gives the ENC obtained by applying the same
+weighting to both spectra, for \SI{20}{ms} frames.
+%
+\begin{table}[htbp]\centering
+\caption{ENC in ions for \SI{20}{ms} frames, from the simulated output
+noise spectra and the measured gain per ion of each circuit. The first row
+is the frame difference of samples taken at the frame boundaries; the
+second averages \SI{5}{ms} around each boundary first, as the present
+reconstruction does; the third averages over the whole frame, the
+weighting of Eq.~\eqref{eq:total}.}
+\begin{tabular}{lccc}
+\toprule
+Weighting & Present circuit & VH1 as built & VH1, device changes\\
+\midrule
+Frame difference of point samples & \vhEncPresPoint & \vhEncBasePoint & \\
+Frame difference of \SI{5}{ms} averages & \vhEncPresFive & \vhEncBaseFive & \vhEncImpFive\\
+Frame difference of \SI{20}{ms} averages & \vhEncPresFull & \vhEncBaseFull & \vhEncImpFull\\
+\bottomrule
+\end{tabular}
+\label{tab:vh1enc}
+\end{table}
+%
+Two checks anchor these numbers. The \SI{5}{ms} weighting applied to the
+present circuit reproduces the 50.2 ions of its calibration. And the
+difference between the first two columns matches the \SI{26}{\percent} of
+the noise variance that the calibration attributed to the discharge
+transistor. Removing it is worth 10 ions at \SI{20}{ms}; the remainder is
+the amplifier itself.
+
+% ----------------------------------------------------------------------
+\subsection{Device changes}
+\label{sec:vh1devices}
+%
+The noise budget of the present circuit assigns \SI{47}{\percent} of the
+variance to the current source M2 and \SI{15}{\percent} to the load M3,
+against \SI{6}{\percent} for the input transistor M1. Both inject their
+drain-current noise into the signal path, so their contribution scales with
+their transconductance. Table~\ref{tab:vh1sweeps} reports single-device
+changes on VH1, each re-biased with the loop closed: the gate of M3 is
+tuned to keep the M1 current at \SI{210}{\micro A} and the gate of M2 to
+keep the output at \SI{0.886}{V}.
+%
+\begin{table}[htbp]\centering
+\caption{Device changes on VH1. $A_0$ is the open-loop gain, $C_{\rm amp}$
+the capacitance the amplifier adds at its input, and the fraction is the
+share of the charge that reaches the feedback capacitor. ENC in ions for
+\SI{20}{ms} frames with \SI{5}{ms} and full-frame averaging.}
+\footnotesize
+\begin{tabular}{lcccccrr}
+\toprule
+Variant & $V_{\rm nmos}$ (V) & $V_{\rm nload}$ (V) & $A_0$ & $C_{\rm amp}$ (pF) & Fraction & \SI{5}{ms} & \SI{20}{ms}\\
+\midrule
+\input{generated/vh1_sweeps}
+\end{tabular}
+\label{tab:vh1sweeps}
+\end{table}
+%
+\begin{itemize}
+\item \textbf{M2.} Lengthening the current source from \SIrange{0.5}{2}{\um}
+  lowers its transconductance at the same current and takes the ENC from
+  \vhEncBaseFive{} to 34 ions, the largest single step. At \SI{4}{\um} the
+  gate bias approaches the supply and the open-loop gain falls; the benefit
+  is lost.
+\item \textbf{M3.} The load helps only to \SI{4}{\um}. A longer M3 needs
+  more drain voltage than the \SI{0.18}{V} available at the cascode node
+  and leaves saturation, which collapses $A_0$. Raising the cascode bias
+  would be the next step; it was not varied here.
+\item \textbf{M1.} Halving the input transistor to \SI{110}{\um} cuts the
+  capacitance it adds from \SI{\vhCamp}{pF} to \SI{1.9}{pF} at equal ENC.
+  At \SI{55}{\um} the loss of transconductance costs more than the
+  capacitance saves. The optimum is the usual one: gate capacitance near
+  the pad capacitance.
+\item \textbf{M4.} A wider cascode does not reduce the input capacitance;
+  it raises it, and with it the open-loop gain. Alone it is neutral. In
+  combination it matters, because the longer M3 lowers $A_0$ and the
+  charge fraction with it; the \SI{23}{\um} cascode restores
+  $A_0=\vhImpAzero$ and a fraction of \vhImpFraction.
+\end{itemize}
+%
+The combination of the four changes gives \vhEncImpFive{} ions with
+\SI{5}{ms} averaging and \vhEncImpFull{} with full-frame averaging, against
+\vhEncPresFive{} and \vhEncPresFull{} for the present circuit. The
+practical reset of Section~\ref{sec:vh1circuit} was verified on this
+combined circuit: \SI{\vhResetGain}{\micro V} per ion from the frame
+difference.
+
+% ----------------------------------------------------------------------
+\subsection{Frame length}
+\label{sec:vh1frame}
+%
+Table~\ref{tab:vh1buckets} evaluates the same spectra for frames of
+\SIlist{10;20;40;80}{ms}.
+%
+\begin{table}[htbp]\centering
+\caption{ENC in ions against frame length, from the simulated spectra.
+Left: full-frame averaging before the frame difference. Right: \SI{5}{ms}
+averages at the frame boundaries.}
+\begin{tabular}{lcccccccc}
+\toprule
+& \multicolumn{4}{c}{Full-frame averaging} & \multicolumn{4}{c}{\SI{5}{ms} averages}\\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+Circuit & \SI{10}{ms} & \SI{20}{ms} & \SI{40}{ms} & \SI{80}{ms} & \SI{10}{ms} & \SI{20}{ms} & \SI{40}{ms} & \SI{80}{ms}\\
+\midrule
+\input{generated/vh1_buckets}
+\end{tabular}
+\label{tab:vh1buckets}
+\end{table}
+%
+With full-frame averaging the ENC of VH1 does not depend on the frame
+length. This is Eq.~\eqref{eq:closed}: the thermal term falls as $1/T$ and
+is negligible already at \SI{10}{ms}, the flicker term is a constant, and
+the resistor term that grows with $T$ is absent. The present circuit has
+that term and gets worse with longer frames. With brief samples at the
+boundaries every circuit gets worse with $T$, because a wider spacing lets
+more low-frequency noise into the difference; the gain from long frames is
+conditional on integrating over them, which a sigma-delta converter does
+by construction.
+
+The frame length is therefore free as far as the electronics are
+concerned, from \SI{10}{ms} upwards. It is set by the tracking: the Z
+resolution of the ion track is about \SI{1}{mm}, three times that is
+\SI{3}{mm}, and \SI{3}{mm} of drift is \SI{20}{ms}. Longer frames buy signal
+per frame at the price of Z resolution; shorter ones buy Z resolution at the
+price of conversions and of a larger correction for the current pulse that
+straddles frame boundaries.
+
+% ----------------------------------------------------------------------
+\subsection{What remains open}
+\label{sec:vh1open}
+%
+\begin{itemize}
+\item Switch charge injection, clock feedthrough and the reset noise are
+  not in the simulation; they need transistor switches and a transient
+  noise study.
+\item The cascode bias was kept at its present value; it limits the
+  length of M3 and the full benefit of the device changes.
+\item The last row of Table~\ref{tab:vh1enc} requires a converter that
+  integrates over the frame. A converter that samples briefly at the swap
+  realises the first row instead.
+\item A feedback capacitor of \SI{30}{fF} would give ten times the range at
+  the same ENC in ions, since signal and noise at the output scale
+  together, and a cleaner phase margin; the price is converter resolution,
+  Section~\ref{sec:conclusions}.
+\end{itemize}
+
 \bibliographystyle{unsrtnat}
 \bibliography{references}
 \end{document}

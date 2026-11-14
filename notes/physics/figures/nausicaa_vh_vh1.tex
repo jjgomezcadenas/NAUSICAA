@@ -1,0 +1,40 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,siunitx}
+\usepackage[american]{circuitikz}
+\newcommand{\amp}[3]{%
+  \draw[thick] (#1,#2+0.8) -- (#1+1.8,#2) -- (#1,#2-0.8) -- cycle;
+  \node at (#1+0.65,#2) {#3};}
+\begin{document}
+\begin{circuitikz}[font=\small]
+% pad and input node
+\draw (0,0) node[ground]{} to[isource, l=$i(t)$] (0,2) -- (3.0,2);
+\draw (1.5,2) to[C, l_=$C_D$] (1.5,0) node[ground]{};
+\filldraw (1.5,2) circle (1.2pt);
+\filldraw (3.0,2) circle (1.2pt) node[below]{$x$};
+\draw (3.0,2) -- (4.0,2);
+\amp{4.0}{2}{$-A$}
+\draw (5.8,2) -- (8.4,2) node[right]{$v_o$};
+\filldraw (7.6,2) circle (1.2pt);
+% capacitor 1
+\draw (3.0,2) -- (3.0,3.6) to[C, l=$C_{f1}$] (4.6,3.6);
+\draw (4.6,3.6) to[nos, l=$\phi_1$] (6.2,3.6) -- (7.6,3.6) -- (7.6,2);
+\draw (4.6,3.6) -- (4.6,4.4) to[nos, l=$\bar\phi_1$] (6.2,4.4) -- (9.2,4.4);
+\filldraw (4.6,3.6) circle (1.2pt);
+% capacitor 2
+\draw (3.0,3.6) -- (3.0,5.4) to[C, l=$C_{f2}$] (4.6,5.4);
+\draw (4.6,5.4) to[nos, l=$\phi_2$] (6.2,5.4) -- (7.0,5.4) -- (7.0,3.6);
+\draw (4.6,5.4) -- (4.6,6.2) to[nos, l=$\bar\phi_2$] (6.2,6.2) -- (9.2,6.2);
+\filldraw (4.6,5.4) circle (1.2pt);
+\filldraw (7.0,3.6) circle (1.2pt);
+% Vref
+\draw (9.2,6.2) -- (9.2,4.4) to[V, l=$V_{\rm REF}$] (9.2,2.6) node[ground]{};
+\filldraw (9.2,4.4) circle (1.2pt);
+% reset path with level shift
+\draw (7.6,2) -- (7.6,0.6) to[R, l_=\SI{8.85}{M\ohm}] (5.4,0.6);
+\draw (5.4,0.6) to[nos, l_=$\phi_{\rm r}$] (3.6,0.6) -- (3.0,0.6) -- (3.0,2);
+\draw (5.4,0.6) to[isource, l=\SI{0.1}{\micro A}] (5.4,-1.0) node[ground]{};
+\filldraw (5.4,0.6) circle (1.2pt);
+\node[align=left,font=\footnotesize,anchor=north west] at (6.4,-0.3) {reset: $\phi_{\rm r}$, $\bar\phi_1$, $\bar\phi_2$ closed\\odd frames: $\phi_1$, $\bar\phi_2$ closed\\even frames: $\phi_2$, $\bar\phi_1$ closed};
+\end{circuitikz}
+\end{document}
