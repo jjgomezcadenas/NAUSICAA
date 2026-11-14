@@ -69,3 +69,24 @@ end
     @test a.variance_limits==0
     @test a.state_repairs==0
 end
+@testset "Fully recovered initial state" begin
+    sensor=P.Sensor(1.,39984,1.,12.5e-9,7e5)
+    @test P.StatisticalOptions().substeps==64
+    @test P.StatisticalOptions().sparse_trigger_limit==16
+    @test P.StatisticalOptions().initial_state==:fully_recovered
+    @test_throws ArgumentError P.StatisticalOptions(128,16;initial_state=:unknown)
+    # With no buckets, fully recovered initialization consumes no random draws.
+    rng=Xoshiro(151);control=Xoshiro(151)
+    P.simulate_channel_statistical(rng,Int64[],250e-9,sensor)
+    @test rand(rng)==rand(control)
+    historical=Xoshiro(151)
+    P.simulate_channel_statistical(historical,Int64[],250e-9,sensor;options=P.StatisticalOptions(;initial_state=:stationary_dark))
+    @test rand(historical)!=rand(Xoshiro(151))
+    one=P.simulate_channel_statistical(Xoshiro(7),Int64[1],1e-12,sensor)
+    @test one.dark_pulses==[0]
+    @test one.optical_charge_C[1]==P.charge_per_pe_C(sensor)
+    # Dark activity continues throughout acquisition, including zero-input channels.
+    dark=P.simulate_channel_statistical(Xoshiro(8),zeros(Int64,20000),250e-9,sensor)
+    @test abs(mean(dark.dark_pulses)-.175)<.015
+    @test sum(dark.dark_charge_C)>0
+end

@@ -14,7 +14,7 @@ const ROOT=normpath(joinpath(@__DIR__,".."))
     counts=Int64[0,1000,50000,0,100]
     dispatched=Pilot.simulate_sensor_channel(Xoshiro(33),counts,250e-9,pilot)
     direct=Prod.P.simulate_channel_statistical(Xoshiro(33),counts,250e-9,pilot.sensor;
-        options=Prod.P.StatisticalOptions(128,16))
+        options=Prod.P.StatisticalOptions(128,16;initial_state=:stationary_dark))
     @test dispatched==direct
     grid=EA.GridSpec(10f0,.25f0,(0f0,0f0,0f0),(0f0,0f0),Int8(-1))
     cells=EA.SparseCells(Int64[-1,-1,2],Int64[3,3,1],Int64[-2,2,0],Int64[1000,50000,100])

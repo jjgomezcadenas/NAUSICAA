@@ -123,3 +123,62 @@ the self-contained TeX/PDF is under
 `latex_generated/electron_readout/elm_sipm_pitch4mm_production/`.
 Use `JULIA="$HOME/.juliaup/bin/julia" PYTHON=work/event-viewer-venv/bin/python`
 as Make overrides when those are the configured local environments.
+
+### Framed electronics
+
+`make electronics-bb0nu PYTHON=work/event-viewer-venv/bin/python` validates the
+existing CSA calculations at 100 μs, runs the 100 accepted bb0nu events selected
+by `config/readout/bb0nu_electronics_pilot_100.toml`, and presents their controls.
+The input detector card and completed detector controls fix the selected events,
+frames, placements and diffusion seeds. Ion and photon vectors are regenerated
+in memory. Every pad and SiPM in the frame receives electronics response.
+
+The public interfaces are in `src/electronics/ElectronicsResponse.jl` and
+`notes/html/event_analysis/sim_electronics_response.html`. Existing circuit,
+nonlinear calibration, SiPM and ASIC cards remain the numerical sources.
+The 100-event card selects `electronics_100events_efficient/`. Outputs there are
+`controls.h5`, `plot_controls.h5`, `index.html` and
+`plots/` within the detector run directory. Use `make electronics-present` to
+regenerate plots. Full event vectors remain in memory.
+
+`make test-electronics` runs numerical interface tests. Peak currents above the calibration maximum are recorded. A voltage outside
+the nonlinear tables stops the run. Production never launches SPICE; calibration
+extension is documented in `notes/html/pending_work.html`.
+
+CSA calibration is loaded once per run. Event-length tables, noise factors and
+working arrays are reused. The linear response uses the exact exponential
+update; the nonlinear model is unchanged. The report includes complete ion
+processing time, one-time preparation, allocations and retained preparation.
+The earlier 100-event comparison remains in `electronics_100events/`.
+
+### Framed reconstruction and ZS controls
+
+`make reconstruction-bb0nu PYTHON=work/event-viewer-venv/bin/python` runs the
+reconstruction tests, validates the PE inverse, and processes the same 100
+accepted bb0nu events through detector response, electronics and reconstruction.
+The card is `config/readout/bb0nu_reconstruction_100.toml`.
+
+`src/reconstruction/` provides separate ion and electron reconstruction functions.
+Ions use measured ADC vectors, baseline subtraction, covariance-weighted linear
+inversion and the direct nonlinear integral when selected by measured voltage. PE estimates
+use the stationary mean correction and are rebinned by 20. ASIC clipping remains
+marked. All estimates remain signed.
+
+Outputs are `reconstruction/controls.h5`, `plot_controls.h5`, `index.html` and
+`plots/` under the detector run directory. The HTML event selector shows signal
+and noise distributions and threshold scans. Truth labels are used only for
+these controls; no zero suppression is applied. Full event vectors stay in memory.
+`make reconstruction-present` regenerates numerical summaries and presentation
+without repeating detector or electronics simulation.
+
+The direct inverse is checked with `scripts/validation/validate_direct_ion_inverse.jl`.
+Its saved comparison is under `reconstruction/direct_inverse/`; regenerate that
+HTML with `scripts/production/present_direct_ion_inverse.py`. The earlier
+100-event ZS report used the iterative reference. Nonlinear noise-bias studies
+remain deferred.
+
+Framed SiPM runs now select fully recovered initial microcells through
+`elm_pitch4mm_3015ps_tau12p5ns_recovered.toml`. Historical cards retain stationary
+dark initialization. `scripts/validation/benchmark_sipm_initialisation.jl`
+compares both settings on the same ten photon events, timing the complete SiPM
+and ASIC calculation. Results are under `electronics_sipm_initialisation/`.

@@ -1,0 +1,448 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Electronics response · ITACA</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}pre{background:#edf3f6;padding:18px;overflow:auto;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}.status{color:#985a00;background:#fff4d8;padding:12px}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}.contract{border-left:3px solid #146955;padding-left:16px}summary{cursor:pointer;font-weight:600}footer{padding:20px;color:#526776} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}</style></head><body><header><a href="index.html">Event-analysis review index</a><h1>03 · Electronics response</h1></header><main>
+<nav><a href="#flow">Processing</a><a href="#types">Data types</a><a href="#functions">Functions</a><a href="#settings">Settings</a><a href="#efficient-csa">Efficient CSA simulation</a><a href="#tests">Tests</a><a href="#files">Files and plots</a></nav>
+<section id="flow"><h2>1. Processing one accepted event</h2>
+<ol>
+<li>Read the ion and photon vectors, channels in the frame and arrival times from detector response.</li>
+<li>Extend the ion acquisition interval by the configured baseline and final sampling intervals.</li>
+<li>For pads with signal, calculate induced current and CSA voltage. For empty pads, use the baseline voltage. Add voltage noise and digitise every pad.</li>
+<li>For each SiPM, sample photodetection and dark activity, calculate avalanche charge with occupancy and recovery, and apply the ASIC response.</li>
+<li>Return ADC-count vectors for ions and PE-equivalent response vectors for electrons. Keep every channel in the frame.</li>
+<li>Pass these vectors to signal reconstruction. Save control statistics and selected examples.</li>
+</ol>
+</section>
+<section id="types"><h2>2. Data types</h2>
+<h3>Inputs from detector response</h3>
+<ul>
+<li><a href="sim_detector_response.html#types"><code>IonDetectorResponse</code></a>: event number, frame, placement and ion vectors.</li>
+<li><a href="sim_detector_response.html#types"><code>ElectronDetectorResponse</code></a>: event number, frame, placement and photon vectors.</li>
+<li><code>ReadoutChannels</code>: channel indices and positions.</li>
+<li><code>IonReadoutTime</code> and <code>ElectronReadoutTime</code>: bucket start, duration and count.</li>
+</ul>
+<p>All matrices below have time along rows and channels along columns. Both readouts retain the common event t0.</p>
+<h3>IonAcquisitionSettings</h3>
+<pre><code>struct IonAcquisitionSettings
+    baseline_ms::Float32
+    signal_tail_ms::Float32
+end</code></pre>
+<p>Additional acquisition before the first possible induced current and after the last collection. The pilot uses 10 ms baseline and 5 ms signal tail, configurable by TOML.</p>
+<h3>IonADCTime</h3>
+<pre><code>struct IonADCTime
+    start_ms::Float32
+    sample_us::Float32
+    sample_count::Int64
+end</code></pre>
+<p>Sample k occurs at <code>start_ms + (k - 1) × sample_us / 1000</code> milliseconds after t0. Calculations use local elapsed time to preserve the sample spacing.</p>
+<h3>ADCSettings</h3>
+<pre><code>struct ADCSettings
+    bits::Int64
+    minimum_V::Float32
+    maximum_V::Float32
+    sample_us::Float32
+    input_noise_rms_V::Float32
+end</code></pre>
+<p>ADC input noise is specified separately from CSA noise.</p>
+<h3>IonCurrentPulse</h3>
+<pre><code>struct IonCurrentPulse
+    time_s::Vector{Float64}
+    current_A::Vector{Float64}
+end</code></pre>
+<p>Induced current from one ion, with collection at time zero. Use the existing weighting-field calculation and preserve its current integral.</p>
+<h3>LinearCSAResponse</h3>
+<pre><code>struct LinearCSAResponse
+    time_s::Vector{Float64}
+    voltage_per_charge_V_C::Vector{Float64}
+    baseline_V::Float64
+end</code></pre>
+<p>Signed voltage response to an instantaneous input charge. Convolution with the induced current gives the linear CSA voltage.</p>
+<h3>NonlinearCSA</h3>
+<pre><code>struct NonlinearCSA
+    knots_V::Vector{Float64}
+    gain_V_per_e::Vector{Float64}
+    recovery_V_s::Vector{Float64}
+    baseline_V::Float64
+    step_s::Float64
+end</code></pre>
+<ul>
+<li><code>knots_V</code>: voltage drops below baseline at which the calibration is tabulated.</li>
+<li><code>gain_V_per_e</code>: voltage change per input elementary charge at each voltage drop.</li>
+<li><code>recovery_V_s</code>: rate at which the voltage returns towards baseline.</li>
+<li><code>baseline_V</code>: output voltage before the signal.</li>
+<li><code>step_s</code>: maximum integration step.</li>
+</ul>
+<p>For voltage drop x below baseline:</p>
+<pre><code>x = baseline_V − output_V
+
+dx/dt = gain(x) × current(t) / e − recovery(x)
+output_V = baseline_V − x</code></pre>
+<p>Here e is the elementary charge. Gain and recovery are interpolated between the tabulated values. Integrating this equation gives the output voltage as charge arrives and the CSA recovers.</p>
+<h4>Calibration</h4>
+<ol>
+<li>Use SPICE calculations with known input current and output voltage versus time.</li>
+<li>Fit the gain and recovery values so that the equation reproduces the voltage changes. Require positive gain, nonnegative recovery and zero recovery at baseline.</li>
+<li>Check complete voltage vectors using separate events that were not used in the fit.</li>
+</ol>
+<h4>Valid voltage range</h4>
+<ul>
+<li>The calibrated voltage drop runs from zero to the last value in <code>knots_V</code>. The corresponding output voltage runs from <code>baseline_V − knots_V[end]</code> to <code>baseline_V</code>.</li>
+<li>Stop and report a pad whose voltage exceeds this range.</li>
+<li>The calibration applies to the circuit and input-current prescription used in the fit. Changes to either require validation.</li>
+</ul>
+<h3>CSAVoltageNoise</h3>
+<pre><code>struct CSAVoltageNoise
+    sample_us::Float32
+    covariance_V2::Vector{Float64}
+end</code></pre>
+<ul>
+<li>Element k gives the voltage covariance at lag <code>(k - 1) × sample_us</code>.</li>
+<li>The first element is the voltage variance.</li>
+<li>Reuse the saved CSA voltage-noise spectrum and its frequency range. Calculate covariance at the selected ADC sampling interval, including aliasing of frequencies above Nyquist.</li>
+</ul>
+<p>The covariance vector covers a complete symmetric FFT period. Prepare a shorter period that preserves every time lag used by the event and has a nonnegative spectrum. Reuse its factors, FFT plan and working arrays across pads. Each pad receives independent random numbers.</p>
+<h3>CSASettings</h3>
+<pre><code>@enum CSAResponseMode linear_csa hybrid_nonlinear_csa
+
+struct CSASettings
+    mode::CSAResponseMode
+    current_pulse::IonCurrentPulse
+    linear_response::LinearCSAResponse
+    nonlinear_response::NonlinearCSA
+    nonlinear_below_V::Float32
+    noise::CSAVoltageNoise
+end</code></pre>
+<p>Use the nonlinear model for a pad when the predicted linear voltage falls below the configured threshold. Record peak currents above the calibration sample maximum. Stop if voltage leaves the tabulated range. Production never launches SPICE; see <a href="../pending_work.html">pending calibration work</a>.</p>
+<p>Existing CSA calculations and calibration tables retain Float64. New event response arrays use Float32, except ADC counts.</p>
+<h3>IonElectronicsSettings</h3>
+<pre><code>struct IonElectronicsSettings
+    acquisition::IonAcquisitionSettings
+    csa::CSASettings
+    adc::ADCSettings
+end</code></pre>
+<h3>SiPM</h3>
+<pre><code>struct SiPM
+    pde::Float64
+    microcells::Int
+    gain::Float64
+    recovery_s::Float64
+    dark_rate_Hz::Float64
+end</code></pre>
+<ul>
+<li><code>pde</code>: probability that a photon arriving at the SiPM produces a primary avalanche.</li>
+<li><code>microcells</code>: total number of microcells in the SiPM.</li>
+<li><code>gain</code>: number of electrons released by a fully recovered microcell. Its avalanche charge is q₀ = e × gain.</li>
+<li><code>recovery_s</code>: exponential microcell recovery time, in seconds.</li>
+<li><code>dark_rate_Hz</code>: mean number of primary dark avalanches per second for the whole SiPM.</li>
+</ul>
+<h4>Photodetection and recovery</h4>
+<ol>
+<li>For N photons in a bucket, sample the number of detected photons from Binomial(N, PDE).</li>
+<li>Sample primary dark avalanches from Poisson(dark_rate_Hz × bucket duration).</li>
+<li>Distribute optical avalanches over the illuminated microcells and dark avalanches over the whole SiPM.</li>
+<li>A fully recovered cell releases q₀. A partially recovered cell releases r × q₀, where r is its recovered fraction. Firing resets that cell's recovered fraction to zero.</li>
+<li>Between avalanches, update recovery over elapsed time Δt using the equation below. Carry recovery from one bucket to the next.</li>
+</ol>
+<pre><code>r_after = 1 − (1 − r_before) × exp(−Δt / recovery_s)</code></pre>
+<p>Before the first bucket, initialise recovery for steady dark activity. With zero dark rate, all cells start fully recovered. PDE is fixed in this model; recovery changes avalanche charge.</p>
+<h3>SiPMStatisticalOptions</h3>
+<pre><code>struct SiPMStatisticalOptions
+    substeps::Int
+    sparse_trigger_limit::Int
+    initial_state::Symbol
+end</code></pre>
+<ul>
+<li><code>substeps</code>: divide buckets with more than 16 avalanches into 64 intervals of 3.91 ns each. The constructor default is 64.</li>
+<li><code>sparse_trigger_limit</code>: with 16 or fewer optical plus dark avalanches, simulate their individual arrival times. The constructor default is 16, a computational choice. This setting selects the calculation method; it discards no signal.</li>
+<li><code>initial_state</code>: <code>:fully_recovered</code> sets R = S = M. Historical cards can select <code>:stationary_dark</code>.</li>
+</ul>
+<h4>Statistical calculation</h4>
+<ul>
+<li>Keep two sums for the microcells: R = sum(r) and S = sum(r²). They describe the mean recovery and its spread.</li>
+<li>Start fully recovered: R = S = M, with no initial random draws. Simulate dark avalanches and recovery from the first bucket.</li>
+<li>At or below <code>sparse_trigger_limit</code>, sample individual avalanche times uniformly within the bucket. Calculate each released charge from the recovery sums.</li>
+<li>Above that limit, distribute the avalanches among <code>substeps</code> equal intervals. Calculate their combined charge at each interval's midpoint, including cells reached more than once.</li>
+<li>For each calculation, sample bounded charge with the mean and variance obtained from microcell occupancy and recovery. Update R and S after releasing the charge.</li>
+<li>The statistical model approximates the full charge distribution. Check its charge mean and variance against the individual-microcell simulation, and check convergence with increasing <code>substeps</code>.</li>
+</ul>
+<p>These parameters control numerical accuracy. They do not change the saved bucket duration.</p>
+<h3>SiPmAsic</h3>
+<pre><code>struct SiPmAsic
+    bucket_width_s::Float64
+    noise_rms_pe::Float64
+    current_limit_A::Float64
+end</code></pre>
+<ul>
+<li><code>bucket_width_s</code>: ASIC integration time per bucket, in seconds.</li>
+<li><code>noise_rms_pe</code>: standard deviation of independent Gaussian ASIC noise per bucket, expressed in fully recovered avalanche units.</li>
+<li><code>current_limit_A</code>: maximum average current represented by the ASIC.</li>
+</ul>
+<h4>ASIC response</h4>
+<p>For SiPM charge Q in a bucket of duration Δt:</p>
+<pre><code>noise_PE ~ Normal(0, noise_rms_pe²)
+input_PE = Q / q₀ + noise_PE
+limit_PE = current_limit_A × Δt / q₀
+output_PE = min(input_PE, limit_PE)</code></pre>
+<p>Mark buckets with input_PE above limit_PE as clipped. Retain negative noise values. The output is measured avalanche charge expressed in PE units.</p>
+<h3>SiPMReadoutSettings</h3>
+<pre><code>struct SiPMReadoutSettings
+    sipm::SiPM
+    illuminated_microcells::Int64
+    statistical::SiPMStatisticalOptions
+    asic::SiPmAsic
+end</code></pre>
+<p>Optical photons reach the illuminated microcells; dark activity includes the whole SiPM. The ASIC duration must equal the photon bucket duration.</p>
+<h3>IonADCResponse</h3>
+<pre><code>struct IonADCResponse
+    event_id::Int64
+    channels::ReadoutChannels
+    time::IonADCTime
+    counts::Matrix{UInt16}
+end</code></pre>
+<p>Digitised CSA voltage. The event's frame and placement remain in the event information passed between stages.</p>
+<h3>SiPMASICResponse</h3>
+<pre><code>struct SiPMASICResponse
+    event_id::Int64
+    channels::ReadoutChannels
+    time::ElectronReadoutTime
+    response_pe::Matrix{Float32}
+    clipped::BitMatrix
+end</code></pre>
+<p>ASIC charge expressed in units of a fully recovered avalanche. Retain negative noise values. The clipping flag identifies buckets at the ASIC limit.</p>
+<h3>Control results</h3>
+<pre><code>struct IonElectronicsControls
+    linear_channels::Int64
+    nonlinear_channels::Int64
+    spice_channels::Int64
+    adc_below_range::Int64
+    adc_above_range::Int64
+end
+
+struct SiPMReadoutControls
+    detected_pe::Int64
+    dark_pulses::Int64
+    sipm_charge_pe::Float64
+    asic_clipped_buckets::Int64
+    asic_charge_lost_pe::Float64
+end</code></pre>
+<p>Simulation totals for the control plots. Reconstruction receives the measured response and calibration.</p>
+</section>
+<section id="functions"><h2>3. Function interfaces</h2>
+<pre><code>ion_adc_time(time::IonReadoutTime,
+             pulse::IonCurrentPulse,
+             acquisition::IonAcquisitionSettings,
+             adc::ADCSettings)::IonADCTime</code></pre>
+<p>Include the induced-current duration, baseline and final sampling intervals. Return a uniformly sampled interval referred to t0.</p>
+<pre><code>ion_current(counts::AbstractVector{Int64},
+            time::IonReadoutTime,
+            pulse::IonCurrentPulse,
+            adc_time::IonADCTime)::IonCurrentPulse</code></pre>
+<p>Build the pad's current from its ion buckets and single-ion current pulse. Returned times are seconds relative to the first ADC sample. Retain the existing within-bucket arrival prescription and check its charge integral.</p>
+<pre><code>linear_csa_voltage(current::IonCurrentPulse,
+                   sample_time_s::Vector{Float64},
+                   model::LinearCSAResponse)::Vector{Float64}</code></pre>
+<p>Calculate the linear voltage at the requested local sample times.</p>
+<pre><code>nonlinear_waveform(model, time_s, current_A;
+                                 sample_time_s)</code></pre>
+<p>Calculate nonlinear voltage and report whether it remains within the calibration range.</p>
+<pre><code>sample_csa_noise(rng::AbstractRNG, sample_count::Int64,
+                 noise::CSAVoltageNoise)::Vector{Float32}</code></pre>
+<p>Generate a voltage-noise vector with the specified covariance. Each pad receives an independent vector.</p>
+<pre><code>digitise_adc(rng::AbstractRNG, voltage_V::AbstractVector,
+             settings::ADCSettings)::NamedTuple{
+                 (:counts, :below_range, :above_range),
+                 Tuple{Vector{UInt16},Int64,Int64}}</code></pre>
+<p>Add ADC input noise and convert voltage to codes. Return the codes and the numbers of samples outside the voltage range.</p>
+<pre><code>sim_ion_electronics_response(noise_rng::AbstractRNG,
+                             adc_rng::AbstractRNG,
+                             detector::IonDetectorResponse,
+                             settings::IonElectronicsSettings)::Tuple{
+                                 IonADCResponse, IonElectronicsControls}</code></pre>
+<p>Calculate each pad's current, CSA voltage, noise and ADC counts. Return all pads in the frame.</p>
+<pre><code>sim_sipm_readout(sipm_rng::AbstractRNG,
+                                  asic_rng::AbstractRNG,
+                                  detector::ElectronDetectorResponse,
+                                  settings::SiPMReadoutSettings)::Tuple{
+                                      SiPMASICResponse,
+                                      SiPMReadoutControls}</code></pre>
+<p>Call the existing illuminated-SiPM statistical calculation and ASIC response for every channel. Convert output charge to PE-equivalent values using the single-avalanche gain.</p>
+<p>Scripts read TOML, load calibration, construct settings and record seeds. Lower-level functions supply voltage and SiPM-charge vectors for selected control examples.</p>
+</section>
+<section id="settings"><h2>4. Settings and calculation</h2>
+<h3>Ions</h3><ul>
+<li>ADC: 100 μs sampling, 12 bits and provisional range 0–1.8 V.</li>
+<li>Store ADC codes as UInt16. Require 1–16 bits.</li>
+<li>Code width: ΔV = (maximum_V − minimum_V) / 2<sup>bits</sup>.</li>
+<li>Code = floor((V − minimum_V) / ΔV), limited to 0…2<sup>bits</sup> − 1.</li>
+<li>Default CSA mode: hybrid nonlinear, with the existing 0.63 V threshold.</li>
+<li>The pilot card sets baseline_ms = 10, signal_tail_ms = 5 and input_noise_rms_V = 0. Quantisation remains included.</li>
+<li>Reuse the existing linear calibration, nonlinear tables and CSA noise spectrum. Validate their application to 100 μs voltage samples against saved SPICE vectors and direct covariance integration.</li>
+</ul>
+<h3>SiPM and ASIC</h3><ul>
+<li>Keep the selected SiPM and ASIC parameters from the production card.</li>
+<li>Use 250 ns photon and ASIC buckets.</li>
+<li>Sample PDE once. Apply microcell occupancy, recovery and dark activity before ASIC noise and clipping.</li>
+<li>ASIC limit in PE = current_limit_A × bucket_width_s / (elementary_charge_C × gain).</li>
+<li>The electronics stage keeps the 250 ns vectors. After signal reconstruction, sum 20 buckets to obtain the 3 mm Z interval.</li>
+</ul>
+<h3>Reused calculations</h3><ul>
+<li>Current: the existing finite-gap weighting potential, with uniform ion collection times within each bucket.</li>
+<li>Linear voltage: the existing calibrated decay time and small-signal SPICE response, expressed as an impulse response for ADC sampling.</li>
+<li>Nonlinear voltage: the existing voltage-dependent gain and recovery tables.</li>
+<li>Noise: the existing one-sided CSA spectrum and covariance integration.</li>
+<li>SiPM and ASIC: the existing statistical occupancy/recovery and bucket-integrating response functions.</li>
+</ul>
+</section>
+<section id="efficient-csa"><h2>5. Efficient CSA simulation</h2>
+<h3>Prepare once per run</h3>
+<ol>
+<li>Read the ion electronics card and verify the circuit and calibration files.</li>
+<li>Load the linear gain, decay time, baseline voltage and nonlinear gain/recovery tables.</li>
+<li>Prepare the single-ion current pulse and its integral. For each ion bucket duration, prepare the current produced by uniform collection within one bucket.</li>
+<li>Load the CSA voltage-noise spectrum and ADC settings.</li>
+</ol>
+<h3>Reuse calculations and arrays</h3>
+<ul>
+<li>Events with the same number of ADC samples can share the prepared noise calculation.</li>
+<li>A preparation for a longer event can also serve a shorter event.</li>
+<li>Reuse the arrays that hold temporary voltages and ADC values.</li>
+<li>Prepare new calculations only when the event needs more samples or the electronics settings change.</li>
+<li>Keep at most 64 MiB of event-length tables and 64 MiB of prepared noise arrays. Release cached entries when a new entry would exceed the limit. ADC output remains limited to 256 MiB per event.</li>
+</ul>
+<p>Each pad still receives its own independent random noise.</p>
+<h3>Calculate each pad</h3>
+<ol>
+<li>For an empty pad, use the baseline voltage.</li>
+<li>For a pad with signal, build its current from the prepared bucket-current response. Record its peak current during this calculation.</li>
+<li>Calculate the linear voltage. If it falls below the configured threshold, calculate the voltage with the existing nonlinear model.</li>
+<li>Add an independent noise vector for the pad, retaining correlations between its time samples.</li>
+<li>Digitise and return the ADC-count vector.</li>
+</ol>
+<h3>CSA voltage response</h3>
+<p>Before ions arrive, the CSA output is at its baseline voltage. Input current lowers the output voltage; feedback discharges the accumulated charge and brings the output back towards baseline. The voltage at a given time therefore depends on the current arriving then and on charge accumulated earlier.</p>
+<ul>
+<li><strong>Linear response:</strong> a given input charge produces the same voltage change at any starting voltage. Gain and decay time are constant, and responses to separate charge arrivals add.</li>
+<li><strong>Nonlinear response:</strong> as the output moves away from baseline, the transistor operating conditions change. The voltage change per additional charge and the rate of recovery depend on the current output voltage.</li>
+</ul>
+<h3>Linear voltage from an exponential response</h3>
+<p>The current linear model has response −G × exp(−t/τ) to a unit input charge. G is the positive gain in V/C and τ is the decay time in seconds. For voltage drop x below baseline:</p>
+<pre><code>dx/dt = G × I(t) − x/τ
+output_V = baseline_V − x</code></pre>
+<p>Between two current points separated by h seconds, the current is a straight line:</p>
+<pre><code>I(t) = I₀ + b × t       for 0 ≤ t ≤ h
+b = (I₁ − I₀) / h
+
+a = exp(−h/τ)
+x₁ = a × x₀ + G × [I₀ × τ × (1 − a)
+                    + b × (τ × h − τ² × (1 − a))]</code></pre>
+<ul>
+<li>I₀ and I₁ are the current at the interval ends, in amperes.</li>
+<li>x₀ and x₁ are the voltage drops at those ends, in volts.</li>
+<li>Advance through the current points and ADC sample times in order. Split an interval at an ADC sample when needed.</li>
+<li>This update is exact for the supplied straight current segments and exponential response.</li>
+<li>For very short intervals, evaluate the exponential differences using stable small-interval expressions.</li>
+</ul>
+<p>Use G and τ from the existing calibration and check that they reproduce the tabulated linear response. The recurrence returns the requested 100 μs samples directly.</p>
+<h3>Nonlinear voltage</h3>
+<p>The model uses the voltage drop x = baseline_V − output_V to describe how far the CSA has moved from its initial state. Two tables specify its response at that voltage:</p>
+<ul>
+<li><strong>Gain:</strong> the additional voltage drop produced by one elementary input charge, in V/e.</li>
+<li><strong>Recovery:</strong> the rate at which the voltage drop decreases through feedback, in V/s.</li>
+</ul>
+<p>The three arrays in <code>NonlinearCSA</code> form the rows of this table:</p>
+<table><tr><th>Voltage drop (V)<br><code>knots_V</code></th><th>Gain (V/e)<br><code>gain_V_per_e</code></th><th>Recovery (V/s)<br><code>recovery_V_s</code></th></tr>
+<tr><td>0</td><td>g₀</td><td>0</td></tr>
+<tr><td>x₁</td><td>g₁</td><td>r₁</td></tr>
+<tr><td>x₂</td><td>g₂</td><td>r₂</td></tr>
+<tr><td>…</td><td>…</td><td>…</td></tr></table>
+<p>The values are fitted from SPICE current and voltage vectors. At a voltage drop between two rows, interpolate both gain and recovery between those rows.</p>
+<p>For current I(t), the voltage evolves as:</p>
+<pre><code>dx/dt = gain(x) × I(t) / e − recovery(x)
+output_V = baseline_V − x</code></pre>
+<ul>
+<li>I(t)/e is the number of elementary input charges per second. Multiplying by gain(x) gives the rate of voltage drop caused by arriving charge.</li>
+<li>Recovery(x) gives the opposing rate from feedback discharge. When the input current is zero, this term determines the return towards baseline.</li>
+<li>If gain decreases as x grows, the same additional charge produces a smaller voltage change. If recovery increases, more charge is discharged while ions are arriving. Both effects are represented by the fitted tables.</li>
+<li>Two identical current pulses can therefore produce different voltage changes if the second arrives before the CSA has recovered from the first.</li>
+</ul>
+<p>The linear model is the special case gain(x) = e × G and recovery(x) = x/τ. The nonlinear tables allow both relationships to vary with voltage.</p>
+<h4>Calculation</h4>
+<ol>
+<li>Load the tables once per run.</li>
+<li>Use the same pad current calculated for the linear model.</li>
+<li>If the predicted linear voltage falls below the configured threshold, calculate the nonlinear response from the start of that pad's current.</li>
+<li>Start at x = 0. At each integration step, obtain gain and recovery from the tables at the current x.</li>
+<li>Advance with the existing fourth-order Runge–Kutta method. End each step at the next current point, ADC sample or configured maximum step, whichever comes first.</li>
+<li>Return voltage at the ADC sample times.</li>
+</ol>
+<p>The current 0.63 V threshold selects which calculation is used. The tabulated gain and recovery vary continuously between their calibration points.</p>
+<h4>Reuse and checks</h4>
+<ul>
+<li>Share the calibration tables across pads and events.</li>
+<li>Reuse working arrays, starting each pad at its own baseline.</li>
+<li>Record peak-current exceedances. Stop if voltage leaves the tabulated range.</li>
+</ul>
+<p>The exponential recurrence applies to the linear model. The nonlinear equation and integration method remain unchanged.</p>
+<h3>Convolution comparison</h3>
+<ul>
+<li>Keep the current convolution as a reference during validation.</li>
+<li>Prepare its common response transform once per sampling configuration and vector length, and reuse the FFT plans and arrays across pads.</li>
+<li>Compare the recurrence with the convolution at its current 25 μs internal spacing and at finer spacing.</li>
+<li>For a future linear response that is not exponential, use the prepared convolution.</li>
+</ul>
+<h3>Validation</h3>
+<table><tr><th>Check</th><th>Required comparison</th></tr>
+<tr><td>Known currents</td><td>Zero current, constant current and a linearly rising current agree with their analytical voltage solutions.</td></tr>
+<tr><td>Pulse timing</td><td>Resolve pulses between ADC samples and across bucket boundaries. Preserve the current integral and event time reference.</td></tr>
+<tr><td>Calibrated voltage</td><td>Compare the recurrence with refined convolution and saved SPICE voltage vectors.</td></tr>
+<tr><td>Model selection</td><td>Check pads near the linear/nonlinear threshold. Explain any change in the selected model.</td></tr>
+<tr><td>ADC output</td><td>Compare codes with the same noise vectors. Count differing codes and check whether voltage differences cross a quantisation boundary.</td></tr>
+<tr><td>Reuse</td><td>Fresh and reused preparation give the same results. Changing settings selects a new preparation. Pads retain independent noise.</td></tr>
+<tr><td>Performance</td><td>Repeat the same 100 events. Record total processing time, allocations and maximum retained working memory.</td></tr>
+</table>
+<h3>Timing</h3>
+<ul>
+<li><strong>One-time ion setup:</strong> card reading, calibration verification and loading, and single-ion current preparation.</li>
+<li><strong>Per-event ion processing:</strong> from ready ion vectors to completed ADC vectors. Include acquisition timing, bucket-current and noise preparation when first needed, any later preparation required by the vector length, current generation and checks, CSA response, noise and digitisation.</li>
+<li><strong>Total ion time:</strong> one-time setup plus all per-event ion processing.</li>
+<li>Report the first event separately because it includes compilation. Report the mean and median of subsequent events, including any new preparations they require.</li>
+<li>Report detector transport, SiPM processing, file writing and presentation separately.</li>
+</ul>
+<p>Keep measured timings and before/after comparisons in the electronics control report. The reviewed public data types and function signatures remain unchanged.</p>
+</section>
+<section id="tests"><h2>6. Tests</h2>
+<table><tr><th>Test</th><th>Check</th></tr>
+<tr><td>Acquisition timing</td><td>Baseline precedes the first induced current. The last collection and final samples fit inside the returned interval. Both readouts keep the same t0.</td></tr>
+<tr><td>Induced charge</td><td>The current integral equals the ion count times the single-ion pulse integral.</td></tr>
+<tr><td>Linear CSA</td><td>A small known input agrees with the existing linear response.</td></tr>
+<tr><td>Nonlinear CSA</td><td>Compare sampled voltage with saved SPICE cases and refined integration. Exercise the threshold and the calibration limit.</td></tr>
+<tr><td>ADC codes</td><td>Check code transitions, both endpoints, out-of-range voltages and 12-bit/16-bit storage.</td></tr>
+<tr><td>Noise</td><td>Recover the specified voltage variance and covariance; verify the ADC noise separately.</td></tr>
+<tr><td>Zero input</td><td>Every pad in the frame has CSA/ADC noise. Every SiPM in the frame has dark activity and ASIC noise.</td></tr>
+<tr><td>SiPM and ASIC</td><td>Match the existing functions with identical inputs, settings and seeds. Check small signals, recovery, occupancy and clipping.</td></tr>
+<tr><td>Channel order</td><td>Output channel positions and order equal the detector input.</td></tr>
+<tr><td>Repeatability</td><td>Identical inputs and seeds give identical responses. Changes to ion settings leave the electron response unchanged.</td></tr>
+<tr><td>Memory</td><td>Check channels × samples before allocation. Release temporary pad vectors as each pad completes.</td></tr>
+</table>
+</section>
+<section id="files"><h2>7. Files and control plots</h2>
+<table><tr><th>Directory</th><th>Contents</th></tr>
+<tr><td><code>src/electronics/</code></td><td>Settings and output types.</td></tr>
+<tr><td><code>src/electronics/ion_signal/</code></td><td>Current, CSA voltage, noise and ADC functions.</td></tr>
+<tr><td><code>src/electronics/electron_signal/</code></td><td>SiPM and ASIC event functions.</td></tr>
+<tr><td><code>tests/electronics/</code></td><td>Numerical tests and comparisons with existing calculations.</td></tr>
+<tr><td><code>scripts/production/</code></td><td>Cards, calibration, execution and control output.</td></tr>
+</table>
+<p>Reuse calculations in <code>src/ion_signal/</code> through the new event interfaces.</p>
+<pre><code>results/readout/&lt;run_label&gt;/electronics/
+    controls.h5
+    index.html
+    plots/</code></pre>
+<ul>
+<li>Selected pads: input ions, induced current, CSA voltage and ADC counts versus time.</li>
+<li>Selected SiPMs: photons, detected PE, avalanche charge and ASIC response versus time.</li>
+<li>Noise-only channels: distributions and time correlations.</li>
+<li>Event mean and maximum over the same positive input cells at each comparable stage; compare ions after deconvolution.</li>
+<li>Fractions of events, channels and samples affected by ADC range or ASIC clipping.</li>
+<li>Time per event, channels in the frame, samples and peak memory.</li>
+</ul>
+<p>Plots include entries and relevant means, standard deviations or residuals. Full intermediate event vectors stay in memory; save selected validation examples.</p>
+</section>
+</main><footer>ITACA · Event-analysis interface review</footer></body></html>

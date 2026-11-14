@@ -66,7 +66,7 @@ function settings(root,runpath)
     model=get(c,"response_model","microscopic")
     model in ("microscopic","statistical","linear") || error("Unknown SiPM response_model")
     if model=="statistical"
-        P.StatisticalOptions(c["statistical_substeps"],get(c,"sparse_trigger_limit",16))
+        P.StatisticalOptions(c["statistical_substeps"],get(c,"sparse_trigger_limit",16);initial_state=Symbol(get(c,"initial_state","stationary_dark")))
     end
     a=c["acquisition"]
     a["channels"]=="illuminated_in_event" && a["quiet_before_buckets"]>=0 &&
@@ -97,7 +97,7 @@ function simulate_sensor_channel(rng,counts,dt,s)
     if get(s.c,"response_model","microscopic")=="linear"
         return P.simulate_channel_linear(rng,counts,dt,s.sensor)
     elseif get(s.c,"response_model","microscopic")=="statistical"
-        options=P.StatisticalOptions(s.c["statistical_substeps"],get(s.c,"sparse_trigger_limit",16))
+        options=P.StatisticalOptions(s.c["statistical_substeps"],get(s.c,"sparse_trigger_limit",16);initial_state=Symbol(get(s.c,"initial_state","stationary_dark")))
         if get(s.c,"illumination","")=="uniform_disk_subset"
             return P.simulate_channel_illuminated(rng,counts,dt,s.sensor,s.c["illuminated_microcell_count"];options)
         end

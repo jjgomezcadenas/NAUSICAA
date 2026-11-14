@@ -512,3 +512,35 @@ detector-response-single-electrons:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl config/readout/single_electrons_detector_response_3mm_mainframe20.toml
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_detector_energy.jl results/readout/single_electrons_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5
 	$(PYTHON) scripts/production/present_framed_detector_response.py results/readout/single_electrons_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5
+
+.PHONY: test-electronics validate-framed-electronics electronics-bb0nu electronics-present
+test-electronics:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/electronics/runtests.jl
+
+validate-framed-electronics:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/validate_framed_electronics.jl
+
+electronics-bb0nu: validate-framed-electronics
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_electronics.jl config/readout/bb0nu_electronics_pilot_100.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_electronics.jl
+	$(PYTHON) scripts/production/present_framed_electronics.py
+
+electronics-present:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_electronics.jl
+	$(PYTHON) scripts/production/present_framed_electronics.py
+
+.PHONY: test-reconstruction validate-signal-reconstruction reconstruction-bb0nu reconstruction-present
+test-reconstruction:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/reconstruction/direct_inverse.jl
+
+validate-signal-reconstruction: test-reconstruction
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/validate_signal_reconstruction.jl
+
+reconstruction-bb0nu: validate-signal-reconstruction
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_reconstruction.jl config/readout/bb0nu_reconstruction_100.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_reconstruction.jl
+	$(PYTHON) scripts/production/present_framed_reconstruction.py
+
+reconstruction-present:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_reconstruction.jl
+	$(PYTHON) scripts/production/present_framed_reconstruction.py

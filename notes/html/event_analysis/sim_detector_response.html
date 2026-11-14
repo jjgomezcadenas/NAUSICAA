@@ -14,7 +14,7 @@
 <h3>Connection to the following modules</h3>
 <ol>
 <li><code>sim_ion_detector_response</code> and <code>sim_electron_detector_response</code>: ion and photon vectors.</li>
-<li><code>sim_electronics_response</code>: simulated CSA/ADC and SiPM/ASIC values, including noise on every acquired channel.</li>
+<li><code>sim_electronics_response</code>: simulated CSA/ADC and SiPM/ASIC values, including noise on every channel in the frame.</li>
 <li><code>reco_signal</code>: RI after linear or nonlinear CSA deconvolution; PE after the SiPM saturation and attachment corrections. Correct attachment by multiplying each PE bucket by exp(drift time / lifetime).</li>
 <li><code>reco_zero_suppression</code>: select reconstructed channel vectors.</li>
 <li><code>write_event</code>: save the selected vectors, frame, channels and timing.</li>
@@ -214,7 +214,7 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <tr><td>Time order</td><td>Increasing Z gives later ion buckets and earlier electron buckets.</td></tr>
 <tr><td>Bucket edges</td><td>Assign a count on an internal edge to the next bucket; include the final frame edge in the last bucket.</td></tr>
 <tr><td>No diffusion</td><td>Known hit positions give the expected channels and times.</td></tr>
-<tr><td>Diffusion at the frame edge</td><td>Retain signal on both sides of the XY frame boundary when it reaches an acquired channel. Record and discard signal reaching an unacquired channel.</td></tr>
+<tr><td>Diffusion at the frame edge</td><td>Retain signal on both sides of the XY frame boundary when it reaches a channel in the frame. Record and discard signal reaching a channel outside the frame.</td></tr>
 <tr><td>Charge and photon totals</td><td>Collected ions + excluded ions = initial pairs. Collected photons + uncollected photons = emitted photons.</td></tr>
 <tr><td>Fluctuations</td><td>Recover the expected Fano, attachment, EL and optical means and variances over repeated events.</td></tr>
 <tr><td>Repeatability</td><td>The same event, settings and seeds give identical vectors. Changing ion pitch leaves the photon calculation unchanged.</td></tr>
@@ -245,11 +245,11 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
         plots/</code></pre>
 <ul>
 <li>The run label includes the ion and EL pitches.</li>
-<li>Each event records its number, position, acquisition frame, complete acquired-channel list, time bounds and ZS settings. Save reconstructed vectors only for channels retained by zero suppression.</li>
+<li>Each event records its number, position, acquisition frame, complete list of channels in the frame, time bounds and ZS settings. Save reconstructed vectors only for channels retained by zero suppression.</li>
 <li>RI and PE files are separate. Both identify the same MC event and placement. The channel lists distinguish suppressed channels from channels outside the acquisition.</li>
 <li>Save gas, photon band, units, cards, calculated parameters, seeds and input/code checksums.</li>
-<li>For ions and SiPM photons separately, report the number and fraction of events with signal reaching unacquired channels.</li>
-<li>Report the number of unacquired channels receiving signal divided by all channels receiving signal before the channel cut.</li>
+<li>For ions and SiPM photons separately, report the number and fraction of events with signal reaching channels outside the frame.</li>
+<li>Report the number of channels outside the frame receiving signal divided by all channels receiving signal before the channel cut.</li>
 <li>Report excluded ions / total arriving ions and excluded photons / total photons reaching SiPMs. Show the per-event distributions, including zero loss, and the sample-wide fractions.</li>
 <li>Record losses outside the time interval separately, and count each lost contribution once in the total loss.</li>
 <li>Control plots also show excluded MC energy, event totals, channel counts and vector lengths. Annotate distributions with entries, mean and RMS.</li>

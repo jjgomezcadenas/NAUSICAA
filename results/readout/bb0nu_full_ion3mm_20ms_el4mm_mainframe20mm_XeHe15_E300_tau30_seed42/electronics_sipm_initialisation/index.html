@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>ITACA · SiPM initial recovery</title><style>body{font:17px/1.6 system-ui;max-width:1000px;margin:30px auto;padding:0 20px;color:#203343}h1,a{color:#185b83}img{max-width:100%}td,th{padding:10px;text-align:left}</style></head><body>
+<a href="../../../../notes/html/index.html">ITACA index</a><h1>SiPM initial recovery</h1>
+<ul><li>Start fully recovered: R = S = M.</li><li>Dark activity, PDE sampling, occupancy, recovery, 128 substeps and ASIC response remain enabled.</li><li>Ten identical input photon events for both settings; three timed repetitions per event, after warm-up. Each plotted point is the median of those repetitions.</li><li>Times cover all SiPMs and buckets in the event, including channels with zero photon input.</li></ul>
+<img src="timing.png" alt="SiPM and ASIC time before and after changing initial recovery">
+<table><tr><th></th><th>Sampled initial state</th><th>Fully recovered</th></tr>
+<tr><td>Mean SiPM + ASIC time (s/event)</td><td>0.2280</td><td>0.0514</td></tr>
+<tr><td>Mean allocations (MiB/event)</td><td>181.78</td><td>47.58</td></tr></table>
+<p>Removed initial microcell draws: 17.16 million per event on this sample.</p>
+<p>Historical cards retain stationary-dark initialization. New framed runs use the fully recovered card.</p>
+</body></html>

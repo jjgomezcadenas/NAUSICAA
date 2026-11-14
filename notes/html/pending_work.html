@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pending work · ITACA</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8}main{max-width:1000px;margin:30px auto;padding:30px;background:white}h1,h2,a{color:#185b83}li{margin:8px 0}</style></head><body><main><a href="index.html">ITACA index</a><h1>Pending work</h1>
+<h2>Extend the nonlinear CSA calibration</h2>
+<p>Cover the rare pad vectors with currents or voltage excursions beyond the existing calibration, while keeping production free of SPICE runs.</p>
+<ol>
+<li>Scan the full ion sample for peak current, accumulated charge and closely spaced pulses.</li>
+<li>Select representative extreme pad vectors.</li>
+<li>Compare the existing nonlinear model with SPICE in a separate calibration study.</li>
+<li>Extend the gain and recovery tables where needed. Change the model only if these comparisons show that voltage-dependent gain and recovery are insufficient.</li>
+<li>Validate on separate events using the agreed 0.5 ENC accuracy criterion.</li>
+</ol>
+<h2>Current production rule</h2>
+<ul>
+<li>Use the existing linear and nonlinear models.</li>
+<li>Record peak-current exceedances, including event number, pad and current relative to the calibration maximum.</li>
+<li>A peak-current exceedance alone does not reject the event.</li>
+<li>Stop and report if the nonlinear voltage leaves its tabulated range.</li>
+<li>Do not launch SPICE automatically.</li>
+</ul>
+<p><a href="event_analysis/sim_electronics_response.html">Electronics interfaces</a></p>
+<h2>Nonlinear reconstruction noise — deferred</h2><ul><li>Measure bias from the direct voltage transformation with CSA and ADC noise.</li><li>Check averaging and propagate nonlinear reconstruction uncertainty.</li></ul></main></body></html>

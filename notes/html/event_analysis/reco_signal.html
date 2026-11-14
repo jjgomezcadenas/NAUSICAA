@@ -1,0 +1,224 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Signal reconstruction · ITACA</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}pre{background:#edf3f6;padding:18px;overflow:auto;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}.status{color:#985a00;background:#fff4d8;padding:12px}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}.contract{border-left:3px solid #146955;padding-left:16px}summary{cursor:pointer;font-weight:600}footer{padding:20px;color:#526776} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}</style></head><body><header><a href="index.html">Event-analysis review index</a><h1>04 · Signal reconstruction</h1></header><main>
+<nav><a href="#flow">Processing</a><a href="#types">Data types</a><a href="#ions">Ion reconstruction</a><a href="#electrons">Electron reconstruction</a><a href="#functions">Functions</a><a href="#tests">Tests and plots</a><a href="#files">Files</a></nav>
+<section id="flow"><h2>1. Processing one event</h2>
+<ol>
+<li>Read the ion ADC vectors, SiPM ASIC vectors, channel positions and acquisition times.</li>
+<li>Estimate the ion baseline from samples taken before the induced current begins.</li>
+<li>Reconstruct ions in each collection bucket, using the calibrated linear or nonlinear CSA response.</li>
+<li>Correct the SiPM signal for saturation and recovery to obtain PE estimates at the original ASIC bucket duration.</li>
+<li>Add consecutive electron buckets to obtain the requested Z spacing.</li>
+<li>Return reconstructed-ion and PE vectors, together with reconstruction checks.</li>
+</ol>
+<p>Reconstruction uses measured vectors, acquisition settings and calibration. Monte Carlo inputs are used separately for control plots.</p>
+<ul><li>Keep signed reconstructed values.</li><li>Keep all channels until zero suppression.</li><li>Ion and electron times share the event t0. Ion vectors use ms; electron vectors use μs.</li></ul>
+</section>
+<section id="types"><h2>2. Data types</h2>
+<h3>Input vectors and timing</h3>
+<p>The input types are <a href="sim_electronics_response.html#types">IonADCResponse and SiPMASICResponse</a>. Their columns identify channels; their rows identify samples or time buckets.</p>
+<pre><code>struct ReadoutChannels
+    ix::Vector{Int32}
+    iy::Vector{Int32}
+    x_mm::Vector{Float32}
+    y_mm::Vector{Float32}
+end
+
+struct IonReadoutTime
+    start_ms::Float32
+    bucket_ms::Float32
+    bucket_count::Int32
+end
+
+struct ElectronReadoutTime
+    start_us::Float32
+    bucket_us::Float32
+    bucket_count::Int32
+end</code></pre>
+<p>These existing timing types specify the first bucket start, bucket duration and number of buckets. Starts are measured from the common event t0.</p>
+<h3>IonReconstructionCalibration</h3>
+<pre><code>struct IonReconstructionCalibration
+    adc::ADCSettings
+    current_pulse::IonCurrentPulse
+    linear_response::LinearCSAResponse
+    nonlinear_response::NonlinearCSA
+    voltage_noise::CSAVoltageNoise
+end</code></pre>
+<p>Reuse the <a href="sim_electronics_response.html#types">reviewed ADC, current, CSA and voltage-noise types</a>. Calibration describes the measured device response.</p>
+<h3>IonReconstructionSettings</h3>
+<pre><code>struct IonReconstructionSettings
+    baseline_ms::Float32
+    average_ms::Float32
+    nonlinear_below_V::Float32
+    max_iterations::Int64
+    convergence_ions::Float32
+end</code></pre>
+<ul>
+<li><code>baseline_ms</code>: duration used to estimate the baseline before induced current.</li>
+<li><code>average_ms</code>: duration of each voltage average used in reconstruction.</li>
+<li><code>nonlinear_below_V</code>: measured-voltage threshold for selecting nonlinear reconstruction.</li>
+<li><code>max_iterations</code>: iteration limit for the reference fit used in validation.</li>
+<li><code>convergence_ions</code>: convergence threshold for that reference fit.</li>
+</ul>
+<p>Proposed starting values: 10 ms baseline, 5 ms averages and the existing 0.63 V threshold. The reference fit uses at most 20 updates and a convergence threshold of 0.05 ions per bucket. The direct inverse uses neither setting. These settings are configurable in TOML.</p>
+<h3>IonReconstructionChecks</h3>
+<pre><code>struct IonReconstructionChecks
+    baseline_V::Vector{Float32}
+    nonlinear::BitVector
+    converged::BitVector
+    adc_at_limit::BitVector
+    voltage_residual_rms_V::Vector{Float32}
+end</code></pre>
+<p>One entry per pad. <code>adc_at_limit</code> marks a pad with at least one endpoint ADC code. <code>converged</code> records successful reconstruction. The direct inverse leaves the voltage residual as NaN; voltage comparisons are calculated separately for validation.</p>
+<h3>ReconstructedIons</h3>
+<pre><code>struct ReconstructedIons
+    event_id::Int64
+    channels::ReadoutChannels
+    time::IonReadoutTime
+    ions::Matrix{Float32}
+    valid::BitMatrix
+    checks::IonReconstructionChecks
+end</code></pre>
+<p>Rows are collection buckets; columns are pads. <code>valid</code> records whether reconstruction produced a usable estimate. Failed estimates are NaN and excluded from energy sums with an explicit count.</p>
+<h3>ElectronReconstructionSettings</h3>
+<pre><code>struct ElectronReconstructionSettings
+    sipm::SiPM
+    illuminated_microcells::Int64
+    subtract_mean_dark::Bool
+end</code></pre>
+<p><a href="sim_electronics_response.html#types">SiPM</a> contains PDE, microcell count, gain, recovery time and dark rate. The illuminated microcell count comes from the optical geometry. Subtracting mean dark activity retains its fluctuations.</p>
+<h3>ReconstructedPE</h3>
+<pre><code>struct ReconstructedPE
+    event_id::Int64
+    channels::ReadoutChannels
+    time::ElectronReadoutTime
+    acquired_end_us::Float32
+    pe::Matrix{Float32}
+    valid::BitMatrix
+    asic_clipped::BitMatrix
+end</code></pre>
+<p>Rows are time buckets; columns are SiPMs. PE estimates refer to detected photoelectrons before SiPM charge loss. They retain attachment loss; attachment correction belongs to the subsequent energy calculation. <code>acquired_end_us</code> preserves the end of the original acquisition when the final rebinned group is incomplete.</p>
+</section>
+<section id="ions"><h2>3. Ion reconstruction</h2>
+<h3>From ADC counts to voltage</h3>
+<pre><code>LSB_V = (maximum_V − minimum_V) / 2^bits
+voltage_V = minimum_V + (ADC_count + 0.5) × LSB_V</code></pre>
+<p>This assigns the voltage at the centre of each ADC interval. The same calculation could be expressed in ADC counts; volts match the existing CSA calibration.</p>
+<ol>
+<li>Select baseline samples from the recorded acquisition interval, before the earliest induced current.</li>
+<li>Estimate the baseline and subtract its offset from the calibrated baseline.</li>
+<li>Form voltage averages of the requested duration. At 100 μs sampling, a 5 ms average contains 50 samples.</li>
+<li>Use the recorded collection-bucket start and duration to place each input-current response.</li>
+</ol>
+<p>Baseline subtraction correlates the voltage estimates. Include this contribution, the measured CSA covariance and ADC quantisation in the reconstruction uncertainty.</p>
+<h3>Linear reconstruction</h3>
+<ol>
+<li>Calculate the voltage produced by one collected ion in each output bucket, including the finite collection-current pulse.</li>
+<li>Apply the same averaging to those voltage vectors as to the measured ADC data.</li>
+<li>Solve for the ion counts whose summed responses reproduce the measured voltage averages.</li>
+<li>Calculate the reconstructed noise covariance using the same linear operation.</li>
+</ol>
+<pre><code>measured_voltage_drop = response_matrix × ions + noise</code></pre>
+<p>The response matrix includes contributions from neighbouring buckets and CSA recovery. Fit all buckets of a pad together. Weight the voltage averages with their covariance.</p>
+<h3>Nonlinear reconstruction</h3>
+<p>For voltage drop x below baseline, the calibrated CSA equation is:</p>
+<pre><code>dx/dt = g(x) × I(t)/e − r(x)
+F(x) = integral of 1/g(x)
+
+Q(t)/e = F(x(t)) − F(x(0)) + integral from 0 to t of r(x)/g(x)</code></pre>
+<ul><li>g(x): gain in V per elementary charge.</li><li>r(x): recovery in V/s.</li><li>Q(t): cumulative induced charge.</li></ul>
+<ol>
+<li>Select nonlinear reconstruction from the baseline-corrected voltage averages and configured threshold.</li>
+<li>Evaluate F at each ADC sample using the calibrated gain table.</li>
+<li>Integrate r/g between samples and add it to the change in F.</li>
+<li>Average the resulting cumulative charge over the configured 5 ms windows.</li>
+<li>Apply the prepared current-pulse inverse to obtain collected ions per bucket.</li>
+</ol>
+<p>Prepare F and the current-pulse matrix once per event timing. The current-pulse matrix includes charge induced by neighbouring collection buckets and preserves the finite-path charge integral.</p>
+<p>The nonlinear model is described in <a href="sim_electronics_response.html#efficient-csa">CSA voltage response</a>. Signed estimates use the small-signal continuation above baseline. Values outside the positive voltage-drop calibration range are marked invalid.</p>
+<h3>Response matrix</h3>
+<ul>
+<li>Each column gives the sampled CSA voltage produced by one ion collected in a particular time bucket.</li>
+<li>Apply the same voltage averaging used for the measured ADC vectors.</li>
+<li>Use this matrix to reconstruct the ion counts and calculate their noise covariance.</li>
+</ul>
+<p>Reuse the current and CSA calculations. Recompute the matrix for the configured sampling and bucket durations.</p>
+</section>
+<section id="electrons"><h2>4. Electron reconstruction and rebinning</h2>
+<ol>
+<li>Read ASIC charge in PE units at 250 ns per bucket.</li>
+<li>Apply the stationary mean SiPM correction at that bucket duration.</li>
+<li>Subtract mean dark activity when requested.</li>
+<li>Mark ASIC-clipped buckets as invalid for charge recovery.</li>
+<li>Add consecutive corrected buckets. A sum is valid only when all its contributing estimates are valid.</li>
+</ol>
+<p>The existing <code>axel_inverse</code> gives a stationary mean correction:</p>
+<pre><code>estimated_PE = measured_PE / (1 − measured_PE × τ / (M × Δt))</code></pre>
+<ul><li>τ is the microcell recovery time.</li><li>M is the number of illuminated microcells.</li><li>Δt is the original ASIC bucket duration.</li></ul>
+<p>Use the illuminated microcell count in this correction. Validate its mean bias with weak, steady and changing illumination, including dark activity across the full SiPM. The <a href="../../../results/readout/bb0nu_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/reconstruction/index.html">pilot controls</a> show the tested range and measured bias.</p>
+<h3>Current output spacing</h3>
+<table><tr><th>Vector</th><th>Time interval</th><th>Drift velocity</th><th>Z spacing</th></tr>
+<tr><td>Ions</td><td>20 ms</td><td>0.15 mm/ms</td><td>3 mm</td></tr>
+<tr><td>Electrons before rebinning</td><td>0.25 μs</td><td>0.6 mm/μs</td><td>0.15 mm</td></tr>
+<tr><td>Electrons after summing 20 buckets</td><td>5 μs</td><td>0.6 mm/μs</td><td>3 mm</td></tr></table>
+<p>Channel pitch remains 3 mm for ions and 4 mm for SiPMs. Rebinning preserves the first bucket start and the PE sum. Keep a final incomplete group and record its actual end in <code>acquired_end_us</code>. Sum only the measured buckets in that group.</p>
+</section>
+<section id="functions"><h2>5. Functions</h2>
+<pre><code>adc_voltages(response::IonADCResponse,
+             adc::ADCSettings)::Matrix{Float64}</code></pre>
+<p>Convert ADC codes to calibrated voltage at each sample.</p>
+<pre><code>reco_ion_signal(response::IonADCResponse,
+                time::IonReadoutTime,
+                calibration::IonReconstructionCalibration,
+                settings::IonReconstructionSettings)::ReconstructedIons</code></pre>
+<p>Estimate baseline and reconstruct signed ions per collection bucket. <code>time</code> comes from the acquired event frame.</p>
+<pre><code>reco_electron_signal(response::SiPMASICResponse,
+                     settings::ElectronReconstructionSettings)::ReconstructedPE</code></pre>
+<p>Return corrected PE estimates at the original ASIC bucket duration, with validity and clipping information.</p>
+<pre><code>rebin_electron_signal(signal::ReconstructedPE,
+                      factor::Int64)::ReconstructedPE</code></pre>
+<p>Add consecutive PE buckets and propagate validity and clipping flags. The current factor is 20.</p>
+<p>Use Float64 for the voltage fit and covariance calculation; return Float32 reconstructed vectors.</p>
+</section>
+<section id="tests"><h2>6. Tests and control plots</h2>
+<h3>Tests</h3>
+<table><tr><th>Calculation</th><th>Check</th></tr>
+<tr><td>ADC calibration</td><td>Each voltage estimate lies at the centre of its ADC interval. Endpoint codes are flagged.</td></tr>
+<tr><td>Baseline</td><td>A constant baseline offset is removed. Baseline noise contributes to the reconstructed covariance.</td></tr>
+<tr><td>Linear inverse</td><td>Recover isolated and adjacent bucket charges at the beginning, middle and end of the frame.</td></tr>
+<tr><td>Nonlinear inverse</td><td>Recover overlapping pulses at several charge levels. Compare the direct integral with the reference fit. Check the constant-gain limit and failures outside the voltage calibration range.</td></tr>
+<tr><td>Model selection</td><td>Test measured voltages on both sides of the configured threshold. No simulation model flags are supplied to reconstruction.</td></tr>
+<tr><td>Noise</td><td>Zero-input pads have zero mean reconstructed signal. Measured covariance and summed-charge variance agree with propagation.</td></tr>
+<tr><td>SiPM correction</td><td>Compare reconstructed PE with expected detected PE for weak, steady and changing illumination. Measure bias and spread.</td></tr>
+<tr><td>ASIC clipping</td><td>A clipped bucket remains identified after correction and rebinning.</td></tr>
+<tr><td>Rebinning</td><td>Preserve total PE and time origin, including a final incomplete group. Combine flags from every contributing bucket.</td></tr>
+</table>
+<h3>100-event controls</h3>
+<ul>
+<li>Input and reconstructed ion vectors for representative pads.</li>
+<li>Measured and fitted voltage averages, with voltage residuals.</li>
+<li>Ion residuals versus input charge, separating linear and nonlinear pads.</li>
+<li>Reconstructed total ions per event versus collected ions.</li>
+<li>Corrected PE versus expected detected PE, before and after rebinning.</li>
+<li>For every event: reconstructed ion and PE histograms over all valid channel–bucket cells, with signed values.</li>
+<li>Separate cells with input signal, zero-input cells and channels with zero input throughout the event.</li>
+<li>Scan proposed thresholds. Plot the fraction of zero-input cells retained and the fraction of input charge below the cut. Report input charge in invalid cells separately.</li>
+<li>Reconstruction failures and clipped samples.</li>
+<li>Time per event and memory used for ion and electron reconstruction.</li>
+</ul>
+<p>Plots show entries, mean, standard deviation or RMS residual as appropriate. Comparisons use the same positive-input cells at each stage. Noise plots include zero-input channels.</p>
+</section>
+<section id="files"><h2>7. Code and output</h2>
+<pre><code>src/reconstruction/
+    SignalReconstruction.jl
+    types.jl
+    ions/reconstruction.jl
+    electrons/reconstruction.jl
+    electrons/rebin.jl
+
+tests/reconstruction/runtests.jl</code></pre>
+<p>Scripts read TOML, call the calculations and save numerical controls. Python reads those controls to generate figures and HTML.</p>
+<pre><code>results/readout/&lt;run_label&gt;/reconstruction/
+    controls.h5
+    index.html
+    plots/</code></pre>
+<p>The pilot passes detector vectors, electronics vectors and reconstructed vectors in memory. Save summaries and selected examples. Full event output follows zero suppression. The control page provides an event selector; no ZS cut is applied.</p>
+</section></main></body></html>

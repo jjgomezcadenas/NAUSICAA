@@ -1,0 +1,17 @@
+detector_card = "config/readout/bb0nu_detector_response_3mm_mainframe20.toml"
+csa_card = "config/specs/response/ion_csa/csa_0p5_enc_4mm.toml"
+nonlinear_calibration = "results/ion_csa_nonlinear/v1/calibration.h5"
+sipm_card = "config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns_recovered.toml"
+asic_card = "config/specs/response/sipm_electronics/readout_v1.toml"
+accepted_events = 100
+example_events = 5
+baseline_ms = 10.0 # existing simulation prehistory
+signal_tail_ms = 5.0 # existing final response window
+adc_sample_us = 100.0
+adc_bits = 12
+adc_minimum_V = 0.0
+adc_maximum_V = 1.8
+adc_input_noise_rms_V = 0.0
+seed = 20261113
+
+output_subdir = "electronics_100events_efficient"

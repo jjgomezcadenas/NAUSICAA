@@ -8,9 +8,11 @@ Dense intervals use a midpoint split with a TOML-configurable number of steps.
 struct StatisticalOptions
     substeps::Int
     sparse_trigger_limit::Int
-    function StatisticalOptions(substeps::Integer=128,sparse_trigger_limit::Integer=16)
+    initial_state::Symbol
+    function StatisticalOptions(substeps::Integer=64,sparse_trigger_limit::Integer=16;initial_state::Symbol=:fully_recovered)
         substeps>0 && sparse_trigger_limit>=0 || throw(ArgumentError("Positive substeps and nonnegative sparse limit required"))
-        new(substeps,sparse_trigger_limit)
+        initial_state in (:fully_recovered,:stationary_dark) || throw(ArgumentError("Unknown initial recovery state"))
+        new(substeps,sparse_trigger_limit,initial_state)
     end
 end
 
@@ -71,8 +73,9 @@ end
 
 Returns the microscopic simulator's count/charge arrays plus numerical
 closure diagnostics. Binomial PDE and Poisson dark counts are retained.
-Initialization samples the stationary dark recovery of M cells once, then
-retains only R and S. Up to sparse_trigger_limit avalanches in a bucket use
+Initialization defaults to fully recovered cells, R=S=M, with no random draws.
+The optional stationary_dark mode retains the earlier sampled initialization.
+Dark avalanches and recovery are simulated from the first bucket in both modes. Up to sparse_trigger_limit avalanches in a bucket use
 individual uniform times and moment-matched single-cell charges. Denser buckets
 partition their fixed counts multinomially into substeps and collect at each
 substep midpoint. The simultaneous-occupancy mean and variance are exact for
@@ -91,7 +94,7 @@ function simulate_channel_statistical(rng::AbstractRNG,incident::AbstractVector{
     n=length(incident);optical=zeros(Int64,n);dark=zeros(Int64,n)
     oq=zeros(n);dq=zeros(n);M=sensor.microcells;tau=sensor.recovery_s;q0=charge_per_pe_C(sensor)
     R=Float64(M);S=Float64(M)
-    if tau>0 && sensor.dark_rate_Hz>0
+    if options.initial_state==:stationary_dark && tau>0 && sensor.dark_rate_Hz>0
         r=rand(rng,Beta(1.,sensor.dark_rate_Hz*tau/M),M)
         R=sum(r);S=sum(abs2,r)
     end
@@ -174,7 +177,7 @@ Statistical response of a uniformly illuminated subset of the physical SiPM.
 `illuminated_cells` cells receive all optical photons; the remaining cells
 receive dark triggers. The full-device primary dark rate is partitioned by cell
 count. Each population uses the same gain and recovery law and independent RNG
-substreams, preserving stationary dark initialization and recurrent avalanches.
+substreams, using the selected initial recovery state and recurrent avalanches.
 
 Returns the standard detected-count and charge histories, separate optical and
 dark charge, and `expected_distinct_optical_cells`: the conditional expectation

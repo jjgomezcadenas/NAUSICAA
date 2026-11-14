@@ -9,7 +9,8 @@ const elementary_charge_C = 1.602176634e-19
 """Effective SiPM: detection probability, microcells, gain, recovery time and total dark rate.
 
 Times are seconds, dark rate Hz, gain electrons per fully recovered avalanche.
-The independent primary dark process is stationary at the acquisition boundary.
+Dark arrivals follow a constant-rate Poisson process. The statistical model
+selects its initial recovery state through StatisticalOptions.
 """
 struct Sensor
     pde::Float64
@@ -85,16 +86,19 @@ pulses receive uniform times and microcell indices. Every avalanche resets its
 cell and contributes its recovered charge to the trigger bucket. Float64 local
 times avoid loss of precision for large signed source-bucket indices. The return
 value owns count and charge arrays; the caller owns the RNG. No pulse shaping
-or recovery-dependent PDE is applied in this first model.
+or recovery-dependent PDE is applied in this first model. Set
+initial_state=:fully_recovered to initialise all cells at full charge; the
+default :stationary_dark retains stationary pre-acquisition recovery.
 """
 function simulate_channel(rng::AbstractRNG, incident::AbstractVector{<:Integer},
-                          dt::Real, sensor::Sensor)
+                          dt::Real, sensor::Sensor;initial_state::Symbol=:stationary_dark)
     isfinite(dt) && dt > 0 || throw(ArgumentError("Bucket duration must be positive"))
     all(>=(0), incident) || throw(ArgumentError("Incident counts must be nonnegative"))
     n = length(incident); optical = zeros(Int64,n); dark = zeros(Int64,n)
     optical_charge = zeros(n); dark_charge = zeros(n)
-    # Independent stationary Poisson ages per microcell before the first bucket.
-    last = sensor.dark_rate_Hz == 0 ? fill(-Inf, sensor.microcells) :
+    initial_state in (:fully_recovered,:stationary_dark)||throw(ArgumentError("Unknown initial recovery state"))
+    # Select the same initial recovery assumption as the statistical comparison.
+    last = initial_state==:fully_recovered || sensor.dark_rate_Hz == 0 ? fill(-Inf, sensor.microcells) :
            -randexp(rng,sensor.microcells) .* (sensor.microcells / sensor.dark_rate_Hz)
     arrivals = Tuple{Float64,Bool}[]
     for b in eachindex(incident)

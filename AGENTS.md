@@ -286,3 +286,26 @@ Establish the physics before implementing electronics.
   Copy selected assets into this repository when used so builds stay portable.
 - Older ITACA operating values do not supersede the revised NAUSICAA design
   inputs in `config/detector.toml`.
+
+## Framed electronics production (2026-11-13)
+
+- Use the existing linear and nonlinear CSA models for the framed ADC workflow.
+  Do not launch SPICE automatically during production. Record pads whose peak
+  current exceeds the calibration sample maximum; this flag alone does not
+  reject an event or force SPICE. Stop and report if the nonlinear voltage
+  leaves its tabulated range.
+- Extending and validating the nonlinear model for extreme currents is pending
+  work, documented in `notes/html/pending_work.html`. SPICE may be used in that
+  separate calibration study. Historical response cards retain their original
+  policies.
+
+## Framed SiPM initial recovery (2026-11-14)
+
+- New framed runs start SiPM microcells fully recovered: `R = S = M`, with no
+  initial random draws. Dark avalanches and recovery continue from the first
+  bucket. This is an explicitly approved approximation.
+- The active card is `elm_pitch4mm_3015ps_tau12p5ns_recovered.toml`; it selects
+  `initial_state = "fully_recovered"` and `statistical_substeps = 64`. The sparse
+  trigger limit remains 16. Preserve historical cards and their
+  `stationary_dark` setting. Card readers default missing historical settings
+  to `stationary_dark`.
