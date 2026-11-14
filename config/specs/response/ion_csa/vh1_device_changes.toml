@@ -1,0 +1,31 @@
+schema = "nausicaa.vh1_csa_spec.v1"
+label = "VH1 with device changes: M2 2 um, M3 4 um, M1 110 um, M4 23 um"
+# SPICE sources (LTSpice/designs/VH1, scripts/electronics/design/vh1_*.py)
+spice_summary = "results/ltspice/design/VH1/improvements/summary.json"
+spice_summary_sha256 = "f1707b1bd0eea2dc3c4179cbd9fde4ab213cb6058566142f34274c0e88998706"
+spice_variant = "combined_W4_23u"
+noise_spectrum_csv = "results/ltspice/design/VH1/improvements/noise_combined_W4_23u.csv"
+noise_spectrum_sha256 = "e41ca266ea9dfbdeb53b7d81f388f3e328348109b662d2a93cfc13a9f8a451dc"
+noise_low_Hz = 0.0001
+noise_high_Hz = 1000000.0
+# circuit
+feedback_capacitance_F = 3e-15
+charge_fraction = 0.8775          # AC transimpedance at 1 Hz over 1/(w Cf)
+gain_V_per_ion = 4.6864e-05       # charge_fraction * e / Cf
+v_ref_V = 0.886
+output_window_V = [0.4, 0.95]
+# frames and converter
+frame_ms = 20.0
+reference_frames = 1
+conversions_per_frame = 2         # readings at the ends of equal sub-intervals of the frame
+conversion_window_ms = 10.0       # each reading averages the output over the last window of its sub-interval
+adc_bits = 16
+adc_minimum_V = 0.0
+adc_maximum_V = 1.8
+adc_input_noise_rms_V = 0.0
+noise_sample_us = 100.0           # internal sampling of the noise before frame integration
+# single-ion current, as in the existing calibration
+pad_side_m = 0.0005
+gap_m = 0.005
+gap_speed_m_s = 3.0
+current_step_s = 0.000005

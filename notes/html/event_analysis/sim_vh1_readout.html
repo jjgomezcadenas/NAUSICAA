@@ -1,0 +1,110 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>VH1 readout · ITACA</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}pre{background:#edf3f6;padding:18px;overflow:auto;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}summary{cursor:pointer;font-weight:600}footer{padding:20px;color:#526776} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}</style></head><body><header><a href="index.html">Event-analysis review index</a><h1>03b · VH1 ion readout</h1></header><main>
+<nav><a href="#scope">Scope</a><a href="#flow">Processing</a><a href="#types">Data types</a><a href="#functions">Functions</a><a href="#noise">Noise</a><a href="#reconstruction">Reconstruction</a><a href="#cards">Cards</a><a href="#tests">Tests</a><a href="#files">Files</a></nav>
+<section id="scope"><h2>1. Scope</h2>
+<p>VH1 is the reset two-capacitor charge-sensitive amplifier of <a href="../../physics/nausicaa_VH.pdf">NAUSICAA v2</a> (Sections 7, 13 and 14), simulated as an alternative to the present CSA/ADC chain of <a href="sim_electronics_response.html">electronics response</a>. It takes the same ion vectors from <a href="sim_detector_response.html">detector response</a> and returns the same <code>ReconstructedIons</code> as <a href="reco_signal.html">signal reconstruction</a>, so hits, energies and tracks follow unchanged. The electron arm is not involved.</p>
+<p>The module <code>src/vh1/VH1Readout.jl</code> is independent: it uses the current builder, noise sampler, ADC quantiser, averaged covariance and output types of the existing modules and modifies none of them.</p>
+<p>Circuit model: no discharge element; the output is <code>v_ref_V</code> minus <code>gain_V_per_ion</code> times the ions accumulated since the reset; linear while the output stays inside <code>output_window_V</code>. Converter: <code>conversions_per_frame</code> integrations per 20 ms frame, each the mean of the output over the last <code>conversion_window_ms</code> of its sub-interval, quantised to 16 bits. Defaults: two contiguous 10 ms integrations per frame. Noise after reconstruction with the default circuit: 31 ions per bucket; the present chain gives 50 on the same footing.</p>
+</section>
+<section id="flow"><h2>2. Processing one accepted event</h2>
+<h3>Electronics (<code>sim_vh1_electronics</code>)</h3>
+<ol>
+<li>Read the ion vectors: counts per collection bucket and pad, bucket timing, channel positions.</li>
+<li>Place the frames: one reference frame ending where the earliest induced current of the first bucket begins, then 20 ms frames until the end of the last bucket.</li>
+<li>Build the internal 100 µs grid over the frames and the pad current from the single-ion pulse, uniform arrival within each bucket, and the counts (same current builder as the present chain).</li>
+<li>Integrate the current to the cumulative charge and form the noiseless readings: for each reading window, the mean of <code>v_ref_V − gain × charge</code> at the cell midpoints. Empty pads read <code>v_ref_V</code>.</li>
+<li>Flag the pad as saturated if any noiseless reading lies outside the output window.</li>
+<li>Draw one noise vector per pad on the internal grid from the VH1 spectrum, average it over the same windows, add it to the readings.</li>
+<li>Quantise each reading with the 16-bit converter; count codes outside the range. Return the code matrix, readings by pads.</li>
+</ol>
+<h3>Reconstruction (<code>prepare_vh1_reconstruction</code>, <code>reco_vh1_ions</code>)</h3>
+<ol>
+<li>Build the response matrix once per bucket count: for one ion in each bucket, the readings formed exactly as in step 4, expressed as drops below the reference reading (the last reading of the reference frame).</li>
+<li>Build the covariance of reference-minus-reading from the VH1 noise covariance on the internal grid, averaged over the windows, plus converter quantisation.</li>
+<li>Whiten with the Cholesky factor, solve by QR; keep the inverse and the predicted ion covariance.</li>
+<li>Per pad: codes to volts, drops below the reference, counts = inverse × drops, residual RMS. Pads saturated or with a code at either end of the range are invalid (NaN).</li>
+<li>Return <code>ReconstructedIons</code> with the existing checks (baseline = reference reading, nonlinear = false).</li>
+</ol>
+</section>
+<section id="types"><h2>3. Data types</h2>
+<pre>struct VH1FrameTime            # frames of equal length from event t0
+    start_ms::Float32
+    frame_ms::Float32
+    frame_count::Int32
+    reference_frames::Int32    # frames before any induced current
+end
+struct VH1Settings             # one readout configuration from a card
+    gain_V_per_ion::Float64    # charge_fraction × e / Cf
+    charge_fraction::Float64
+    feedback_capacitance_F::Float64
+    v_ref_V::Float64
+    window_V::Tuple{Float64,Float64}
+    frame_ms::Float32
+    conversions_per_frame::Int64
+    window_ms::Float32         # integration window of each reading
+    reference_frames::Int64
+    adc::ADCSettings           # existing type; sample_us holds the frame length
+    noise_sample_us::Float32   # internal grid of the noise and of the readings
+    noise::CSAVoltageNoise     # existing type: covariance on the internal grid
+    current_pulse::IonCurrentPulse
+    provenance::Dict{String,String}   # card and SPICE hashes, variant label
+end
+struct VH1FrameResponse        # converter codes of one event
+    event_id::Int64
+    channels::ReadoutChannels
+    time::VH1FrameTime
+    codes::Matrix{UInt16}      # readings (time order) × pads
+    saturated::BitVector       # noiseless output left the window
+    adc_below_range::Int64
+    adc_above_range::Int64
+end
+struct VH1ReconstructionPlan   # prepared once per bucket count
+    frames::VH1FrameTime
+    buckets::IonReadoutTime
+    settings::VH1Settings
+    response::Matrix{Float64}  # readings after the reference × buckets
+    covariance::Matrix{Float64}
+    lower::Matrix{Float64}     # Cholesky factor
+    inverse::Matrix{Float64}   # whitened least-squares inverse
+    ion_covariance::Matrix{Float64}
+end</pre>
+<p>Output of the reconstruction is the existing <code>ReconstructedIons</code>.</p>
+</section>
+<section id="functions"><h2>4. Function interfaces</h2>
+<pre>load_vh1_settings(root, cardpath; minimum_samples=4096) -> VH1Settings
+vh1_frame_time(buckets::IonReadoutTime, s::VH1Settings) -> VH1FrameTime
+sim_vh1_electronics(noise_rng, adc_rng, d::IonDetectorResponse, s::VH1Settings) -> VH1FrameResponse
+frame_voltages(r::VH1FrameResponse, s::VH1Settings) -> Matrix{Float64}
+prepare_vh1_reconstruction(frames::VH1FrameTime, buckets::IonReadoutTime, s::VH1Settings) -> VH1ReconstructionPlan
+reco_vh1_ions(r::VH1FrameResponse, plan::VH1ReconstructionPlan) -> ReconstructedIons</pre>
+<ul>
+<li><code>load_vh1_settings</code> verifies the SHA-256 of the spectrum and SPICE summary recorded in the card, checks gain against charge fraction, builds the noise covariance for a period of at least 16 × <code>minimum_samples</code> internal samples (200 per frame), and the single-ion pulse of the present calibration.</li>
+<li><code>sim_vh1_electronics</code> limits the code matrix to 256 MiB. Pads are independent; the noise sampler buffers are reused across pads.</li>
+<li><code>prepare_vh1_reconstruction</code> requires one reference frame. Its result depends on the event only through the bucket count.</li>
+</ul>
+</section>
+<section id="noise"><h2>5. Noise model</h2>
+<p>The source is the one-sided output noise spectral density of the VH1 circuit from LTspice (<code>results/ltspice/design/VH1/improvements/noise_combined_W4_23u.csv</code>, 0.1 mHz to 1 MHz). <code>voltage_noise_from_spectrum</code> of the present chain turns it into the covariance of samples 100 µs apart: the spectrum is integrated analytically between its knots, each piece of power is assigned to the FFT frequency bin it falls in, frequencies above the Nyquist frequency of the 100 µs grid are folded onto their alias, and the inverse FFT of the binned power is the covariance. One Gaussian vector per pad with that covariance is drawn by <code>sample_csa_noise!</code> (circulant embedding, inverse FFT of independent complex Gaussians). The readings then average the vector over the same windows as the signal, so the noise of a reading is exactly the window average of the output noise. Quantisation adds LSB²/12 per reading in the covariance (27 µV steps, negligible).</p>
+<p>Pads are independent. Reset noise, switch charge injection and clock feedthrough are not modelled.</p>
+</section>
+<section id="reconstruction"><h2>6. Reconstruction and its conditioning</h2>
+<p>Readings are drops below the reference reading; the model is <code>drops = response × counts + noise</code> with the response built from a single ion per bucket by the identical window operation, so noiseless inputs are recovered exactly. The solve is the generalised least squares of the present chain. Because the output ramps while the ions of a bucket arrive, a reading that integrates a whole frame sees only part of its own bucket and part of the next; one reading per frame therefore gives a poorly conditioned matrix and amplified noise. Two readings per frame resolve where in the frame the charge arrived. Per-bucket noise for the default circuit and 20 ms buckets, from the prepared covariance and confirmed on noise-only pads:</p>
+<table><tr><th>Readings per frame</th><th>Window of each</th><th>Ions per bucket</th></tr>
+<tr><td>1</td><td>20 ms</td><td>59</td></tr><tr><td>1</td><td>5 ms</td><td>43</td></tr><tr><td>2</td><td>10 ms</td><td>31</td></tr><tr><td>4</td><td>5 ms</td><td>30</td></tr><tr><td>10 or 20</td><td>2 or 1 ms</td><td>30</td></tr><tr><td>Present chain</td><td>200 samples per frame</td><td>50</td></tr></table>
+</section>
+<section id="cards"><h2>7. Cards</h2>
+<p><code>config/specs/response/ion_csa/vh1_device_changes.toml</code> (default: the VH1 amplifier with M2 2 µm, M3 4 µm, M1 110 µm, M4 23 µm; 46.9 µV per ion) and <code>vh1_base.toml</code> (the unchanged amplifier; 42.9 µV per ion). Keys: SPICE summary and spectrum with their SHA-256 and variant label; <code>feedback_capacitance_F</code>, <code>charge_fraction</code>, <code>gain_V_per_ion</code>, <code>v_ref_V</code>, <code>output_window_V</code>; <code>frame_ms</code>, <code>reference_frames</code>, <code>conversions_per_frame</code>, <code>conversion_window_ms</code>; <code>adc_bits</code>, <code>adc_minimum_V</code>, <code>adc_maximum_V</code>, <code>adc_input_noise_rms_V</code>, <code>noise_sample_us</code>; the single-ion current prescription (<code>pad_side_m</code>, <code>gap_m</code>, <code>gap_speed_m_s</code>, <code>current_step_s</code>). A card whose hashes do not match its files is refused.</p>
+</section>
+<section id="tests"><h2>8. Tests</h2>
+<p><code>tests/vh1/test_vh1.jl</code>: card loading and consistency; frame placement; exact recovery of arbitrary bucket counts from noiseless readings for 1, 4 and 20 readings per frame and recovery within quantisation through the converter; the increments of one ion per frame sum to its finite-path charge and fall in the bucket's own frame, the next, and a trace in the one after; the window flag on a 20 000-ion pad; 1500 noise-only pads reproduce the predicted per-bucket covariance within 8 % and a zero mean; the scan of readings per frame printed above.</p>
+</section>
+<section id="files"><h2>9. Files</h2>
+<ul>
+<li><code>src/vh1/VH1Readout.jl</code>: module.</li>
+<li><code>config/specs/response/ion_csa/vh1_*.toml</code>: cards.</li>
+<li><code>tests/vh1/test_vh1.jl</code>: tests.</li>
+<li><code>docs/handoffs/vh1_production.md</code>: production handoff.</li>
+<li><code>results/ltspice/design/VH1/</code>: the SPICE study the cards rest on; <code>LTSpice/designs/VH1/</code>: its decks.</li>
+<li><code>notes/physics/nausicaa_VH.tex</code>: physics and results.</li>
+</ul>
+</section>
+</main><footer>ITACA · VH1 ion readout</footer></body></html>
