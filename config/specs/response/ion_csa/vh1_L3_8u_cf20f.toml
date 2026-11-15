@@ -1,0 +1,31 @@
+schema = "nausicaa.vh1_csa_spec.v1"
+label = "VH1 with the 8 um load (M3 200/8 um, present cascode bias 0.66 V) and Cf = 20 fF: M2 2 um, M1 110 um, M4 23 um"
+# SPICE sources (LTSpice/designs/VH1/cascode_bias, scripts/electronics/design/vh1_cascode_bias.py and vh1_cascode_cf.py)
+spice_summary = "results/ltspice/design/VH1/cascode_bias/cf_scan_L3_8u_casc0.66.json"
+spice_summary_sha256 = "5302532e992d03ce1ec4bc291bab0f2555a20d0bd2b8da007b42b98aedddedd2"
+spice_variant = "20f"
+noise_spectrum_csv = "results/ltspice/design/VH1/cascode_bias/noise_L3_8u_casc0.66_cf20f.csv"
+noise_spectrum_sha256 = "d71d950722981a169db7a924df8e3bc6bc50125a0b3e3a2a75a974284a5e3fbe"
+noise_low_Hz = 0.0001
+noise_high_Hz = 1000000.0
+# circuit
+feedback_capacitance_F = 2e-14
+charge_fraction = 0.9682          # AC transimpedance at 1 Hz over 1/(w Cf)
+gain_V_per_ion = 7.7558e-06       # charge_fraction * e / Cf
+v_ref_V = 0.886
+output_window_V = [0.4, 0.95]
+# frames and converter
+frame_ms = 20.0
+reference_frames = 1
+conversions_per_frame = 2         # readings at the ends of equal sub-intervals of the frame
+conversion_window_ms = 10.0       # each reading averages the output over the last window of its sub-interval
+adc_bits = 16
+adc_minimum_V = 0.3               # converter spans the output window 0.4 to 0.95 V with margin
+adc_maximum_V = 1.0
+adc_input_noise_rms_V = 0.0
+noise_sample_us = 100.0           # internal sampling of the noise before frame integration
+# single-ion current, as in the existing calibration
+pad_side_m = 0.0005
+gap_m = 0.005
+gap_speed_m_s = 3.0
+current_step_s = 0.000005

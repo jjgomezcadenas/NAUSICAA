@@ -1396,16 +1396,57 @@ M3 length & Gate of M4 & \textsf{med} & $A_0$ & $C_{\rm amp}$ (pF) & \SI{5}{ms} 
   to its edge.
 \end{itemize}
 %
-The recommendation is the \SI{8}{\um} load at the present cascode bias:
-\SI{8}{\percent} less noise, no change to the window or to the bias
-network. The \SI{16}{\um} load with the gate of M4 at \SI{0.76}{V} buys
-another \SI{3}{\percent} for \SI{0.07}{V} of window, \SI{9000}{} ions of
-range at \SI{20}{fF}, which still leaves three times the busiest pad of
-Table~\ref{tab:vh1pads}. The production cards of Section~\ref{sec:vh1range}
-keep the \SI{4}{\um} load that was simulated for them; the longer load is
-for their next revision. The decks and results are in
-\code{LTSpice/designs/VH1/cascode_bias} and
-\code{results/ltspice/design/VH1/cascode_bias}.
+At \SI{3}{fF} the \SI{8}{\um} load at the present cascode bias is the
+natural choice: \SI{8}{\percent} less noise, no change to the window or to
+the bias network. The \SI{16}{\um} load with the gate of M4 at \SI{0.76}{V}
+buys another \SI{3}{\percent} for \SI{0.07}{V} of window, \SI{9000}{} ions
+of range at \SI{20}{fF}, which still leaves three times the busiest pad of
+Table~\ref{tab:vh1pads}.
+
+With the production capacitors the gain shrinks. Table~\ref{tab:vh1cascf}
+gives the \SI{8}{\um} load circuit, biases as tuned at \SI{3}{fF}, at
+\SIlist{20;30}{fF}, and the noise per \SI{20}{ms} bucket after the
+reconstruction of Section~\ref{sec:vh1result} beside the production cards.
+%
+\begin{table}[htbp]\centering\footnotesize
+\begin{tabular}{llcccccc}
+\toprule
+Load & $C_f$ & $A_0$ & fraction & \si{\micro V}/ion & ENC & per bucket & range (ions) \\
+\midrule
+\SI{4}{\um} (production) & \SI{20}{fF} & 9269 & 0.980 & 7.85 & 19.7 & 32.8 & 61\,900 \\
+\SI{8}{\um} & \SI{20}{fF} & 3864 & 0.968 & 7.76 & 18.4 & 30.8 & 62\,700 \\
+\SI{4}{\um} (production) & \SI{30}{fF} & 9269 & 0.986 & 5.27 & 19.7 & 33.2 & 92\,300 \\
+\SI{8}{\um} & \SI{30}{fF} & 3864 & 0.979 & 5.23 & 18.5 & 31.3 & 93\,000 \\
+\bottomrule
+\end{tabular}
+\caption{The longer load with the production feedback capacitors.
+Open-loop gain, charge fraction and gain per ion from the AC deck; ENC in
+ions for the frame difference of \SI{20}{ms} averages; noise per bucket for
+a quiet pad with two \SI{10}{ms} conversions per frame; range from the
+reference level to the \SI{0.4}{V} window edge. Decks and spectra in
+\texttt{LTSpice/designs/VH1/cascode\_bias} and
+\texttt{results/ltspice/design/VH1/cascode\_bias}
+(\texttt{cf\_scan\_L3\_8u\_casc0.66.json}).}
+\label{tab:vh1cascf}
+\end{table}
+%
+The \SI{8}{\percent} at \SI{3}{fF} becomes \SI{6}{\percent} per bucket at
+\SI{20}{fF}: the longer load works by halving the amplifier's input
+capacitance, and with \SI{20}{fF} of feedback the input capacitance already
+costs only the \SIrange{2}{3}{\percent} of charge left on the pad, so the
+capacitor change took most of what the device change had to give. The lower
+open-loop gain also softens the window edge: at \SI{0.40}{V} the fraction
+has fallen \SI{3.4}{\percent}, against \SI{2}{\percent} for the production
+circuit. For a noise-limited ion energy resolution the \SI{6}{\percent}
+would move the \SI{23}{keV} of Section~\ref{sec:vh1result} to about
+\SI{21.6}{keV}. The production cards keep the \SI{4}{\um} circuit; the
+cards of the \SI{8}{\um} circuit,
+\code{config/specs/response/ion_csa/vh1_L3_8u_cf20f.toml} and
+\code{vh1_L3_8u_cf30f.toml}, are kept as the documented alternative. What
+would lower the noise further is not in the amplifier: the unmixing factor
+of Section~\ref{sec:vh1result} belongs to the frame timing, and the ENC of
+the frame difference scales with the pad capacitance, \SI{1.25}{pF}, which
+now matches the amplifier's own.
 
 % ----------------------------------------------------------------------
 \subsection{Frame length}
@@ -1455,10 +1496,6 @@ straddles frame boundaries.
 \item Switch charge injection, clock feedthrough and the reset noise are
   not in the simulation; they need transistor switches and a transient
   noise study.
-\item The load M3 can be lengthened to \SI{8}{\um} at the present cascode
-  bias for \SI{8}{\percent} less noise (Section~\ref{sec:vh1cascode}); the
-  production cards keep the \SI{4}{\um} circuit until they are
-  re-simulated with it.
 \item The last row of Table~\ref{tab:vh1enc} requires a converter that
   integrates over the frame. A converter that samples briefly at the swap
   realises the first row instead.

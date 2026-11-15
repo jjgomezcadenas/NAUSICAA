@@ -157,6 +157,8 @@ per ion, about 45 ions per bucket) for comparison runs.
 - Whether the signal-to-noise per pad-bucket at 3 mm pitch (6.8 mean) is
   sufficient for tracking is to be settled with the hit-cut studies.
 - A longer load transistor (M3 at 8 um, present cascode bias) lowers the
-  noise by 8 % in SPICE (`results/ltspice/design/VH1/cascode_bias/`). The
-  production cards keep the simulated 4 um circuit; a card revision needs
-  new spectra and hashes.
+  noise by 8 % at 3 fF but only 6 % per bucket with the production
+  capacitors (32.8 to 30.8 ions at 20 fF; `results/ltspice/design/VH1/
+  cascode_bias/cf_scan_L3_8u_casc0.66.md`). Decision 2026-11-16: the
+  production cards keep the 4 um circuit; `vh1_L3_8u_cf20f.toml` and
+  `vh1_L3_8u_cf30f.toml` document the alternative.
