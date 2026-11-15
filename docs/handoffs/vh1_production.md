@@ -156,3 +156,7 @@ per ion, about 45 ions per bucket) for comparison runs.
 - Switch charge injection, reset noise and clock feedthrough are not modelled.
 - Whether the signal-to-noise per pad-bucket at 3 mm pitch (6.8 mean) is
   sufficient for tracking is to be settled with the hit-cut studies.
+- A longer load transistor (M3 at 8 um, present cascode bias) lowers the
+  noise by 8 % in SPICE (`results/ltspice/design/VH1/cascode_bias/`). The
+  production cards keep the simulated 4 um circuit; a card revision needs
+  new spectra and hashes.

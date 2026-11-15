@@ -50,7 +50,10 @@ The analysis uses one set of symbols throughout.
   input, in farad, between \SIlist{1;5}{pF} for the TopMetal pad. Where the amplifier's
   own input capacitance matters it is included in $\CD$.
 \item $\Cf$: feedback capacitance. The present NAUSICAA circuit uses
-  \SI{3}{fF}.
+  \SI{3}{fF}. The VH1 readout of Sections~\ref{sec:vh1} and
+  \ref{sec:vh1sim} was prototyped with the same value and is produced with
+  \SI{20}{fF} at \SI{3}{mm} pitch and \SI{30}{fF} at \SI{4}{mm}
+  (Section~\ref{sec:vh1range}).
 \item $A$: open-loop voltage gain of the amplifier, dimensionless and
   negative in sign convention, written $-A$ with $A>0$.
 \item $e_n^2(f)$: one-sided spectral density of the voltage noise referred to
@@ -87,6 +90,7 @@ resistor $R_f$ is present in a continuous-discharge amplifier and absent in a
 reset amplifier.}
 \label{fig:csa}
 \end{figure}
+The 
 The ions arriving at the pad induce a current $i(t)$. Figure~\ref{fig:csa}
 shows the circuit. Write $v_i$ for the voltage at the input node and
 $v_o=-Av_i$ for the output. Charge conservation implies 
@@ -236,7 +240,11 @@ properties follow from Eqs.~\eqref{eq:kcl} to \eqref{eq:vo}.
   \SI{29}{\percent} of the charge never reaches the output; for $A=10^4$
   the fraction is \SI{4}{\percent}. Either the open-loop gain is made large
   enough for this fraction to be negligible, or the calibration measures the
-  actual output per ion and absorbs it.
+  actual output per ion and absorbs it. With the \SI{20}{fF} of the VH1
+  production card and the open-loop gain of \vhImpAzero{} measured in
+  Section~\ref{sec:vh1devices}, the Miller capacitance is \SI{185}{pF} and
+  the fraction left on the pad is \SI{2}{\percent}: the larger capacitor
+  makes the sharing negligible.
 \end{itemize}
 %
 
@@ -335,7 +343,9 @@ amount. Four steps answer it.
 %
   The noise voltage appears at the output multiplied by $(\CD+\Cf)/\Cf$,
   the noise gain of the stage. For the NAUSICAA values, \SI{1.25}{pF} and
-  \SI{3}{fF}, that gain is about 400.
+  \SI{3}{fF}, that gain is about 400; with \SI{20}{fF} it is about 60. The
+  signal per ion, $e/\Cf$, falls by the same factor, so the noise expressed
+  as a charge at the pad does not depend on $\Cf$.
 \end{itemize}
 %
 A signal charge $Q$ arriving at the pad moves the output by $Q/\Cf$ in
@@ -718,7 +728,11 @@ a reason and a cost.
   storing and subtracting digital samples. The cost is the switch network at
   the input node, whose charge injection and leakage must be controlled.
 \item \textbf{Fewer ADC conversions.} One conversion per frame suffices, since
-  the output already holds the accumulated charge. The present NAUSICAA plan
+  the output already holds the accumulated charge.\footnote{One conversion
+  per frame recovers the charge of the frame. Section~\ref{sec:vh1result}
+  shows that two per frame are needed to recover the charge of each bucket
+  with the least noise, because the ion pulse straddles the frame
+  boundaries.} The present NAUSICAA plan
   samples every \SI{100}{\micro s} and averages 50 samples over \SI{5}{ms}
   before differencing; that average is the sinc window of
   Section~\ref{sec:gated} with $T=\SI{5}{ms}$ applied inside the frame.
@@ -773,15 +787,15 @@ feedback loop linearises the closed-loop response in the same way.
 impedance is the parallel combination of the two cascodes. Looking up into
 M4, M5 the impedance is about $g_{m4}r_{d4}r_{d5}$; looking down into M2 it is
 about $g_{m2}r_{d2}$ times the impedance at the source of M2, which is the
-parallel of $r_{d3}$ and the degenerated output of M1, $g_{m1}r_{d1}R$. Here
-$r_d$ is the drain-source resistance of each transistor. The open-loop gain
-is
+output resistance of the degenerated M1, $r_{d1}(1+g_{m1}R)\simeq
+g_{m1}r_{d1}R$. Here $r_d$ is the drain-source resistance of each
+transistor. The open-loop gain is
 %
 \begin{equation}
  A = G_m\,Z_o,
  \qquad
  Z_o = \left(g_{m4}r_{d4}r_{d5}\right)\parallel
-       \left[g_{m2}r_{d2}\,\big(r_{d3}\parallel g_{m1}r_{d1}R\big)\right].
+       \left(g_{m2}r_{d2}\;g_{m1}r_{d1}R\right).
 \end{equation}
 %
 Each cascode multiplies an output resistance by a factor $g_mr_d$, which is
@@ -795,6 +809,56 @@ appears at the input with that full value. Since $e_t^2=4kT_{\rm K}\gamma/g_{m1}
 for the transistor, the resistor adds the same noise as the transistor once
 $R\simeq\gamma/g_{m1}$. Degeneration is therefore likely to increase the
 noise budget; in current form the added term is $i_n^2=4kT_{\rm K}/R$.
+
+% ----------------------------------------------------------------------
+\subsection{The stage of the present circuit: a folded cascode}
+\label{sec:folded}
+%
+\begin{figure}[htbp]\centering
+\includegraphics[height=80mm]{nausicaa_vh_folded.pdf}
+\caption{The single stage of the present NAUSICAA amplifier
+(\texttt{csa\_v3}), the one simulated in Section~\ref{sec:vh1}, with the
+names of the SPICE deck. The PMOS input transistor M1 is biased by the
+current source M2 and drives the node \textsf{med}; the load M3 sinks that
+current; the cascode M4 carries the small current of the output branch from
+\textsf{med} to the output, where the PMOS pair M5, M6 is a cascoded current
+source. Sizes are width/length in \si{\um}; M2 is three devices in
+parallel. Currents and node voltages are those of the operating point.}
+\label{fig:folded}
+\end{figure}
+%
+The amplifier of the present circuit, which Section~\ref{sec:vh1} reuses,
+is a cascode of a different arrangement, drawn in Fig.~\ref{fig:folded}.
+Three things differ from Fig.~\ref{fig:cascode}.
+%
+\begin{itemize}
+\item The input transistor M1 is a PMOS of \SI{220}{\um}/\SI{0.5}{\um}
+  carrying \SI{210}{\micro A}, supplied at its source by the NMOS current
+  source M2. There is no degeneration resistor: the transconductance is
+  that of M1, \SI{1.45}{mS} from the input impedance measured in
+  Section~\ref{sec:vh1transfer}.
+\item The cascode is folded. The drain current of M1 flows down into the
+  load M3 (\SI{200}{\um}/\SI{2}{\um}), not up through the cascode. The
+  cascode M4 (\SI{2.88}{\um}/\SI{1.44}{\um}) hangs from the same node,
+  \textsf{med}, and carries only the \SI{0.38}{\micro A} of the output
+  branch, a current set by M6 at the top. With its gate at \SI{0.66}{V} and
+  \textsf{med} at \SI{0.18}{V}, M4 operates in weak inversion.
+\item The signal current $g_{m1}v_i$ divides at \textsf{med} between the
+  output resistances of M1 and M3 and the input of the cascode. The part
+  that enters M4 reaches the output node, whose impedance is the cascoded
+  current source M5, M6 in parallel with $g_{m4}r_{d4}$ times the
+  resistance at \textsf{med}. The voltage gain from the gate of M1 to
+  \textsf{med} is not small, and it multiplies the gate-drain capacitance of
+  M1 as seen from the input: this is the capacitance that the amplifier
+  adds to the pad in Section~\ref{sec:vh1transfer}.
+\end{itemize}
+%
+The folded arrangement lets the two branches carry very different currents,
+\SI{210}{\micro A} for transconductance and noise, \SI{0.38}{\micro A} for a
+high output impedance, at the price of a second current path whose
+transistors, M2 and M3, inject their drain-current noise into the signal.
+Section~\ref{sec:vh1devices} measures that price and
+Section~\ref{sec:vh1cascode} what the cascode itself does.
 
 % ----------------------------------------------------------------------
 \section{The real amplifier: bandwidth and stability}
@@ -851,8 +915,8 @@ nanoseconds for picofarads and millisiemens.
 A design constraint follows from Eq.~\eqref{eq:gbp}. Low
 thermal noise requires a large $g_{m1}$; a high charge gain requires a small
 $\Cf$; the two together give a very large GBP. With $g_{m1}=\SI{1}{mS}$ and
-$\Cf=\SI{3}{fF}$ the ratio is \SI{3e11}{rad/s}. No single-stage amplifier is
-that fast, so the second pole of the stage, at the cascode nodes, falls inside
+$\Cf=\SI{3}{fF}$ the ratio is \SI{3e11}{rad/s}, and \SI{5e10}{rad/s} with
+\SI{20}{fF}. No single-stage amplifier is that fast, so the second pole of the stage, at the cascode nodes, falls inside
 the loop bandwidth and the phase margin is lost. Three remedies exist.
 %
 \begin{itemize}
@@ -866,7 +930,9 @@ the loop bandwidth and the phase margin is lost. Three remedies exist.
 \end{itemize}
 %
 Each remedy trades bandwidth, which is not needed at frame time scales,
-against noise or complexity.
+against noise or complexity. The VH1 readout takes the third route without
+the second stage: the \SIlist{20;30}{fF} of Section~\ref{sec:vh1range} were
+chosen for range, and lower the GBP by the same factor of seven to ten.
 
 % ----------------------------------------------------------------------
 \section{Pad capacitance and input impedance}
@@ -932,7 +998,8 @@ and has calibrated.
  & Present NAUSICAA circuit & Reset architecture\\
 \midrule
 Charge removal & Feedback transistor, decay \SI{19.5}{s}, $\Cf=\SI{3}{fF}$ &
-Reset switch; no discharge element\\
+Reset switch; no discharge element; two capacitors of \SI{20}{} or
+\SI{30}{fF}\\
 Reference per frame & Digital difference of consecutive readings; discharge term
 $\tau_f^{-1}\int u\,\dd t$ corrected in reconstruction & Analogue: capacitor
 swap, output referred to $\Vref$\\
@@ -943,7 +1010,8 @@ Nonlinearity & Feedback transistor; calibrated nonlinear model with \SI{0.63}{V}
 guard & Linear integrator up to the output range; range set by $\Cf$ and the
 ADC\\
 Conversion & 12 bits every \SI{100}{\micro s}, 50-sample average over \SI{5}{ms}
-& One 16-bit sigma-delta conversion per frame\\
+& Two 16-bit sigma-delta conversions per frame, each integrating
+\SI{10}{ms} (Section~\ref{sec:vh1result})\\
 Charge per frame & From differences and the discharge correction & From
 differences; total charge read directly\\
 \bottomrule
@@ -999,9 +1067,9 @@ every number in this section is written by the scripts that run them.
 %
 \begin{figure}[htbp]\centering
 \includegraphics[width=.8\linewidth]{nausicaa_vh_vh1.pdf}
-\caption{The VH1 prototype. The amplifier is the single stage of the
-present circuit (M1 to M6 of Fig.~\ref{fig:cascode}, without the resistor
-$R$); the discharge transistor is removed. The two feedback capacitors
+\caption{The VH1 prototype. The amplifier is the folded-cascode stage of
+the present circuit, M1 to M6 of Fig.~\ref{fig:folded}; the discharge
+transistor is removed. The two feedback capacitors
 alternate between the output and $V_{\rm REF}$ through the switches
 $\phi_{1,2}$ and $\bar\phi_{1,2}$. The reset switch $\phi_{\rm r}$ closes
 the loop through a level shift of \SI{0.885}{V}, a resistor carrying
@@ -1013,11 +1081,11 @@ Figure~\ref{fig:vh1} shows the circuit.
 %
 \begin{itemize}
 \item The amplifier is M1 to M6 of the frozen \texttt{csa\_v3} release with
-  their sizes and biases: PMOS input M1 (\SI{220}{\um}/\SI{0.5}{\um},
-  \SI{210}{\micro A}), NMOS cascode M4, load M3, current source M2 and a
-  PMOS cascode pair M5, M6 at the output. The pad capacitance is
-  \SI{1.25}{pF} and the feedback capacitors are \SI{3}{fF}, as in the
-  present circuit. The discharge transistor Mf is removed.
+  their sizes and biases, the folded cascode of Fig.~\ref{fig:folded}. The
+  pad capacitance is \SI{1.25}{pF} and the feedback capacitors are
+  \SI{3}{fF}, as in the present circuit; Section~\ref{sec:vh1range} raises
+  them to \SIlist{20;30}{fF} once the range is measured on events. The
+  discharge transistor Mf is removed.
 \item The capacitors park at $V_{\rm REF}=\SI{0.886}{V}$, the output
   baseline of the present circuit, so that the output starts each cycle
   where it does today.
@@ -1071,7 +1139,7 @@ $e/\Cf=\SI{\vhIdealGain}{\micro V}$. The calibrated \SI{40.2}{\micro V} per
 ion of the present circuit has the same origin. The added capacitance grows
 faster than linearly with the width of M1 and also with the width of the
 cascode M4, so it is a Miller term through the cascode node rather than the
-gate oxide of M1 alone.
+gate oxide of M1 alone (Section~\ref{sec:vh1cascode}).
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{vh1_transients.pdf}
@@ -1176,18 +1244,16 @@ Variant & $V_{\rm nmos}$ (V) & $V_{\rm nload}$ (V) & $A_0$ & $C_{\rm amp}$ (pF) 
   is lost.
 \item \textbf{M3.} The load helps only to \SI{4}{\um}. A longer M3 needs
   more drain voltage than the \SI{0.18}{V} available at the cascode node
-  and leaves saturation, which collapses $A_0$. Raising the cascode bias
-  would be the next step; it was not varied here.
+  and leaves saturation, which collapses $A_0$. Section~\ref{sec:vh1cascode}
+  gives the headroom arithmetic.
 \item \textbf{M1.} Halving the input transistor to \SI{110}{\um} cuts the
   capacitance it adds from \SI{\vhCamp}{pF} to \SI{1.9}{pF} at equal ENC.
   At \SI{55}{\um} the loss of transconductance costs more than the
   capacitance saves. The optimum is the usual one: gate capacitance near
   the pad capacitance.
 \item \textbf{M4.} A wider cascode does not reduce the input capacitance;
-  it raises it, and with it the open-loop gain. Alone it is neutral. In
-  combination it matters, because the longer M3 lowers $A_0$ and the
-  charge fraction with it; the \SI{23}{\um} cascode restores
-  $A_0=\vhImpAzero$ and a fraction of \vhImpFraction.
+  it raises it, and with it the open-loop gain. Alone it is neutral; in
+  combination it matters. Section~\ref{sec:vh1cascode} is devoted to it.
 \end{itemize}
 %
 The combination of the four changes gives \vhEncImpFive{} ions with
@@ -1196,6 +1262,150 @@ The combination of the four changes gives \vhEncImpFive{} ions with
 practical reset of Section~\ref{sec:vh1circuit} was verified on this
 combined circuit: \SI{\vhResetGain}{\micro V} per ion from the frame
 difference.
+
+% ----------------------------------------------------------------------
+\subsection{The cascode}
+\label{sec:vh1cascode}
+%
+The cascode M4 of Fig.~\ref{fig:folded} was varied in width from
+\SIrange{2.88}{46}{\um}, at its present length and gate bias, with the
+current of the output branch fixed at \SI{0.38}{\micro A} by M6 (the M4
+rows of Table~\ref{tab:vh1sweeps}). Four observations describe what it
+does in this stage.
+%
+\begin{itemize}
+\item \textbf{The node \textsf{med}.} A wider M4 needs less gate-source
+  voltage for the same current, so with its gate fixed the node
+  \textsf{med} rises: from \SI{0.184}{V} at \SI{2.88}{\um} to
+  \SI{0.207}{}, \SI{0.229}{}, \SI{0.251}{} and \SI{0.273}{V} at each
+  doubling of the width, \SI{22}{mV} per doubling. This is the
+  weak-inversion slope $nV_T\ln2$ with $n\simeq1.2$ and confirms that M4
+  operates there. The node voltage is the drain voltage of M3, so the
+  cascode width sets how deep in saturation the load sits.
+\item \textbf{Gain.} The open-loop gain rises from \vhAzero{} to
+  \SI{19745}{} over the sweep, a factor \SI{2.6}{}. With more drain
+  voltage the output resistance of M3 grows, less of the signal current
+  of M1 is lost in it and the voltage gain from the gate of M1 to
+  \textsf{med} grows with the share steered into the output branch.
+\item \textbf{Input capacitance.} The capacitance added by the amplifier
+  rises in step, from \SI{\vhCamp}{pF} to \SI{10.3}{pF}. The ratio of
+  open-loop gain to added capacitance stays between \SI{1750}{} and
+  \SI{1920}{} per \si{pF} across the five widths. Both quantities are
+  proportional to the voltage gain from the gate of M1 to \textsf{med}:
+  the first because the stage gain is that gain times the gain of the
+  cascode from \textsf{med} to the output, the second because the
+  gate-drain capacitance of M1 is multiplied by it, the Miller effect of
+  Section~\ref{sec:csa} applied inside the amplifier. The same ratio holds
+  across the M2 sweep, \SIrange{1670}{1750}{} per \si{pF}, and breaks only
+  when M1 itself is resized, since then the gate-drain capacitance changes
+  as well.
+\item \textbf{Noise.} The ENC does not move: \SIrange{27.0}{27.1}{} ions
+  with full-frame averaging at every width. The cascode carries
+  \SI{0.38}{\micro A} and adds no noise of consequence; the gain it brings
+  raises signal and noise together at the output, and the charge fraction
+  it recovers, \SIrange{0.80}{0.84}{}, is worth a few percent.
+\end{itemize}
+%
+The headroom of the load follows from the first observation. With
+\SI{210}{\micro A} through \SI{200}{\um} of width, M3 needs a drain voltage
+of about \SI{0.12}{V} at \SI{2}{\um} length, \SI{0.17}{V} at \SI{4}{\um}
+and \SI{0.24}{V} at \SI{8}{\um}, from the square-law estimate
+$V_{\rm ov}=\sqrt{2I_DL/(\mu C_{\rm ox}W)}$ with the usual
+\SI{300}{\micro A/V^2} of a \SI{180}{nm} NMOS. Against the \SI{0.18}{V}
+that the \SI{2.88}{\um} cascode allows, this is why the M3 sweep of
+Section~\ref{sec:vh1devices} helps at \SI{4}{\um} and collapses at
+\SI{8}{\um}: M3 leaves saturation, its output resistance falls and the
+gain with it.
+
+Alone, the cascode is therefore neutral. In the combined circuit it is
+not. The longer M2 and M3 and the narrower M1 bring the open-loop gain to
+\SI{2379}{} and the charge fraction to \SI{0.77}{}, with an ENC of
+\SI{30.3}{} and \SI{21.0}{} ions; widening M4 to \SI{23}{\um} lifts
+\textsf{med} to \SI{0.25}{V}, restores $A_0=\vhImpAzero$ and a fraction of
+\vhImpFraction, and the ENC becomes \vhEncImpFive{} and \vhEncImpFull{}.
+With \SI{3}{fF} the cascode width is what makes the device changes pay in
+full.
+
+With the production capacitors the gain matters less.
+Eq.~\eqref{eq:sharing} with the \SI{0.90}{pF} that the combined circuit
+adds to the pad gives a charge fraction of \SI{0.96}{} at \SI{20}{fF} and
+\SI{0.97}{} at \SI{30}{fF} even with $A_0=2379$, against \SI{0.98}{} and
+\SI{0.99}{} with the wide cascode: the larger capacitor relaxes the gain
+requirement by itself. The noise spectra of the production cards were
+simulated with the \SI{23}{\um} cascode; a run without it at
+\SIlist{20;30}{fF} was not made.
+
+The cascode bias was then varied on the combined circuit together with the
+length of M3 (Table~\ref{tab:vh1casc}). Every variant is re-tuned with the
+loop closed as before. The output window is measured by lowering the level
+shift of the closed reset loop step by step, which moves the output down at
+a fixed gate voltage as accumulated charge does, and reading the
+small-signal gain and charge fraction at each level.
+%
+\begin{table}[htbp]\centering
+\caption{Cascode gate bias and load length on the combined circuit (M1
+\SI{110}{\um}, M2 \SI{2}{\um}, M4 \SI{23}{\um}). ENC in ions for
+\SI{20}{ms} frames at \SI{3}{fF}, with \SI{5}{ms} and full-frame averaging.
+The last column is the output level at which the gain per ion with
+\SI{20}{fF} has fallen by \SI{2}{\percent}, the lower edge of the output
+window; the upper edge does not move.}
+\footnotesize
+\begin{tabular}{cccccccc}
+\toprule
+M3 length & Gate of M4 & \textsf{med} & $A_0$ & $C_{\rm amp}$ (pF) & \SI{5}{ms} & \SI{20}{ms} & Window edge, \SI{20}{fF}\\
+\midrule
+\SI{4}{\um} & \SI{0.66}{V} & \SI{0.25}{V} & 9268 & 2.6 & 28.3 & 19.7 & \SI{0.40}{V}\\
+\SI{8}{\um} & \SI{0.66}{V} & \SI{0.25}{V} & 3864 & 1.3 & 26.1 & 18.2 & \\
+\SI{4}{\um} & \SI{0.76}{V} & \SI{0.33}{V} & 18020 & 4.9 & 28.6 & 19.8 & \\
+\SI{8}{\um} & \SI{0.76}{V} & \SI{0.33}{V} & 14016 & 3.9 & 26.1 & 18.2 & \SI{0.47}{V}\\
+\SI{16}{\um} & \SI{0.76}{V} & \SI{0.33}{V} & 4680 & 1.5 & 25.3 & 17.7 & \\
+\SI{8}{\um} & \SI{0.86}{V} & \SI{0.41}{V} & 23293 & 6.3 & 26.1 & 18.2 & \SI{0.55}{V}\\
+\SI{16}{\um} & \SI{0.86}{V} & \SI{0.41}{V} & 15083 & 4.2 & 25.2 & 17.6 & \\
+\bottomrule
+\end{tabular}
+\label{tab:vh1casc}
+\end{table}
+%
+\begin{itemize}
+\item \textbf{The longer load works at the present bias.} With
+  \textsf{med} at \SI{0.25}{V}, M3 at \SI{8}{\um} stays in saturation: the
+  open-loop gain falls to \SI{3864}{} but the ENC improves from
+  \vhEncImpFive{} and \vhEncImpFull{} to \SI{26.1}{} and \SI{18.2}{} ions,
+  \SI{8}{\percent}. At \SI{20}{fF} the lower gain costs \SI{1}{\percent} of
+  charge fraction, \SI{0.968}{} instead of \SI{0.980}{}.
+\item \textbf{Raising the bias restores the gain, not the noise.} With the
+  gate of M4 at \SI{0.76}{V}, \textsf{med} rises to \SI{0.33}{V}, the
+  \SI{8}{\um} load recovers $A_0=\SI{14016}{}$ and the ENC is the same
+  \SI{26.1}{} and \SI{18.2}{}. The noise of M3 is set by its
+  transconductance, which the bias does not change; the bias only decides
+  whether the load is in saturation.
+\item \textbf{A \SI{16}{\um} load needs the raised bias and gives little
+  more.} At \SI{0.76}{V} the ENC is \SI{25.3}{} and \SI{17.7}{} ions,
+  \SI{3}{\percent} below the \SI{8}{\um} load; at \SI{0.86}{V} the same.
+  The load has become a minor noise source; what remains is the input
+  transistor and the current source M2.
+\item \textbf{Each \SI{0.1}{V} of bias costs \SI{0.07}{V} of window.} The
+  lower edge of the output window, where the gain per ion at \SI{20}{fF}
+  has fallen by \SI{2}{\percent}, is \SI{0.40}{V} at the present bias,
+  \SI{0.47}{V} at \SI{0.76}{V} and \SI{0.55}{V} at \SI{0.86}{V}. The same
+  scan shows that the \SI{0.4}{V} edge of the production cards is exactly
+  at the \SI{2}{\percent} mark with \SI{20}{fF} (\SI{1.4}{\percent} with
+  \SI{30}{fF}) and that at \SI{0.45}{V} the loss is below
+  \SI{1}{\percent}. At \SI{3}{fF} the same edge would cost
+  \SI{12}{\percent}: the larger capacitor is what makes the window usable
+  to its edge.
+\end{itemize}
+%
+The recommendation is the \SI{8}{\um} load at the present cascode bias:
+\SI{8}{\percent} less noise, no change to the window or to the bias
+network. The \SI{16}{\um} load with the gate of M4 at \SI{0.76}{V} buys
+another \SI{3}{\percent} for \SI{0.07}{V} of window, \SI{9000}{} ions of
+range at \SI{20}{fF}, which still leaves three times the busiest pad of
+Table~\ref{tab:vh1pads}. The production cards of Section~\ref{sec:vh1range}
+keep the \SI{4}{\um} load that was simulated for them; the longer load is
+for their next revision. The decks and results are in
+\code{LTSpice/designs/VH1/cascode_bias} and
+\code{results/ltspice/design/VH1/cascode_bias}.
 
 % ----------------------------------------------------------------------
 \subsection{Frame length}
@@ -1245,14 +1455,17 @@ straddles frame boundaries.
 \item Switch charge injection, clock feedthrough and the reset noise are
   not in the simulation; they need transistor switches and a transient
   noise study.
-\item The cascode bias was kept at its present value; it limits the
-  length of M3 and the full benefit of the device changes.
+\item The load M3 can be lengthened to \SI{8}{\um} at the present cascode
+  bias for \SI{8}{\percent} less noise (Section~\ref{sec:vh1cascode}); the
+  production cards keep the \SI{4}{\um} circuit until they are
+  re-simulated with it.
 \item The last row of Table~\ref{tab:vh1enc} requires a converter that
   integrates over the frame. A converter that samples briefly at the swap
   realises the first row instead.
 \item The range of \SI{3}{fF}, about \SI{10000}{} ions per pad, is too
   small for the busiest pads of a bb0nu event. Section~\ref{sec:vh1range}
-  measures the need and settles the capacitor.
+  measured the need on events and settled the capacitor at \SI{20}{fF} for
+  \SI{3}{mm} pitch and \SI{30}{fF} for \SI{4}{mm}.
 \end{itemize}
 
 % ----------------------------------------------------------------------
@@ -1293,10 +1506,13 @@ readout turns these counts into converter readings in five steps.
   capacitor is the integral of the pad current from the reset. The output is
   \[
    v_o(t) = V_{\rm REF} - g\,\frac{Q(t)}{e},
-   \qquad g=\SI{46.9}{\micro V}\ \text{per ion},
+   \qquad g = f\,\frac{e}{\Cf},
   \]
-  with $g$ the charge fraction of Section~\ref{sec:vh1transfer} times
-  $e/\Cf$. There is no discharge term. The output is linear while it stays
+  with $f$ the charge fraction of Section~\ref{sec:vh1transfer}:
+  \SI{46.9}{\micro V} per ion with \SI{3}{fF}, \SI{7.85}{\micro V} with the
+  \SI{20}{fF} of the \SI{3}{mm} card and \SI{5.27}{\micro V} with the
+  \SI{30}{fF} of the \SI{4}{mm} card (Table~\ref{tab:vh1cf}). There is no
+  discharge term. The output is linear while it stays
   between \SI{0.4}{} and \SI{0.95}{V}; a pad whose noiseless output leaves
   this window is flagged and not reconstructed.
 \item \textbf{Frames and readings.} Frames of \SI{20}{ms} start one frame
@@ -1307,9 +1523,12 @@ readout turns these counts into converter readings in five steps.
   reading is the mean of $v_o$ at the midpoints of \SI{100}{\micro s} cells
   inside its window. The reference reading is the last reading of the
   reference frame.
-\item \textbf{Converter.} Each reading is quantised to 16 bits over
-  \SI{1.8}{V}, a step of \SI{27}{\micro V}, about half an ion. Codes at
-  either end of the range invalidate the pad.
+\item \textbf{Converter.} Each reading is quantised to 16 bits over the
+  converter span: \SI{1.8}{V} for the \SI{3}{fF} card, a step of
+  \SI{27}{\micro V} or half an ion; \SIrange{0.3}{1.0}{V} for the
+  production cards, a step of \SI{10.7}{\micro V}, \SI{1.4}{} ions at
+  \SI{20}{fF} and \SI{2.0}{} at \SI{30}{fF}. Codes at either end of the
+  range invalidate the pad.
 \end{itemize}
 
 % ----------------------------------------------------------------------
@@ -1469,7 +1688,9 @@ The adopted readout is therefore two contiguous \SI{10}{ms} integrations per
 \SI{50}{} for the present chain, with a hundred times fewer conversions. The
 swap of the capacitors stays at \SI{20}{ms}; only the converter reads twice.
 For the amplifier as it is today, without the device changes, the same
-readout gives about \SI{45}{} ions.
+readout gives about \SI{45}{} ions. These numbers are for \SI{3}{fF}; with
+the production capacitors the noise per bucket is \SI{32.8}{} ions at
+\SI{20}{fF} and \SI{33.2}{} at \SI{30}{fF} (Table~\ref{tab:vh1cf}).
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{vh1_example_pad.pdf}
@@ -1570,6 +1791,22 @@ the readout supports both with the two cards. The price of the larger
 capacitor is at the converter: \SI{5}{} to \SI{8}{\micro V} per ion leaves
 no margin on the \SI{16}{} bits, so converter noise and drift must stay at
 the microvolt level.
+
+The production cards are
+\code{config/specs/response/ion_csa/vh1_device_changes_cf20f.toml} for
+\SI{3}{mm} pitch and \code{vh1_device_changes_cf30f.toml} beside it for
+\SI{4}{mm}. A first run of \SI{1000}{} events at \SI{3}{mm} pitch with
+\SI{20}{fF}, through detector response, VH1 readout, hit formation and track
+reconstruction, gave no saturated pad and no invalid bucket. The ion energy
+estimator, the sum of all reconstructed charges before any hit cut, has
+$\sigma/\mu=\SI{0.94}{\percent}$ (\SI{23}{keV}, which is the \SI{33}{} ions
+of noise summed over about a thousand pad-buckets per event, far above the
+Fano floor of \SI{2.8}{keV}); the same sum on the present chain at
+\SI{4}{mm} spreads by \SI{70}{keV}, in part through nonlinear failures, a
+comparison between different pitches that is indicative only. The ion track
+is a single connected component in \SI{847}{} of the \SI{1000}{} events,
+and every additional component matches a gamma deposit of the Monte Carlo:
+no primary track is broken by the readout noise.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}

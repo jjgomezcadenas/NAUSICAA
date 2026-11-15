@@ -1,0 +1,40 @@
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,siunitx}
+\usepackage[american]{circuitikz}
+\begin{document}
+\begin{circuitikz}[font=\small]
+% ---- input branch: M2 (tail current source), M1 (PMOS input), M3 (load)
+\node[nmos](M2) at (0,5.0) {};
+\node[pmos](M1) at (0,3.0) {};
+\node[nmos](M3) at (0,1.0) {};
+\draw (M2.D) -- ++(0,0.4) node[vcc]{$V_{DD}=\SI{1.8}{V}$};
+\draw (M2.S) -- (M1.S);
+\draw (M1.D) -- (M3.D);
+\draw (M3.S) -- ++(0,-0.3) node[ground]{};
+\filldraw (0,2.0) circle (1.2pt);
+\node[left] at (M2.G) {$V_{\rm nmos}=\SI{1.6}{V}$};
+\node[left] at (M1.G) {in $\;\SI{1.3}{mV}$};
+\node[left] at (M3.G) {$V_{\rm nload}=\SI{0.54}{V}$};
+\node[right,align=left,font=\footnotesize] at ($(M2.D)+(0.15,-0.55)$) {M2\\$3\times27/0.5$};
+\node[right,align=left,font=\footnotesize] at ($(M1.S)+(0.15,-0.55)$) {M1\\$220/0.5$\\\SI{210}{\micro A}};
+\node[right,align=left,font=\footnotesize] at ($(M3.D)+(0.15,-0.55)$) {M3\\$200/2$};
+\node[below left,font=\footnotesize] at (0,2.0) {med $\;\SI{0.18}{V}$};
+% ---- output branch: M4 (NMOS cascode, folded), M5, M6 (PMOS cascoded current source)
+\node[nmos,xscale=-1](M4) at (4.2,2.9) {};
+\node[pmos,xscale=-1](M5) at (4.2,4.9) {};
+\node[pmos,xscale=-1](M6) at (4.2,6.4) {};
+\draw (0,2.0) -| (M4.S);
+\draw (M4.D) -- (M5.D);
+\draw (M5.S) -- (M6.D);
+\draw (M6.S) -- ++(0,0.3) node[vcc]{$V_{DD}$};
+\filldraw (4.2,3.9) circle (1.2pt);
+\draw (4.2,3.9) -- ++(1.4,0) node[right]{out $\;\SI{0.886}{V}$};
+\node[right] at (M4.G) {$V_{\rm ncasc}=\SI{0.66}{V}$};
+\node[right] at (M5.G) {\SI{0.8}{V}};
+\node[right] at (M6.G) {\SI{1.1}{V}};
+\node[left,align=right,font=\footnotesize] at ($(M4.D)+(-0.15,-0.55)$) {M4\\$2.88/1.44$\\\SI{0.38}{\micro A}};
+\node[left,align=right,font=\footnotesize] at ($(M5.S)+(-0.15,-0.55)$) {M5\\$220/0.5$};
+\node[left,align=right,font=\footnotesize] at ($(M6.S)+(-0.15,-0.55)$) {M6\\$1/6$};
+\end{circuitikz}
+\end{document}
