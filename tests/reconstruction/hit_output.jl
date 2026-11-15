@@ -33,6 +33,28 @@ using Test,HDF5
     @test read(f["etrack/offsets"])==[0,0,5]
    end
   end
+  # Event location (schema v2): vertex in detector mm and the fixed frame
+  cube=EventFrame(mc_vertex_frame,(-90f0,-100f0,-110f0),(110f0,100f0,90f0));where=HitEventLocation((12f0,-34f0,560f0),cube)
+  path=joinpath(dir,"located.h5");w=open_hit_output(path,meta,settings();located=true)
+  @test_throws ArgumentError write_hit_event(w,event(7))                       # a located file needs the location
+  write_hit_event(w,event(7);location=where);write_hit_event(w,event(8,empty,h);location=HitEventLocation((0f0,0f0,125f0),cube))
+  @test finish_hit_output(w)==path
+  r=open_hit_input(path)
+  @test read_hit_location(r,Int64(7)).vertex_mm==(12f0,-34f0,560f0)
+  @test read_hit_location(r,Int64(8)).vertex_mm==(0f0,0f0,125f0)
+  @test read_hit_location(r,Int64(7)).fixed_frame.lower_mm==cube.lower_mm && read_hit_location(r,Int64(7)).fixed_frame.upper_mm==cube.upper_mm
+  @test read_hit_event(r,Int64(7)).itrack.energy_keV==h.energy_keV            # the version 1 content is unchanged
+  @test_throws KeyError read_hit_location(r,Int64(12));close_hit_input(r)
+  h5open(path,"r") do f
+   @test read(f["schema"],String)=="itaca.reconstructed_hits.v2"
+   @test read(f["events/vertex_z_mm"])==Float32[560,125]
+   @test read(f["events/fixed_frame_x_min_mm"])==Float32[-90,-90]
+  end
+  plain=joinpath(dir,"plain.h5");w=open_hit_output(plain,meta,settings())
+  @test_throws ArgumentError write_hit_event(w,event(7);location=where)        # a version 1 file takes no location
+  write_hit_event(w,event(7));finish_hit_output(w)
+  r=open_hit_input(plain);@test_throws ArgumentError read_hit_location(r,Int64(7));close_hit_input(r)
+  h5open(plain,"r") do f;@test read(f["schema"],String)=="itaca.reconstructed_hits.v1"&&!haskey(f["events"],"vertex_z_mm");end
   @test_throws ArgumentError HitOutputSettings(.5f0,1f0,4,4,1024)
   path=joinpath(dir,"failed.h5");w=open_hit_output(path,meta,settings())
   boundary=SavedHits(Float32[0],Float32[0],Float32[0],Float32[1])

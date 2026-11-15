@@ -31,6 +31,12 @@ struct HitEventInfo
     ion_sigma_t_mm::Float32
     electron_sigma_t_mm::Float32
 end
+"""Where the event is in the detector: generation vertex in detector mm
+(Z = 0 at the ion readout plane) and the fixed frame, vertex-relative."""
+struct HitEventLocation
+    vertex_mm::NTuple{3,Float32}
+    fixed_frame::EventFrame
+end
 """One event's information, pre-cut totals and both retained hit sets."""
 struct HitEvent
     info::HitEventInfo
@@ -73,6 +79,7 @@ mutable struct HitWriter
     ion_hit_count::Int64
     electron_hit_count::Int64
     event_numbers::Set{Int64}
+    located::Bool
 end
 """Open hit file with a lookup from MC event number to one-based event row."""
 struct HitReader
@@ -80,6 +87,10 @@ struct HitReader
     event_rows::Dict{Int64,Int64}
 end
 const HIT_SCHEMA="itaca.reconstructed_hits.v1"
+"""Version 1 plus the event location columns."""
+const HIT_SCHEMA_LOCATED="itaca.reconstructed_hits.v2"
+const LOCATION_COLUMNS=("vertex_x_mm","vertex_y_mm","vertex_z_mm","fixed_frame_x_min_mm","fixed_frame_x_max_mm",
+ "fixed_frame_y_min_mm","fixed_frame_y_max_mm","fixed_frame_z_min_mm","fixed_frame_z_max_mm")
 const HIT_COLUMNS=("x_mm","y_mm","z_mm","energy_keV")
 const EVENT_FLOAT_COLUMNS=("ion_drift_cm","electron_drift_cm","frame_x_min_mm","frame_x_max_mm",
  "frame_y_min_mm","frame_y_max_mm","frame_z_min_mm","frame_z_max_mm","ion_sigma_t_mm",
@@ -106,16 +117,18 @@ end
 """Create an extendible compressed hit file beside its final path.
 Checks the output cap and a 1 GiB free-space reserve before creating a unique
 run's `.tmp` file. Refuses an existing final file or unfinished temporary.
+With `located`, every event also stores its vertex and fixed frame (schema v2).
 """
-function open_hit_output(path::AbstractString,metadata::HitFileMetadata,settings::HitOutputSettings)::HitWriter
+function open_hit_output(path::AbstractString,metadata::HitFileMetadata,settings::HitOutputSettings;located::Bool=false)::HitWriter
     target=abspath(path);tmp=target*".tmp";mkpath(dirname(target))
     (ispath(target)||ispath(tmp))&&throw(ArgumentError("Output or temporary already exists: $target"))
     GuardedFiles.space_check(dirname(target),settings.max_output_bytes,1024^3)
     f=h5open(tmp,"w")
     try
-        f["schema"]=HIT_SCHEMA
+        f["schema"]=located ? HIT_SCHEMA_LOCATED : HIT_SCHEMA
         g=create_group(f,"events")
         for key in EVENT_FLOAT_COLUMNS;create_column(g,key,Float32,256,settings.compression_level);end
+        if located;for key in LOCATION_COLUMNS;create_column(g,key,Float32,256,settings.compression_level);end;end
         for key in EVENT_INT_COLUMNS;create_column(g,key,Int64,256,settings.compression_level);end
         close(g)
         for arm in ("itrack","etrack")
@@ -128,6 +141,7 @@ function open_hit_output(path::AbstractString,metadata::HitFileMetadata,settings
         for key in (:run_label,:species);g[string(key)]=getfield(metadata,key);end
         g["gas_mixture"]=string(metadata.gas_mixture);g["coordinate_frame"]="mc_vertex_frame"
         g["position_unit"]="mm";g["energy_unit"]="keV"
+        located&&(g["vertex_frame"]="detector: x, y from the axis, z = 0 at the ion readout plane")
         for key in fieldnames(HitOutputSettings);g[string(key)]=getfield(settings,key);end
         for key in (:cards,:checksums)
             sub=create_group(g,string(key))
@@ -135,7 +149,7 @@ function open_hit_output(path::AbstractString,metadata::HitFileMetadata,settings
             close(sub)
         end
         close(g);flush(f);GuardedFiles.check_size(tmp,settings.max_output_bytes)
-        HitWriter(f,tmp,target,settings,0,0,0,Set{Int64}())
+        HitWriter(f,tmp,target,settings,0,0,0,Set{Int64}(),located)
     catch
         close(f);rm(tmp;force=true);rethrow()
     end
@@ -146,8 +160,10 @@ Validate columns, coordinate frame, threshold and duplicate event number before
 writing. Check free space and the file budget after flushing each event.
 On a write failure the caller must abort the temporary output.
 """
-function write_hit_event(w::HitWriter,event::HitEvent)::Nothing
+function write_hit_event(w::HitWriter,event::HitEvent;location::Union{Nothing,HitEventLocation}=nothing)::Nothing
     info=event.info;energy=event.energy
+    (location!==nothing)==w.located||throw(ArgumentError("Event location must be given exactly when the file stores locations"))
+    location===nothing||location.fixed_frame.frame==mc_vertex_frame||throw(ArgumentError("Expected vertex-relative fixed frame"))
     info.event_number in w.event_numbers&&throw(ArgumentError("Duplicate MC event number"))
     info.frame.frame==mc_vertex_frame||throw(ArgumentError("Expected vertex-relative frame"))
     for (h,cut) in ((event.itrack,w.settings.ion_hit_cut_keV),(event.etrack,w.settings.electron_hit_cut_keV))
@@ -165,6 +181,13 @@ function write_hit_event(w::HitWriter,event::HitEvent)::Nothing
         values["frame_$(axis)_max_mm"]=info.frame.upper_mm[i]
     end
     for k in fieldnames(EventEnergy);values[string(k)]=getfield(energy,k);end
+    if location!==nothing
+        for (i,axis) in enumerate(("x","y","z"))
+            values["vertex_$(axis)_mm"]=location.vertex_mm[i]
+            values["fixed_frame_$(axis)_min_mm"]=location.fixed_frame.lower_mm[i]
+            values["fixed_frame_$(axis)_max_mm"]=location.fixed_frame.upper_mm[i]
+        end
+    end
     for (k,v) in values;append_column(w.file,"events/$k",[v]);end
     for (arm,h) in (("itrack",event.itrack),("etrack",event.etrack))
         for key in HIT_COLUMNS;append_column(w.file,"$arm/$key",getfield(h,Symbol(key)));end
@@ -178,7 +201,7 @@ function write_hit_event(w::HitWriter,event::HitEvent)::Nothing
 end
 """Check schema lengths and offsets, close, and atomically publish the completed file."""
 function finish_hit_output(w::HitWriter)::String
-    for key in (EVENT_FLOAT_COLUMNS...,EVENT_INT_COLUMNS...)
+    for key in (EVENT_FLOAT_COLUMNS...,EVENT_INT_COLUMNS...,(w.located ? LOCATION_COLUMNS : ())...)
         d=w.file["events/$key"];try length(d)==w.event_count||error("Incomplete event column") finally close(d) end
     end
     for (arm,count) in (("itrack",w.ion_hit_count),("etrack",w.electron_hit_count))
@@ -203,7 +226,7 @@ end
 function open_hit_input(path::AbstractString)::HitReader
     f=h5open(path,"r")
     try
-        read(f["schema"],String)==HIT_SCHEMA||throw(ArgumentError("Unsupported hit schema"))
+        read(f["schema"],String) in (HIT_SCHEMA,HIT_SCHEMA_LOCATED)||throw(ArgumentError("Unsupported hit schema"))
         ids=read(f["events/event_number"]);length(unique(ids))==length(ids)||error("Duplicate event numbers")
         HitReader(f,Dict(id=>Int64(i) for (i,id) in enumerate(ids)))
     catch;close(f);rethrow();end
@@ -223,6 +246,14 @@ function read_hit_event(r::HitReader,event_number::Int64)::HitEvent
         SavedHits(columns...)
     end
     HitEvent(info,energy,hits("itrack"),hits("etrack"))
+end
+"""Read an event's vertex and fixed frame from a file that stores locations."""
+function read_hit_location(r::HitReader,event_number::Int64)::HitEventLocation
+    read(r.file["schema"],String)==HIT_SCHEMA_LOCATED||throw(ArgumentError("This hit file stores no event locations"))
+    row=get(r.event_rows,event_number,0);row>0||throw(KeyError(event_number))
+    value(key)=begin d=r.file["events/$key"];try d[row] finally close(d) end end
+    HitEventLocation(ntuple(i->value("vertex_$("xyz"[i])_mm"),3),
+        EventFrame(mc_vertex_frame,ntuple(i->value("fixed_frame_$("xyz"[i])_min_mm"),3),ntuple(i->value("fixed_frame_$("xyz"[i])_max_mm"),3)))
 end
 """Release an open hit reader."""
 close_hit_input(r::HitReader)=close(r.file)

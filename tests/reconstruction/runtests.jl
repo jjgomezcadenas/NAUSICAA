@@ -120,3 +120,5 @@ include("../../scripts/production/reconstruction_controls.jl")
 end
 
 include("hit_output.jl")
+include("frame_noise_hits.jl")
+include("merge_hit_batches.jl")

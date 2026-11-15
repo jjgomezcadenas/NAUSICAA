@@ -16,6 +16,19 @@ function place_event(rng::AbstractRNG,id::Int64,L::Float32)::EventPlacement
     EventPlacement(id,z/10f0,(L-z)/10f0)
 end
 
+"""Take the event where it was generated; return its drift lengths in cm.
+
+The source coordinates are detector coordinates: Z = 0 at the ion readout
+plane and Z = L at the EL entry. Ion drift is the vertex Z, electron drift
+L minus it. The vertex must lie within 0..L.
+"""
+function placement_from_vertex(info::MCEventInfo,L::Float32)::EventPlacement
+    isfinite(L) && L>0 || throw(ArgumentError("Invalid chamber length"))
+    z=info.generation_vertex_mm[3]
+    0f0<=z<=L || throw(ArgumentError("Vertex of event $(info.event_id) outside 0..$L mm: $z"))
+    EventPlacement(info.event_id,z/10f0,(L-z)/10f0)
+end
+
 """Map particles to the first gamma in their chain of mothers; zero if none.
 
 Primary IDs come from MCEventInfo. Reject duplicate IDs, missing mothers,
@@ -128,6 +141,84 @@ function mc_fast_trigger(h::MCEventHits,info::MCEventInfo,particles::Vector{MCPa
     end
     FastTriggerOutput(decision,frame)
 end
+
+"""Cube of the given side centred on the centre of a box, in the box's frame."""
+function fixed_frame(b::EventFrame,side::Float32)::EventFrame
+    isfinite(side)&&side>0 || throw(ArgumentError("Invalid frame side"))
+    c=ntuple(i->(b.lower_mm[i]+b.upper_mm[i])/2f0,3)
+    EventFrame(b.frame,ntuple(i->c[i]-side/2f0,3),ntuple(i->c[i]+side/2f0,3))
+end
+
+"""Largest side of a box in mm."""
+box_side(b::EventFrame)::Float32=maximum(b.upper_mm[i]-b.lower_mm[i] for i in 1:3)
+
+"""True when a vertex-relative box lies inside the detector cylinder."""
+function _inside_detector(b::EventFrame,v::NTuple{3,Float32},L::Float32,R::Float32)::Bool
+    0f0<=b.lower_mm[3]+v[3] && b.upper_mm[3]+v[3]<=L || return false
+    all(hypot(x+v[1],y+v[2])<=R for x in (b.lower_mm[1],b.upper_mm[1]), y in (b.lower_mm[2],b.upper_mm[2]))
+end
+
+"""Frame the event in a fixed cube and apply detector, frame and gamma cuts.
+
+Input hits are vertex-centred; detector coordinates add the generation vertex.
+The placement must be the one given by `placement_from_vertex`. Cuts, in order:
+
+1. `outside_detector`: a main-track hit, or a hit of a gamma deposit above the
+   energy cut, lies outside the detector cylinder.
+2. `track_larger_than_frame`: a side of the main-track box exceeds the frame side.
+3. `frame_outside_detector`: the cube centred on the main-track box is not
+   fully inside the detector.
+4. `outside_frame_gamma`: a gamma deposit above the energy cut is not fully
+   inside the cube.
+
+Return the first failed decision and the cube. Inputs are preserved.
+"""
+function mc_fast_trigger(h::MCEventHits,info::MCEventInfo,particles::Vector{MCParticle},p::EventPlacement,s::FixedFrameTriggerSettings)::FastTriggerOutput
+    h.event_id==info.event_id==p.event_id || throw(ArgumentError("Mismatched event numbers"))
+    h.frame==mc_vertex_frame || throw(ArgumentError("Expected vertex-centred hits"))
+    v=info.generation_vertex_mm;L=s.chamber_length_mm;R=s.detector_radius_mm
+    isapprox(10f0*p.ion_drift_cm,v[3];atol=1f-2) && isapprox(10f0*(p.ion_drift_cm+p.electron_drift_cm),L;rtol=4eps(Float32)) ||
+        throw(ArgumentError("Placement does not match the generation vertex"))
+    roots=gamma_map(particles,info);gs=gamma_deposits(h,roots)
+    box=main_track_box(h,info,particles);frame=fixed_frame(box,s.frame_side_mm)
+    energetic=Set(g.gamma_particle_id for g in gs if g.energy_keV>s.gamma_energy_cut_keV)
+    outside(j)=!(0f0<=h.z_mm[j]+v[3]<=L && hypot(h.x_mm[j]+v[1],h.y_mm[j]+v[2])<=R)
+    escaped=any(j->(roots[h.particle_id[j]]==0 || roots[h.particle_id[j]] in energetic) && outside(j),eachindex(h.x_mm))
+    decision=if escaped
+        outside_detector
+    elseif box_side(box)>s.frame_side_mm
+        track_larger_than_frame
+    elseif !_inside_detector(frame,v,L,R)
+        frame_outside_detector
+    elseif gamma_veto(gs,frame,s.gamma_energy_cut_keV)
+        outside_frame_gamma
+    else
+        trigger_accepted
+    end
+    FastTriggerOutput(decision,frame)
+end
+
+"""Box to simulate inside a fixed frame: main track and the gamma deposits
+fully inside the frame, enlarged by the margin on each side and limited to the
+frame. With no margin given, the whole frame."""
+function simulation_box(h::MCEventHits,info::MCEventInfo,particles::Vector{MCParticle},frame::EventFrame,margin_mm::Union{Nothing,Float32})::EventFrame
+    margin_mm===nothing && return frame
+    isfinite(margin_mm)&&margin_mm>=0 || throw(ArgumentError("Invalid margin"))
+    boxes=[main_track_box(h,info,particles)]
+    for g in gamma_deposits(h,gamma_map(particles,info));contains(frame,g.bounds)&&push!(boxes,g.bounds);end
+    lo=ntuple(i->max(frame.lower_mm[i],minimum(b.lower_mm[i] for b in boxes)-margin_mm),3)
+    hi=ntuple(i->min(frame.upper_mm[i],maximum(b.upper_mm[i] for b in boxes)+margin_mm),3)
+    EventFrame(frame.frame,lo,hi)
+end
+
+"""Add one event to its selection count; return the updated statistics."""
+function update_statistics(s::FixedFrameStatistics,o::FastTriggerOutput)::FixedFrameStatistics
+    d=o.decision
+    d in (trigger_accepted,outside_detector,track_larger_than_frame,frame_outside_detector,outside_frame_gamma) || throw(ArgumentError("Decision $d does not belong to the fixed-frame selection"))
+    FixedFrameStatistics(s.input_events+1,s.outside_detector_events+(d==outside_detector),s.track_larger_than_frame_events+(d==track_larger_than_frame),
+        s.frame_outside_detector_events+(d==frame_outside_detector),s.outside_frame_gamma_events+(d==outside_frame_gamma),s.accepted_events+(d==trigger_accepted))
+end
+merge_statistics(a::FixedFrameStatistics,b::FixedFrameStatistics)=FixedFrameStatistics((getfield(a,k)+getfield(b,k) for k in fieldnames(FixedFrameStatistics))...)
 
 """Add one event to its selection count; return the updated statistics."""
 function update_statistics(s::FastTriggerStatistics,o::FastTriggerOutput)::FastTriggerStatistics

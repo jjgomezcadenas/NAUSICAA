@@ -441,6 +441,14 @@ vh1-production:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl $(RUN)
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_hit_production.jl $(RUN)
 
+# Batches of a run card in sequence, then the chained hit file. NAUSICAA_DATA is the folder with the input files.
+# Example: make itaca-batches RUN=config/runs/bb0nu_itaca_pilot_10x100.toml FIRST=0 LAST=9
+FIRST ?= 0
+LAST ?= 0
+.PHONY: itaca-batches
+itaca-batches:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_batches.jl $(RUN) $(FIRST) $(LAST)
+
 elm-note:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/documentation/calculate_elm_example.jl
 	$(MAKE) elm-note-present

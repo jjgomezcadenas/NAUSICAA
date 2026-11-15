@@ -85,8 +85,25 @@ struct FastTriggerSettings
     end
 end
 
+"""Detector length and radius, fixed frame side in mm; gamma veto in keV.
+
+The detector is the cylinder 0 <= Z <= chamber_length_mm, radius
+detector_radius_mm about X = Y = 0. The frame is a cube of side frame_side_mm.
+Settings are supplied by the caller; TOML parsing belongs in scripts.
+"""
+struct FixedFrameTriggerSettings
+    chamber_length_mm::Float32
+    detector_radius_mm::Float32
+    frame_side_mm::Float32
+    gamma_energy_cut_keV::Float32
+    function FixedFrameTriggerSettings(L::Float32,R::Float32,side::Float32,e::Float32)
+        all(isfinite,(L,R,side,e)) && L>0 && R>0 && 0<side<=L && side<=2R && e>=0 || throw(ArgumentError("Invalid fixed-frame trigger settings"))
+        new(L,R,side,e)
+    end
+end
+
 """First failed cut, or acceptance. Numeric values are stable in saved files."""
-@enum FastTriggerDecision::UInt8 trigger_accepted=0 outside_detector=1 outside_vertex_fiducial=2 outside_frame_gamma=3
+@enum FastTriggerDecision::UInt8 trigger_accepted=0 outside_detector=1 outside_vertex_fiducial=2 outside_frame_gamma=3 track_larger_than_frame=4 frame_outside_detector=5
 
 """The selection decision and the event's expanded acquisition frame."""
 struct FastTriggerOutput
@@ -103,3 +120,14 @@ struct FastTriggerStatistics
     accepted_events::Int64
 end
 FastTriggerStatistics()=FastTriggerStatistics(0,0,0,0,0)
+
+"""Disjoint counts for one sample selected with the fixed frame."""
+struct FixedFrameStatistics
+    input_events::Int64
+    outside_detector_events::Int64
+    track_larger_than_frame_events::Int64
+    frame_outside_detector_events::Int64
+    outside_frame_gamma_events::Int64
+    accepted_events::Int64
+end
+FixedFrameStatistics()=FixedFrameStatistics(0,0,0,0,0,0)

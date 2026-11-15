@@ -2,6 +2,7 @@
 include("run_framed_reconstruction.jl")
 include("../../src/vh1/VH1Readout.jl")
 using .VH1Readout
+include("frame_noise_hits.jl")
 
 """Parse the explicit diagnostic selection. No diagnostics are constructed in `none` mode."""
 function hit_control_settings(card)
@@ -51,23 +52,26 @@ Write compact event totals and retained hits. In controls.mode=none no control
 histogram, graph or example routine is called. Optional on_event sees one event
 for validation and must not alter it. Timings are printed to the run log.
 """
-function run_hit_production(cardpath;on_event=event->nothing)
+function run_hit_production(cardpath;on_event=event->nothing,batch=nothing)
     BLAS.set_num_threads(1)
-    r=resolve_run(cardpath;root=ROOT);rc=r.run;stage=rc["hit_production"];response=rc["response"];ec=electronics_card(r)
+    r=resolve_run(cardpath;root=ROOT);rc=r.run;batch===nothing||select_batch!(rc,batch);stage=rc["hit_production"];response=rc["response"];ec=electronics_card(r)
     debug=hit_control_settings(rc)
     use_vh1=haskey(response,"vh1_card")
     use_vh1&&debug.mode!="none"&&throw(ArgumentError("VH1 hit production requires controls.mode=none"))
-    hp=joinpath(ROOT,rc["hits"]);sha=bytes2hex(open(sha256,hp))
+    hp=input_path(ROOT,rc["hits"]);sha=bytes2hex(open(sha256,hp))
     source=joinpath(ROOT,get(stage,"selection_controls",joinpath("results/readout",rc["run_label"],"detector_response/controls.h5")))
     out=joinpath(ROOT,"results/readout",rc["run_label"],stage["output_subdir"])
     write_configuration(r,ROOT;stage="hits")
     c=rc["hit_output"];settings=HitOutputSettings(c["ion_hit_cut_keV"],c["electron_hit_cut_keV"],c["compression_level"],c["chunk_hits"],c["max_output_bytes"])
-    ids,positions,frames=h5open(source,"r") do f
+    ids,positions,frames,locations=h5open(source,"r") do f
         read(f["source_sha256"],String)==sha||error("MC source changed")
-        g=f["events"];ids=read(g["event_number"])[1:stage["accepted_events"]]
+        g=f["events"];ids=read(g["event_number"]);stage["accepted_events"]>0&&(ids=ids[1:stage["accepted_events"]])   # 0: all accepted events
         ps=[EventPlacement(id,read(g["ion_drift_cm"])[j],read(g["electron_drift_cm"])[j]) for (j,id) in enumerate(ids)]
         fs=[EventFrame(mc_vertex_frame,ntuple(k->read(g["frame_$("xyz"[k])_min"])[j],3),ntuple(k->read(g["frame_$("xyz"[k])_max"])[j],3)) for j in eachindex(ids)]
-        ids,ps,fs
+        # Fixed-frame selection: the vertex in detector coordinates and the fixed frame of each event
+        ls=haskey(g,"fixed_frame_x_min") ? [HitEventLocation(ntuple(k->read(g["vertex_$("xyz"[k])_mm"])[j],3),
+            EventFrame(mc_vertex_frame,ntuple(k->read(g["fixed_frame_$("xyz"[k])_min"])[j],3),ntuple(k->read(g["fixed_frame_$("xyz"[k])_max"])[j],3))) for j in eachindex(ids)] : nothing
+        ids,ps,fs,ls
     end
     cards=configuration_texts(r,ROOT)
     hashes=Dict("source"=>sha,"selection"=>bytes2hex(open(sha256,source)),"calibration"=>bytes2hex(open(sha256,joinpath(ROOT,ec["nonlinear_calibration"]))))
@@ -84,7 +88,8 @@ function run_hit_production(cardpath;on_event=event->nothing)
     vh=use_vh1 ? load_vh1_settings(ROOT,joinpath(ROOT,response["vh1_card"]);minimum_samples=get(response,"vh1_minimum_samples",32768)) : nothing
     c=rc["ions"];is=IonReconstructionSettings(c["baseline_ms"],c["average_ms"],c["nonlinear_below_V"],c["max_iterations"],c["convergence_ions"])
     es=ElectronReconstructionSettings(prepared.sipm.sipm,prepared.sipm.illuminated_microcells,rc["electrons"]["subtract_mean_dark"])
-    w=open_hit_output(joinpath(out,"hits.h5"),metadata,settings)
+    located=locations!==nothing
+    w=open_hit_output(joinpath(out,"hits.h5"),metadata,settings;located)
     timing=zeros(6);debug_results=debug.mode=="debug" ? Dict{String,Any}() : nothing
     started=time()
     try
@@ -123,12 +128,16 @@ function run_hit_production(cardpath;on_event=event->nothing)
                 end;timing[4]+=t
                 t=@elapsed begin
                     ih=reconstruct_hits(ri,p,ds;keV_per_count=totals.ion_keV_per_count,minimum_energy_keV=settings.ion_hit_cut_keV)
+                    if located&&use_vh1   # noise hits of the frame cells outside the simulated pads and buckets
+                        sigma=sqrt(sum(plan.ion_covariance[k,k] for k in axes(plan.ion_covariance,1))/size(plan.ion_covariance,1))
+                        ih=join_hits(ih,frame_noise_hits(erng("frame_noise"),locations[j].fixed_frame,ri,p,ds,sigma,totals.ion_keV_per_count,settings.ion_hit_cut_keV))
+                    end
                     eh=reconstruct_hits(pe,p,ds;charge_correction=totals.attachment_correction,keV_per_count=totals.pe_keV_per_count,minimum_energy_keV=settings.electron_hit_cut_keV)
                     energy=EventEnergy(totals.ions_total,totals.pe_total,totals.ion_energy_keV,totals.electron_energy_keV,totals.invalid_ion_buckets,totals.invalid_pe_buckets)
                     info=HitEventInfo(id,p.ion_drift_cm,p.electron_drift_cm,frame,ds.ion_transport.sigma_t_mm,ds.electron_transport.sigma_t_mm)
                     event=HitEvent(info,energy,saved_hits(ih),saved_hits(eh))
                 end;timing[5]+=t
-                timing[6]+=@elapsed write_hit_event(w,event)
+                timing[6]+=@elapsed write_hit_event(w,event;location=located ? locations[j] : nothing)
                 on_event(event)
                 if debug.mode=="debug"&&j<=debug.limit
                     debug_results[string(id)]=hit_debug(debug;ri,pe,ions,photons,adc,asic,p,ds,totals,s,card=rc)
@@ -158,6 +167,7 @@ function run_hit_production(cardpath;on_event=event->nothing)
     end
 end
 if abspath(PROGRAM_FILE)==@__FILE__
-    length(ARGS)==1||error("Usage: run_hit_production.jl run_card.toml")
-    run_hit_production(abspath(ARGS[1]))
+    batch,args=batch_argument(ARGS)
+    length(args)==1||error("Usage: run_hit_production.jl run_card.toml [--batch=N]")
+    run_hit_production(abspath(args[1]);batch)
 end

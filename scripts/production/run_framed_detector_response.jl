@@ -9,6 +9,7 @@ using .DetectorResponse
 include("../../src/ion_signal/guarded_files.jl")
 include("../../src/itaca/ItacaConditions.jl")
 using .ItacaConditions
+include("batch_inputs.jl")
 const ROOT=normpath(joinpath(@__DIR__,"../.."))
 seedfor(seed,id,part)=parse(UInt64,bytes2hex(sha256("framed-v1|$seed|$id|$part"))[1:16];base=16)
 
@@ -107,13 +108,14 @@ function histograms(g,rows,nb)
         q["mean"]=mean(x);q["rms"]=sqrt(mean(abs2,x));q["std"]=std(x;corrected=false)
     end
 end
-function main(card,limit=0)
+function main(card,limit=0;batch=nothing)
     started=time();r=resolve_run(card;root=ROOT);c=r.run;sel=c["selection"]
+    batch===nothing||select_batch!(c,batch)
     limit>0&&(c["max_events"]=limit;c["run_label"]*="_first$(limit)")
     write_configuration(r,ROOT)
     out=joinpath(ROOT,"results/readout",c["run_label"]);mkpath(joinpath(out,"detector_response"))
     target=joinpath(out,"detector_response/controls.h5");isfile(target)&&error("Output exists: $target")
-    hp=joinpath(ROOT,c["hits"]);pp=expanduser(c["particles"])
+    hp=input_path(ROOT,c["hits"]);pp=input_path(ROOT,c["particles"])
     source_sha=open(sha256,hp)|>bytes2hex;particle_sha=open(sha256,pp)|>bytes2hex
     ids=h5open(hp,"r") do f
         read(f["metadata/source_sha256"])==particle_sha||error("Particle source mismatch")
@@ -121,17 +123,25 @@ function main(card,limit=0)
     end
     c["max_events"]>0&&(ids=ids[1:min(length(ids),c["max_events"])])
     parts=read_mc_particles(pp,ids)
-    trigger=FastTriggerSettings(Float32(r.detector["geometry"]["fiducial_length_cm"]*10),Float32(sel["vertex_min_mm"]),Float32(sel["vertex_max_mm"]),ntuple(_->Float32(sel["frame_margin_mm"]),3),Float32(sel["gamma_energy_cut_keV"]))
-    rng=Xoshiro(c["seed"]);stats=FastTriggerStatistics();ev=NamedTuple[];im=NamedTuple[];em=NamedTuple[];allrows=NamedTuple[]
+    # Selection: a fixed frame around the event where it was generated ([selection] frame_side_mm),
+    # or the earlier track box with margins at a sampled drift position.
+    L=Float32(r.detector["geometry"]["fiducial_length_cm"]*10);fixed=haskey(sel,"frame_side_mm")
+    placement=get(sel,"placement",fixed ? "generated_vertex" : "uniform_random")
+    placement in ("generated_vertex","uniform_random") || error("selection.placement must be generated_vertex or uniform_random")
+    fixed && placement!="generated_vertex" && error("A fixed frame requires selection.placement = \"generated_vertex\"")
+    trigger=fixed ? FixedFrameTriggerSettings(L,Float32(r.detector["geometry"]["fiducial_diameter_cm"]*5),Float32(sel["frame_side_mm"]),Float32(sel["gamma_energy_cut_keV"])) :
+        FastTriggerSettings(L,Float32(sel["vertex_min_mm"]),Float32(sel["vertex_max_mm"]),ntuple(_->Float32(sel["frame_margin_mm"]),3),Float32(sel["gamma_energy_cut_keV"]))
+    simulation_margin=fixed&&haskey(sel,"simulation_margin_mm") ? Float32(sel["simulation_margin_mm"]) : nothing
+    rng=Xoshiro(c["seed"]);stats=fixed ? FixedFrameStatistics() : FastTriggerStatistics();ev=NamedTuple[];im=NamedTuple[];em=NamedTuple[];allrows=NamedTuple[]
     examples=Dict{Int64,Any}();worst=Dict{Int64,Any}();checks=Dict{Int64,Any}();selection_s=0.;response_s=0.;per_event=Float64[]
     h5open(hp,"r") do f
         for (row,id) in enumerate(ids)
             t=time();h,info=read_mc_event(f,id;event_row=row);h=center_hits(h,info)
-            p=place_event(rng,id,trigger.chamber_length_mm);o=mc_fast_trigger(h,info,parts[id],p,trigger)
+            p=placement=="generated_vertex" ? placement_from_vertex(info,L) : place_event(rng,id,L);o=mc_fast_trigger(h,info,parts[id],p,trigger)
             stats=update_statistics(stats,o);push!(allrows,(event_number=id,decision=Int(o.decision),ion_drift_cm=p.ion_drift_cm,electron_drift_cm=p.electron_drift_cm))
             selection_s+=time()-t
             o.decision==trigger_accepted||continue
-            t=time();frame=acquisition_frame(o.frame,p,trigger.chamber_length_mm);selected=hits_in_frame(h,frame)
+            t=time();frame=fixed ? simulation_box(h,info,parts[id],o.frame,simulation_margin) : acquisition_frame(o.frame,p,L);selected=hits_in_frame(h,frame)
             gm=gamma_map(parts[id],info)
             main_outside=sum(h.energy_keV[j] for j in eachindex(h.x_mm) if gm[h.particle_id[j]]==0 && !contains(frame,(h.x_mm[j],h.y_mm[j],h.z_mm[j]));init=0f0)
             iszero(main_outside)||error("Main-track energy outside frame in event $id")
@@ -142,11 +152,14 @@ function main(card,limit=0)
             elapsed=time()-t;response_s+=elapsed;push!(per_event,elapsed)
             push!(im,metrics(ri,ri.ions));push!(em,metrics(re,re.photons))
             inside=sum(selected.energy_keV);outside=sum(h.energy_keV[i] for i in eachindex(h.x_mm) if !contains(frame,(h.x_mm[i],h.y_mm[i],h.z_mm[i]));init=0f0)
-            push!(ev,(event_number=id,energy_inframe_keV=inside,energy_outside_frame_keV=outside,main_track_energy_outside_frame_keV=main_outside,e_ion_pairs=sum(pairs),
+            located=fixed ? (vertex_x_mm=info.generation_vertex_mm[1],vertex_y_mm=info.generation_vertex_mm[2],vertex_z_mm=info.generation_vertex_mm[3],
+                fixed_frame_x_min=o.frame.lower_mm[1],fixed_frame_x_max=o.frame.upper_mm[1],fixed_frame_y_min=o.frame.lower_mm[2],fixed_frame_y_max=o.frame.upper_mm[2],
+                fixed_frame_z_min=o.frame.lower_mm[3],fixed_frame_z_max=o.frame.upper_mm[3]) : NamedTuple()
+            push!(ev,merge((event_number=id,energy_inframe_keV=inside,energy_outside_frame_keV=outside,main_track_energy_outside_frame_keV=main_outside,e_ion_pairs=sum(pairs),
                 e_lost_attachment=re.e_lost_attachment,EL_photons=re.EL_photons,uncollected_photons=re.uncollected_photons,
                 ion_drift_cm=p.ion_drift_cm,electron_drift_cm=p.electron_drift_cm,response_s=elapsed,
                 frame_x_min=frame.lower_mm[1],frame_x_max=frame.upper_mm[1],frame_y_min=frame.lower_mm[2],frame_y_max=frame.upper_mm[2],frame_z_min=frame.lower_mm[3],frame_z_max=frame.upper_mm[3],
-                ion_phase_x=s.ion_grid.edge_mm[1],ion_phase_y=s.ion_grid.edge_mm[2],electron_phase_x=s.electron_grid.edge_mm[1],electron_phase_y=s.electron_grid.edge_mm[2]))
+                ion_phase_x=s.ion_grid.edge_mm[1],ion_phase_y=s.ion_grid.edge_mm[2],electron_phase_x=s.electron_grid.edge_mm[1],electron_phase_y=s.electron_grid.edge_mm[2]),located))
             score=max(last(im).loss_fraction,last(em).loss_fraction)
             check_event=get(c,"sample","")=="single_electrons" && id==604
             if check_event || length(examples)<c["example_events"] || length(worst)<3 || score>minimum(v["score"] for v in values(worst))
@@ -180,7 +193,8 @@ function main(card,limit=0)
         end
         f["code_files"]=relpath.(files,ROOT);f["code_sha256"]=[bytes2hex(open(sha256,p)) for p in files]
         columns(create_group(f,"selection/events"),allrows)
-        for k in fieldnames(FastTriggerStatistics);f["selection/"*string(k)]=getfield(stats,k);end
+        for k in fieldnames(typeof(stats));f["selection/"*string(k)]=getfield(stats,k);end
+        f["selection/placement"]=placement;f["selection/frame"]=fixed ? "fixed_cube" : "track_box_with_margins"
         columns(create_group(f,"events"),ev);columns(create_group(f,"ions/events"),im);columns(create_group(f,"photons/events"),em)
         histograms(create_group(f,"event_histograms"),ev,c["histogram_bins"])
         histograms(create_group(f,"ions/histograms"),im,c["histogram_bins"]);histograms(create_group(f,"photons/histograms"),em,c["histogram_bins"])
@@ -210,5 +224,7 @@ function main(card,limit=0)
     println("FINISHED: $(stats.input_events) input; $(stats.accepted_events) accepted; $(round(response_s;digits=2)) s response; $(round(time()-started;digits=2)) s total; $target")
 end
 if abspath(PROGRAM_FILE)==@__FILE__
- main(isempty(ARGS) ? error("Usage: run_framed_detector_response.jl run_card.toml [limit]") : abspath(ARGS[1]),length(ARGS)>1 ? parse(Int,ARGS[2]) : 0)
+ batch,args=batch_argument(ARGS)
+ isempty(args)&&error("Usage: run_framed_detector_response.jl run_card.toml [limit] [--batch=N]")
+ main(abspath(args[1]),length(args)>1 ? parse(Int,args[2]) : 0;batch)
 end
