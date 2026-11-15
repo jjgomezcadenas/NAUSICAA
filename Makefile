@@ -434,6 +434,13 @@ itaca-detector-present:
 test-itaca:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/itaca/test_itaca_conditions.jl
 
+# Event display: main-track box and zoom cube, and the headless viewer check on a presentation folder (PRESENTATION=...)
+PRESENTATION ?= results/readout/bb0nu_itaca_pilot_10x100/vh1_hits/presentation
+.PHONY: test-track-zoom
+test-track-zoom:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/production/test_track_zoom.jl
+	node scripts/validation/check_hit_viewer.js $(PRESENTATION)
+
 # VH1 production from a run card: detector response, then hits. Example: make vh1-production RUN=config/runs/bb0nu_vh1_cf20f_1000.toml
 RUN ?= config/runs/bb0nu_vh1_legacy_conditions_pilot100.toml
 .PHONY: vh1-production

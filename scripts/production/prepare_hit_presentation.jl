@@ -52,7 +52,7 @@ function prepare_hit_presentation(path;graph_card=nothing,output_dir=nothing)
     blob_energies=Dict(arm=>Dict(blob_labels[arm]=>Dict("E1_keV"=>Float64[],"E2_keV"=>Float64[])) for arm in ("itrack","etrack"))
     try
       for (j,id) in enumerate(ids)
-        e=read_hit_event(r,id);show_example=j%stride==0;ex=Dict{String,Any}("ordinal"=>j)
+        e=read_hit_event(r,id);show_example=j%stride==0;ex=Dict{String,Any}("ordinal"=>j);boxes=Dict{String,Any}()
         for (arm,key,h,pitch,dz,sigma,drift) in (
           ("itrack","ions",e.itrack,dc["ion_pitch_mm"],dc["ion_bucket_ms"]*dc["ion_drift_velocity_mm_ms"],e.info.ion_sigma_t_mm,e.info.ion_drift_cm),
           ("etrack","pe",e.etrack,dc["EL_pitch_mm"],dc["electron_bucket_us"]*rc["electrons"]["rebin_factor"]*dc["electron_drift_velocity_mm_us"],e.info.electron_sigma_t_mm,e.info.electron_drift_cm))
@@ -96,6 +96,8 @@ function prepare_hit_presentation(path;graph_card=nothing,output_dir=nothing)
             voxels=voxelize_event(df,bin_width)
             tracks=make_tracks(voxels;method="KDT",max_distance_mm=max_distance,energy_threshold_kev=0f0)
             push!(component_counts[arm],length(tracks))
+            boxes[arm]=main_track_box(tracks,bin_width)
+            show_example&&boxes[arm]!==nothing&&(ex[arm]["main_box_mm"]=boxes[arm])
             energies=sort(Float32[1000sum(t.voxels.energy) for t in tracks];rev=true)
             push!(largest_component_energy[arm],isempty(energies) ? 0f0 : energies[1])
             push!(second_component_energy[arm],length(energies)<2 ? 0f0 : energies[2])
@@ -129,13 +131,17 @@ function prepare_hit_presentation(path;graph_card=nothing,output_dir=nothing)
                 ex[arm]["blobs"]=blobs
             end
         end
-        if show_example;examples[string(id)]=ex;end
+        if show_example   # zoom region of the display: one cube for both tracks, inside the fixed frame when there is one
+            frame=located ? (c=read_hit_location(r,id).fixed_frame;Float32[c.lower_mm[1] c.upper_mm[1];c.lower_mm[2] c.upper_mm[2];c.lower_mm[3] c.upper_mm[3]]) : nothing
+            zoom=zoom_cube(values(boxes),frame);zoom===nothing||(ex["zoom_mm"]=zoom)
+            examples[string(id)]=ex
+        end
       end
       budget=16*1024^2+3Base.summarysize(examples)
       GuardedFiles.space_check(out,budget,1024^3);tmp=target*".tmp"
       try
         h5open(tmp,"w") do f
-          f["schema"]="itaca.hit_presentation.v4";f["species"]=read(r.file["configuration/species"],String)
+          f["schema"]="itaca.hit_presentation.v5";f["species"]=read(r.file["configuration/species"],String)
           f["hit_file"]=relpath(path,out);f["hit_file_sha256"]=bytes2hex(open(sha256,path))
           f["card"]=sprint(io->TOML.print(io,rc));f["cards/detector_card"]=detector_text
           if located   # where the events are, the box of the detector response, and the selection counts of the run

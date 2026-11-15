@@ -26,4 +26,28 @@ for(const id of [ids[0],ids[Math.floor(ids.length/2)],ids.at(-1)]){
 }
 el('show-path').checked=false;el('show-path').onchange();assert(!plots['itrack-3d'].data.some(t=>t.mode==='lines'));
 el('tab-etrack').onclick();el('tab-itrack').onclick();
-console.log(`Passed: ${ids.length} selectable events; three event changes; axes, heatmaps, overlays, 3D lines and tabs.`);
+// Zoom to the main track: every view takes the saved zoom cube, which contains the main-track boxes; a second press restores the full frame.
+const axisRanges=()=>Object.fromEntries(['itrack','etrack'].flatMap(arm=>[
+ ...[['xy','x','y'],['xz','x','z'],['yz','y','z']].map(([v,a,b])=>[arm+'-'+v,{[a]:plots[arm+'-'+v].layout.xaxis.range,[b]:plots[arm+'-'+v].layout.yaxis.range}]),
+ [arm+'-3d',{x:plots[arm+'-3d'].layout.scene.xaxis.range,y:plots[arm+'-3d'].layout.scene.yaxis.range,z:plots[arm+'-3d'].layout.scene.zaxis.range}]]));
+const close=(u,v)=>Math.abs(u-v)<1e-2;   // Float32 positions: 0.01 mm
+let zoomChecked=0;
+for(const id of ids){
+ const text=fs.readFileSync(root+'/viewer/event_'+id+'.js','utf8'),data=JSON.parse(text.slice('receiveEvent('.length,-2));
+ if(!data.zoom_mm)continue;
+ el('event').value=id;vm.runInContext(text,ctx);
+ const full=axisRanges();assert.equal(el('zoom').textContent||'Zoom to track','Zoom to track');
+ el('zoom').onclick();assert.equal(el('zoom').textContent,'Full frame');
+ const zoom=axisRanges(),side=data.zoom_mm[1][0]-data.zoom_mm[0][0];
+ for(const [i,axis] of ['x','y','z'].entries()){
+  assert(close(data.zoom_mm[1][i]-data.zoom_mm[0][i],side),'zoom region is a cube');
+  for(const r of Object.values(zoom))if(r[axis]){assert(close(r[axis][0],data.zoom_mm[0][i])&&close(r[axis][1],data.zoom_mm[1][i]),'all views take the zoom range on '+axis);}
+  for(const arm of ['itrack','etrack']){const box=data.tracks[arm].main_box_mm;if(!box)continue;
+   assert(box[0][i]>=data.zoom_mm[0][i]-1e-6&&box[1][i]<=data.zoom_mm[1][i]+1e-6,'zoom region contains the '+arm+' main-track box on '+axis);}
+ }
+ el('zoom').onclick();assert.equal(el('zoom').textContent,'Zoom to track');
+ assert.deepEqual(axisRanges(),full,'second press restores the full frame');
+ zoomChecked++;
+}
+assert(zoomChecked>0,'no event carries a zoom region');
+console.log(`Passed: ${ids.length} selectable events; three event changes; axes, heatmaps, overlays, 3D lines and tabs; zoom to track and back on ${zoomChecked} events.`);

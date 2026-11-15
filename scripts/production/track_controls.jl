@@ -17,6 +17,46 @@ function hit_projections(h,pitch,z_width;z_centres=nothing,x_centres=nothing,y_c
  "z_edges_mm"=>z_edges,"xy_keV"=>xy,"xz_keV"=>xz,"yz_keV"=>yz,"hit_count"=>length(h.charge))
 end
 
+"""Box of the main track: the graph component with most voxels, voxel centres
+extended by half the voxel width on each side. A 3x2 matrix (axis, lower/upper)
+in mm; `nothing` when the track has no component."""
+function main_track_box(tracks,voxel_width_mm)
+ isempty(tracks)&&return nothing
+ v=tracks[argmax([size(t.voxels,1) for t in tracks])].voxels;h=Float32(voxel_width_mm)/2
+ Float32[minimum(v.x)-h maximum(v.x)+h;minimum(v.y)-h maximum(v.y)+h;minimum(v.z)-h maximum(v.z)+h]
+end
+
+"""Zoom region for the event display: a cube centred on the union of the given
+boxes (3x2 matrices; `nothing` entries are skipped) whose side is the largest
+side of the union plus a margin on each side, the margin being `margin_mm` or
+`fraction` of that side, whichever is larger. With a `frame` (3x2), first widened
+to contain the boxes (a cell may straddle the frame edge), the cube is shifted
+to stay inside it; if it does not fit, the region is the cube of the largest
+frame extent centred on the frame. The result is always a cube that contains
+every box. Without boxes the frame is returned."""
+function zoom_cube(boxes,frame;margin_mm=10.0,fraction=0.1)
+ boxes=[b for b in boxes if b!==nothing]
+ isempty(boxes)&&return frame===nothing ? nothing : Float32.(frame)
+ lo=[minimum(Float64(b[i,1]) for b in boxes) for i in 1:3];hi=[maximum(Float64(b[i,2]) for b in boxes) for i in 1:3]
+ side=maximum(hi.-lo);margin=max(Float64(margin_mm),fraction*side);s=side+2margin
+ out=zeros(Float32,3,2)
+ if frame===nothing
+  for i in 1:3;c=(lo[i]+hi[i])/2;out[i,1]=c-s/2;out[i,2]=c+s/2;end
+  return out
+ end
+ flo=[min(Float64(frame[i,1]),lo[i]) for i in 1:3];fhi=[max(Float64(frame[i,2]),hi[i]) for i in 1:3];ext=fhi.-flo
+ if s>=minimum(ext)   # the cube does not fit: the frame itself, as a cube of its largest extent
+  S=maximum(ext)
+  for i in 1:3;c=(flo[i]+fhi[i])/2;out[i,1]=c-S/2;out[i,2]=c+S/2;end
+  return out
+ end
+ for i in 1:3
+  c=(lo[i]+hi[i])/2;a=c-s/2;b=c+s/2
+  shift=max(0.,flo[i]-a)-max(0.,b-fhi[i]);out[i,1]=a+shift;out[i,2]=b+shift
+ end
+ out
+end
+
 """Combine histograms with common edges; moments include values beyond the plotted range."""
 function combine_histograms(histograms)
  n=sum(h["entries"] for h in histograms)
