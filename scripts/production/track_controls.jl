@@ -1,6 +1,6 @@
 """Sum hit energy into XY, XZ and YZ cells for presentation."""
-function hit_projections(h,pitch,z_width;z_centres=nothing)
- x=sort(unique(h.x_mm));y=sort(unique(h.y_mm));z=z_centres===nothing ? sort(unique(h.z_mm)) : sort(Float32.(z_centres))
+function hit_projections(h,pitch,z_width;z_centres=nothing,x_centres=nothing,y_centres=nothing)
+ x=x_centres===nothing ? sort(unique(h.x_mm)) : sort(Float32.(x_centres));y=y_centres===nothing ? sort(unique(h.y_mm)) : sort(Float32.(y_centres));z=z_centres===nothing ? sort(unique(h.z_mm)) : sort(Float32.(z_centres))
  # Channel/time coordinates cover a regular grid; include empty intervening cells.
  grid(v,step)=Float32.(range(first(v),last(v);length=round(Int,(last(v)-first(v))/step)+1))
  x=isempty(x) ? Float32[0] : grid(x,pitch);y=isempty(y) ? Float32[0] : grid(y,pitch)

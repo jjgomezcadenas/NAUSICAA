@@ -129,7 +129,9 @@ function main(card,limit=0;batch=nothing)
     placement=get(sel,"placement",fixed ? "generated_vertex" : "uniform_random")
     placement in ("generated_vertex","uniform_random") || error("selection.placement must be generated_vertex or uniform_random")
     fixed && placement!="generated_vertex" && error("A fixed frame requires selection.placement = \"generated_vertex\"")
-    trigger=fixed ? FixedFrameTriggerSettings(L,Float32(r.detector["geometry"]["fiducial_diameter_cm"]*5),Float32(sel["frame_side_mm"]),Float32(sel["gamma_energy_cut_keV"])) :
+    frame_placement=get(sel,"frame_placement","centred")
+    frame_placement in ("centred","inside_detector") || error("selection.frame_placement must be centred or inside_detector")
+    trigger=fixed ? FixedFrameTriggerSettings(L,Float32(r.detector["geometry"]["fiducial_diameter_cm"]*5),Float32(sel["frame_side_mm"]),Float32(sel["gamma_energy_cut_keV"]),frame_placement=="inside_detector",Float32(get(sel,"el_exclusion_mm",0.0))) :
         FastTriggerSettings(L,Float32(sel["vertex_min_mm"]),Float32(sel["vertex_max_mm"]),ntuple(_->Float32(sel["frame_margin_mm"]),3),Float32(sel["gamma_energy_cut_keV"]))
     simulation_margin=fixed&&haskey(sel,"simulation_margin_mm") ? Float32(sel["simulation_margin_mm"]) : nothing
     rng=Xoshiro(c["seed"]);stats=fixed ? FixedFrameStatistics() : FastTriggerStatistics();ev=NamedTuple[];im=NamedTuple[];em=NamedTuple[];allrows=NamedTuple[]
@@ -194,7 +196,7 @@ function main(card,limit=0;batch=nothing)
         f["code_files"]=relpath.(files,ROOT);f["code_sha256"]=[bytes2hex(open(sha256,p)) for p in files]
         columns(create_group(f,"selection/events"),allrows)
         for k in fieldnames(typeof(stats));f["selection/"*string(k)]=getfield(stats,k);end
-        f["selection/placement"]=placement;f["selection/frame"]=fixed ? "fixed_cube" : "track_box_with_margins"
+        f["selection/placement"]=placement;f["selection/frame"]=fixed ? "fixed_cube" : "track_box_with_margins";fixed&&(f["selection/frame_placement"]=frame_placement;f["selection/el_exclusion_mm"]=Float64(get(sel,"el_exclusion_mm",0.0)))
         columns(create_group(f,"events"),ev);columns(create_group(f,"ions/events"),im);columns(create_group(f,"photons/events"),em)
         histograms(create_group(f,"event_histograms"),ev,c["histogram_bins"])
         histograms(create_group(f,"ions/histograms"),im,c["histogram_bins"]);histograms(create_group(f,"photons/histograms"),em,c["histogram_bins"])

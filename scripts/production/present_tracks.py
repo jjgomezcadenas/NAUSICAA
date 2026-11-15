@@ -120,10 +120,37 @@ def render(path):
     options=''.join(f'<option value="{id}">{id}</option>' for id in ids)
     panels=''.join(f'<section class="track-panel" id="panel-{arm}"><div id="{arm}-energy"></div><div class="views">'+''.join(f'<div class="plot" id="{arm}-{view}"></div>' for view in ['xy','xz','yz','3d'])+'</div></section>' for arm in ['itrack','etrack'])
     invalid_i=int(np.count_nonzero(e['invalid_ion_buckets'][:]));invalid_e=int(np.count_nonzero(e['invalid_pe_buckets'][:]))
+    # Fixed-frame selection: counts of the run and where the accepted events are
+    selection_section=''
+    if 'selection' in f and 'vertex_z_mm' in e:
+        s={k:(v[()].decode() if isinstance(v[()],bytes) else int(v[()])) for k,v in f['selection'].items()}
+        L=float(dc['chamber_length_mm']);R=float(dc['detector_radius_mm'])
+        z=e['vertex_z_mm'][:];r=np.hypot(e['vertex_x_mm'][:],e['vertex_y_mm'][:])
+        side=float(np.median(e['fixed_frame_x_max_mm'][:]-e['fixed_frame_x_min_mm'][:]))
+        box=np.max([e[f'frame_{a}_max_mm'][:]-e[f'frame_{a}_min_mm'][:] for a in 'xyz'],axis=0)
+        fig,axes=plt.subplots(1,3,figsize=(15,4.5),layout='constrained')
+        for ax,values,edges,label,title in [
+            (axes[0],z,np.linspace(0,L,27),'Vertex Z (mm)','Vertex along the drift · Z = 0 at the TopMetal plane'),
+            (axes[1],(r/R)**2,np.linspace(0,1,21),'(vertex radius / detector radius)²','Vertex radius · uniform density is flat'),
+            (axes[2],box,np.linspace(0,side,21),'Largest side (mm)','Box of the detector response')]:
+            ax.hist(values,bins=edges,color='#287ba0',alpha=.6)
+            ax.set(xlabel=label,ylabel='Events / bin',title=title,xlim=(edges[0],edges[-1]));ax.grid(alpha=.15)
+            ax.text(.97,.96,f"N = {len(values)}\nmean = {np.mean(values):.3g}\nstd = {np.std(values):.3g}\nmedian = {np.median(values):.3g}",ha='right',va='top',transform=ax.transAxes,bbox=dict(facecolor='white',alpha=.8,edgecolor='#ccd6dc'))
+        fig.suptitle(f'Accepted events · fixed frame of {side:g} mm · detector length {L:g} mm, radius {R:g} mm')
+        fig.savefig(plots/'event_position.png',dpi=150);plt.close(fig)
+        n=s['input_events'];rows=[('Events read (after the Geant4 energy window)',n),('Rejected: energy deposit outside the detector',s['outside_detector_events']),
+            (f"Rejected: main track within {s.get('el_exclusion_mm',0):g} mm of the EL",s.get('main_track_near_el_events',0)),
+            ('Rejected: track larger than the frame',s['track_larger_than_frame_events']),('Rejected: frame not inside the detector',s['frame_outside_detector_events']),
+            ('Rejected: gamma deposit above the cut outside the frame',s['outside_frame_gamma_events']),('Accepted',s['accepted_events'])]
+        table=''.join(f'<tr><td>{name}</td><td>{count}</td><td>{100*count/n:.1f}%</td></tr>' for name,count in rows)
+        selection_section=(f'<h2>Selection and event position</h2><p>The event stays where it was generated: ion drift is the vertex Z, electron drift the detector length minus it. '
+            f'The frame is a cube of {side:g} mm centred on the main-track box. Counts add the {s.get("batches",1)} input batches.</p>'
+            f'<table><tr><th>Step</th><th>Events</th><th>Fraction of events read</th></tr>{table}</table>'
+            f'<img src="plots/event_position.png" alt="Vertex position and box of the detector response">')
     page='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ITACA · Event energy and tracks</title>
-<style>body{font:17px/1.5 system-ui;color:#203343;max-width:1800px;margin:auto;padding:24px}img{max-width:100%}.views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plot{height:440px;min-width:0}.viewer-frame{height:980px;min-height:980px;border:1px solid #ccd6dc;border-radius:8px;padding:12px;box-sizing:border-box;overflow:hidden}.track-panel{height:100%;display:none;grid-template-rows:36px minmax(0,1fr)}.track-panel.active{display:grid}.track-panel .views{min-height:0;grid-template-rows:repeat(2,minmax(0,1fr))}.track-panel .plot{height:100%;min-height:0}.tabs button[aria-selected="true"]{background:#203343;color:white}select,button{font:inherit;padding:7px}nav{background:#fff;padding:12px 0;border-bottom:1px solid #ddd}a{color:#185b83}@media(max-width:750px){body{padding:10px}.plot{font-size:12px}}</style>
+<style>body{font:17px/1.5 system-ui;color:#203343;max-width:1800px;margin:auto;padding:24px}img{max-width:100%}.views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plot{height:440px;min-width:0}.viewer-frame{height:980px;min-height:980px;border:1px solid #ccd6dc;border-radius:8px;padding:12px;box-sizing:border-box;overflow:hidden}.track-panel{height:100%;display:none;grid-template-rows:36px minmax(0,1fr)}.track-panel.active{display:grid}.track-panel .views{min-height:0;grid-template-rows:repeat(2,minmax(0,1fr))}.track-panel .plot{height:100%;min-height:0}.tabs button[aria-selected="true"]{background:#203343;color:white}select,button{font:inherit;padding:7px}nav{background:#fff;padding:12px 0;border-bottom:1px solid #ddd}table{border-collapse:collapse}th,td{padding:8px 14px;border-bottom:1px solid #ddd;text-align:left}a{color:#185b83}@media(max-width:750px){body{padding:10px}.plot{font-size:12px}}</style>
 <script src="viewer/plotly.min.js"></script></head><body><a href="../../../../../notes/html/index.html">ITACA index</a><h1>bb0nu · Event energy and tracks</h1>
-'''+f'''<p>{len(all_ids)} events; {len(ids)} event displays (one per {tc.get('example_every',1)}). TopMetal pitch {dc['ion_pitch_mm']:g} mm; time buckets {dc['ion_bucket_ms']:g} ms. SiPM pitch {dc['EL_pitch_mm']:g} mm; reconstructed time buckets {dc['electron_bucket_us']*rc['electrons']['rebin_factor']:g} μs.</p>
+'''+f'''<p>{len(all_ids)} events; {len(ids)} event displays (one per {tc.get('example_every',1)}). TopMetal pitch {dc['ion_pitch_mm']:g} mm; time buckets {dc['ion_bucket_ms']:g} ms. SiPM pitch {dc['EL_pitch_mm']:g} mm; reconstructed time buckets {dc['electron_bucket_us']*rc['electrons']['rebin_factor']:g} μs.</p>{selection_section}
 <h2 id="results">Event energy before the hit cut</h2><p>Sum all signed reconstructed charges. Ions include CSA deconvolution; electrons include SiPM and mean attachment corrections.</p><img src="plots/event_energy.png" alt="Ion and electron energy estimates before the hit cut">
 <h2>Track components and endpoint blobs</h2><p>Both distributions use all {len(all_ids)} events. {ion_setting} {electron_setting} {short_radius_note}{single_ion} events have one itrack component. E₁ and E₂ sum voxel energies around the endpoints of the largest component, with E₁ ≥ E₂. {blob_settings}</p>{comparison}<img src="plots/track_components.png" alt="Connected component counts for itracks and etracks">{failure_note}<img src="plots/blob_energies.png" alt="Endpoint blob energy correlations for itracks and etracks">
 <p>Incomplete estimates are excluded: {invalid_i} ion events and {invalid_e} electron events.</p>

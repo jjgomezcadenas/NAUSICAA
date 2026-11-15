@@ -9,6 +9,19 @@ function petit_kdt_settings(drift_cm,sigma_t_mm)
                   (Float32(3sigma_t_mm),Float32(6sigma_t_mm))
 end
 
+"""Centres of a regular lattice through `values` (or `start` if empty) covering lo..hi."""
+function covering_lattice(values,step,lo,hi,start)
+    anchor=Float64(isempty(values) ? start : first(values));s=Float64(step)
+    Float32[anchor+k*s for k in ceil(Int,(lo-anchor)/s-.5):floor(Int,(hi-anchor)/s+.5)]
+end
+"""Extend sorted centres outward by `step` until they cover lo..hi; keep the given ones."""
+function extend_centres(z,step,lo,hi)
+    z=sort(Float32.(z));isempty(z)&&return z
+    while first(z)-step/2>lo;pushfirst!(z,first(z)-Float32(step));end
+    while last(z)+step/2<hi;push!(z,last(z)+Float32(step));end
+    z
+end
+
 """Calculate histograms, projections and graph backbones from a completed hit file.
 No detector or electronics calculation is repeated. Retained hits are read from
 the source file; this output saves only derived presentation data.
@@ -16,7 +29,18 @@ the source file; this output saves only derived presentation data.
 function prepare_hit_presentation(path;graph_card=nothing,output_dir=nothing)
     r=open_hit_input(path);base=dirname(abspath(path));out=output_dir===nothing ? joinpath(base,"presentation") : abspath(output_dir);mkpath(out)
     target=joinpath(out,"controls.h5");isfile(target)&&error("Preserve existing presentation data")
-    rc=TOML.parse(read(r.file["configuration/cards/run"],String));dc=TOML.parse(read(r.file["configuration/cards/detector_card"],String))
+    cards=r.file["configuration/cards"]
+    if haskey(cards,"detector_card")   # flat cards of the earlier productions
+        rc=TOML.parse(read(cards["run"],String));detector_text=read(cards["detector_card"],String);dc=TOML.parse(detector_text)
+    else                               # run card on the detector set: the resolved configuration
+        resolved=TOML.parse(read(cards["resolved"],String));rc=resolved["run"];d=resolved["detector"]
+        dc=Dict{String,Any}("ion_pitch_mm"=>d["ions"]["pad_pitch_mm"],"ion_bucket_ms"=>d["ions"]["ion_bucket_ms"],
+            "ion_drift_velocity_mm_ms"=>d["drift"]["ion_drift_velocity_cm_s"]/100,"EL_pitch_mm"=>d["el"]["hole_pitch_mm"],
+            "electron_bucket_us"=>d["sipm"]["electron_bucket_us"],"electron_drift_velocity_mm_us"=>d["drift"]["electron_drift_velocity_mm_us"],
+            "chamber_length_mm"=>10d["geometry"]["fiducial_length_cm"],"detector_radius_mm"=>5d["geometry"]["fiducial_diameter_cm"])
+        detector_text=sprint(io->TOML.print(io,dc;sorted=true))
+    end
+    located=read(r.file["schema"],String)==SignalReconstruction.HIT_SCHEMA_LOCATED
     graph_card===nothing || (rc["track_analysis"]=TOML.parsefile(graph_card)["track_analysis"])
     ids=read(r.file["events/event_number"]);examples=Dict{String,Any}()
     tc=rc["track_analysis"];stride=Int(get(tc,"example_every",1));started=time()
@@ -39,7 +63,9 @@ function prepare_hit_presentation(path;graph_card=nothing,output_dir=nothing)
             placement=EventPlacement(id,e.info.ion_drift_cm,e.info.electron_drift_cm)
             z0=10Float64(placement.ion_drift_cm)
             if arm=="itrack"
-                t=ion_readout_time(e.info.frame,placement,Float32(dc["chamber_length_mm"]),Float32(dc["ion_drift_velocity_mm_ms"]),Float32(dc["ion_bucket_ms"]))
+                # With a fixed frame the itrack holds noise hits anywhere in the cube: use its buckets
+                lattice_frame=located ? read_hit_location(r,id).fixed_frame : e.info.frame
+                t=ion_readout_time(lattice_frame,placement,Float32(dc["chamber_length_mm"]),Float32(dc["ion_drift_velocity_mm_ms"]),Float32(dc["ion_bucket_ms"]))
                 zs=Float32[(Float64(t.start_ms)+(i-.5)*t.bucket_ms)*Float32(dc["ion_drift_velocity_mm_ms"])-z0 for i in 1:t.bucket_count]
             else
                 t=electron_readout_time(e.info.frame,placement,Float32(dc["chamber_length_mm"]),Float32(dc["electron_drift_velocity_mm_us"]),Float32(dc["electron_bucket_us"]))
@@ -51,7 +77,15 @@ function prepare_hit_presentation(path;graph_card=nothing,output_dir=nothing)
                     push!(zs,Float32(dc["chamber_length_mm"])-(lo+hi)/2*Float32(dc["electron_drift_velocity_mm_us"])-z0)
                 end
             end
-            show_example&&(ex[arm]=hit_projections(h0,pitch,dz;z_centres=zs))
+            if show_example
+                if located   # every view covers the whole fixed frame, for both tracks
+                    cube=read_hit_location(r,id).fixed_frame;lo=cube.lower_mm;hi=cube.upper_mm
+                    xs=covering_lattice(h.x_mm,pitch,lo[1],hi[1],lo[1]+pitch/2);ys=covering_lattice(h.y_mm,pitch,lo[2],hi[2],lo[2]+pitch/2)
+                    ex[arm]=hit_projections(h0,pitch,dz;z_centres=extend_centres(zs,dz,lo[3],hi[3]),x_centres=xs,y_centres=ys)
+                else
+                    ex[arm]=hit_projections(h0,pitch,dz;z_centres=zs)
+                end
+            end
             df=EventAnalysis.DataFrame(x=h.x_mm,y=h.y_mm,z=h.z_mm,energy=h.energy_keV./1000f0)
             mode_key=arm=="itrack" ? "ion_graph_mode" : "electron_graph_mode"
             width_key=arm=="itrack" ? "ion_voxel_width_mm" : "electron_voxel_width_mm"
@@ -103,7 +137,13 @@ function prepare_hit_presentation(path;graph_card=nothing,output_dir=nothing)
         h5open(tmp,"w") do f
           f["schema"]="itaca.hit_presentation.v4";f["species"]=read(r.file["configuration/species"],String)
           f["hit_file"]=relpath(path,out);f["hit_file_sha256"]=bytes2hex(open(sha256,path))
-          f["card"]=sprint(io->TOML.print(io,rc));f["cards/detector_card"]=read(r.file["configuration/cards/detector_card"],String)
+          f["card"]=sprint(io->TOML.print(io,rc));f["cards/detector_card"]=detector_text
+          if located   # where the events are, the box of the detector response, and the selection counts of the run
+            for key in SignalReconstruction.LOCATION_COLUMNS;f["events/$key"]=read(r.file["events/$key"]);end
+            for axis in ("x","y","z"), bound in ("min","max");f["events/frame_$(axis)_$(bound)_mm"]=read(r.file["events/frame_$(axis)_$(bound)_mm"]);end
+            counts=joinpath(base,"selection_counts.toml")
+            if isfile(counts);for (k,v) in TOML.parsefile(counts);f["selection/$k"]=v;end;end
+          end
           f["events/event_number"]=ids
           for arm in ("itrack","etrack")
             f["events/$(arm)_component_count"]=component_counts[arm]

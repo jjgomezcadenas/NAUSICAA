@@ -70,3 +70,70 @@ using Test
     # Inputs are preserved
     @test h.z_mm==Float32[0,0,30,-50] && info.generation_vertex_mm==(100f0,-200f0,400f0)
 end
+
+@testset "Fixed frame moved inside the detector" begin
+    L=1300f0;R=1800f0;centred=FixedFrameTriggerSettings(L,R,160f0,3f0);inside=FixedFrameTriggerSettings(L,R,160f0,3f0,true)
+    @test !centred.inside_detector && inside.inside_detector
+    @test_throws ArgumentError FixedFrameTriggerSettings(L,R,2600f0,3f0,true)
+    particles=[MCParticle(Int32(1),Int32(0),"e-"),MCParticle(Int32(2),Int32(1),"gamma"),MCParticle(Int32(3),Int32(2),"e-"),MCParticle(Int32(5),Int32(1),"e-")]
+    event(v;x=Float32[0,60,0,0],y=Float32[0,0,0,40],z=Float32[0,0,30,-50],e=Float32[100,100,5,20])=begin
+        local vertex_info=MCEventInfo(Int64(9),v,Int32[1])
+        local source_hits=MCEventHits(Int64(9),mc_source_frame,x.+v[1],y.+v[2],z.+v[3],e,Int32[1,1,3,5],Int32[0,1,0,0])
+        center_hits(source_hits,vertex_info),vertex_info
+    end
+    trig(h,info,s)=mc_fast_trigger(h,info,particles,placement_from_vertex(info,L),s)
+    detector(f,i)=(ntuple(k->f.lower_mm[k]+i.generation_vertex_mm[k],3),ntuple(k->f.upper_mm[k]+i.generation_vertex_mm[k],3))
+
+    # Away from the boundary the cube is the centred one
+    h,i=event((0f0,0f0,650f0));@test trig(h,i,inside).frame==trig(h,i,centred).frame && trig(h,i,inside).decision==trigger_accepted
+
+    # Near the TopMetal end: track at detector Z 10..60 mm; the centred cube reaches Z = -45 mm
+    h,i=event((0f0,0f0,60f0))
+    @test trig(h,i,centred).decision==frame_outside_detector
+    o=trig(h,i,inside);lo,hi=detector(o.frame,i)
+    @test o.decision==trigger_accepted && 0f0<=lo[3]<0.01f0 && isapprox(hi[3],160f0;atol=0.01)
+    @test all(hi[k]-lo[k]≈160f0 for k in 1:3) && contains(o.frame,main_track_box(h,i,particles))
+    # Near the EL end: track at detector Z 1240..1290 mm (the 2 keV gamma deposit at 1320 mm is below the cut)
+    h,i=event((0f0,0f0,1290f0);e=Float32[100,100,2,20]);o=trig(h,i,inside);lo,hi=detector(o.frame,i)
+    @test trig(h,i,centred).decision==frame_outside_detector && o.decision==trigger_accepted && 1299.99f0<hi[3]<=1300f0
+
+    # Near the wall: track at detector X 1700..1760; the centred cube has a corner at radius 1813 mm
+    h,i=event((1700f0,0f0,650f0))
+    @test trig(h,i,centred).decision==frame_outside_detector
+    o=trig(h,i,inside);lo,hi=detector(o.frame,i)
+    @test o.decision==trigger_accepted
+    @test maximum(hypot(x,y) for x in (lo[1],hi[1]), y in (lo[2],hi[2])) <= R
+    @test isapprox(maximum(hypot(x,y) for x in (lo[1],hi[1]), y in (lo[2],hi[2])),R;atol=0.01)
+    # Track touching the wall: no cube that contains it fits inside the detector
+    h,i=event((1720f0,0f0,650f0);x=Float32[0,79,0,0])
+    @test trig(h,i,inside).decision==frame_outside_detector
+
+    # The gamma veto uses the moved cube: the gamma deposit at Z + 30 mm is inside it
+    h,i=event((0f0,0f0,60f0);z=Float32[0,0,95,-50])            # gamma at detector Z = 155 mm
+    @test trig(h,i,inside).decision==trigger_accepted
+    h,i=event((0f0,0f0,60f0);z=Float32[0,0,105,-50])           # gamma at detector Z = 165 mm, beyond the cube
+    @test trig(h,i,inside).decision==outside_frame_gamma
+end
+
+@testset "Main track away from the EL" begin
+    L=1300f0;R=1800f0;s=FixedFrameTriggerSettings(L,R,160f0,3f0,true,50f0)
+    @test s.el_exclusion_mm==50f0 && FixedFrameTriggerSettings(L,R,160f0,3f0,true).el_exclusion_mm==0f0
+    @test_throws ArgumentError FixedFrameTriggerSettings(L,R,160f0,3f0,true,-1f0)
+    particles=[MCParticle(Int32(1),Int32(0),"e-"),MCParticle(Int32(2),Int32(1),"gamma"),MCParticle(Int32(3),Int32(2),"e-"),MCParticle(Int32(5),Int32(1),"e-")]
+    event(v;z=Float32[0,0,-30,-50],e=Float32[100,100,5,20])=begin
+        local vertex_info=MCEventInfo(Int64(9),v,Int32[1])
+        local source_hits=MCEventHits(Int64(9),mc_source_frame,Float32[0,60,0,0].+v[1],Float32[0,0,0,40].+v[2],z.+v[3],e,Int32[1,1,3,5],Int32[0,1,0,0])
+        center_hits(source_hits,vertex_info),vertex_info
+    end
+    trig(h,i,set=s)=mc_fast_trigger(h,i,particles,placement_from_vertex(i,L),set)
+    # The main track spans detector Z = vertex - 50 .. vertex
+    h,i=event((0f0,0f0,1250f0));@test trig(h,i).decision==trigger_accepted            # top of the track exactly 50 mm from the EL
+    h,i=event((0f0,0f0,1251f0));@test trig(h,i).decision==main_track_near_el
+    @test trig(h,i,FixedFrameTriggerSettings(L,R,160f0,3f0,true)).decision==trigger_accepted   # no exclusion: accepted
+    # The cut looks at the whole main track, not at the vertex: vertex at 1200 mm, a primary hit at 1260 mm
+    h,i=event((0f0,0f0,1200f0);z=Float32[0,60,-30,-50]);@test trig(h,i).decision==main_track_near_el
+    # A gamma deposit near the EL does not trigger it
+    h,i=event((0f0,0f0,1240f0);z=Float32[0,0,40,-50]);@test trig(h,i).decision==trigger_accepted
+    st=update_statistics(FixedFrameStatistics(),trig(event((0f0,0f0,1251f0))...))
+    @test st.main_track_near_el_events==1 && st.input_events==1 && st.accepted_events==0
+end

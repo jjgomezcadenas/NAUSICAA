@@ -88,7 +88,10 @@ end
 """Detector length and radius, fixed frame side in mm; gamma veto in keV.
 
 The detector is the cylinder 0 <= Z <= chamber_length_mm, radius
-detector_radius_mm about X = Y = 0. The frame is a cube of side frame_side_mm.
+detector_radius_mm about X = Y = 0. The frame is a cube of side frame_side_mm,
+centred on the main-track box. With `inside_detector`, a cube that would cross
+the detector boundary is moved inward until it fits. The main track must stay
+`el_exclusion_mm` away from the EL entry at Z = chamber_length_mm.
 Settings are supplied by the caller; TOML parsing belongs in scripts.
 """
 struct FixedFrameTriggerSettings
@@ -96,14 +99,18 @@ struct FixedFrameTriggerSettings
     detector_radius_mm::Float32
     frame_side_mm::Float32
     gamma_energy_cut_keV::Float32
-    function FixedFrameTriggerSettings(L::Float32,R::Float32,side::Float32,e::Float32)
-        all(isfinite,(L,R,side,e)) && L>0 && R>0 && 0<side<=L && side<=2R && e>=0 || throw(ArgumentError("Invalid fixed-frame trigger settings"))
-        new(L,R,side,e)
+    inside_detector::Bool
+    el_exclusion_mm::Float32
+    function FixedFrameTriggerSettings(L::Float32,R::Float32,side::Float32,e::Float32,inside::Bool,exclusion::Float32)
+        all(isfinite,(L,R,side,e,exclusion)) && L>0 && R>0 && 0<side<=L && side<=sqrt(2f0)*R && e>=0 && 0<=exclusion<L || throw(ArgumentError("Invalid fixed-frame trigger settings"))
+        new(L,R,side,e,inside,exclusion)
     end
 end
+FixedFrameTriggerSettings(L::Float32,R::Float32,side::Float32,e::Float32,inside::Bool)=FixedFrameTriggerSettings(L,R,side,e,inside,0f0)
+FixedFrameTriggerSettings(L::Float32,R::Float32,side::Float32,e::Float32)=FixedFrameTriggerSettings(L,R,side,e,false,0f0)
 
 """First failed cut, or acceptance. Numeric values are stable in saved files."""
-@enum FastTriggerDecision::UInt8 trigger_accepted=0 outside_detector=1 outside_vertex_fiducial=2 outside_frame_gamma=3 track_larger_than_frame=4 frame_outside_detector=5
+@enum FastTriggerDecision::UInt8 trigger_accepted=0 outside_detector=1 outside_vertex_fiducial=2 outside_frame_gamma=3 track_larger_than_frame=4 frame_outside_detector=5 main_track_near_el=6
 
 """The selection decision and the event's expanded acquisition frame."""
 struct FastTriggerOutput
@@ -125,9 +132,10 @@ FastTriggerStatistics()=FastTriggerStatistics(0,0,0,0,0)
 struct FixedFrameStatistics
     input_events::Int64
     outside_detector_events::Int64
+    main_track_near_el_events::Int64
     track_larger_than_frame_events::Int64
     frame_outside_detector_events::Int64
     outside_frame_gamma_events::Int64
     accepted_events::Int64
 end
-FixedFrameStatistics()=FixedFrameStatistics(0,0,0,0,0,0)
+FixedFrameStatistics()=FixedFrameStatistics(0,0,0,0,0,0,0)

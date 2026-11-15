@@ -149,6 +149,27 @@ function fixed_frame(b::EventFrame,side::Float32)::EventFrame
     EventFrame(b.frame,ntuple(i->c[i]-side/2f0,3),ntuple(i->c[i]+side/2f0,3))
 end
 
+"""Cube of the given side around a vertex-relative box, moved inside the detector.
+
+The cube is centred on the box. If it crosses an end of the detector it slides
+along Z until it touches that end; if a corner lies beyond the radius it moves
+towards the axis, along the line from the axis to its centre, until the
+farthest corner lies on the radius. The box may then extend beyond the cube;
+the trigger rejects such events. `v` is the generation vertex in detector mm.
+"""
+function inside_frame(b::EventFrame,v::NTuple{3,Float32},L::Float32,R::Float32,side::Float32)::EventFrame
+    h=Float64(side)/2;tol=1e-3   # mm inside the boundary, against rounding
+    c=[Float64(b.lower_mm[i]+b.upper_mm[i])/2+v[i] for i in 1:3]
+    c[3]=clamp(c[3],h+tol,Float64(L)-h-tol)
+    a=abs(c[1]);d=abs(c[2]);r2=a^2+d^2;target=Float64(R)-tol
+    if hypot(a+h,d+h)>target && r2>0
+        # (s a + h)^2 + (s d + h)^2 = target^2, positive root
+        s=(-h*(a+d)+sqrt(h^2*(a+d)^2-r2*(2h^2-target^2)))/r2
+        c[1]*=clamp(s,0.,1.);c[2]*=clamp(s,0.,1.)
+    end
+    EventFrame(b.frame,ntuple(i->Float32(c[i]-h-v[i]),3),ntuple(i->Float32(c[i]+h-v[i]),3))
+end
+
 """Largest side of a box in mm."""
 box_side(b::EventFrame)::Float32=maximum(b.upper_mm[i]-b.lower_mm[i] for i in 1:3)
 
@@ -165,10 +186,12 @@ The placement must be the one given by `placement_from_vertex`. Cuts, in order:
 
 1. `outside_detector`: a main-track hit, or a hit of a gamma deposit above the
    energy cut, lies outside the detector cylinder.
-2. `track_larger_than_frame`: a side of the main-track box exceeds the frame side.
-3. `frame_outside_detector`: the cube centred on the main-track box is not
-   fully inside the detector.
-4. `outside_frame_gamma`: a gamma deposit above the energy cut is not fully
+2. `main_track_near_el`: the main-track box comes closer to the EL entry than
+   the exclusion distance.
+3. `track_larger_than_frame`: a side of the main-track box exceeds the frame side.
+4. `frame_outside_detector`: the cube is not fully inside the detector, or,
+   when it was moved inside the detector, it no longer contains the box.
+5. `outside_frame_gamma`: a gamma deposit above the energy cut is not fully
    inside the cube.
 
 Return the first failed decision and the cube. Inputs are preserved.
@@ -180,15 +203,18 @@ function mc_fast_trigger(h::MCEventHits,info::MCEventInfo,particles::Vector{MCPa
     isapprox(10f0*p.ion_drift_cm,v[3];atol=1f-2) && isapprox(10f0*(p.ion_drift_cm+p.electron_drift_cm),L;rtol=4eps(Float32)) ||
         throw(ArgumentError("Placement does not match the generation vertex"))
     roots=gamma_map(particles,info);gs=gamma_deposits(h,roots)
-    box=main_track_box(h,info,particles);frame=fixed_frame(box,s.frame_side_mm)
+    box=main_track_box(h,info,particles)
+    frame=s.inside_detector ? inside_frame(box,v,L,R,s.frame_side_mm) : fixed_frame(box,s.frame_side_mm)
     energetic=Set(g.gamma_particle_id for g in gs if g.energy_keV>s.gamma_energy_cut_keV)
     outside(j)=!(0f0<=h.z_mm[j]+v[3]<=L && hypot(h.x_mm[j]+v[1],h.y_mm[j]+v[2])<=R)
     escaped=any(j->(roots[h.particle_id[j]]==0 || roots[h.particle_id[j]] in energetic) && outside(j),eachindex(h.x_mm))
     decision=if escaped
         outside_detector
+    elseif box.upper_mm[3]+v[3]>L-s.el_exclusion_mm
+        main_track_near_el
     elseif box_side(box)>s.frame_side_mm
         track_larger_than_frame
-    elseif !_inside_detector(frame,v,L,R)
+    elseif !_inside_detector(frame,v,L,R) || !contains(frame,box)
         frame_outside_detector
     elseif gamma_veto(gs,frame,s.gamma_energy_cut_keV)
         outside_frame_gamma
@@ -214,8 +240,8 @@ end
 """Add one event to its selection count; return the updated statistics."""
 function update_statistics(s::FixedFrameStatistics,o::FastTriggerOutput)::FixedFrameStatistics
     d=o.decision
-    d in (trigger_accepted,outside_detector,track_larger_than_frame,frame_outside_detector,outside_frame_gamma) || throw(ArgumentError("Decision $d does not belong to the fixed-frame selection"))
-    FixedFrameStatistics(s.input_events+1,s.outside_detector_events+(d==outside_detector),s.track_larger_than_frame_events+(d==track_larger_than_frame),
+    d in (trigger_accepted,outside_detector,main_track_near_el,track_larger_than_frame,frame_outside_detector,outside_frame_gamma) || throw(ArgumentError("Decision $d does not belong to the fixed-frame selection"))
+    FixedFrameStatistics(s.input_events+1,s.outside_detector_events+(d==outside_detector),s.main_track_near_el_events+(d==main_track_near_el),s.track_larger_than_frame_events+(d==track_larger_than_frame),
         s.frame_outside_detector_events+(d==frame_outside_detector),s.outside_frame_gamma_events+(d==outside_frame_gamma),s.accepted_events+(d==trigger_accepted))
 end
 merge_statistics(a::FixedFrameStatistics,b::FixedFrameStatistics)=FixedFrameStatistics((getfield(a,k)+getfield(b,k) for k in fieldnames(FixedFrameStatistics))...)
