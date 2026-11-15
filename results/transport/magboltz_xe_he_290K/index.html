@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Xe–He electron transport · Magboltz</title>
+<style>body{font:16px/1.5 system-ui;max-width:1200px;margin:30px auto;padding:0 20px;color:#203343}
+img{max-width:100%}table{border-collapse:collapse;width:100%}th,td{padding:7px;border-bottom:1px solid #ccd6dc;text-align:right}
+th:first-child,td:first-child{text-align:left}a{color:#185b83}</style></head><body>
+<h1>Xe–He electron transport · Magboltz</h1>
+<p>Magboltz source filename: 11.21; internal header: 11.20.
+SHA-256: <code>efa3244aa7c033872864997ee005b50d3732a59080e3957d13be9bf6d9569cbc</code>. Gas composition is by mole fraction. The model-density
+setting follows the Geant4 material density at the physical pressure.
+Temperatures: 290 K;
+collision targets: 400,000,000.
+Measured Xe/He points are from McDonald et al.; their physical E/P convention
+is described in <a href="../../../docs/handoffs/magboltz_xe_he.md">the handoff</a>.</p>
+<h2>Drift velocity</h2><img src="plots/velocity_reduced.png" alt="Velocity and literature points">
+<img src="plots/velocity_field.png" alt="Velocity and drift time against field">
+<h2>Diffusion</h2><img src="plots/diffusion_field.png" alt="Diffusion coefficients against field">
+<h2>Numerical results</h2><table><thead><tr><th>Gas</th><th>Density</th><th>P (bar)</th>
+<th>E (V/cm)</th><th>E/N (Td)</th><th>v (mm/µs)</th>
+<th>Dₜ (mm·√bar/√cm)</th><th>Dₗ (mm·√bar/√cm)</th><th>Time (s)</th></tr></thead>
+<tbody><tr><td>Xe_85_He_15</td><td>Density-corrected</td><td>15.000</td><td>300.0</td><td>0.07316</td><td>0.51670 ± 0.02279</td><td>0.7709 ± 0.0359</td><td>1.3970 ± 0.1207</td><td>81.5</td></tr><tr><td>Xe_85_He_15</td><td>Density-corrected</td><td>15.000</td><td>350.0</td><td>0.08535</td><td>0.70570 ± 0.02442</td><td>0.8856 ± 0.0468</td><td>1.4954 ± 0.0845</td><td>82.2</td></tr><tr><td>Xe_85_He_15</td><td>Density-corrected</td><td>16.000</td><td>300.0</td><td>0.06815</td><td>0.42190 ± 0.01426</td><td>0.7655 ± 0.0298</td><td>1.1655 ± 0.0945</td><td>80.9</td></tr><tr><td>Xe_85_He_15</td><td>Density-corrected</td><td>16.000</td><td>350.0</td><td>0.07951</td><td>0.56840 ± 0.01518</td><td>0.8046 ± 0.0198</td><td>1.3691 ± 0.0631</td><td>80.8</td></tr><tr><td>Xe_85_He_15</td><td>Density-corrected</td><td>17.500</td><td>300.0</td><td>0.06172</td><td>0.34420 ± 0.01566</td><td>0.7611 ± 0.0358</td><td>1.1118 ± 0.1270</td><td>80.2</td></tr><tr><td>Xe_85_He_15</td><td>Density-corrected</td><td>17.500</td><td>350.0</td><td>0.07201</td><td>0.48070 ± 0.02399</td><td>0.7509 ± 0.0384</td><td>1.2867 ± 0.1302</td><td>76.5</td></tr><tr><td>Xe_85_He_15</td><td>Plain</td><td>15.000</td><td>300.0</td><td>0.08008</td><td>0.62360 ± 0.01715</td><td>0.8635 ± 0.0388</td><td>1.4240 ± 0.0790</td><td>81.6</td></tr><tr><td>Xe_85_He_15</td><td>Plain</td><td>16.000</td><td>300.0</td><td>0.07507</td><td>0.53220 ± 0.01958</td><td>0.8458 ± 0.0343</td><td>1.3828 ± 0.0575</td><td>80.8</td></tr><tr><td>Xe_85_He_15</td><td>Plain</td><td>17.500</td><td>300.0</td><td>0.06864</td><td>0.41520 ± 0.01329</td><td>0.8057 ± 0.0390</td><td>1.1654 ± 0.0663</td><td>76.7</td></tr></tbody></table>
+<p>HDF5 data, inputs and raw output: <a href="pilot_geant4_15bar_300Vcm.h5">pilot_geant4_15bar_300Vcm</a> · <a href="pilot_geant4_15bar_350Vcm.h5">pilot_geant4_15bar_350Vcm</a> · <a href="pilot_geant4_16bar_300Vcm.h5">pilot_geant4_16bar_300Vcm</a> · <a href="pilot_geant4_16bar_350Vcm.h5">pilot_geant4_16bar_350Vcm</a> · <a href="pilot_geant4_17p5bar_300Vcm.h5">pilot_geant4_17p5bar_300Vcm</a> · <a href="pilot_geant4_17p5bar_350Vcm.h5">pilot_geant4_17p5bar_350Vcm</a> · <a href="pilot_plain_15bar_300Vcm.h5">pilot_plain_15bar_300Vcm</a> · <a href="pilot_plain_16bar_300Vcm.h5">pilot_plain_16bar_300Vcm</a> · <a href="pilot_plain_refined_17p5bar_300Vcm.h5">pilot_plain_refined_17p5bar_300Vcm</a> ·
+<a href="https://magboltz.web.cern.ch/magboltz/">CERN Magboltz source</a></p>
+</body></html>

@@ -1,0 +1,9 @@
+gas = "Xe_85_He_15"
+temperature_K = 290.0
+pressure_bar = 16.0
+field_V_cm = 300.0
+density_mode = "geant4_material"
+nmax = 10
+energy_limit_eV = 1.5
+penning = false
+thermal_motion = true

@@ -185,3 +185,18 @@ used (theirs: 11.8 and 11.1; cross sections change between versions).
 | Bibliography entries (McDonald, Felkai) | `notes/physics/references.bib` |
 | Literature points | `docs/handoffs/data/xe_he_electron_drift_velocity_literature.csv` |
 | Paper text extractions (scratch) | `work/literature_transport/` |
+
+## Completed points (2026-11-15)
+
+The Fortran source ran for Xe/He 85/15 at 290 K and 300 V/cm: plain-pressure
+points at 15, 16 and 17.5 bar, and Geant4-density-corrected points at the same
+three physical pressures. Corrected points were also run at 350 V/cm. Each
+retained point used 400 million collisions, a 1.5 eV energy limit, thermal
+gas motion, no Penning transfer and zero magnetic field. All retained points
+had zero collisions in the final energy bin. An initial 80-million-collision
+point at 17.5 bar and 300 V/cm is retained as a pilot with its raw output.
+
+The numerical files and combined report are under
+`results/transport/magboltz_xe_he_290K/`; each HDF5 file contains the input
+card, raw output, source checksum and statistical errors. The reported drift
+velocity errors of the corrected points range from 2.67% to 4.99%.
