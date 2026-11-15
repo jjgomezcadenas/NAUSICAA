@@ -4,6 +4,14 @@ This repository develops reproducible ion and electron readout models for the
 ITACA TPC, including detector transport, optical collection and electronics.
 Establish the physics before implementing electronics.
 
+## ITACA operating conditions
+
+The detector description and operating conditions (gas, pressure, temperature,
+fiducial volume, drift and EL fields, electron and ion transport, ELM, ion
+collection potentials, W and Fano) live in `config/itaca.toml` and are shown
+with their derived quantities in `notes/html/itaca_detector.html`
+(`make itaca-detector`).
+
 - Xe2+ means the molecular ion Xe_2^+, with charge +e, not atomic Xe^{2+}.
 - Extend event readout to both carrier populations: a single-electron or
   double-electron ionisation track produces a trail of electrons and positive

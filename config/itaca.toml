@@ -3,9 +3,9 @@
 # the energy constants. The ELM dimensions are in [elm]. The ion pad pitch
 # is not here: the run and detector cards under config/ select it.
 #
-# Every value has an entry in [source], keyed "section.key". All values are
-# confirmed design inputs (user, 2026-11-15). Derived quantities (densities,
-# masses, reduced fields, yields, potentials, drift times) are computed by
+# All values are confirmed design inputs (user, 2026-11-15); literature
+# origins are noted beside the values. Derived quantities (densities, masses,
+# reduced fields, yields, potentials, drift times) are computed by
 # scripts/documentation/calculate_itaca_conditions.jl, not stored here.
 # Page: notes/html/itaca_detector.html.
 
@@ -15,13 +15,14 @@ date = "2026-11-15"
 [gas]
 mixture = "Xe_85_He_15"
 helium_mole_fraction = 0.15
-xenon_enrichment = "GXeEnriched"       # NEXUS isotopic abundances, below
+xenon_enrichment = "GXeEnriched"       # NEXUS materials::GXeEnriched, isotopic fractions below
 xe136_isotopic_fraction = 0.902616
 xenon_isotopic_fractions = { Xe129 = 0.000656392, Xe130 = 0.000656392, Xe131 = 0.00234361, Xe132 = 0.00708251, Xe134 = 0.086645, Xe136 = 0.902616 }
 temperature_K = 290.0
 pressure_bar = 16.0
 
 [gas.density_model]
+# NEXT DocDB 1183, as in simulation/nexus/source/geometries/ItacaChamber.cc.
 # Xenon: second-virial compressibility z = 1 + (a - b / T_r^1.6) P_r / T_r,
 # T_r = T / T_c, P_r = P / P_c. Helium: ideal gas. Mixture: additive partial
 # volumes (Amagat) for mole fractions x_xe, x_he:
@@ -40,7 +41,8 @@ fiducial_length_cm = 130.0
 [drift]
 field_V_cm = 350.0
 electron_lifetime_ms = 100.0
-# Magboltz, Xe/He 85/15, 16 bar, 290 K, 350 V/cm, real-gas density.
+# Magboltz 11.21 run of 2026-11-15 (magboltz/, docs/handoffs/magboltz_xe_he.md):
+# Xe/He 85/15, 16 bar, 290 K, 350 V/cm, real-gas density; errors statistical.
 electron_drift_velocity_mm_us = 0.5684
 electron_drift_velocity_relative_error = 0.0267
 electron_transverse_diffusion_mm_sqrtm = 2.0115
@@ -51,7 +53,9 @@ electron_longitudinal_diffusion_relative_error = 0.0461
 # D[mm sqrt(bar)/sqrt(cm)] = D[mm/sqrt(m)] sqrt(P[bar]) / 10.
 electron_transverse_diffusion_mm_sqrtbar_sqrtcm = 0.8046
 electron_longitudinal_diffusion_mm_sqrtbar_sqrtcm = 1.3691
-# Ions: literature mobility, not a Magboltz result.
+# Ions: reduced mobility 0.65 cm2/V/s in xenon (Neves et al., J. Chem. Phys. 133
+# (2010) 124316, via Cortez et al., JINST 12 (2017) P06012, Fig. 3), raised 17 %
+# for helium by Blanc's law; N/N0 = 16.14 at 16 bar, 290 K.
 ion_drift_velocity_cm_s = 16.5
 ion_species = "Xe2+ molecular ion, charge +e"
 
@@ -59,7 +63,9 @@ ion_species = "Xe2+ molecular ion, charge +e"
 depth_mm = 5.0
 voltage_kV = 15.0
 sipm_plane_V = 0.0
-# Yield model: photons per electron = gain x (V_EL[kV] - threshold x P[bar] x d[cm]).
+# Yield model: photons per electron = gain x (V_EL[kV] - threshold x P[bar] x d[cm]);
+# Fernandes et al., JHEP 04 (2020) 034, Table 1, 15 % He. J: user reading of
+# Oliveira et al., Fig. 6 (2026-11-04).
 yield_gain_photons_per_electron_kV = 139.0
 yield_threshold_kV_cm_bar = 0.80
 variance_ratio_J = 0.030
@@ -72,7 +78,8 @@ transfer_gap_mm = 10.0
 transfer_gap_field_V_cm = 300.0
 guide_length_mm = 100.0
 guide_length_policy = "fixed_length"
-# Average gradient from the EL exit electrode (68.8 kV) to the SiPM plane.
+# Average gradient from the EL exit electrode (68.8 kV) to the SiPM plane
+# (docs/elm.tex, grading equation).
 grading_field_kV_cm = 6.88
 guide_refractive_index = 1.5
 gas_gap_radial_mm = 0.5
@@ -81,7 +88,8 @@ tpb_conversion_efficiency = 0.65
 forward_fraction = 0.5
 
 [ion_readout]
-# Potentials of the ion collection stack; pads and SiPM plane at ground.
+# Potentials of the ion collection stack (manuscripts/itaca3/itaca3.tex); pads
+# and SiPM plane at ground.
 tpc_face_ifg_V = 8000.0
 pad_face_ifg_V = 3000.0
 pads_V = 0.0
@@ -91,52 +99,3 @@ pad_gap_mm = 5.0
 [energy]
 W_eV = 21.9
 fano_factor = 0.15
-
-[source]
-"gas.mixture" = "user design input, 2026-11-15"
-"gas.helium_mole_fraction" = "user design input, 2026-11-15; Felkai et al., NIM A 905 (2018) 82"
-"gas.xenon_enrichment" = "NEXUS materials::GXeEnriched, as used in simulation/nexus/source/geometries/ItacaChamber.cc"
-"gas.xe136_isotopic_fraction" = "NEXUS materials::GXeEnriched"
-"gas.xenon_isotopic_fractions" = "NEXUS materials::GXeEnriched"
-"gas.temperature_K" = "user design input, 2026-11-15"
-"gas.pressure_bar" = "user design input, 2026-11-15 (final configuration): limits the anode-side voltages"
-"gas.density_model" = "NEXT DocDB 1183 (materials::CompressibilityFactor); additive partial volumes as in simulation/nexus/source/geometries/ItacaChamber.cc (corrected 2026-11-15)"
-"geometry.fiducial_diameter_cm" = "user design input, 2026-11-15 (final configuration): radius 180 cm, about one tonne of Xe-136; arXiv:2604.02443 has 320 cm"
-"geometry.fiducial_length_cm" = "user design input, 2026-11-15 (final configuration); arXiv:2604.02443 has 150 cm"
-"drift.field_V_cm" = "user design input, 2026-11-15 (configuration summarised at 350 V/cm and 16 bar); 300 V/cm before"
-"drift.electron_lifetime_ms" = "user design input, 2026-11-15"
-"drift.electron_drift_velocity_mm_us" = "Magboltz Fortran run of 2026-11-15 (magboltz/, docs/handoffs/magboltz_xe_he.md): Xe/He 85/15, 16 bar, 290 K, 350 V/cm, real-gas density from the Geant4 material before its correction (equivalent pressure 17.624 bar; 17.367 bar after it)"
-"drift.electron_drift_velocity_relative_error" = "statistical error of that run"
-"drift.electron_transverse_diffusion_mm_sqrtm" = "Magboltz Fortran run of 2026-11-15 (magboltz/, docs/handoffs/magboltz_xe_he.md): Xe/He 85/15, 16 bar, 290 K, 350 V/cm, real-gas density from the Geant4 material before its correction (equivalent pressure 17.624 bar; 17.367 bar after it)"
-"drift.electron_transverse_diffusion_relative_error" = "statistical error of that run"
-"drift.electron_longitudinal_diffusion_mm_sqrtm" = "Magboltz Fortran run of 2026-11-15 (magboltz/, docs/handoffs/magboltz_xe_he.md): Xe/He 85/15, 16 bar, 290 K, 350 V/cm, real-gas density from the Geant4 material before its correction (equivalent pressure 17.624 bar; 17.367 bar after it); McDonald et al., JINST 14 (2019) P08009, measure more longitudinal diffusion than Magboltz in Xe-He"
-"drift.electron_longitudinal_diffusion_relative_error" = "statistical error of that run"
-"drift.electron_transverse_diffusion_mm_sqrtbar_sqrtcm" = "converted from the mm/sqrt(m) value at 16 bar; replaces 1.6 of the earlier cards"
-"drift.electron_longitudinal_diffusion_mm_sqrtbar_sqrtcm" = "converted from the mm/sqrt(m) value at 16 bar; replaces 0.75 of the earlier cards"
-"drift.ion_drift_velocity_cm_s" = "reduced mobility 0.65 cm2/V/s (Neves et al., J. Chem. Phys. 133 (2010) 124316, as plotted in Cortez et al., JINST 12 (2017) P06012, Fig. 3), raised 17% for helium by Blanc's law with a Langevin estimate of 15 cm2/V/s for the ion in helium; number density N/N0 = 16.14 at 16 bar, 290 K; 350 V/cm. Adopted by the user, 2026-11-15"
-"drift.ion_species" = "AGENTS.md convention; Gomez-Cadenas et al., arXiv:2512.08549"
-"el.depth_mm" = "user design input, 2026-11-09; current cards"
-"el.voltage_kV" = "user design input, 2026-11-15: slightly less light than the earlier 1251 photons per electron, to limit saturation"
-"el.sipm_plane_V" = "manuscripts/itaca3/itaca3.tex: sensors at ground"
-"el.yield_gain_photons_per_electron_kV" = "Fernandes et al., JHEP 04 (2020) 034, Table 1, 15% He (139 +- 1 photons/kV, measured near 1.2 bar)"
-"el.yield_threshold_kV_cm_bar" = "Fernandes et al., JHEP 04 (2020) 034, Table 1, 15% He (0.80 +- 0.02 kV/cm/bar)"
-"el.variance_ratio_J" = "user corrected reading of Oliveira et al., Fig. 6, 2026-11-04; current cards"
-"elm.hole_pitch_mm" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"
-"elm.hole_diameter_mm" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"
-"elm.transfer_gap_mm" = "docs/elm.tex, table of regions (transfer gap 1 cm)"
-"elm.transfer_gap_field_V_cm" = "docs/elm.tex, table of regions (0.3 kV across the transfer gap)"
-"elm.guide_length_mm" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml: the simulated value, kept (user, 2026-11-15)"
-"elm.guide_length_policy" = "docs/elm.tex, section on linking guide length to the EL operating point: fixed length"
-"elm.grading_field_kV_cm" = "exit potential over guide length, docs/elm.tex grading equation: (8 + 45.5 + 0.3 + 15) kV / 10 cm; the earlier cards recorded 4.65 kV/cm for 200 V/cm and a 1.2 kV cathode"
-"elm.guide_refractive_index" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"
-"elm.gas_gap_radial_mm" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"
-"elm.sipm_side_mm" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml; 3 mm SiPMs on 4 mm holes limit saturation of the electronics (user, 2026-11-15)"
-"elm.tpb_conversion_efficiency" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"
-"elm.forward_fraction" = "config/specs/detector/electrons/elm_4mm_250ns_ep2_shared.toml"
-"ion_readout.tpc_face_ifg_V" = "manuscripts/itaca3/itaca3.tex; user correction recorded in config/detector.toml"
-"ion_readout.pad_face_ifg_V" = "manuscripts/itaca3/itaca3.tex; user correction recorded in config/detector.toml"
-"ion_readout.pads_V" = "manuscripts/itaca3/itaca3.tex"
-"ion_readout.ifg_thickness_mm" = "config/detector.toml (geometry.ifg_thickness_m)"
-"ion_readout.pad_gap_mm" = "config/detector.toml (geometry.gap_m)"
-"energy.W_eV" = "config/readout/bb0nu_detector_response_3mm_mainframe20.toml"
-"energy.fano_factor" = "config/readout/bb0nu_detector_response_3mm_mainframe20.toml"
