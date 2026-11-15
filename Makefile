@@ -441,6 +441,21 @@ test-track-zoom:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/production/test_track_zoom.jl
 	node scripts/validation/check_hit_viewer.js $(PRESENTATION)
 
+# Statistics of a run kept as batches, and the comparison of two such runs.
+# make itaca-statistics RUN_DIR=results/readout/<run_label> [CLASSIFICATION=<toml>]
+# make itaca-comparison SIGNAL=<run dir> BACKGROUND=<run dir> OUT=<folder>
+STATISTICS_SUBDIR ?= vh1_hits
+.PHONY: itaca-statistics itaca-comparison test-species-comparison
+itaca-statistics:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/prepare_batch_statistics.jl $(RUN_DIR)
+	$(VIEWER_PYTHON) scripts/production/present_batch_statistics.py $(RUN_DIR) $(CLASSIFICATION)
+itaca-comparison:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/prepare_species_comparison.jl $(SIGNAL)/$(STATISTICS_SUBDIR)/statistics/events.h5 $(BACKGROUND)/$(STATISTICS_SUBDIR)/statistics/events.h5 $(OUT)
+	$(VIEWER_PYTHON) scripts/production/present_species_comparison.py $(OUT)
+test-species-comparison:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/production/test_species_comparison.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/production/test_batch_statistics.jl
+
 # VH1 production from a run card: detector response, then hits. Example: make vh1-production RUN=config/runs/bb0nu_vh1_cf20f_1000.toml
 RUN ?= config/runs/bb0nu_vh1_legacy_conditions_pilot100.toml
 .PHONY: vh1-production
