@@ -21,6 +21,9 @@ using .EventAnalysis,.DetectorResponse,.ElectronicsResponse,.SignalReconstructio
  @test ih.z_mm[1]≈0 atol=1e-4
  @test eh.z_mm[1]≈0 atol=1e-4
  @test ih.energy_keV[1]≈.219 rtol=1e-6
+ # A Float64 energy just above the cut can round to the cut in saved Float32.
+ @test isempty(reconstruct_hits(ions,p,ds;keV_per_count=.50000001,minimum_energy_keV=5.).energy_keV)
+ @test only(reconstruct_hits(ions,p,ds;keV_per_count=.5000001,minimum_energy_keV=5.).energy_keV)>5f0
  pe.valid[1]=false
  @test isnan(event_charge_estimates(ions,pe,p,ds,.32).pe_total)
  @test event_charge_estimates(ions,pe,p,ds,.32).invalid_pe_buckets==1

@@ -45,9 +45,10 @@ function reconstruct_hits(signal,placement,detector;charge_correction=1.,keV_per
    zd=detector.chamber_length_mm-(lo+hi)/2*detector.electron_transport.electron_drift_velocity_mm_us
   end
   charge=Float64(values[index])*charge_correction
-  charge*keV_per_count>minimum_energy_keV||continue
+  stored_energy_keV=Float32(charge*keV_per_count)
+  stored_energy_keV>Float32(minimum_energy_keV)||continue
   push!(x,signal.channels.x_mm[j]);push!(y,signal.channels.y_mm[j]);push!(z,zd-vertex_z)
-  push!(q,charge);push!(energy,charge*keV_per_count)
+  push!(q,charge);push!(energy,stored_energy_keV)
  end
  ReconstructedHits(x,y,z,q,energy)
 end

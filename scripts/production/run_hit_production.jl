@@ -1,5 +1,7 @@
 #!/usr/bin/env julia
 include("run_framed_reconstruction.jl")
+include("../../src/vh1/VH1Readout.jl")
+using .VH1Readout
 
 """Parse the explicit diagnostic selection. No diagnostics are constructed in `none` mode."""
 function hit_control_settings(card)
@@ -52,6 +54,8 @@ for validation and must not alter it. Timings are printed to the run log.
 function run_hit_production(cardpath;on_event=event->nothing)
     BLAS.set_num_threads(1)
     rc=TOML.parsefile(cardpath);debug=hit_control_settings(rc)
+    use_vh1=haskey(rc,"vh1_card")
+    use_vh1&&debug.mode!="none"&&throw(ArgumentError("VH1 hit production requires controls.mode=none"))
     ec=TOML.parsefile(joinpath(ROOT,rc["electronics_card"]));dc=TOML.parsefile(joinpath(ROOT,ec["detector_card"]))
     hp=joinpath(ROOT,dc["hits"]);source=joinpath(ROOT,rc["selection_controls"]);sha=bytes2hex(open(sha256,hp))
     out=joinpath(ROOT,"results/readout",dc["run_label"],rc["output_subdir"])
@@ -64,13 +68,19 @@ function run_hit_production(cardpath;on_event=event->nothing)
         ids,ps,fs
     end
     cards=Dict("run"=>read(cardpath,String),"electronics"=>read(joinpath(ROOT,rc["electronics_card"]),String))
+    use_vh1&&(cards["vh1_card"]=read(joinpath(ROOT,rc["vh1_card"]),String))
     for k in ["detector_card","csa_card","sipm_card","asic_card"];cards[k]=read(joinpath(ROOT,ec[k]),String);end
     hashes=Dict("source"=>sha,"selection"=>bytes2hex(open(sha256,source)),"calibration"=>bytes2hex(open(sha256,joinpath(ROOT,ec["nonlinear_calibration"]))))
+    if use_vh1
+        hashes["vh1_card"]=bytes2hex(open(sha256,joinpath(ROOT,rc["vh1_card"])))
+        hashes["vh1_code"]=bytes2hex(open(sha256,joinpath(ROOT,"src/vh1/VH1Readout.jl")))
+    end
     files=vcat([@__FILE__,joinpath(@__DIR__,"framed_electronics_settings.jl"),joinpath(@__DIR__,"run_framed_detector_response.jl")],
       [joinpath(d,n) for sub in ("src/event_analysis","src/detector_response","src/electronics","src/reconstruction","src/ion_signal") for (d,_,ns) in walkdir(joinpath(ROOT,sub)) for n in ns if endswith(n,".jl")])
     for file in files;hashes[replace(relpath(file,ROOT),"/"=>"__")]=bytes2hex(open(sha256,file));end
-    metadata=HitFileMetadata(dc["run_label"],get(dc,"species","bb0nu"),Xe_85_He_15,cards,hashes)
+    metadata=HitFileMetadata(dc["run_label"],get(dc,"sample",get(dc,"species","bb0nu")),Xe_85_He_15,cards,hashes)
     setup=@timed prepare_electronics_run(ec);prepared=setup.value;workspace=ER.CSAWorkspace()
+    vh=use_vh1 ? load_vh1_settings(ROOT,joinpath(ROOT,rc["vh1_card"]);minimum_samples=get(rc,"vh1_minimum_samples",32768)) : nothing
     c=rc["ions"];is=IonReconstructionSettings(c["baseline_ms"],c["average_ms"],c["nonlinear_below_V"],c["max_iterations"],c["convergence_ions"])
     es=ElectronReconstructionSettings(prepared.sipm.sipm,prepared.sipm.illuminated_microcells,rc["electrons"]["subtract_mean_dark"])
     w=open_hit_output(joinpath(out,"hits.h5"),metadata,settings)
@@ -90,13 +100,23 @@ function run_hit_production(cardpath;on_event=event->nothing)
                 end;timing[1]+=t
                 t=@elapsed begin
                     s=electronics_settings(prepared,ions.ions.time)
-                    adc,_=ER.sim_ion_electronics_prepared(erng("csa_noise"),erng("adc_noise"),ions,s.ion,workspace)
+                    if use_vh1
+                        adc=sim_vh1_electronics(erng("vh1_noise"),erng("vh1_adc"),ions,vh)
+                    else
+                        adc,_=ER.sim_ion_electronics_prepared(erng("csa_noise"),erng("adc_noise"),ions,s.ion,workspace)
+                    end
                 end;timing[2]+=t
                 t=@elapsed asic,_=sim_sipm_readout(erng("sipm"),erng("asic"),photons,s.sipm);timing[3]+=t
                 t=@elapsed begin
-                    cal=IonReconstructionCalibration(s.ion.adc,s.ion.csa.current_pulse,s.ion.csa.linear_response,s.ion.csa.nonlinear_response,s.ion.csa.noise)
-                    plan=SR.prepare_ion_reconstruction(adc.time,ions.ions.time,cal,is)
-                    ri=SR.reconstruct_ions(adc,plan);fine=reco_electron_signal(asic,es)
+                    if use_vh1
+                        plan=prepare_vh1_reconstruction(adc.time,ions.ions.time,vh)
+                        ri=reco_vh1_ions(adc,plan)
+                    else
+                        cal=IonReconstructionCalibration(s.ion.adc,s.ion.csa.current_pulse,s.ion.csa.linear_response,s.ion.csa.nonlinear_response,s.ion.csa.noise)
+                        plan=SR.prepare_ion_reconstruction(adc.time,ions.ions.time,cal,is)
+                        ri=SR.reconstruct_ions(adc,plan)
+                    end
+                    fine=reco_electron_signal(asic,es)
                     totals=event_charge_estimates(ri,fine,p,ds,s.sipm.sipm.pde)
                     pe=rebin_electron_signal(fine,Int64(rc["electrons"]["rebin_factor"]))
                 end;timing[4]+=t
@@ -127,7 +147,7 @@ function run_hit_production(cardpath;on_event=event->nothing)
             catch;isfile(path*".tmp")&&rm(path*".tmp");rethrow();end
         end
         println("TIMING setup_s=$(setup.time) event_loop_s=$(time()-started) events=$(length(ids))")
-        for (name,t) in zip(("detector","CSA_ADC","SiPM_ASIC","reconstruction","hits","write"),timing)
+        for (name,t) in zip(("detector",use_vh1 ? "VH1_ADC" : "CSA_ADC","SiPM_ASIC","reconstruction","hits","write"),timing)
             println("TIMING $name total_s=$t per_event_s=$(t/length(ids))")
         end
         println("OUTPUT $target bytes=$(filesize(target))")

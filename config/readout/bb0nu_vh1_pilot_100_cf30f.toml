@@ -1,0 +1,13 @@
+selection_controls = "results/readout/bb0nu_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5"
+electronics_card = "config/readout/bb0nu_electronics_ion4mm_20ms_100.toml"
+vh1_card = "config/specs/response/ion_csa/vh1_device_changes_cf30f.toml"
+accepted_events = 100
+example_events = 5
+output_subdir = "vh1_pilot_100_cf30f"
+minimum_samples = 32768
+[ions]
+baseline_ms = 10.0
+average_ms = 5.0
+nonlinear_below_V = 0.63
+max_iterations = 20
+convergence_ions = 0.05
