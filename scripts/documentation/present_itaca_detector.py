@@ -173,7 +173,7 @@ def detector_page(source: Path, target: Path) -> None:
     D("geometry.gas_mass_kg", "Gas mass"), D("geometry.xenon_mass_kg", "Xenon mass"), D("geometry.xe136_mass_kg", "Xe-136 mass"),
     D("geometry.helium_mass_kg", "Helium mass"), D("geometry.reference_pure_xenon_mass_kg", "Pure enriched xenon in the same volume at 15 bar, 290 K"),
     D("geometry.track_length_relative_to_pure_xenon_15bar", "Track length relative to pure xenon at 15 bar, 290 K", lambda x: f"+{pct(x, 3)}"),
-    I("geometry.z_origin", "Origin of z"), D("geometry.z_el_entry_cm", "z of the EL entry"), D("geometry.geant4_z_offset_cm", "Geant4 z offset"),
+    I("geometry.z_origin", "Origin of z"), D("geometry.z_el_entry_cm", "z of the EL entry"),
     D("geometry.pads_to_sipm_plane_mm", "Pads to SiPM plane"),
 ])}
 <h3>Potentials along the axis, anode at top</h3>

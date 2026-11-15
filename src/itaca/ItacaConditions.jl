@@ -323,7 +323,6 @@ function derived_conditions(d::AbstractDict)
     put!("geometry", "track_length_relative_to_pure_xenon_15bar", ref.number_density_m3 / effective - 1, "",
         "inverse effective atom density, helium counted as 2/54 of a xenon atom; reference enriched xenon at 15 bar, 290 K")
     put!("geometry", "z_el_entry_cm", L_cm, "cm", "z of the EL entry, z = 0 at the pad plane")
-    put!("geometry", "geant4_z_offset_cm", L_cm / 2, "cm", "z = z_Geant4 + offset; the Geant4 cylinder is centred on its origin")
     stack = geo["pad_gap_mm"] + geo["ifg_thickness_mm"] + L_cm * 10 + geo["transfer_gap_mm"] + geo["el_depth_mm"] + geo["guide_length_mm"]
     put!("geometry", "pads_to_sipm_plane_mm", stack, "mm", "pad gap + IFG + drift + transfer gap + EL + guides")
 

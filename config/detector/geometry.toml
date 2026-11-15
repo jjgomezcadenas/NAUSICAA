@@ -12,6 +12,6 @@ guide_length_policy = "fixed_length"
 # Detector coordinates (user, 2026-11-15): z along the drift, z = 0 at the
 # TopMetal pad plane, z = fiducial length at the EL entry. An event at z has
 # ion drift length z and electron drift length (fiducial length - z). x and y
-# are measured from the detector axis. The Geant4 gas cylinder is centred on
-# its origin, so z = z_Geant4 + fiducial length / 2 (derived).
+# are measured from the detector axis. The Geant4 gas volume (ItacaChamber)
+# uses the same coordinates, so the generated vertex is used as found.
 z_origin = "topmetal_pad_plane"

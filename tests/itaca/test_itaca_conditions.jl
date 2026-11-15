@@ -64,7 +64,7 @@ end
     @test derived["geometry.xe136_mass_kg"] ≈ 994 atol = 1
     @test derived["geometry.helium_mass_kg"] ≈ 5.7 atol = 0.05
     @test derived["geometry.track_length_relative_to_pure_xenon_15bar"] ≈ 0.11 atol = 0.005
-    @test derived["geometry.geant4_z_offset_cm"] == 65.0
+    @test !haskey(derived, "geometry.geant4_z_offset_cm")   # the Geant4 volume uses detector coordinates
     @test derived["geometry.z_el_entry_cm"] == 130.0
     @test derived["drift.drift_voltage_kV"] ≈ 45.5 atol = 0.01
     @test derived["drift.reduced_field_V_cm_bar"] ≈ 21.9 atol = 0.05
