@@ -1,0 +1,15 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.mac
+##
+## ITACA gas volume: radius 160 cm, length 150 cm (arXiv:2604.02443, Table 1),
+## enriched xenon with 15% helium (mole fraction) at 15 bar, 290 K
+## (operating temperature: user design input, 2026-11-15).
+## Step limit 1 mm, as in the NextPrecdr files of July 2025.
+## ----------------------------------------------------------------------------
+
+/Geometry/ItacaChamber/radius 160. cm
+/Geometry/ItacaChamber/length 150. cm
+/Geometry/ItacaChamber/pressure 15. bar
+/Geometry/ItacaChamber/temperature 290. kelvin
+/Geometry/ItacaChamber/helium_mole_fraction 0.15
+/Geometry/ItacaChamber/step_limit 1. mm

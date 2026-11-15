@@ -1,0 +1,19 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.bb0nu.init.mac
+##
+## Template. The job script replaces @CONFIG@ with the per-job configuration
+## macro written from ItacaChamber.bb0nu.config.mac.
+## ----------------------------------------------------------------------------
+
+/control/execute macros/physics/DefaultPhysicsList.mac
+
+/nexus/RegisterGeometry ItacaChamber
+/nexus/RegisterGenerator Decay0Interface
+
+/nexus/RegisterPersistencyManager PersistencyManager
+
+/nexus/RegisterRunAction DefaultRunAction
+/nexus/RegisterEventAction DefaultEventAction
+/nexus/RegisterTrackingAction DefaultTrackingAction
+
+/nexus/RegisterMacro @CONFIG@

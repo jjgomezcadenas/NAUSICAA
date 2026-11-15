@@ -1,0 +1,26 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.electron.config.mac
+##
+## Template. The job script replaces @SEED@, @START_ID@ and @OUTPUT@.
+## Generator and energy window as in the NextPrecdr files of July 2025.
+## ----------------------------------------------------------------------------
+
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+/control/execute macros/geometries/ItacaChamber.mac
+
+/Generator/SingleParticle/particle e-
+/Generator/SingleParticle/min_energy 2457.83 keV
+/Generator/SingleParticle/max_energy 2457.83 keV
+/Generator/SingleParticle/region GAS
+
+/Actions/DefaultEventAction/min_energy 2300 keV
+/Actions/DefaultEventAction/max_energy 2470 keV
+
+/nexus/random_seed @SEED@
+/nexus/persistency/start_id @START_ID@
+/nexus/persistency/output_file @OUTPUT@
+/nexus/persistency/event_type background

@@ -1,0 +1,26 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.bb0nu.config.mac
+##
+## Template. The job script replaces @SEED@, @START_ID@ and @OUTPUT@.
+## Generator and energy window as in the NextPrecdr files of July 2025.
+## ----------------------------------------------------------------------------
+
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+/control/execute macros/geometries/ItacaChamber.mac
+
+/Generator/Decay0Interface/inputFile none
+/Generator/Decay0Interface/Xe136DecayMode 1
+/Generator/Decay0Interface/Ba136FinalState 0
+/Generator/Decay0Interface/region GAS
+
+/Actions/DefaultEventAction/min_energy 2300 keV
+/Actions/DefaultEventAction/max_energy 2470 keV
+
+/nexus/random_seed @SEED@
+/nexus/persistency/start_id @START_ID@
+/nexus/persistency/output_file @OUTPUT@
+/nexus/persistency/event_type signal
