@@ -30,15 +30,15 @@ namespace nexus {
     void Construct();
 
     /// Xe-He mixture: mole fractions converted to the mass fractions
-    /// Geant4 requires; density from additive partial volumes.
+    /// Geant4 requires; density from additive partial volumes (Amagat).
     static G4Material* XenonHelium(G4double pressure, G4double temperature,
                                    G4double helium_mole_fraction);
 
   private:
-    G4double radius_;               ///< Gas radius (ITACA: 160 cm)
-    G4double length_;               ///< Gas length along z (ITACA: 150 cm)
-    G4double pressure_;             ///< Total pressure (15 bar)
-    G4double temperature_;          ///< Gas temperature (300 K)
+    G4double radius_;               ///< Gas radius (ITACA: 180 cm)
+    G4double length_;               ///< Gas length along z (ITACA: 130 cm)
+    G4double pressure_;             ///< Total pressure (16 bar)
+    G4double temperature_;          ///< Gas temperature (290 K)
     G4double helium_mole_fraction_; ///< Helium mole fraction (0.15)
     G4double step_limit_;           ///< Maximum step in the gas (1 mm)
 

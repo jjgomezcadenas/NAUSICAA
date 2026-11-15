@@ -45,8 +45,8 @@ namespace nexus {
 
   ItacaChamber::ItacaChamber():
     GeometryBase(),
-    radius_(160.*cm), length_(150.*cm),
-    pressure_(15.*bar), temperature_(300.*kelvin),
+    radius_(180.*cm), length_(130.*cm),
+    pressure_(16.*bar), temperature_(290.*kelvin),
     helium_mole_fraction_(0.15), step_limit_(1.*mm),
     gas_vertex_gen_(nullptr)
   {
@@ -134,11 +134,15 @@ namespace nexus {
     const G4double xenon_density  = pressure * xenon_molar_mass  / (z_xenon * gas_constant * temperature);
     const G4double helium_density = pressure * helium_molar_mass / (gas_constant * temperature);
 
-    // Additive partial volumes: each gas at the total pressure, weighted by
-    // its mole fraction.
+    // Additive partial volumes (Amagat): one mole of mixture occupies
+    // (x_xe z_xe + x_he) R T / P, so the density of a mixture with mole
+    // fractions x_xe and x_he is
+    //   rho = P (x_xe M_xe + x_he M_he) / ((x_xe z_xe + x_he) R T).
     const G4double x_he = helium_mole_fraction;
     const G4double x_xe = 1. - x_he;
-    const G4double density = x_xe * xenon_density + x_he * helium_density;
+    const G4double density =
+      pressure * (x_xe * xenon_molar_mass + x_he * helium_molar_mass) /
+      ((x_xe * z_xenon + x_he) * gas_constant * temperature);
 
     // Geant4 takes MASS fractions when the fraction is a G4double.
     const G4double xenon_mass  = x_xe * xenon_molar_mass;
