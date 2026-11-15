@@ -13,11 +13,16 @@ case $SAMPLE in bb0nu) SEED_BASE=100000;; electron) SEED_BASE=200000;; *) echo "
 SEED=$((SEED_BASE + BATCH)); START=$((BATCH * EVENTS))
 TAG=$(printf "%s_b%05d" "$SAMPLE" "$BATCH")
 mkdir -p "$OUTDIR"
+cp -n "$NEXUS/macros/geometries/ItacaChamber.mac" "$OUTDIR/" 2>/dev/null || true
 OUT="$OUTDIR/$TAG.next"
 [ -e "$OUT.h5" ] && { echo "Output exists: $OUT.h5"; exit 3; }
 
-# Batch shells do not define the module command.
+# Batch shells do not define the module command. The profile may print an
+# error on nodes that cannot resolve the user name; that must not stop the job.
+set +e
 type module >/dev/null 2>&1 || source /etc/profile
+set -e
+type module >/dev/null 2>&1 || { echo "module command unavailable on $(hostname)"; exit 4; }
 module purge
 module load Geant4/11.1.2-GCC-11.3.0 HDF5/1.12.2-gompi-2022a GSL/2.7-GCC-11.3.0
 cd "$(dirname "$(which geant4-config)")" && source geant4.sh

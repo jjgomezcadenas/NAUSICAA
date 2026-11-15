@@ -2,7 +2,8 @@
 // nexus | ItacaChamber.h
 //
 // Gas cylinder for ITACA track studies: enriched xenon with a helium
-// admixture, no internal structures. Axis along z, centred at the origin.
+// admixture, no internal structures. Axis along z; the gas spans z = 0
+// (TopMetal pad plane) to z = length (EL entry), centred on x = y = 0.
 //
 // NAUSICAA addition to the soleti/nexus "precdr" branch.
 // ----------------------------------------------------------------------------

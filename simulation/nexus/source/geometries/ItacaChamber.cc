@@ -2,7 +2,8 @@
 // nexus | ItacaChamber.cc
 //
 // Gas cylinder for ITACA track studies: enriched xenon with a helium
-// admixture, no internal structures. Axis along z, centred at the origin.
+// admixture, no internal structures. Axis along z; the gas spans z = 0
+// (TopMetal pad plane) to z = length (EL entry), centred on x = y = 0.
 //
 // NAUSICAA addition to the soleti/nexus "precdr" branch.
 // ----------------------------------------------------------------------------
@@ -171,7 +172,7 @@ namespace nexus {
     const G4double half_length = length_ / 2.;
 
     // World: vacuum box. Particles leaving the gas are not returned.
-    const G4double lab_half = 1.2 * std::max(radius_, half_length);
+    const G4double lab_half = 1.2 * std::max(radius_, length_);
     G4Box* lab_solid = new G4Box(name + "_LAB", lab_half, lab_half, lab_half);
     G4Material* vacuum = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
     G4LogicalVolume* lab_logic = new G4LogicalVolume(lab_solid, vacuum, name + "_LAB");
@@ -181,7 +182,9 @@ namespace nexus {
     G4Tubs* gas_solid = new G4Tubs(name + "_GAS", 0., radius_, half_length, 0., twopi);
     G4Material* gas = XenonHelium(pressure_, temperature_, helium_mole_fraction_);
     G4LogicalVolume* gas_logic = new G4LogicalVolume(gas_solid, gas, name + "_GAS");
-    new G4PVPlacement(nullptr, G4ThreeVector(), gas_logic, name + "_GAS", lab_logic, false, 0, true);
+    // Detector coordinates: z = 0 at the TopMetal pad plane.
+    const G4ThreeVector gas_centre(0., 0., half_length);
+    new G4PVPlacement(nullptr, gas_centre, gas_logic, name + "_GAS", lab_logic, false, 0, true);
 
     IonizationSD* ionizsd = new IonizationSD("/ITACA_GAS");
     G4SDManager::GetSDMpointer()->AddNewDetector(ionizsd);
@@ -191,10 +194,11 @@ namespace nexus {
 
     // Built here, after the macro has set the dimensions.
     delete gas_vertex_gen_;
-    gas_vertex_gen_ = new CylinderPointSampler(0., radius_, half_length, 0., twopi);
+    gas_vertex_gen_ = new CylinderPointSampler(0., radius_, half_length, 0., twopi,
+                                               nullptr, gas_centre);
 
     G4cout << "[ItacaChamber] radius " << radius_/cm << " cm, length " << length_/cm
-           << " cm, step limit " << step_limit_/mm << " mm" << G4endl;
+           << " cm (z = 0 to " << length_/cm << " cm), step limit " << step_limit_/mm << " mm" << G4endl;
   }
 
 
