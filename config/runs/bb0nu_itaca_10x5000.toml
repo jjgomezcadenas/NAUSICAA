@@ -1,0 +1,105 @@
+# Production at the default ITACA detector: bb0nu, 10 NEXUS batches of 5,000
+# generated events (simulation/nexus, ItacaChamber geometry, seed offset 1000).
+# The event stays where it was generated and is framed in a fixed 160 mm cube,
+# moved inward when it would cross the detector boundary.
+# Batches: scripts/production/slurm/itaca_batches.slurm, one batch per array
+# task, with NAUSICAA_DATA set to the folder that holds prod_10x5000/.
+schema = "nausicaa.run.v1"
+detector = "config/detector/itaca.toml"
+run_label = "bb0nu_itaca_10x5000"
+sample = "bb0nu"
+hits = "$NAUSICAA_DATA/prod_10x5000/bb0nu/bb0nu_{batch}_hitdf.h5"
+particles = "$NAUSICAA_DATA/prod_10x5000/bb0nu/bb0nu_{batch}.next.h5"
+max_events = 0                    # 0: all events of the batch
+seed = 42
+example_events = 0
+histogram_bins = 50
+max_vector_bytes = 268435456
+electron_display_rebin = 20       # display only; response vectors retain 250 ns
+
+[overrides]                       # none: the default detector
+
+[selection]
+placement = "generated_vertex"    # ion drift = vertex z, electron drift = length - z
+frame_side_mm = 160.0             # fixed cube around the main-track box; larger tracks are rejected
+frame_placement = "inside_detector"  # cube centred on the track, moved inward at the detector boundary
+el_exclusion_mm = 50.0            # the main track stays this far from the EL entry: closer tracks saturate the SiPM readout
+simulation_margin_mm = 20.0       # detector response on the track and contained gamma deposits plus this margin, inside the cube
+gamma_energy_cut_keV = 3.0
+frame_track = "primary_and_delta_electrons"
+
+[response]
+vh1_card = "config/specs/response/ion_csa/vh1_device_changes_cf20f.toml"
+vh1_minimum_samples = 32768
+csa_card = "config/specs/response/ion_csa/csa_0p5_enc_4mm.toml"
+nonlinear_calibration = "results/ion_csa_nonlinear/v1/calibration.h5"
+sipm_card = "config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns_recovered.toml"
+asic_card = "config/specs/response/sipm_electronics/readout_v1.toml"
+
+[electronics]            # present-chain acquisition and converter; its own pilot stage
+seed = 20261113
+accepted_events = 100
+example_events = 5
+output_subdir = "electronics_100events_efficient"
+baseline_ms = 10.0
+signal_tail_ms = 5.0
+adc_sample_us = 100.0
+adc_bits = 12
+adc_minimum_V = 0.0
+adc_maximum_V = 1.8
+adc_input_noise_rms_V = 0.0
+
+[hit_production]         # hit production stage
+accepted_events = 0            # 0: every accepted event of the batch
+example_events = 0
+output_subdir = "vh1_hits"
+
+[ions]
+baseline_ms = 10.0
+average_ms = 5.0
+nonlinear_below_V = 0.63
+max_iterations = 20
+convergence_ions = 0.05
+
+[electrons]
+subtract_mean_dark = true
+rebin_factor = 20
+
+[track_analysis]
+ion_graph_mode = "fixed"
+ion_voxel_width_mm = 3.0
+ion_connection_mm = 8.0
+electron_graph_mode = "fixed"
+electron_voxel_width_mm = 4.0
+electron_connection_mm = 8.0
+ion_blob_radius_mm = 7.0
+electron_blob_radius_mm = 10.0
+example_every = 50
+hit_energy_bin_keV = 0.25
+hit_energy_max_keV = 200.0
+ion_hit_cut_keV = 5.0
+electron_hit_cut_keV = 1.0
+check_connectivity = true
+graph_k = 10
+edge_sigma_scale = 6.0
+ion_graph_k = 10
+electron_graph_k = 20
+ion_edge_sigma_scale = 7.5
+save_all_track_hits = true
+
+[hit_output]
+ion_hit_cut_keV = 3.0
+electron_hit_cut_keV = 1.0
+compression_level = 4
+chunk_hits = 65536
+max_output_bytes = 67108864   # 64 MiB per batch file: about 3,200 events at 3.5 kB
+
+[controls]
+mode = "none"
+
+[zs_controls]            # reconstruction-controls stage (run_framed_reconstruction.jl)
+ion_threshold_step = 5.0
+ion_threshold_maximum = 300.0
+pe_threshold_step = 0.5
+pe_threshold_maximum = 50.0
+histogram_bins = 100
