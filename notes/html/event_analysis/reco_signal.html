@@ -58,7 +58,7 @@ end</code></pre>
 <li><code>max_iterations</code>: iteration limit for the reference fit used in validation.</li>
 <li><code>convergence_ions</code>: convergence threshold for that reference fit.</li>
 </ul>
-<p>Proposed starting values: 10 ms baseline, 5 ms averages and the existing 0.63 V threshold. The reference fit uses at most 20 updates and a convergence threshold of 0.05 ions per bucket. The direct inverse uses neither setting. These settings are configurable in TOML.</p>
+<p>Proposed starting values: 10 ms baseline, 5 ms averages and the existing 0.63 V threshold. The reference fit uses at most 20 updates and a convergence threshold of 0.05 ions per bucket. The direct inverse uses neither setting. These settings are the <code>[ions]</code> and <code>[electrons]</code> sections of the run card.</p>
 <h3>IonReconstructionChecks</h3>
 <pre><code>struct IonReconstructionChecks
     baseline_V::Vector{Float32}

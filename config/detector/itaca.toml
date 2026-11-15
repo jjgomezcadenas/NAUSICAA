@@ -1,0 +1,19 @@
+# ITACA default detector: the index of the eight cards that define it.
+# Each card holds the design values of one subsystem; nothing derived is
+# typed in them. scripts/documentation/calculate_itaca_conditions.jl resolves
+# the set (plus the overrides of a run card) and computes the derived
+# quantities; notes/html/itaca_detector.html shows both, and
+# notes/html/detector_configuration.html describes the architecture.
+schema = "nausicaa.detector_set.v1"
+name = "ITACA"
+date = "2026-11-15"
+
+[cards]   # paths relative to this file
+gas = "gas.toml"
+geometry = "geometry.toml"
+drift = "drift.toml"
+voltages = "voltages.toml"
+el = "el.toml"
+sipm = "sipm.toml"
+ions = "ions.toml"
+energy = "energy.toml"

@@ -53,34 +53,35 @@ for validation and must not alter it. Timings are printed to the run log.
 """
 function run_hit_production(cardpath;on_event=event->nothing)
     BLAS.set_num_threads(1)
-    rc=TOML.parsefile(cardpath);debug=hit_control_settings(rc)
-    use_vh1=haskey(rc,"vh1_card")
+    r=resolve_run(cardpath;root=ROOT);rc=r.run;stage=rc["hit_production"];response=rc["response"];ec=electronics_card(r)
+    debug=hit_control_settings(rc)
+    use_vh1=haskey(response,"vh1_card")
     use_vh1&&debug.mode!="none"&&throw(ArgumentError("VH1 hit production requires controls.mode=none"))
-    ec=TOML.parsefile(joinpath(ROOT,rc["electronics_card"]));dc=TOML.parsefile(joinpath(ROOT,ec["detector_card"]))
-    hp=joinpath(ROOT,dc["hits"]);source=joinpath(ROOT,rc["selection_controls"]);sha=bytes2hex(open(sha256,hp))
-    out=joinpath(ROOT,"results/readout",dc["run_label"],rc["output_subdir"])
+    hp=joinpath(ROOT,rc["hits"]);sha=bytes2hex(open(sha256,hp))
+    source=joinpath(ROOT,get(stage,"selection_controls",joinpath("results/readout",rc["run_label"],"detector_response/controls.h5")))
+    out=joinpath(ROOT,"results/readout",rc["run_label"],stage["output_subdir"])
+    write_configuration(r,ROOT;stage="hits")
     c=rc["hit_output"];settings=HitOutputSettings(c["ion_hit_cut_keV"],c["electron_hit_cut_keV"],c["compression_level"],c["chunk_hits"],c["max_output_bytes"])
     ids,positions,frames=h5open(source,"r") do f
         read(f["source_sha256"],String)==sha||error("MC source changed")
-        g=f["events"];ids=read(g["event_number"])[1:rc["accepted_events"]]
+        g=f["events"];ids=read(g["event_number"])[1:stage["accepted_events"]]
         ps=[EventPlacement(id,read(g["ion_drift_cm"])[j],read(g["electron_drift_cm"])[j]) for (j,id) in enumerate(ids)]
         fs=[EventFrame(mc_vertex_frame,ntuple(k->read(g["frame_$("xyz"[k])_min"])[j],3),ntuple(k->read(g["frame_$("xyz"[k])_max"])[j],3)) for j in eachindex(ids)]
         ids,ps,fs
     end
-    cards=Dict("run"=>read(cardpath,String),"electronics"=>read(joinpath(ROOT,rc["electronics_card"]),String))
-    use_vh1&&(cards["vh1_card"]=read(joinpath(ROOT,rc["vh1_card"]),String))
-    for k in ["detector_card","csa_card","sipm_card","asic_card"];cards[k]=read(joinpath(ROOT,ec[k]),String);end
+    cards=configuration_texts(r,ROOT)
     hashes=Dict("source"=>sha,"selection"=>bytes2hex(open(sha256,source)),"calibration"=>bytes2hex(open(sha256,joinpath(ROOT,ec["nonlinear_calibration"]))))
+    for (name,h) in r.set.sha256;hashes["detector/"*name]=h;end
     if use_vh1
-        hashes["vh1_card"]=bytes2hex(open(sha256,joinpath(ROOT,rc["vh1_card"])))
+        hashes["vh1_card"]=bytes2hex(open(sha256,joinpath(ROOT,response["vh1_card"])))
         hashes["vh1_code"]=bytes2hex(open(sha256,joinpath(ROOT,"src/vh1/VH1Readout.jl")))
     end
     files=vcat([@__FILE__,joinpath(@__DIR__,"framed_electronics_settings.jl"),joinpath(@__DIR__,"run_framed_detector_response.jl")],
       [joinpath(d,n) for sub in ("src/event_analysis","src/detector_response","src/electronics","src/reconstruction","src/ion_signal") for (d,_,ns) in walkdir(joinpath(ROOT,sub)) for n in ns if endswith(n,".jl")])
     for file in files;hashes[replace(relpath(file,ROOT),"/"=>"__")]=bytes2hex(open(sha256,file));end
-    metadata=HitFileMetadata(dc["run_label"],get(dc,"sample",get(dc,"species","bb0nu")),Xe_85_He_15,cards,hashes)
+    metadata=HitFileMetadata(rc["run_label"],get(rc,"sample","bb0nu"),Xe_85_He_15,cards,hashes)
     setup=@timed prepare_electronics_run(ec);prepared=setup.value;workspace=ER.CSAWorkspace()
-    vh=use_vh1 ? load_vh1_settings(ROOT,joinpath(ROOT,rc["vh1_card"]);minimum_samples=get(rc,"vh1_minimum_samples",32768)) : nothing
+    vh=use_vh1 ? load_vh1_settings(ROOT,joinpath(ROOT,response["vh1_card"]);minimum_samples=get(response,"vh1_minimum_samples",32768)) : nothing
     c=rc["ions"];is=IonReconstructionSettings(c["baseline_ms"],c["average_ms"],c["nonlinear_below_V"],c["max_iterations"],c["convergence_ions"])
     es=ElectronReconstructionSettings(prepared.sipm.sipm,prepared.sipm.illuminated_microcells,rc["electrons"]["subtract_mean_dark"])
     w=open_hit_output(joinpath(out,"hits.h5"),metadata,settings)
@@ -92,11 +93,11 @@ function run_hit_production(cardpath;on_event=event->nothing)
             for (j,id) in enumerate(ids)
                 t=@elapsed begin
                     h,info=read_mc_event(input,id;event_row=rowmap[id]);p=positions[j];frame=frames[j]
-                    h=hits_in_frame(center_hits(h,info),frame);ds=event_settings(dc,p)
-                    rng(tag)=Xoshiro(seedfor(dc["seed"],id,tag));erng(tag)=Xoshiro(seedfor(ec["seed"],id,tag))
-                    pairs=sample_fano_pairs(rng("pairs"),h,Float32(dc["W_eV"]),Float32(dc["fano_factor"]))
-                    ions=sim_ion_detector_response(rng("ions"),h,pairs,p,frame,ds;max_vector_bytes=dc["max_vector_bytes"])
-                    photons=sim_electron_detector_response(rng("electrons"),h,pairs,p,frame,ds;max_vector_bytes=dc["max_vector_bytes"])
+                    h=hits_in_frame(center_hits(h,info),frame);ds=event_settings(r,p)
+                    rng(tag)=Xoshiro(seedfor(rc["seed"],id,tag));erng(tag)=Xoshiro(seedfor(ec["seed"],id,tag))
+                    pairs=sample_fano_pairs(rng("pairs"),h,Float32(r.detector["energy"]["W_eV"]),Float32(r.detector["energy"]["fano_factor"]))
+                    ions=sim_ion_detector_response(rng("ions"),h,pairs,p,frame,ds;max_vector_bytes=rc["max_vector_bytes"])
+                    photons=sim_electron_detector_response(rng("electrons"),h,pairs,p,frame,ds;max_vector_bytes=rc["max_vector_bytes"])
                 end;timing[1]+=t
                 t=@elapsed begin
                     s=electronics_settings(prepared,ions.ions.time)
@@ -157,6 +158,6 @@ function run_hit_production(cardpath;on_event=event->nothing)
     end
 end
 if abspath(PROGRAM_FILE)==@__FILE__
-    length(ARGS)==1||error("Usage: run_hit_production.jl card.toml")
+    length(ARGS)==1||error("Usage: run_hit_production.jl run_card.toml")
     run_hit_production(abspath(ARGS[1]))
 end

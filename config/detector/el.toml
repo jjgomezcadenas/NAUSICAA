@@ -1,0 +1,21 @@
+# Electroluminescent module: holes, light production and optics. The EL depth,
+# transfer gap and guide length are in geometry.toml; the EL voltage in
+# voltages.toml; the SiPMs in sipm.toml.
+schema = "nausicaa.detector_el.v1"
+hole_diameter_mm = 2.5
+hole_pitch_mm = 4.0
+gas_gap_radial_mm = 0.5             # xenon gap around each light guide
+# Yield model: photons per electron = gain x (V_EL[kV] - threshold x P[bar] x d[cm]);
+# Fernandes et al., JHEP 04 (2020) 034, Table 1, 15 % He.
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.80
+variance_ratio_J = 0.030            # user reading of Oliveira et al., Fig. 6 (2026-11-04)
+# Optics: TPB on the guide entrance, blue photons forward into the guide.
+photon_band = "blue_tpb"
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5
+gap_refractive_index = 1.0
+propagation_transmission = 1.0
+coupling_transmission = 1.0
+electrode_transmission = 1.0

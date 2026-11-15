@@ -1,0 +1,8 @@
+# Ion readout plane: TopMetal pads under the ion focusing grid. The IFG
+# thickness and pad gap are in geometry.toml, the potentials in voltages.toml;
+# the charge-sensitive amplifier and the converter are run cards.
+schema = "nausicaa.detector_ions.v1"
+readout_chip = "TopMetal"
+pad_pitch_mm = 3.0
+pad_side_mm = 0.5                   # collecting electrode; the IFG focuses the cell onto it
+ion_bucket_ms = 20.0

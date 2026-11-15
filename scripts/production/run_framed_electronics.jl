@@ -6,10 +6,11 @@ include("framed_electronics_settings.jl")
 
 """Run electronics on selected accepted MC events; retain numerical controls and example vectors."""
 function run_electronics(cardpath)
- card=TOML.parsefile(cardpath);c=TOML.parsefile(joinpath(ROOT,card["detector_card"]))
+ r=resolve_run(cardpath;root=ROOT);c=r.run;card=electronics_card(r)
  base=joinpath(ROOT,"results/readout",c["run_label"]);source=joinpath(base,"detector_response/controls.h5")
  outdir=joinpath(base,get(card,"output_subdir","electronics"));mkpath(outdir);target=joinpath(outdir,"controls.h5")
  isfile(target)&&error("Preserve existing controls: $target")
+ write_configuration(r,ROOT;stage="electronics")
  hp=joinpath(ROOT,c["hits"])
  source_hash=bytes2hex(open(sha256,hp))
  ids,placements,frames=h5open(source,"r") do f
@@ -25,9 +26,9 @@ function run_electronics(cardpath)
   inputids=read(input["events/event_id"]);rowmap=Dict(id=>j for (j,id) in enumerate(inputids))
   for (number,id) in enumerate(ids)
    h,info=read_mc_event(input,id;event_row=rowmap[id]);h=center_hits(h,info);p=placements[number];frame=frames[number]
-   selected=hits_in_frame(h,frame);settings=event_settings(c,p)
+   selected=hits_in_frame(h,frame);settings=event_settings(r,p)
    rng(tag)=Xoshiro(seedfor(c["seed"],id,tag));erng(tag)=Xoshiro(seedfor(card["seed"],id,tag))
-   pairs=sample_fano_pairs(rng("pairs"),selected,Float32(c["W_eV"]),Float32(c["fano_factor"]))
+   pairs=sample_fano_pairs(rng("pairs"),selected,Float32(r.detector["energy"]["W_eV"]),Float32(r.detector["energy"]["fano_factor"]))
    t=time()
    ions=sim_ion_detector_response(rng("ions"),selected,pairs,p,frame,settings;max_vector_bytes=c["max_vector_bytes"])
    photons=sim_electron_detector_response(rng("electrons"),selected,pairs,p,frame,settings;max_vector_bytes=c["max_vector_bytes"])
@@ -87,9 +88,7 @@ function run_electronics(cardpath)
    f["detector_controls_sha256"]=bytes2hex(open(sha256,source));f["total_s"]=time()-started
    f["ion_setup_s"]=prepared.ion_setup_s;f["sipm_setup_s"]=prepared.sipm_setup_s
    f["linear_method"]="exact_piecewise_linear_current_recurrence"
-   for key in ["detector_card","csa_card","sipm_card","asic_card"]
-    f["cards/$key"]=read(joinpath(ROOT,card[key]),String)
-   end
+   for (key,text) in configuration_texts(r,ROOT);f["cards/$key"]=text;end
    f["nonlinear_calibration_sha256"]=bytes2hex(open(sha256,joinpath(ROOT,card["nonlinear_calibration"])))
    files=vcat([@__FILE__,joinpath(@__DIR__,"framed_electronics_settings.jl")],
        [joinpath(dir,n) for (dir,_,names) in walkdir(joinpath(ROOT,"src/electronics")) for n in names if endswith(n,".jl")])
@@ -114,5 +113,5 @@ function run_electronics(cardpath)
  println("FINISHED: $target")
 end
 if abspath(PROGRAM_FILE)==@__FILE__
- run_electronics(isempty(ARGS) ? joinpath(ROOT,"config/readout/bb0nu_electronics_pilot.toml") : abspath(only(ARGS)))
+ run_electronics(isempty(ARGS) ? error("Usage: run_framed_electronics.jl run_card.toml") : abspath(only(ARGS)))
 end

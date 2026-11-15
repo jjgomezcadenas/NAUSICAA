@@ -1,0 +1,12 @@
+# SiPM plane: one SiPM per EL hole, on the hole pitch of el.toml. The response
+# model (statistical recovery, substeps, seeds) and the ASIC are run cards.
+schema = "nausicaa.detector_sipm.v1"
+device = "Hamamatsu S14160-3015PS"
+side_mm = 3.0
+microcell_count = 39984
+microcell_pitch_um = 15.0
+pde = 0.32                          # peak PDE at 460 nm, used for the TPB spectrum
+gain = 360000.0                     # electrons per avalanche, nominal, +4 V, 25 C
+dark_rate_Hz = 700000.0             # nominal primary dark rate, +4 V, 25 C
+recovery_ns = 12.5                  # provisional recovery time constant
+electron_bucket_us = 0.25

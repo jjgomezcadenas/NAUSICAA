@@ -20,7 +20,7 @@
 <li>Intersect the acquisition frame with the detector Z limits.</li>
 </ul>
 <h3>Channel coverage</h3><ul>
-<li>Use separate ion and EL grids, with pitch and transverse offset supplied by the card and recorded for the event.</li>
+<li>Use separate ion and EL grids, with the pitch from the detector set (<code>ions.pad_pitch_mm</code>, <code>el.hole_pitch_mm</code>) and a transverse offset drawn from the run seed, recorded for the event.</li>
 <li>Include every grid cell that overlaps the frame in XY. A cell touching only an outer edge adds no channel.</li>
 <li>Keep the resulting rectangular channel list even when some channels receive zero counts.</li>
 <li>Assign diffused positions to physical channels. Acquire each selected channel in full, including signal arriving beyond the original XY frame boundary.</li>
@@ -177,13 +177,13 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <li>Pass the vectors to electronics and signal reconstruction, then calculate event totals and retained hits.</li>
 </ol>
 <p>Use separate random-number generators for pair production, ion transport and electron response. Reproduce either response using the source hits, saved settings, event position and seeds.</p>
-<p>The script reads TOML, constructs the settings and records the seeds.</p>
+<p>The script resolves the run card against the detector set, constructs the settings and records the seeds.</p>
 </section>
 <section id="physics"><h2>5. Calculation and existing code</h2>
 <ul>
 <li><strong>Ionisation:</strong> mean pairs = 1000 × E<sub>keV</sub>/W<sub>eV</sub>; variance = F × mean. Use the existing integer sampler, including its small-count treatment.</li>
 <li><strong>Diffusion:</strong> sample physical positions and assign them directly to channels and time buckets. Use the existing event-distance prescription for the widths.</li>
-<li><strong>Attachment:</strong> electron survival probability = exp(−t/τ). The default lifetime is 30 ms, configurable by TOML. Use the event's electron drift time, as in the existing calculation. Ions receive no attachment loss.</li>
+<li><strong>Attachment:</strong> electron survival probability = exp(−t/τ). The lifetime is <code>drift.electron_lifetime_ms</code> of the detector set, overridable by the run card. Use the event's electron drift time, as in the existing calculation. Ions receive no attachment loss.</li>
 <li><strong>EL:</strong> for N entering electrons, mean photons = N × Y; variance = N × J × Y.</li>
 <li><strong>Optical collection:</strong> sample photons reaching the SiPM using the analytical hole acceptance, TPB conversion and guide transmission. The current ELM output is blue photons.</li>
 <li><strong>Photon timing:</strong> use the parent electron arrival bucket.</li>
@@ -222,7 +222,7 @@ electron_readout_time(frame::EventFrame, placement::EventPlacement,
 <tr><td><code>src/detector_response/ions/sim_ion_detector_response.jl</code></td><td>Calculate ion vectors and losses.</td></tr>
 <tr><td><code>src/detector_response/electrons/sim_electron_detector_response.jl</code></td><td>Calculate photon vectors and losses.</td></tr>
 <tr><td><code>tests/detector_response/</code></td><td>Test frame handling, collection and vector output.</td></tr>
-<tr><td><code>scripts/production/</code></td><td>Read cards and MC events, run the functions and save results.</td></tr>
+<tr><td><code>scripts/production/</code></td><td>Resolve run cards, read MC events, run the functions and save results.</td></tr>
 </table>
 <h3>Production output</h3><p>Pass the vectors in memory to electronics and reconstruction. Save event totals and retained hits as described in <a href="reco_hits.html">Event energy and hit output</a>.</p>
 <h3>Optional detector controls</h3><ul><li>Ion and photon totals, including acquisition losses.</li><li>Events and channels with signal outside the frame.</li><li>Lost charge fraction, with XY and time losses recorded separately.</li><li>Mean and maximum positive channel/bucket counts per event.</li><li>Channel counts, vector lengths and selected projections.</li></ul><p>The detector-only study writes these controls under <code>results/readout/&lt;run_label&gt;/detector_response/</code>. Production must not create or fill them unless debugging is enabled; the production script applies this switch.</p>

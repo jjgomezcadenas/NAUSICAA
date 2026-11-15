@@ -1,49 +1,59 @@
 #!/usr/bin/env julia
 #=
-Derive the ITACA operating quantities from config/itaca.toml and save them to HDF5.
+Resolve the ITACA detector set and save its derived quantities to HDF5.
 
-Run from the repository with
-  JULIA_DEPOT_PATH=work/julia-depot julia --project=. scripts/documentation/calculate_itaca_conditions.jl
-or `make itaca-detector`. Output: results/itaca_detector/itaca_conditions.h5 with
-the card text and SHA-256, every card value under /inputs and every derived value
-under /derived (Float64 scalar with unit and note attributes). Python makes the
-page from this file (scripts/documentation/present_itaca_detector.py).
+  julia --project=. scripts/documentation/calculate_itaca_conditions.jl            # default detector
+  julia --project=. scripts/documentation/calculate_itaca_conditions.jl <run card> # with the run's overrides
+
+Default output: results/itaca_detector/itaca_conditions.h5. With a run card the
+output is results/readout/<run_label>/configuration/itaca_conditions.h5. The file
+holds the card texts and SHA-256, every detector value under /inputs (after
+overrides), the overrides under /overrides, and every derived value under /derived
+(Float64 scalar with unit and note attributes). Python makes the page from it
+(scripts/documentation/present_itaca_detector.py).
 =#
-using HDF5
+using HDF5, TOML
 const ROOT = normpath(joinpath(@__DIR__, "../.."))
 include(joinpath(ROOT, "src/event_analysis/EventAnalysis.jl"))
 include(joinpath(ROOT, "src/itaca/ItacaConditions.jl"))
 using .EventAnalysis, .ItacaConditions
 
-card_path = joinpath(ROOT, "config/itaca.toml")
-card = load_itaca_card(card_path)
-derived = derived_conditions(card)
+index = joinpath(ROOT, "config/detector/itaca.toml")
+if isempty(ARGS)
+    set = load_detector_set(index); detector = set.cards; overrides = Dict{String,Any}(); run_path = ""
+    out = joinpath(ROOT, "results/itaca_detector/itaca_conditions.h5")
+else
+    r = resolve_run(abspath(ARGS[1]); root = ROOT)
+    set = r.set; detector = r.detector; overrides = r.overrides; run_path = relpath(r.run_path, ROOT)
+    out = joinpath(ROOT, "results/readout", r.run["run_label"], "configuration/itaca_conditions.h5")
+end
+derived = derived_conditions(detector)
 
-out = joinpath(ROOT, "results/itaca_detector/itaca_conditions.h5")
 mkpath(dirname(out))
 h5open(out, "w") do f
-    attrs(f)["card_path"] = relpath(card_path, ROOT)
-    attrs(f)["card_sha256"] = card.sha256
-    attrs(f)["card_date"] = string(card.data["date"])
-    attrs(f)["schema"] = string(card.data["schema"])
+    attrs(f)["detector_index"] = relpath(set.index_path, ROOT)
+    attrs(f)["detector_name"] = set.name
+    attrs(f)["detector_date"] = set.date
+    attrs(f)["run_card"] = run_path
     attrs(f)["generator"] = "scripts/documentation/calculate_itaca_conditions.jl"
-    f["card_toml"] = card.text
+    cards = create_group(f, "cards")
+    for (name, text) in set.texts
+        cards[name] = text
+        attrs(cards[name])["sha256"] = set.sha256[name]
+    end
     inputs = create_group(f, "inputs")
-    function store!(group, prefix, table)
-        for (k, v) in table
-            name = prefix == "" ? k : "$prefix.$k"
-            if v isa Dict
-                store!(group, name, v)
-            elseif v isa Real
-                group[name] = Float64(v)
-            else
-                group[name] = string(v)
-            end
+    for (key, value) in ItacaConditions.flatten(detector)
+        if value isa Dict
+            inputs[key] = sprint(io -> TOML.print(io, value))
+        elseif value isa Real && !(value isa Bool)
+            inputs[key] = Float64(value)
+        else
+            inputs[key] = string(value)
         end
     end
-    for (section, table) in card.data
-        table isa Dict || continue
-        store!(inputs, section, table)
+    ov = create_group(f, "overrides")
+    for (key, value) in overrides
+        ov[key] = value isa Real && !(value isa Bool) ? Float64(value) : string(value)
     end
     g = create_group(f, "derived")
     for (group, name, value, unit, note) in derived
@@ -53,7 +63,7 @@ h5open(out, "w") do f
         attrs(g[ds])["note"] = note
     end
 end
-println("Saved $(length(derived)) derived values to $(relpath(out, ROOT)) (card sha256 $(card.sha256[1:12]))")
+println("Saved $(length(derived)) derived values to $(relpath(out, ROOT)); overrides: $(length(overrides))")
 for (group, name, value, unit, note) in derived
     println(rpad("$group.$name", 52), " ", rpad(string(round(value, sigdigits=6)), 14), " ", unit)
 end

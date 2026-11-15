@@ -8,7 +8,7 @@
 <li>Track reconstruction: read the hits and calculate kNN graphs and backbones.</li>
 <li>Presentation: read saved results to generate distributions and the event viewer.</li>
 </ol><p>Steps 1–5 process one event in memory. Steps 6–7 reuse the saved output.</p></section>
-<section><h2>Configuration</h2><ul><li>For each energy deposit, calculate electron–ion pairs including Fano fluctuations. The ion and electron calculations use the same pair counts and event position.</li><li>Ion and electron drift distances are complementary.</li><li>TOML cards specify the detector, electronics, reconstruction, hit cuts and graph settings.</li><li>Run labels include the ion and EL pitches. Save cards, seeds, source checksums and code identifiers.</li></ul></section>
+<section><h2>Configuration</h2><ul><li>For each energy deposit, calculate electron–ion pairs including Fano fluctuations. The ion and electron calculations use the same pair counts and event position.</li><li>Ion and electron drift distances are complementary.</li><li>The detector set under <code>config/detector/</code> defines the detector; a run card names it, overrides values explicitly and holds the electronics, reconstruction, hit-cut and graph settings (<a href="detector_configuration.html">detector configuration</a>).</li><li>Run labels include the ion and EL pitches. Save cards, seeds, source checksums and code identifiers.</li></ul></section>
 <section><h2>Code</h2><table><tr><th>Directory</th><th>Calculation</th></tr>
 <tr><td>src/event_analysis/</td><td>MC reading, fast trigger, existing sampling and graph functions.</td></tr>
 <tr><td>src/detector_response/</td><td>Frame, channels, ion transport and photon production.</td></tr>

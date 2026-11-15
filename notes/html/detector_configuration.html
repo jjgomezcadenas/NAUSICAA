@@ -1,0 +1,279 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Detector configuration</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}pre{background:#edf3f6;padding:18px;overflow:auto;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}td:nth-child(2){white-space:nowrap}.over{background:#fff4d8}.over td:nth-child(2)::after{content:' (overridden)';color:#985a00;font-size:.85em}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}footer{padding:20px;color:#526776}svg text{font:14px system-ui;fill:#203343}svg .box{fill:#fff;stroke:#185b83;stroke-width:1.5}svg .store{fill:#edf3f6;stroke:#526776}svg .arrow{stroke:#526776;stroke-width:1.5;fill:none;marker-end:url(#a)} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}</style></head><body><header><a href="index.html">Documentation index</a><h1>Detector configuration</h1><p>How the detector is defined: detector cards, response-model cards and run cards with explicit overrides.</p></header><main><nav><a href="#layers">Three layers</a><a href="#rules">Resolution rules</a><a href="#cards">The detector cards</a><a href="#run">A run card</a><a href="#code">Code, commands and tests</a></nav><section id="layers"><h2>1. Three layers</h2>
+<svg viewBox="0 0 1040 420" width="100%" role="img" aria-label="Configuration architecture">
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#526776"/></marker></defs>
+<rect class="box" x="20" y="20" width="300" height="150" rx="8"/><text x="36" y="44" font-weight="600">1 · Detector set  config/detector/</text>
+<text x="36" y="70">itaca.toml (index)</text><text x="36" y="92">gas · geometry · drift · voltages</text><text x="36" y="114">el · sipm · ions · energy</text><text x="36" y="150" fill="#526776">design values only, nothing derived</text>
+<rect class="box" x="20" y="200" width="300" height="100" rx="8"/><text x="36" y="224" font-weight="600">2 · Response models  config/specs/response/</text>
+<text x="36" y="250">VH1 · CSA · SiPM · ASIC cards</text><text x="36" y="272">device models, hashes, calibrations</text>
+<rect class="box" x="20" y="320" width="300" height="80" rx="8"/><text x="36" y="344" font-weight="600">3 · Run card  config/runs/</text>
+<text x="36" y="368">detector · [overrides] · events, seeds,</text><text x="36" y="388">selection, stages, response cards</text>
+<rect class="box" x="400" y="150" width="220" height="120" rx="8"/><text x="416" y="176" font-weight="600">resolve_run</text>
+<text x="416" y="200">load the set</text><text x="416" y="220">apply + check overrides</text><text x="416" y="240">event_settings</text><text x="416" y="260">derived_conditions</text>
+<rect class="store" x="700" y="20" width="320" height="90" rx="8"/><text x="716" y="44" font-weight="600">results/readout/&lt;run&gt;/configuration/</text>
+<text x="716" y="68">resolved.toml per stage: detector values after</text><text x="716" y="90">overrides, run card, SHA-256 of every input</text>
+<rect class="store" x="700" y="140" width="320" height="70" rx="8"/><text x="716" y="164" font-weight="600">production scripts</text><text x="716" y="188">run_framed_detector_response.jl · run_hit_production.jl</text>
+<rect class="store" x="700" y="240" width="320" height="70" rx="8"/><text x="716" y="264" font-weight="600">pages</text><text x="716" y="288">itaca_detector.html (default and per run)</text>
+<rect class="store" x="700" y="340" width="320" height="60" rx="8"/><text x="716" y="364" font-weight="600">Geant4 macro (planned)</text><text x="716" y="386">same resolver, same values</text>
+<path class="arrow" d="M320,95 C360,95 360,190 400,190"/><path class="arrow" d="M320,250 C360,250 360,220 400,220"/><path class="arrow" d="M320,360 C360,360 360,240 400,240"/>
+<path class="arrow" d="M620,190 C660,190 660,65 700,65"/><path class="arrow" d="M620,200 C660,200 660,175 700,175"/><path class="arrow" d="M620,220 C660,220 660,275 700,275"/><path class="arrow" d="M620,240 C660,240 660,370 700,370"/>
+</svg>
+<ol>
+<li><strong>Detector set.</strong> <code>config/detector/itaca.toml</code> is an index naming eight cards, one per subsystem. They hold design values only. Everything that follows from them (densities, masses, the potential ladder, reduced fields, yields, drift times, spreads, counts) is computed by the resolver and shown on the <a href="itaca_detector.html">detector page</a>, never typed in a card.</li>
+<li><strong>Response models.</strong> The VH1 and CSA amplifiers, the SiPM response model and the ASIC are device models with simulation settings, calibrations and hashes. They stay as their own cards under <code>config/specs/response/</code>, named by the run card and loaded by their own functions.</li>
+<li><strong>Run card.</strong> Names the detector index, lists its <code>[overrides]</code> as dotted keys into the set, and carries the run parameters: events, seeds, selection, the response cards, the stages and their settings. A run is "the default detector plus what this run changes".</li>
+</ol></section><section id="rules"><h2>2. Resolution rules</h2>
+<ul>
+<li>An override key must exist in the detector set, with the same type class (number, string or boolean). A misspelt key is an error, not a new key.</li>
+<li>A physical key at the top level of a run card is refused; changes go through <code>[overrides]</code>.</li>
+<li>Each stage writes <code>resolved.toml</code> beside its results: the detector-response stage in <code>results/readout/&lt;run_label&gt;/configuration/</code>, without the later-stage sections, so every run card that shares a detector response writes the same file; the hit-production stage in <code>&lt;run_label&gt;/&lt;output_subdir&gt;/configuration/</code> with the full run. The file holds the detector values after overrides, the overrides, the run card and the SHA-256 of every input. A different content in an existing folder is an error.</li>
+<li>The production scripts read the resolved detector sections directly (<code>event_settings</code> in <code>run_framed_detector_response.jl</code>) and the response cards from <code>[response]</code>; they accept run cards only. The cards under <code>config/readout/</code> and <code>config/specs/runs/</code> predate the scheme and stay as the records of their productions, with their copies saved in the HDF5 outputs.</li>
+<li>Historical cards under <code>config/readout/</code> and <code>config/specs/</code> are not edited; their productions keep their saved copies.</li>
+</ul></section><section id="cards"><h2>3. The detector cards</h2><p>Shown as they are in the repository, comments included.</p><h3><code>config/detector/itaca.toml</code></h3><pre><code># ITACA default detector: the index of the eight cards that define it.
+# Each card holds the design values of one subsystem; nothing derived is
+# typed in them. scripts/documentation/calculate_itaca_conditions.jl resolves
+# the set (plus the overrides of a run card) and computes the derived
+# quantities; notes/html/itaca_detector.html shows both, and
+# notes/html/detector_configuration.html describes the architecture.
+schema = &quot;nausicaa.detector_set.v1&quot;
+name = &quot;ITACA&quot;
+date = &quot;2026-11-15&quot;
+
+[cards]   # paths relative to this file
+gas = &quot;gas.toml&quot;
+geometry = &quot;geometry.toml&quot;
+drift = &quot;drift.toml&quot;
+voltages = &quot;voltages.toml&quot;
+el = &quot;el.toml&quot;
+sipm = &quot;sipm.toml&quot;
+ions = &quot;ions.toml&quot;
+energy = &quot;energy.toml&quot;</code></pre><h3><code>config/detector/gas.toml</code></h3><pre><code># Gas: xenon enriched in Xe-136 with helium, and the density model.
+schema = &quot;nausicaa.detector_gas.v1&quot;
+mixture = &quot;Xe_85_He_15&quot;
+helium_mole_fraction = 0.15
+xenon_enrichment = &quot;GXeEnriched&quot;       # NEXUS materials::GXeEnriched, isotopic fractions below
+xenon_isotopic_fractions = { Xe129 = 0.000656392, Xe130 = 0.000656392, Xe131 = 0.00234361, Xe132 = 0.00708251, Xe134 = 0.086645, Xe136 = 0.902616 }
+temperature_K = 290.0
+pressure_bar = 16.0
+
+[density_model]
+# NEXT DocDB 1183, as in simulation/nexus/source/geometries/ItacaChamber.cc.
+# Xenon: second-virial compressibility z = 1 + (a - b / T_r^1.6) P_r / T_r,
+# T_r = T / T_c, P_r = P / P_c. Helium: ideal gas. Mixture: additive partial
+# volumes for mole fractions x_xe, x_he:
+#   rho = P (x_xe M_xe + x_he M_he) / ((x_xe z_xe + x_he) R T).
+xenon_virial_a = 0.083
+xenon_virial_b = 0.422
+xenon_critical_temperature_K = 289.733
+xenon_critical_pressure_bar = 58.420
+helium = &quot;ideal&quot;
+mixing_rule = &quot;additive_partial_volumes&quot;</code></pre><h3><code>config/detector/geometry.toml</code></h3><pre><code># Geometry: fiducial cylinder and the lengths of the regions along the axis,
+# from the pads to the SiPM plane. The potentials are in voltages.toml.
+schema = &quot;nausicaa.detector_geometry.v1&quot;
+fiducial_diameter_cm = 360.0
+fiducial_length_cm = 130.0          # drift length, pad-side IFG face to EL entry
+ifg_thickness_mm = 10.0             # ion focusing grid, between its two faces
+pad_gap_mm = 5.0                    # pad-facing IFG face to the pads
+transfer_gap_mm = 10.0              # end of the drift to the EL entry electrode
+el_depth_mm = 5.0                   # EL region, entry to exit electrode
+guide_length_mm = 100.0             # light guides, EL exit electrode to the SiPM plane
+guide_length_policy = &quot;fixed_length&quot;
+# Detector coordinates (user, 2026-11-15): z along the drift, z = 0 at the
+# TopMetal pad plane, z = fiducial length at the EL entry. An event at z has
+# ion drift length z and electron drift length (fiducial length - z). x and y
+# are measured from the detector axis. The Geant4 gas cylinder is centred on
+# its origin, so z = z_Geant4 + fiducial length / 2 (derived).
+z_origin = &quot;topmetal_pad_plane&quot;</code></pre><h3><code>config/detector/drift.toml</code></h3><pre><code># Drift region: field and carrier transport.
+schema = &quot;nausicaa.detector_drift.v1&quot;
+field_V_cm = 350.0
+electron_lifetime_ms = 100.0
+# Magboltz 11.21 run of 2026-11-15 (magboltz/, docs/handoffs/magboltz_xe_he.md):
+# Xe/He 85/15, 16 bar, 290 K, 350 V/cm, real-gas density; errors statistical.
+electron_drift_velocity_mm_us = 0.5684
+electron_drift_velocity_relative_error = 0.0267
+electron_transverse_diffusion_mm_sqrtm = 2.0115
+electron_transverse_diffusion_relative_error = 0.0246
+electron_longitudinal_diffusion_mm_sqrtm = 3.4227
+electron_longitudinal_diffusion_relative_error = 0.0461
+# Ions: reduced mobility 0.65 cm2/V/s in xenon (Neves et al., J. Chem. Phys. 133
+# (2010) 124316, via Cortez et al., JINST 12 (2017) P06012, Fig. 3), raised 17 %
+# for helium by Blanc&#x27;s law; N/N0 = 16.14 at 16 bar, 290 K.
+ion_species = &quot;Xe2+ molecular ion, charge +e&quot;
+ion_drift_velocity_cm_s = 16.5</code></pre><h3><code>config/detector/voltages.toml</code></h3><pre><code># Independent potentials and fields. Sensors at ground; the high voltage is on
+# the anode side. The potential ladder (drift end, EL entry and exit) and the
+# grading field along the guides are derived from these and from the lengths
+# in geometry.toml and the drift field in drift.toml.
+schema = &quot;nausicaa.detector_voltages.v1&quot;
+pads_V = 0.0
+pad_face_ifg_V = 3000.0             # manuscripts/itaca3/itaca3.tex
+tpc_face_ifg_V = 8000.0
+transfer_gap_field_V_cm = 300.0     # docs/elm.tex, table of regions
+el_voltage_kV = 15.0                # across el_depth_mm
+sipm_plane_V = 0.0</code></pre><h3><code>config/detector/el.toml</code></h3><pre><code># Electroluminescent module: holes, light production and optics. The EL depth,
+# transfer gap and guide length are in geometry.toml; the EL voltage in
+# voltages.toml; the SiPMs in sipm.toml.
+schema = &quot;nausicaa.detector_el.v1&quot;
+hole_diameter_mm = 2.5
+hole_pitch_mm = 4.0
+gas_gap_radial_mm = 0.5             # xenon gap around each light guide
+# Yield model: photons per electron = gain x (V_EL[kV] - threshold x P[bar] x d[cm]);
+# Fernandes et al., JHEP 04 (2020) 034, Table 1, 15 % He.
+yield_gain_photons_per_electron_kV = 139.0
+yield_threshold_kV_cm_bar = 0.80
+variance_ratio_J = 0.030            # user reading of Oliveira et al., Fig. 6 (2026-11-04)
+# Optics: TPB on the guide entrance, blue photons forward into the guide.
+photon_band = &quot;blue_tpb&quot;
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5
+gap_refractive_index = 1.0
+propagation_transmission = 1.0
+coupling_transmission = 1.0
+electrode_transmission = 1.0</code></pre><h3><code>config/detector/sipm.toml</code></h3><pre><code># SiPM plane: one SiPM per EL hole, on the hole pitch of el.toml. The response
+# model (statistical recovery, substeps, seeds) and the ASIC are run cards.
+schema = &quot;nausicaa.detector_sipm.v1&quot;
+device = &quot;Hamamatsu S14160-3015PS&quot;
+side_mm = 3.0
+microcell_count = 39984
+microcell_pitch_um = 15.0
+pde = 0.32                          # peak PDE at 460 nm, used for the TPB spectrum
+gain = 360000.0                     # electrons per avalanche, nominal, +4 V, 25 C
+dark_rate_Hz = 700000.0             # nominal primary dark rate, +4 V, 25 C
+recovery_ns = 12.5                  # provisional recovery time constant
+electron_bucket_us = 0.25</code></pre><h3><code>config/detector/ions.toml</code></h3><pre><code># Ion readout plane: TopMetal pads under the ion focusing grid. The IFG
+# thickness and pad gap are in geometry.toml, the potentials in voltages.toml;
+# the charge-sensitive amplifier and the converter are run cards.
+schema = &quot;nausicaa.detector_ions.v1&quot;
+readout_chip = &quot;TopMetal&quot;
+pad_pitch_mm = 3.0
+pad_side_mm = 0.5                   # collecting electrode; the IFG focuses the cell onto it
+ion_bucket_ms = 20.0</code></pre><h3><code>config/detector/energy.toml</code></h3><pre><code># Ionisation constants.
+schema = &quot;nausicaa.detector_energy.v1&quot;
+W_eV = 21.9
+fano_factor = 0.15
+qbb_keV = 2457.83                   # Xe-136, Redshaw et al., PRL 98 (2007) 053003</code></pre></section><section id="run"><h2>4. A run card</h2>
+<p><code>config/runs/bb0nu_vh1_legacy_conditions_pilot100.toml</code>: the default detector overridden to the conditions of the current production. Sections: run identity and inputs at the top level; <code>[overrides]</code>; <code>[selection]</code> (fast trigger and frame); <code>[response]</code> (VH1, CSA, SiPM and ASIC cards); <code>[electronics]</code> (present-chain acquisition and converter, and its own pilot stage); <code>[hit_production]</code> (events, output folder); <code>[ions]</code>, <code>[electrons]</code>, <code>[track_analysis]</code>, <code>[hit_output]</code>, <code>[controls]</code>, <code>[zs_controls]</code> for the reconstruction stages.</p>
+<pre><code># Pilot of the new configuration: the default ITACA detector overridden to the
+# conditions of the current production (config/readout/
+# bb0nu_detector_response_3mm_mainframe20.toml: 15 bar, 293.15 K, 150 cm,
+# 300 V/cm, 0.6 mm/us, 30 ms, diffusion 1.6 / 0.75 in card units, 15 cm/s).
+# Its events must reproduce, one by one, the detector response and the hits of
+# results/readout/bb0nu_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42.
+schema = &quot;nausicaa.run.v1&quot;
+detector = &quot;config/detector/itaca.toml&quot;
+run_label = &quot;bb0nu_newconfig_legacy_conditions_pilot100&quot;
+sample = &quot;bb0nu&quot;
+hits = &quot;events/0nubb_hitdf.h5&quot;
+particles = &quot;~/NAUSICAA/0nubb.next.h5&quot;
+max_events = 200                  # input events; about two thirds pass the selection
+seed = 42
+example_events = 5
+histogram_bins = 50
+max_vector_bytes = 268435456
+electron_display_rebin = 20       # display only: 5 us = 3 mm; response vectors retain 250 ns
+
+[overrides]
+&quot;gas.pressure_bar&quot; = 15.0
+&quot;gas.temperature_K&quot; = 293.15
+&quot;geometry.fiducial_length_cm&quot; = 150.0
+&quot;drift.field_V_cm&quot; = 300.0
+&quot;drift.electron_drift_velocity_mm_us&quot; = 0.6
+&quot;drift.electron_lifetime_ms&quot; = 30.0
+&quot;drift.electron_transverse_diffusion_mm_sqrtm&quot; = 4.131182235954578     # 1.6 mm sqrt(bar)/sqrt(cm) at 15 bar
+&quot;drift.electron_longitudinal_diffusion_mm_sqrtm&quot; = 1.9364916731037083  # 0.75
+&quot;drift.ion_drift_velocity_cm_s&quot; = 15.0
+
+[selection]
+vertex_min_mm = 50.0
+vertex_max_mm = 1450.0
+frame_margin_mm = 20.0
+gamma_energy_cut_keV = 3.0
+frame_track = &quot;primary_and_delta_electrons&quot;
+
+[response]
+vh1_card = &quot;config/specs/response/ion_csa/vh1_device_changes_cf20f.toml&quot;
+vh1_minimum_samples = 32768
+csa_card = &quot;config/specs/response/ion_csa/csa_0p5_enc_4mm.toml&quot;
+nonlinear_calibration = &quot;results/ion_csa_nonlinear/v1/calibration.h5&quot;
+sipm_card = &quot;config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns_recovered.toml&quot;
+asic_card = &quot;config/specs/response/sipm_electronics/readout_v1.toml&quot;
+
+[electronics]            # present-chain acquisition and converter; its own pilot stage
+seed = 20261113
+accepted_events = 100
+example_events = 5
+output_subdir = &quot;electronics_100events_efficient&quot;
+baseline_ms = 10.0
+signal_tail_ms = 5.0
+adc_sample_us = 100.0
+adc_bits = 12
+adc_minimum_V = 0.0
+adc_maximum_V = 1.8
+adc_input_noise_rms_V = 0.0
+
+[hit_production]         # hit production stage
+accepted_events = 100
+example_events = 0
+output_subdir = &quot;vh1_hit_output_100_cf20f&quot;
+
+[ions]
+baseline_ms = 10.0
+average_ms = 5.0
+nonlinear_below_V = 0.63
+max_iterations = 20
+convergence_ions = 0.05
+
+[electrons]
+subtract_mean_dark = true
+rebin_factor = 20
+
+[track_analysis]
+ion_graph_mode = &quot;fixed&quot;
+ion_voxel_width_mm = 3.0
+ion_connection_mm = 7.0
+electron_graph_mode = &quot;fixed&quot;
+electron_voxel_width_mm = 4.0
+electron_connection_mm = 8.0
+ion_blob_radius_mm = 7.0
+electron_blob_radius_mm = 10.0
+example_every = 50
+hit_energy_bin_keV = 0.25
+hit_energy_max_keV = 200.0
+ion_hit_cut_keV = 5.0
+electron_hit_cut_keV = 1.0
+check_connectivity = true
+graph_k = 10
+edge_sigma_scale = 6.0
+ion_graph_k = 10
+electron_graph_k = 20
+ion_edge_sigma_scale = 7.5
+save_all_track_hits = true
+
+[hit_output]             # as config/readout/bb0nu_vh1_hit_output_100_cf20f.toml, the output to reproduce
+ion_hit_cut_keV = 3.0
+electron_hit_cut_keV = 1.0
+compression_level = 4
+chunk_hits = 65536
+max_output_bytes = 16777216
+
+[controls]
+mode = &quot;none&quot;
+
+[zs_controls]            # reconstruction-controls stage (run_framed_reconstruction.jl)
+ion_threshold_step = 5.0
+ion_threshold_maximum = 300.0
+pe_threshold_step = 0.5
+pe_threshold_maximum = 50.0
+histogram_bins = 100</code></pre>
+<h3>Making a run</h3>
+<ol><li>Copy a run card under <code>config/runs/</code>; change <code>run_label</code>, the event counts and the output folder.</li>
+<li>Put every changed detector value in <code>[overrides]</code>; nothing else in the card is physics.</li>
+<li><code>make vh1-production RUN=config/runs/&lt;card&gt;.toml</code> runs the detector response and the VH1 hits; <code>julia --project=. scripts/documentation/calculate_itaca_conditions.jl config/runs/&lt;card&gt;.toml</code> then <code>present_itaca_detector.py &lt;h5&gt; &lt;html&gt;</code> make the run's own detector page with the overrides highlighted.</li></ol>
+<p>Check of the scheme (2026-11-15): the run card above, the default detector plus nine overrides, reproduced the detector response of the current production on 145 events and the VH1 hits of its first 100 accepted events bit for bit (<code>scripts/validation/compare_detector_controls.jl</code>).</p></section><section id="code"><h2>5. Code, commands and tests</h2>
+<table><tr><th>Item</th><th>Path</th></tr>
+<tr><td>Resolver and physics</td><td><code>src/itaca/ItacaConditions.jl</code>: <code>load_detector_set</code>, <code>resolve_run</code>, <code>derived_conditions</code>, <code>electronics_card</code>, <code>write_configuration</code>, <code>configuration_texts</code></td></tr>
+<tr><td>Production scripts</td><td><code>scripts/production/run_framed_detector_response.jl</code> (<code>event_settings</code> builds the detector-response settings from the resolved set), <code>run_hit_production.jl</code>, <code>run_framed_electronics.jl</code>, <code>run_framed_reconstruction.jl</code>; all take a run card</td></tr>
+<tr><td>Run cards</td><td><code>config/runs/</code>: the two bb0nu productions (6156 and 1000 events), the single-electron production, the pilot card</td></tr>
+<tr><td>Derived values to HDF5</td><td><code>scripts/documentation/calculate_itaca_conditions.jl [run card]</code></td></tr>
+<tr><td>Pages</td><td><code>scripts/documentation/present_itaca_detector.py</code>; <code>make itaca-detector</code> runs both steps for the default detector</td></tr>
+<tr><td>Tests</td><td><code>tests/itaca/test_itaca_conditions.jl</code> (<code>make test-itaca</code>): card schemas and sections; no derived key in a card; override checks; the density model against the handoff references; the derived values of the default detector; the detector-response settings of the pilot card against the production card field by field at Float32; every run card resolves and names existing response cards; configuration writing per stage</td></tr>
+</table></section></main><footer>ITACA · Detector configuration</footer></body></html>

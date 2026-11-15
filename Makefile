@@ -434,6 +434,13 @@ itaca-detector-present:
 test-itaca:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/itaca/test_itaca_conditions.jl
 
+# VH1 production from a run card: detector response, then hits. Example: make vh1-production RUN=config/runs/bb0nu_vh1_cf20f_1000.toml
+RUN ?= config/runs/bb0nu_vh1_legacy_conditions_pilot100.toml
+.PHONY: vh1-production
+vh1-production:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl $(RUN)
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_hit_production.jl $(RUN)
+
 elm-note:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/documentation/calculate_elm_example.jl
 	$(MAKE) elm-note-present
@@ -511,7 +518,7 @@ test-detector-response:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/detector_response/test_event604.jl
 
 detector-response-bb0nu:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl config/readout/bb0nu_detector_response_3mm_mainframe20.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl config/runs/bb0nu_vh1_cf20f_full_6156.toml
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_detector_energy.jl
 	$(PYTHON) scripts/production/present_framed_detector_response.py
 
@@ -521,7 +528,7 @@ detector-response-present:
 
 .PHONY: detector-response-single-electrons
 detector-response-single-electrons:
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl config/readout/single_electrons_detector_response_3mm_mainframe20.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_detector_response.jl config/runs/single_electrons_vh1_cf20f_full_5481.toml
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_detector_energy.jl results/readout/single_electrons_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5
 	$(PYTHON) scripts/production/present_framed_detector_response.py results/readout/single_electrons_full_ion3mm_20ms_el4mm_mainframe20mm_XeHe15_E300_tau30_seed42/detector_response/controls.h5
 
@@ -533,7 +540,7 @@ validate-framed-electronics:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/validate_framed_electronics.jl
 
 electronics-bb0nu: validate-framed-electronics
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_electronics.jl config/readout/bb0nu_electronics_pilot_100.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_electronics.jl config/runs/bb0nu_vh1_cf20f_full_6156.toml
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_framed_electronics.jl
 	$(PYTHON) scripts/production/present_framed_electronics.py
 
@@ -550,7 +557,7 @@ validate-signal-reconstruction: test-reconstruction
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/validation/validate_signal_reconstruction.jl
 
 reconstruction-bb0nu: validate-signal-reconstruction
-	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_reconstruction.jl config/readout/bb0nu_reconstruction_bucket_histograms_100.toml
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/run_framed_reconstruction.jl config/runs/bb0nu_vh1_cf20f_full_6156.toml
 	$(PYTHON) scripts/production/present_framed_reconstruction.py
 
 reconstruction-present:

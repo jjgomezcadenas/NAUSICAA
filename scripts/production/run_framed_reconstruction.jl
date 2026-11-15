@@ -10,16 +10,16 @@ Save per-event numerical ZS controls and selected vectors, without event product
 or suppression. The source detector controls fix event positions and frames."""
 function run_reconstruction(cardpath;limit=0)
  BLAS.set_num_threads(1)
- rc=TOML.parsefile(cardpath);ec=TOML.parsefile(joinpath(ROOT,rc["electronics_card"]))
- dc=TOML.parsefile(joinpath(ROOT,ec["detector_card"]))
- base=joinpath(ROOT,"results/readout",dc["run_label"])
- source=haskey(rc,"selection_controls") ? joinpath(ROOT,rc["selection_controls"]) : joinpath(base,"detector_response/controls.h5")
- outdir=limit>0 ? joinpath(ROOT,"work/reconstruction","pilot$limit") : joinpath(base,rc["output_subdir"])
+ r=resolve_run(cardpath;root=ROOT);rc=r.run;stage=rc["hit_production"];ec=electronics_card(r)
+ base=joinpath(ROOT,"results/readout",rc["run_label"])
+ source=haskey(stage,"selection_controls") ? joinpath(ROOT,stage["selection_controls"]) : joinpath(base,"detector_response/controls.h5")
+ outdir=limit>0 ? joinpath(ROOT,"work/reconstruction","pilot$limit") : joinpath(base,stage["output_subdir"])
  mkpath(outdir);target=joinpath(outdir,"controls.h5");isfile(target)&&error("Preserve existing controls: $target")
- hp=joinpath(ROOT,dc["hits"]);sha=bytes2hex(open(sha256,hp))
+ limit>0||write_configuration(r,ROOT;stage="hits")
+ hp=joinpath(ROOT,rc["hits"]);sha=bytes2hex(open(sha256,hp))
  ids,placements,frames=h5open(source,"r") do f
   read(f["source_sha256"])==sha||error("Detector source changed")
-  ev=f["events"];n=limit>0 ? limit : rc["accepted_events"];ids=read(ev["event_number"])[1:n]
+  ev=f["events"];n=limit>0 ? limit : stage["accepted_events"];ids=read(ev["event_number"])[1:n]
   ps=[EventPlacement(id,read(ev["ion_drift_cm"])[j],read(ev["electron_drift_cm"])[j]) for (j,id) in enumerate(ids)]
   fs=[EventFrame(mc_vertex_frame,ntuple(k->read(ev["frame_$("xyz"[k])_min"])[j],3),ntuple(k->read(ev["frame_$("xyz"[k])_max"])[j],3)) for j in eachindex(ids)]
   ids,ps,fs
@@ -35,12 +35,12 @@ function run_reconstruction(cardpath;limit=0)
   for (number,id) in enumerate(ids)
    event_started=time()
    h,info=read_mc_event(input,id;event_row=rowmap[id]);h=center_hits(h,info);p=placements[number];frame=frames[number]
-   selected=hits_in_frame(h,frame);ds=event_settings(dc,p)
-   rng(tag)=Xoshiro(seedfor(dc["seed"],id,tag));erng(tag)=Xoshiro(seedfor(ec["seed"],id,tag))
-   pairs=sample_fano_pairs(rng("pairs"),selected,Float32(dc["W_eV"]),Float32(dc["fano_factor"]))
+   selected=hits_in_frame(h,frame);ds=event_settings(r,p)
+   rng(tag)=Xoshiro(seedfor(rc["seed"],id,tag));erng(tag)=Xoshiro(seedfor(ec["seed"],id,tag))
+   pairs=sample_fano_pairs(rng("pairs"),selected,Float32(r.detector["energy"]["W_eV"]),Float32(r.detector["energy"]["fano_factor"]))
    det=@timed begin
-    ions=sim_ion_detector_response(rng("ions"),selected,pairs,p,frame,ds;max_vector_bytes=dc["max_vector_bytes"])
-    photons=sim_electron_detector_response(rng("electrons"),selected,pairs,p,frame,ds;max_vector_bytes=dc["max_vector_bytes"])
+    ions=sim_ion_detector_response(rng("ions"),selected,pairs,p,frame,ds;max_vector_bytes=rc["max_vector_bytes"])
+    photons=sim_electron_detector_response(rng("electrons"),selected,pairs,p,frame,ds;max_vector_bytes=rc["max_vector_bytes"])
     ions,photons
    end
    ions,photons=det.value
@@ -91,8 +91,8 @@ function run_reconstruction(cardpath;limit=0)
       "ions_before"=>control_histogram(ihits_before.energy_keV,edges),"pe_before"=>control_histogram(ehits_before.energy_keV,edges),"cut_statistics"=>cut_stats)
      if get(tc,"save_all_track_hits",false) || number%tc["example_every"]==0
       track_examples[string(id)]=Dict("ordinal"=>number,
-       "itrack"=>hit_projections(ihits,dc["ion_pitch_mm"],dc["ion_bucket_ms"]*dc["ion_drift_velocity_mm_ms"];z_centres=SR.hit_z_centres(ri,p,ds)),
-       "etrack"=>hit_projections(ehits,dc["EL_pitch_mm"],dc["electron_bucket_us"]*factor*dc["electron_drift_velocity_mm_us"];z_centres=SR.hit_z_centres(pe,p,ds)))
+       "itrack"=>hit_projections(ihits,r.detector["ions"]["pad_pitch_mm"],r.detector["ions"]["ion_bucket_ms"]*r.detector["drift"]["ion_drift_velocity_cm_s"]/100;z_centres=SR.hit_z_centres(ri,p,ds)),
+       "etrack"=>hit_projections(ehits,r.detector["el"]["hole_pitch_mm"],r.detector["sipm"]["electron_bucket_us"]*factor*r.detector["drift"]["electron_drift_velocity_mm_us"];z_centres=SR.hit_z_centres(pe,p,ds)))
       if get(tc,"save_all_track_hits",false)
        for (arm,hits) in (("itrack",ihits),("etrack",ehits))
         track_examples[string(id)][arm]["hits"]=Dict("x_mm"=>hits.x_mm,"y_mm"=>hits.y_mm,"z_mm"=>hits.z_mm,"energy_keV"=>hits.energy_keV)
@@ -122,7 +122,7 @@ function run_reconstruction(cardpath;limit=0)
    if track_mode
     rows[end]=merge(rows[end],charge_estimates,(itrack_hits=length(ihits.charge),etrack_hits=length(ehits.charge)))
    end
-   if number<=rc["example_events"]
+   if number<=get(stage,"example_events",0)
     chosen=unique(vcat(argmax(vec(sum(ions.ions.counts;dims=1))),something(findfirst(empty_pads),1)))
     ex=Dict{String,Any}()
     for j in chosen
@@ -151,7 +151,7 @@ function run_reconstruction(cardpath;limit=0)
  GuardedFiles.space_check(outdir,budget,1024^3);tmp=target*".tmp"
  try
   h5open(tmp,"w") do f
-   f["schema"]=track_mode ? "itaca.track_controls.v1" : "itaca.reconstruction_controls.v3";f["ion_reconstruction_method"]="linear_voltage_inverse_and_direct_nonlinear_integral";f["card"]=read(cardpath,String);f["electronics_card"]=read(joinpath(ROOT,rc["electronics_card"]),String)
+   f["schema"]=track_mode ? "itaca.track_controls.v1" : "itaca.reconstruction_controls.v3";f["ion_reconstruction_method"]="linear_voltage_inverse_and_direct_nonlinear_integral";f["card"]=read(cardpath,String);f["resolved"]=resolved_text(r,ROOT)
    f["source_sha256"]=sha;f["detector_controls_sha256"]=bytes2hex(open(sha256,source))
    write_control_tree(create_group(f,"electron_inverse_validation"),TOML.parsefile(joinpath(ROOT,"work/reconstruction/electron_validation.toml")))
    f["setup_s"]=setup.time;f["total_s"]=total_s
@@ -162,7 +162,7 @@ function run_reconstruction(cardpath;limit=0)
     write_control_tree(create_group(f,"track_examples"),track_examples)
    end
    write_control_tree(create_group(f,"zs"),event_controls);write_control_tree(create_group(f,"examples"),examples)
-   for key in ["detector_card","csa_card","sipm_card","asic_card"];f["cards/$key"]=read(joinpath(ROOT,ec[key]),String);end
+   for (key,text) in configuration_texts(r,ROOT);f["cards/$key"]=text;end
    f["calibration_sha256"]=bytes2hex(open(sha256,joinpath(ROOT,ec["nonlinear_calibration"])))
    files=vcat([@__FILE__,joinpath(@__DIR__,"reconstruction_controls.jl"),joinpath(@__DIR__,"track_controls.jl"),joinpath(@__DIR__,"framed_electronics_settings.jl")],
     [joinpath(dir,n) for sub in ["src/reconstruction","src/electronics","src/detector_response"] for (dir,_,names) in walkdir(joinpath(ROOT,sub)) for n in names if endswith(n,".jl")])
@@ -174,5 +174,5 @@ function run_reconstruction(cardpath;limit=0)
  println("FINISHED: $target")
 end
 if abspath(PROGRAM_FILE)==@__FILE__
- run_reconstruction(isempty(ARGS) ? joinpath(ROOT,"config/readout/bb0nu_reconstruction_bucket_histograms_100.toml") : abspath(ARGS[1]);limit=length(ARGS)>1 ? parse(Int,ARGS[2]) : 0)
+ run_reconstruction(isempty(ARGS) ? error("Usage: run_framed_reconstruction.jl run_card.toml [limit]") : abspath(ARGS[1]);limit=length(ARGS)>1 ? parse(Int,ARGS[2]) : 0)
 end

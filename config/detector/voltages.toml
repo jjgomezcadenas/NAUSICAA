@@ -1,0 +1,11 @@
+# Independent potentials and fields. Sensors at ground; the high voltage is on
+# the anode side. The potential ladder (drift end, EL entry and exit) and the
+# grading field along the guides are derived from these and from the lengths
+# in geometry.toml and the drift field in drift.toml.
+schema = "nausicaa.detector_voltages.v1"
+pads_V = 0.0
+pad_face_ifg_V = 3000.0             # manuscripts/itaca3/itaca3.tex
+tpc_face_ifg_V = 8000.0
+transfer_gap_field_V_cm = 300.0     # docs/elm.tex, table of regions
+el_voltage_kV = 15.0                # across el_depth_mm
+sipm_plane_V = 0.0

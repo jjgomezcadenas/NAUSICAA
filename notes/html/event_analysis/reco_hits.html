@@ -4,7 +4,7 @@
 <li>Correct PE for mean attachment using the event drift distance and electron lifetime.</li>
 <li>Sum all signed charges to obtain the total reconstructed ions and corrected PE.</li>
 <li>Calculate the two event energies: ions × W; corrected PE × W / (PDE × EL yield × optical acceptance).</li>
-<li>Rebin the electron vectors to the spatial resolution set in TOML.</li>
+<li>Rebin the electron vectors by <code>electrons.rebin_factor</code> of the run card.</li>
 <li>Form itrack and etrack hits. Apply the hit-energy cuts, with an absolute minimum of 1 keV.</li>
 <li>Write the event totals and retained hits. Release the event vectors.</li>
 </ol><p>The event energies are calculated before the hit cuts. The saved hits support new graph calculations and plots without repeating the detector or electronics simulation.</p></section>
@@ -50,7 +50,7 @@ end</pre><p>Both cuts must be at least 1 keV. Retain hits whose energy is greate
     gas_mixture::GasMixture
     cards::Dict{String,String}
     checksums::Dict{String,String}
-end</pre><p><a href="sim_detector_response.html#types">GasMixture</a> identifies Xe or Xe–He. Store complete TOML card text and labelled source, code and calibration checksums.</p>
+end</pre><p><a href="sim_detector_response.html#types">GasMixture</a> identifies Xe or Xe–He. Store the run card, the resolved configuration, the detector cards and the response cards as text, with labelled source, code, detector-card and calibration checksums.</p>
 <h3>HitWriter and HitReader</h3><pre>mutable struct HitWriter
     file::HDF5.File
     temporary_path::String

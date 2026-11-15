@@ -1,32 +1,38 @@
 #!/usr/bin/env julia
-# Run bb0nu framed detector controls: summaries and example projections.
-# Optional second CLI argument limits input events.
+# Run the framed detector response of a run card (config/runs/, schema nausicaa.run.v1):
+# summaries and example projections. Optional second CLI argument limits input events.
 using HDF5,TOML,Random,SHA,Statistics
 include("../../src/event_analysis/EventAnalysis.jl")
 using .EventAnalysis
 include("../../src/detector_response/DetectorResponse.jl")
 using .DetectorResponse
 include("../../src/ion_signal/guarded_files.jl")
+include("../../src/itaca/ItacaConditions.jl")
+using .ItacaConditions
 const ROOT=normpath(joinpath(@__DIR__,"../.."))
 seedfor(seed,id,part)=parse(UInt64,bytes2hex(sha256("framed-v1|$seed|$id|$part"))[1:16];base=16)
 
-"""Resolve event diffusion and optics from card values; grids have independent fixed random offsets."""
-function event_settings(c,p)
-    F(k)=Float32(c[k]);rng(tag)=Xoshiro(seedfor(c["seed"],p.event_id,tag))
-    iong=ReadoutGrid(F("ion_pitch_mm"),sample_grid_offset_mm(rng("ion_grid"),F("ion_pitch_mm")))
-    elg=ReadoutGrid(F("EL_pitch_mm"),sample_grid_offset_mm(rng("electron_grid"),F("EL_pitch_mm")))
-    si=sigma_t_ion_mm(F("temperature_K"),p.ion_drift_cm,F("drift_field_V_cm"))
-    scale=sqrt(p.electron_drift_cm/F("pressure_bar"))
-    a=elm_light_acceptance(F("hole_diameter_mm")/2,F("hole_depth_mm");
-        tpb_efficiency=F("tpb_efficiency"),forward_fraction=F("forward_fraction"),
-        guide_index=F("guide_index"),gap_index=F("gap_index"),
-        propagation_transmission=F("propagation_transmission"),coupling_transmission=F("coupling_transmission"),electrode_transmission=F("electrode_transmission"))
-    y=el_photon_yield(F("EL_gain_photons_e_kV"),F("EL_threshold_kV_cm_bar"),F("EL_reduced_field_kV_cm_bar"),F("pressure_bar"),F("hole_depth_mm"))
-    c["gas_mixture"]=="Xe_85_He_15" || error("This run card specifies Xe–15% He")
-    DetectorResponseSettings(F("chamber_length_mm"),F("W_eV"),F("fano_factor"),Xe_85_He_15,
-      iong,elg,F("ion_bucket_ms"),F("electron_bucket_us"),IonTransportSettings(F("ion_drift_velocity_mm_ms"),si,si),
-      ElectronTransportSettings(F("electron_drift_velocity_mm_us"),F("electron_dT_mm_sqrtbar_sqrtcm")*scale,F("electron_dL_mm_sqrtbar_sqrtcm")*scale),
-      F("electron_lifetime_ms"),y,F("EL_variance_ratio"),a,Symbol(c["photon_wavelength"]))
+"""Detector-response settings of one event from the resolved detector set; the two grids have independent fixed random offsets."""
+function event_settings(r::ResolvedRun,p)
+    d=r.detector;gas=d["gas"];geo=d["geometry"];dr=d["drift"];v=d["voltages"];el=d["el"];sipm=d["sipm"];ions=d["ions"];en=d["energy"]
+    F(x)=Float32(x);rng(tag)=Xoshiro(seedfor(r.run["seed"],p.event_id,tag));P=gas["pressure_bar"]
+    iong=ReadoutGrid(F(ions["pad_pitch_mm"]),sample_grid_offset_mm(rng("ion_grid"),F(ions["pad_pitch_mm"])))
+    elg=ReadoutGrid(F(el["hole_pitch_mm"]),sample_grid_offset_mm(rng("electron_grid"),F(el["hole_pitch_mm"])))
+    si=sigma_t_ion_mm(F(gas["temperature_K"]),p.ion_drift_cm,F(dr["field_V_cm"]))
+    scale=sqrt(p.electron_drift_cm/F(P))
+    a=elm_light_acceptance(F(el["hole_diameter_mm"])/2,F(geo["el_depth_mm"]);
+        tpb_efficiency=F(el["tpb_conversion_efficiency"]),forward_fraction=F(el["forward_fraction"]),
+        guide_index=F(el["guide_refractive_index"]),gap_index=F(el["gap_refractive_index"]),
+        propagation_transmission=F(el["propagation_transmission"]),coupling_transmission=F(el["coupling_transmission"]),electrode_transmission=F(el["electrode_transmission"]))
+    reduced=F(v["el_voltage_kV"]/(geo["el_depth_mm"]/10)/P)   # reduced EL field inside the holes, kV/cm/bar
+    y=el_photon_yield(F(el["yield_gain_photons_per_electron_kV"]),F(el["yield_threshold_kV_cm_bar"]),reduced,F(P),F(geo["el_depth_mm"]))
+    gas["mixture"]=="Xe_85_He_15" || error("The detector set specifies Xe–15% He")
+    dT=F(ItacaConditions.diffusion_card_units(dr["electron_transverse_diffusion_mm_sqrtm"],P))
+    dL=F(ItacaConditions.diffusion_card_units(dr["electron_longitudinal_diffusion_mm_sqrtm"],P))
+    DetectorResponseSettings(F(geo["fiducial_length_cm"]*10),F(en["W_eV"]),F(en["fano_factor"]),Xe_85_He_15,
+      iong,elg,F(ions["ion_bucket_ms"]),F(sipm["electron_bucket_us"]),IonTransportSettings(F(dr["ion_drift_velocity_cm_s"]/100),si,si),
+      ElectronTransportSettings(F(dr["electron_drift_velocity_mm_us"]),dT*scale,dL*scale),
+      F(dr["electron_lifetime_ms"]),y,F(el["variance_ratio_J"]),a,Symbol(el["photon_band"]))
 end
 fraction(n,d)=d==0 ? 0. : n/d
 """Per-event controls, reduced in one pass without sorting events or pulses."""
@@ -102,7 +108,9 @@ function histograms(g,rows,nb)
     end
 end
 function main(card,limit=0)
-    started=time();c=TOML.parsefile(card);limit>0&&(c["max_events"]=limit;c["run_label"]*="_first$(limit)")
+    started=time();r=resolve_run(card;root=ROOT);c=r.run;sel=c["selection"]
+    limit>0&&(c["max_events"]=limit;c["run_label"]*="_first$(limit)")
+    write_configuration(r,ROOT)
     out=joinpath(ROOT,"results/readout",c["run_label"]);mkpath(joinpath(out,"detector_response"))
     target=joinpath(out,"detector_response/controls.h5");isfile(target)&&error("Output exists: $target")
     hp=joinpath(ROOT,c["hits"]);pp=expanduser(c["particles"])
@@ -113,7 +121,7 @@ function main(card,limit=0)
     end
     c["max_events"]>0&&(ids=ids[1:min(length(ids),c["max_events"])])
     parts=read_mc_particles(pp,ids)
-    trigger=FastTriggerSettings(Float32(c["chamber_length_mm"]),Float32(c["vertex_min_mm"]),Float32(c["vertex_max_mm"]),ntuple(_->Float32(c["frame_margin_mm"]),3),Float32(c["gamma_energy_cut_keV"]))
+    trigger=FastTriggerSettings(Float32(r.detector["geometry"]["fiducial_length_cm"]*10),Float32(sel["vertex_min_mm"]),Float32(sel["vertex_max_mm"]),ntuple(_->Float32(sel["frame_margin_mm"]),3),Float32(sel["gamma_energy_cut_keV"]))
     rng=Xoshiro(c["seed"]);stats=FastTriggerStatistics();ev=NamedTuple[];im=NamedTuple[];em=NamedTuple[];allrows=NamedTuple[]
     examples=Dict{Int64,Any}();worst=Dict{Int64,Any}();checks=Dict{Int64,Any}();selection_s=0.;response_s=0.;per_event=Float64[]
     h5open(hp,"r") do f
@@ -127,8 +135,8 @@ function main(card,limit=0)
             gm=gamma_map(parts[id],info)
             main_outside=sum(h.energy_keV[j] for j in eachindex(h.x_mm) if gm[h.particle_id[j]]==0 && !contains(frame,(h.x_mm[j],h.y_mm[j],h.z_mm[j]));init=0f0)
             iszero(main_outside)||error("Main-track energy outside frame in event $id")
-            pairs=sample_fano_pairs(Xoshiro(seedfor(c["seed"],id,"pairs")),selected,Float32(c["W_eV"]),Float32(c["fano_factor"]))
-            s=event_settings(c,p)
+            pairs=sample_fano_pairs(Xoshiro(seedfor(c["seed"],id,"pairs")),selected,Float32(r.detector["energy"]["W_eV"]),Float32(r.detector["energy"]["fano_factor"]))
+            s=event_settings(r,p)
             ri=sim_ion_detector_response(Xoshiro(seedfor(c["seed"],id,"ions")),selected,pairs,p,frame,s;max_vector_bytes=c["max_vector_bytes"])
             re=sim_electron_detector_response(Xoshiro(seedfor(c["seed"],id,"electrons")),selected,pairs,p,frame,s;max_vector_bytes=c["max_vector_bytes"])
             elapsed=time()-t;response_s+=elapsed;push!(per_event,elapsed)
@@ -162,7 +170,7 @@ function main(card,limit=0)
     tmp=target*".tmp"
     try
       h5open(tmp,"w") do f
-        f["schema"]="itaca.framed_detector_controls.v1";f["card"]=sprint(io->TOML.print(io,c))
+        f["schema"]="itaca.framed_detector_controls.v1";f["card"]=resolved_text(r,ROOT;full=false);f["run_card"]=read(card,String)
         f["source_sha256"]=source_sha;f["particles_sha256"]=particle_sha
         files=[@__FILE__]
         for dir in ("src/detector_response","src/event_analysis")
@@ -202,5 +210,5 @@ function main(card,limit=0)
     println("FINISHED: $(stats.input_events) input; $(stats.accepted_events) accepted; $(round(response_s;digits=2)) s response; $(round(time()-started;digits=2)) s total; $target")
 end
 if abspath(PROGRAM_FILE)==@__FILE__
- main(isempty(ARGS) ? joinpath(ROOT,"config/readout/bb0nu_detector_response_3mm.toml") : abspath(ARGS[1]),length(ARGS)>1 ? parse(Int,ARGS[2]) : 0)
+ main(isempty(ARGS) ? error("Usage: run_framed_detector_response.jl run_card.toml [limit]") : abspath(ARGS[1]),length(ARGS)>1 ? parse(Int,ARGS[2]) : 0)
 end

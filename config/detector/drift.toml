@@ -1,0 +1,17 @@
+# Drift region: field and carrier transport.
+schema = "nausicaa.detector_drift.v1"
+field_V_cm = 350.0
+electron_lifetime_ms = 100.0
+# Magboltz 11.21 run of 2026-11-15 (magboltz/, docs/handoffs/magboltz_xe_he.md):
+# Xe/He 85/15, 16 bar, 290 K, 350 V/cm, real-gas density; errors statistical.
+electron_drift_velocity_mm_us = 0.5684
+electron_drift_velocity_relative_error = 0.0267
+electron_transverse_diffusion_mm_sqrtm = 2.0115
+electron_transverse_diffusion_relative_error = 0.0246
+electron_longitudinal_diffusion_mm_sqrtm = 3.4227
+electron_longitudinal_diffusion_relative_error = 0.0461
+# Ions: reduced mobility 0.65 cm2/V/s in xenon (Neves et al., J. Chem. Phys. 133
+# (2010) 124316, via Cortez et al., JINST 12 (2017) P06012, Fig. 3), raised 17 %
+# for helium by Blanc's law; N/N0 = 16.14 at 16 bar, 290 K.
+ion_species = "Xe2+ molecular ion, charge +e"
+ion_drift_velocity_cm_s = 16.5

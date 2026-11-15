@@ -263,7 +263,7 @@ end</code></pre>
                                       SiPMASICResponse,
                                       SiPMReadoutControls}</code></pre>
 <p>Call the existing illuminated-SiPM statistical calculation and ASIC response for every channel. Convert output charge to PE-equivalent values using the single-avalanche gain.</p>
-<p>Scripts read TOML, load calibration, construct settings and record seeds. Lower-level functions supply voltage and SiPM-charge vectors for selected control examples.</p>
+<p>Scripts take the response cards and the acquisition settings from the <code>[response]</code> and <code>[electronics]</code> sections of the run card, load the calibration, construct the settings and record the seeds. Lower-level functions supply voltage and SiPM-charge vectors for selected control examples.</p>
 </section>
 <section id="settings"><h2>4. Settings and calculation</h2>
 <h3>Ions</h3><ul>
@@ -276,7 +276,7 @@ end</code></pre>
 <li>Reuse the existing linear calibration, nonlinear tables and CSA noise spectrum. Validate their application to 100 μs voltage samples against saved SPICE vectors and direct covariance integration.</li>
 </ul>
 <h3>SiPM and ASIC</h3><ul>
-<li>Keep the selected SiPM and ASIC parameters from the production card.</li>
+<li>Keep the selected SiPM and ASIC parameters from the response cards named in the run card.</li>
 <li>Use 250 ns photon and ASIC buckets.</li>
 <li>Sample PDE once. Apply microcell occupancy, recovery and dark activity before ASIC noise and clipping.</li>
 <li>ASIC limit in PE = current_limit_A × bucket_width_s / (elementary_charge_C × gain).</li>
