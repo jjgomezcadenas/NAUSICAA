@@ -43,7 +43,7 @@ def render(out,runs,truth):
     qbb=tomllib.loads((ROOT/'config/detector/energy.toml').read_text())['qbb_keV'];fwhm=2.3548*sig['sigma'];st=sig['settings']
     rows=[];flow={}
     for r in R:
-        e=r['events'];s=r['sel'];n=len(e['event_number']);roi=np.abs(e['electron_energy_keV']-qbb)<fwhm/2
+        e=r['events'];s=r['sel'];n=len(e['event_number']);E=e['electron_energy_keV'].astype(float);roi=(E>qbb-fwhm/2)&(E<qbb+fwhm/2)      # in double precision, as in prepare_species_comparison.jl
         old=(e['itrack_components']==1)&(e['etrack_components']==1);new=s['selected']==1;dep=s['deposits']>0
         apart=~dep&(s['segments']>1)&(s['segments_joined']==0);many=~dep&(s['segments']>int(st['ion_max_segments']))&(s['segments_joined']==1);none=~dep&(s['segments']==0)
         r.update(roi=roi,old=old,new=new);flow[r['name']]=dict(accepted=n,roi=int(roi.sum()),old=int((roi&old).sum()),new=int((roi&new).sum()),dep=int((roi&dep).sum()),apart=int((roi&apart).sum()),many=int((roi&(many|none)).sum()),
