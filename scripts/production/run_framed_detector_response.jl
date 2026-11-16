@@ -123,6 +123,12 @@ function main(card,limit=0;batch=nothing)
     end
     c["max_events"]>0&&(ids=ids[1:min(length(ids),c["max_events"])])
     parts=read_mc_particles(pp,ids)
+    # Main track ([selection] frame_track): the generated electrons and their electron descendants, or, in events
+    # generated as a gamma, the electron of highest energy produced by that gamma. In the second case the creation
+    # point of that electron is the event position.
+    frame_track=get(sel,"frame_track","primary_and_delta_electrons")
+    frame_track in ("primary_and_delta_electrons","leading_gamma_electron") || error("selection.frame_track must be primary_and_delta_electrons or leading_gamma_electron")
+    leading=frame_track=="leading_gamma_electron" ? read_leading_gamma_electrons(pp,ids) : nothing
     # Selection: a fixed frame around the event where it was generated ([selection] frame_side_mm),
     # or the earlier track box with margins at a sampled drift position.
     L=Float32(r.detector["geometry"]["fiducial_length_cm"]*10);fixed=haskey(sel,"frame_side_mm")
@@ -138,7 +144,7 @@ function main(card,limit=0;batch=nothing)
     examples=Dict{Int64,Any}();worst=Dict{Int64,Any}();checks=Dict{Int64,Any}();selection_s=0.;response_s=0.;per_event=Float64[]
     h5open(hp,"r") do f
         for (row,id) in enumerate(ids)
-            t=time();h,info=read_mc_event(f,id;event_row=row);h=center_hits(h,info)
+            t=time();h,info=read_mc_event(f,id;event_row=row);leading===nothing||(info=leading_electron_info(info,leading[id]));h=center_hits(h,info)
             p=placement=="generated_vertex" ? placement_from_vertex(info,L) : place_event(rng,id,L);o=mc_fast_trigger(h,info,parts[id],p,trigger)
             stats=update_statistics(stats,o);push!(allrows,(event_number=id,decision=Int(o.decision),ion_drift_cm=p.ion_drift_cm,electron_drift_cm=p.electron_drift_cm))
             selection_s+=time()-t

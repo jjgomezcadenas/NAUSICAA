@@ -24,6 +24,7 @@ suite = @testset "Event analysis through step $STEP" begin
     include("test_types.jl")
     include("test_fast_trigger.jl")
     include("test_fixed_frame_trigger.jl")
+    include("test_gamma_event_trigger.jl")
     include("test_coordinates.jl")
     include("test_docstrings.jl")
     include("test_reconstruction.jl")

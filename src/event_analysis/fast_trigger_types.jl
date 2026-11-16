@@ -24,6 +24,15 @@ struct MCParticle
     particle_name::String
 end
 
+"""Electron with the highest initial kinetic energy among those produced directly
+by the generated gamma of an event: its ID, creation point in source
+coordinates (mm) and kinetic energy (keV)."""
+struct LeadingElectron
+    particle_id::Int32
+    creation_mm::NTuple{3,Float32}
+    kinetic_energy_keV::Float32
+end
+
 """One event's MC hits: Float32 positions in mm and deposited energies in keV.
 
 Each vector entry describes one hit. IDs retain input order and precision.

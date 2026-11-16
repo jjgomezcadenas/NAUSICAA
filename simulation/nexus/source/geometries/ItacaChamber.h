@@ -25,7 +25,8 @@ namespace nexus {
     ItacaChamber();
     ~ItacaChamber();
 
-    /// Vertex uniform in the gas for region GAS (also VOLUME or XENON)
+    /// Vertex uniform in the gas for region GAS (also VOLUME or XENON), or
+    /// uniform on the inner surface of the gas cylinder for INNER_SURFACE
     G4ThreeVector GenerateVertex(const G4String& region) const;
 
     void Construct();

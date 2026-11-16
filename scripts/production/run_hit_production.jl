@@ -89,6 +89,7 @@ function run_hit_production(cardpath;on_event=event->nothing,batch=nothing)
     c=rc["ions"];is=IonReconstructionSettings(c["baseline_ms"],c["average_ms"],c["nonlinear_below_V"],c["max_iterations"],c["convergence_ions"])
     es=ElectronReconstructionSettings(prepared.sipm.sipm,prepared.sipm.illuminated_microcells,rc["electrons"]["subtract_mean_dark"])
     located=locations!==nothing
+    leading_frame=get(get(rc,"selection",Dict()),"frame_track","")=="leading_gamma_electron";leading_frame&&!located&&error("frame_track = leading_gamma_electron requires a fixed frame")
     w=open_hit_output(joinpath(out,"hits.h5"),metadata,settings;located)
     timing=zeros(6);debug_results=debug.mode=="debug" ? Dict{String,Any}() : nothing
     started=time()
@@ -98,6 +99,8 @@ function run_hit_production(cardpath;on_event=event->nothing,batch=nothing)
             for (j,id) in enumerate(ids)
                 t=@elapsed begin
                     h,info=read_mc_event(input,id;event_row=rowmap[id]);p=positions[j];frame=frames[j]
+                    # Events generated as a gamma are centred on the saved event position, the creation point of the main electron
+                    leading_frame&&(info=MCEventInfo(info.event_id,locations[j].vertex_mm,info.primary_particle_ids))
                     h=hits_in_frame(center_hits(h,info),frame);ds=event_settings(r,p)
                     rng(tag)=Xoshiro(seedfor(rc["seed"],id,tag));erng(tag)=Xoshiro(seedfor(ec["seed"],id,tag))
                     pairs=sample_fano_pairs(rng("pairs"),h,Float32(r.detector["energy"]["W_eV"]),Float32(r.detector["energy"]["fano_factor"]))

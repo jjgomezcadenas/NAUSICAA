@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 
 BLUE,ORANGE,RED='#287ba0','#b16d31','#a63f35'
-LABEL={'bb0nu':'bb0nu','single_electrons':'single electrons'}
+LABEL={'bb0nu':'bb0nu','single_electrons':'single electrons','bi214':'²¹⁴Bi gammas'}
 
 def text(v): return v.decode() if isinstance(v,bytes) else v
 def stats_box(ax,values,unit='',loc='right'):

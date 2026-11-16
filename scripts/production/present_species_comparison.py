@@ -16,7 +16,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 SIG,BKG='#287ba0','#b16d31'
-LABEL={'bb0nu':'bb0nu','single_electrons':'single electrons'}
+LABEL={'bb0nu':'bb0nu','single_electrons':'single electrons','bi214':'²¹⁴Bi gammas'}
 def text(v): return v.decode() if isinstance(v,bytes) else v
 
 def events(path):

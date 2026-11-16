@@ -33,6 +33,12 @@ end
 
 Primary IDs come from MCEventInfo. Reject duplicate IDs, missing mothers,
 cycles or non-electron primaries. Input order does not affect the map.
+
+In an event generated as a gamma, the generated gamma has no mother and is not
+in the primary IDs (see `leading_electron_info`). It maps to itself, and each
+particle it produces directly, other than the primary electron, maps to itself
+and starts its own deposit: a Compton electron, the K X-ray of a photoelectric
+absorption. Their descendants follow them.
 """
 function gamma_map(particles::Vector{MCParticle},info::MCEventInfo)::Dict{Int32,Int32}
     byid=Dict(p.particle_id=>p for p in particles);prim=Set(info.primary_particle_ids)
@@ -44,13 +50,29 @@ function gamma_map(particles::Vector{MCParticle},info::MCEventInfo)::Dict{Int32,
         id in visiting && throw(ArgumentError("Particle mother cycle"))
         haskey(byid,id) || throw(ArgumentError("Missing mother particle $id"))
         push!(visiting,id);p=byid[id]
-        parent=id in prim ? Int32(0) : walk(p.mother_id)
-        root=parent!=0 ? parent : (p.particle_name=="gamma" ? id : Int32(0))
+        generated_gamma(q)=q.mother_id==0 && q.particle_name=="gamma" && !(q.particle_id in prim)
+        root=if id in prim
+            Int32(0)
+        elseif generated_gamma(p) || (haskey(byid,p.mother_id) && generated_gamma(byid[p.mother_id]))
+            id
+        else
+            parent=walk(p.mother_id);parent!=0 ? parent : (p.particle_name=="gamma" ? id : Int32(0))
+        end
         roots[id]=root;delete!(visiting,id);root
     end
     for id in keys(byid);walk(id);end
     roots
 end
+
+"""Use the leading electron of a gamma event as its primary particle.
+
+Return the event information with the creation point of the electron as the
+event position and the electron as the only primary. Hits centred with this
+information are relative to the start of the track, and the drift lengths,
+the frame and the main track then refer to that electron, as in an event
+generated as an electron.
+"""
+leading_electron_info(info::MCEventInfo,e::LeadingElectron)::MCEventInfo=MCEventInfo(info.event_id,e.creation_mm,[e.particle_id])
 
 function hit_bounds(h::MCEventHits,ix)::EventFrame
     isempty(ix) && throw(ArgumentError("No hits for bounds"))

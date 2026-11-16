@@ -28,6 +28,7 @@
 #include <G4VisAttributes.hh>
 #include <G4SDManager.hh>
 #include <G4Exception.hh>
+#include <Randomize.hh>
 
 #include <CLHEP/Units/SystemOfUnits.h>
 #include <CLHEP/Units/PhysicalConstants.h>
@@ -208,6 +209,23 @@ namespace nexus {
       return gas_vertex_gen_->GenerateVertex(VOLUME);
     if (region == "CENTER")
       return G4ThreeVector(0., 0., 0.);
+
+    // Uniform on the inner surface of the gas cylinder (barrel and both end
+    // faces, weighted by area), one micrometre inside the gas: the starting
+    // point of gammas emitted by the materials around the gas.
+    if (region == "INNER_SURFACE") {
+      const G4double inset = 1.*micrometer;
+      const G4double phi = twopi * G4UniformRand();
+      G4double r, z;
+      if (G4UniformRand() < length_ / (length_ + radius_)) {   // barrel: 2 pi R L of 2 pi R (L + R)
+        r = radius_ - inset;
+        z = inset + (length_ - 2.*inset) * G4UniformRand();
+      } else {                                                 // one of the two end faces
+        r = (radius_ - inset) * std::sqrt(G4UniformRand());
+        z = (G4UniformRand() < 0.5) ? inset : length_ - inset;
+      }
+      return G4ThreeVector(r * std::cos(phi), r * std::sin(phi), z);
+    }
 
     G4Exception("[ItacaChamber]", "GenerateVertex()", FatalException,
                 ("Unknown vertex region: " + region).c_str());

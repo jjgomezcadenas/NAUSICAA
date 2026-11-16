@@ -74,3 +74,33 @@ function read_mc_particles(f::HDF5.File,ids::AbstractVector{Int64};block_rows::I
     result
 end
 read_mc_particles(path::AbstractString,ids::AbstractVector{Int64};kwargs...)=h5open(f->read_mc_particles(f,ids;kwargs...),path,"r")
+
+"""
+    read_leading_gamma_electrons(file, event_ids; block_rows=8192)
+
+For events generated as one gamma, read from raw NEXUS MC/particles the
+`LeadingElectron` of each requested event: among the electrons whose mother is
+the generated gamma, the one with the highest initial kinetic energy (the
+lowest ID on a tie). Two bounded scans of the table: the generated gammas,
+then the electrons. An event whose generated particle is not a single gamma,
+or with no such electron, raises an error.
+"""
+function read_leading_gamma_electrons(f::HDF5.File,ids::AbstractVector{Int64};block_rows::Int=8192)
+    block_rows>0 || throw(ArgumentError("block_rows must be positive"))
+    ds=f["MC/particles"];wanted=Set(ids);gamma=Dict{Int64,Int32}();best=Dict{Int64,LeadingElectron}()
+    blocks=(ds[first:min(first+block_rows-1,length(ds))] for first in 1:block_rows:length(ds))
+    for block in blocks, p in block
+        p.event_id in wanted && p.primary==1 || continue
+        String(p.particle_name)=="gamma" && !haskey(gamma,p.event_id) || throw(ArgumentError("Event $(p.event_id) was not generated as one gamma"))
+        gamma[p.event_id]=p.particle_id
+    end
+    for id in ids;haskey(gamma,id) || throw(KeyError(id));end
+    for block in blocks, p in block
+        p.event_id in wanted && p.mother_id==gamma[p.event_id] && String(p.particle_name)=="e-" || continue
+        e=LeadingElectron(p.particle_id,(Float32(p.initial_x),Float32(p.initial_y),Float32(p.initial_z)),1000f0*Float32(p.kin_energy));b=get(best,p.event_id,nothing)
+        (b===nothing || e.kinetic_energy_keV>b.kinetic_energy_keV || (e.kinetic_energy_keV==b.kinetic_energy_keV && e.particle_id<b.particle_id)) && (best[p.event_id]=e)
+    end
+    for id in ids;haskey(best,id) || throw(ArgumentError("No electron produced by the generated gamma in event $id"));end
+    best
+end
+read_leading_gamma_electrons(path::AbstractString,ids::AbstractVector{Int64};kwargs...)=h5open(f->read_leading_gamma_electrons(f,ids;kwargs...),path,"r")
