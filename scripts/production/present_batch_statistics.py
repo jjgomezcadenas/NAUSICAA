@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Statistics page of a run kept as per-batch hit files.
 
-  python scripts/production/present_batch_statistics.py results/readout/<run_label> [classification.toml]
+  python scripts/production/present_batch_statistics.py results/readout/<run_label> [classification.toml] [--generated=N] [--comparison=DIR]
 
 Reads <run_label>/<output_subdir>/statistics/events.h5, written by
 prepare_batch_statistics.jl, and writes plots and index.html beside it. No
 physical calculation is repeated: histograms are counts of the saved per-event
 values, and the energy fits are read from the file. The optional TOML holds
 the Monte Carlo classification of detached components of another sample.
+--generated starts the selection table from the generated events; --comparison
+names the folder of present_species_comparison.py, whose E2 thresholds close it.
 """
-import html,sys,tomllib
+import os,html,sys,tomllib
 from pathlib import Path
 import h5py,numpy as np
 import matplotlib
@@ -46,7 +48,7 @@ def load(run_dir):
               by_drift={k:{n:v[:] for n,v in g.items()} for k,g in f['energy_fits_by_drift'].items()})
     return e,meta
 
-def render(run_dir,classification=None):
+def render(run_dir,classification=None,generated=None,comparison=None):
     e,m=load(run_dir);out=m['out'];plots=out/'plots';plots.mkdir(exist_ok=True)
     n=len(e['event_number']);L=m['dc']['chamber_length_mm'];R=m['dc']['detector_radius_mm'];tc=m['tc'];sample=LABEL.get(m['species'],m['species'])
     side=float(np.median(e['frame_side_mm']))
@@ -127,6 +129,23 @@ def render(run_dir,classification=None):
           ('Rejected: track larger than the frame',t['track_larger_than_frame_events']),('Rejected: frame not inside the detector',t['frame_outside_detector_events']),
           ('Rejected: gamma deposit above the cut outside the frame',t['outside_frame_gamma_events']),('Accepted',t['accepted_events'])]
     selection=''.join(f'<tr><td>{a}</td><td>{b}</td><td>{100*b/n0:.1f}%</td></tr>' for a,b in rows)
+    # Events remaining after each step; the E2 thresholds come from the comparison of the two samples
+    fid=n0-t['outside_detector_events']-t.get('main_track_near_el_events',0)-t['track_larger_than_frame_events']-t['frame_outside_detector_events']
+    common=([('Generated',generated)] if generated else [])+[('Energy deposited in the gas inside the Geant4 window',n0),
+        (f"Fiducial: track inside the detector, {float(m['settings'].get('el_exclusion_mm',0)):g} mm from the EL, not larger than the frame; frame inside the detector",fid),
+        ('Gamma veto: no gamma deposit above the cut outside the frame',t['accepted_events'])]
+    threshold={}
+    if comparison:
+        with h5py.File(Path(comparison)/'comparison.h5') as c:
+            for arm in ('itrack','etrack'):
+                w=c[f'E2_cut/{arm}/one_component/working_points'];threshold[arm]=float(w['threshold_keV'][int(np.argmin(np.abs(w['target_signal_efficiency'][:]-0.8)))])
+    def flow(arm):
+        one=e[arm+'_components']==1;steps=common+[(f'One component in the {arm}',int(one.sum()))]
+        if arm in threshold: steps.append((f'E₂ > {threshold[arm]:.0f} keV ({arm})',int((one&(e[arm+"_E2_keV"]>threshold[arm])).sum())))
+        body=''.join(f'<tr><td>{a}</td><td>{v}</td><td>{"" if j==0 else f"{100*v/steps[j-1][1]:.1f}%"}</td><td>{100*v/steps[0][1]:.2f}%</td></tr>' for j,(a,v) in enumerate(steps))
+        return f'<h3>{arm}</h3><table><tr><th>Step</th><th>Events</th><th>Of previous step</th><th>Of first step</th></tr>{body}</table>'
+    flow_note='The first steps use the Monte Carlo truth and are common to both tracks.'+(' The E₂ threshold keeps 80% of the bb0nu events with one component (<a href="'+html.escape(os.path.relpath(Path(comparison)/'index.html',out))+'">comparison of the two samples</a>).' if comparison else '')
+    cutflow=f'<h2>Selection</h2><p>Events remaining after each step, applied in this order. {flow_note}</p>{flow("itrack")}{flow("etrack")}'
     b=m['batch'];per_batch=''.join(f"<tr><td>{tag}</td><td>{b['input_events'][i]}</td><td>{b['accepted_events'][i]}</td><td>{100*b['accepted_events'][i]/b['input_events'][i]:.1f}%</td></tr>" for i,tag in enumerate(m['batches']))
     fi,fe=m['fits']['ion_energy_keV'],m['fits']['electron_energy_keV']
     def line(arm):
@@ -143,7 +162,8 @@ def render(run_dir,classification=None):
 <style>body{{font:17px/1.5 system-ui;color:#203343;max-width:1500px;margin:auto;padding:24px}}img{{max-width:100%}}table{{border-collapse:collapse;margin:10px 0 18px}}th,td{{padding:7px 14px;border-bottom:1px solid #ddd;text-align:left}}th{{background:#eef4f7}}a{{color:#185b83}}h2{{margin-top:34px}}code{{background:#eef3f6;padding:2px 5px;border-radius:3px}}</style></head>
 <body><a href="../../../../../notes/html/index.html">ITACA index</a><h1>{sample} · statistics of the accepted events</h1>
 <p>Run <code>{html.escape(m['run_label'])}</code>: {len(m['batches'])} batches, {n} accepted events. Frame of {side:g} mm; itrack hits above {tc['ion_hit_cut_keV']:g} keV, voxels of {tc['ion_voxel_width_mm']:g} mm, connection radius {tc['ion_connection_mm']:g} mm; etrack hits above {tc['electron_hit_cut_keV']:g} keV, voxels of {tc['electron_voxel_width_mm']:g} mm, connection radius {tc['electron_connection_mm']:g} mm. Saved hit cuts: {m['ion_cut']:g} keV (ions), {m['electron_cut']:g} keV (electrons).</p>{viewer_link}
-<h2>Selection</h2><table><tr><th>Step</th><th>Events</th><th>Fraction of events read</th></tr>{selection}</table>
+{cutflow}
+<h3>Rejected events by cause</h3><table><tr><th>Step</th><th>Events</th><th>Fraction of events read</th></tr>{selection}</table>
 <details><summary>Counts per batch</summary><table><tr><th>Batch</th><th>Events read</th><th>Accepted</th><th>Fraction</th></tr>{per_batch}</table></details>
 <img src="plots/event_position.png" alt="Vertex position and frame shift">
 <h2>Event energy before the hit cut</h2><p>Sum of all signed reconstructed charges. Ions: μ = {fi['mu']:.1f} keV, σ/μ = {100*fi['sigma']/fi['mu']:.2f}% ({235.5*fi['sigma']/fi['mu']:.2f}% FWHM). Electrons: μ = {fe['mu']:.1f} keV, σ/μ = {100*fe['sigma']/fe['mu']:.3f}% ({235.5*fe['sigma']/fe['mu']:.2f}% FWHM). Incomplete electron estimates: {int(np.count_nonzero(~np.isfinite(e['electron_energy_keV'])))}; incomplete ion estimates: {int(np.count_nonzero(~np.isfinite(e['ion_energy_keV'])))}.</p>
@@ -157,5 +177,6 @@ def render(run_dir,classification=None):
     (out/'index.html').write_text(page);print(out/'index.html')
 
 if __name__=='__main__':
-    if len(sys.argv) not in (2,3): raise SystemExit(__doc__)
-    render(sys.argv[1],sys.argv[2] if len(sys.argv)>2 else None)
+    options={k:v for k,v in (a[2:].split('=',1) for a in sys.argv[1:] if a.startswith('--'))};args=[a for a in sys.argv[1:] if not a.startswith('--')]
+    if len(args) not in (1,2) or set(options)-{'generated','comparison'}: raise SystemExit(__doc__)
+    render(args[0],args[1] if len(args)>1 else None,int(options['generated']) if 'generated' in options else None,options.get('comparison'))
