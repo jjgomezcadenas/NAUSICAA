@@ -35,7 +35,7 @@ class SparseTrunk(nn.Module):
     mean over the occupied cells of the last stage.
     """
     def __init__(self,channels=(16,32,64,128)):
-            super().__init__();layers=[spconv.SubMConv3d(1,channels[0],3,padding=1,bias=False,indice_key='stage0'),Normalised(channels[0]),SparseBlock(channels[0],'stage0')]
+        super().__init__();layers=[spconv.SubMConv3d(1,channels[0],3,padding=1,bias=False,indice_key='stage0'),Normalised(channels[0]),SparseBlock(channels[0],'stage0')]
         for i,(a,b) in enumerate(zip(channels[:-1],channels[1:])): layers+=[spconv.SparseConv3d(a,b,3,stride=2,padding=1,bias=False),Normalised(b),SparseBlock(b,f'stage{i+1}')]
         self.layers=nn.Sequential(*layers);self.features=channels[-1]
     def forward(self,x):

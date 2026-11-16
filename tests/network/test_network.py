@@ -40,7 +40,9 @@ def test_network():
 
 def test_sparse():
     """The sparse tensor holds the hits of the dense grid; the sparse network runs. Needs spconv (cluster)."""
-    if not sparse_available(): return 'skipped: needs spconv and a CUDA GPU (Hyperion)'
+    import py_compile
+    py_compile.compile(str(Path(__file__).resolve().parents[2]/'scripts/network/network_sparse.py'),doraise=True)
+    if not sparse_available(): return 'compiled; run skipped: needs spconv and a CUDA GPU (Hyperion)'
     from network_sparse import sparse_batch
     device='cuda';a=arm((6,6,10));rows=np.array([2,0,1]);rng=np.random.default_rng(3);state=rng.bit_generator.state
     x=sparse_batch(a,rows,Transform(3,rng),device);rng.bit_generator.state=state;d=dense_batch(a,rows,Transform(3,rng),device)
