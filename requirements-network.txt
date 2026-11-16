@@ -4,3 +4,8 @@ torch==2.13.0
 numpy==2.4.4
 h5py==3.16.0
 matplotlib==3.10.9
+# Hyperion: the module PyTorch/2.1.2-foss-2021a-CUDA-12.1.1 (Python 3.11.3, torch 2.1.2, numpy 1.25.1) with
+# h5py 3.11.0 added in /scratch/jjgomez/network-venv:
+#   module load PyTorch/2.1.2-foss-2021a-CUDA-12.1.1
+#   python3 -m venv --system-site-packages /scratch/jjgomez/network-venv
+#   /scratch/jjgomez/network-venv/bin/python -m pip install h5py==3.11.0

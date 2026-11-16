@@ -12,11 +12,14 @@
 set +e
 type module >/dev/null 2>&1 || source /etc/profile
 set -eo pipefail
-module load PyTorch/2.1.2-foss-2021a-CUDA-12.1.1 h5py/3.2.1-foss-2021a
+module purge
+module load PyTorch/2.1.2-foss-2021a-CUDA-12.1.1
+# The module has no h5py: the environment adds it on top of the module's Python (see requirements-network.txt)
+PY=${NAUSICAA_NETWORK_PYTHON:-/scratch/jjgomez/network-venv/bin/python}
 cd "${NAUSICAA_REPO:-/scratch/jjgomez/NAUSICAA}"
 echo "node $(hostname) commit $(git rev-parse HEAD) gpu $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader | head -1)"
-python tests/network/test_itaca_network.py
-python - <<'P'
+$PY tests/network/test_itaca_network.py
+$PY - <<'P'
 import sys,time,torch
 sys.path.insert(0,'scripts/network')
 from itaca_network import Classifier
@@ -28,4 +31,4 @@ for arms,shape in ((('itrack',),{'itrack':(56,56,56)}),(('etrack',),{'etrack':(4
         print(f'TIMING {arms[0]} {stem}: {1000*sorted(ts)[len(ts)//2]:.0f} ms per step of 64 events, peak memory {torch.cuda.max_memory_allocated()/2**30:.1f} GiB',flush=True)
         del m,opt,g;torch.cuda.empty_cache();torch.cuda.reset_peak_memory_stats()
 P
-python scripts/network/train_network.py "$1" "$2" "$3" --input=both --epochs=1 --fraction=0.01 --validation-batches=5 --test-batches=0
+$PY scripts/network/train_network.py "$1" "$2" "$3" --input=both --epochs=1 --fraction=0.01 --validation-batches=5 --test-batches=0

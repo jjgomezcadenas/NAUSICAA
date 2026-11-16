@@ -13,8 +13,11 @@
 set +e
 type module >/dev/null 2>&1 || source /etc/profile
 set -eo pipefail
-module load PyTorch/2.1.2-foss-2021a-CUDA-12.1.1 h5py/3.2.1-foss-2021a
+module purge
+module load PyTorch/2.1.2-foss-2021a-CUDA-12.1.1
+# The module has no h5py: the environment adds it on top of the module's Python (see requirements-network.txt)
+PY=${NAUSICAA_NETWORK_PYTHON:-/scratch/jjgomez/network-venv/bin/python}
 cd "${NAUSICAA_REPO:-/scratch/jjgomez/NAUSICAA}"
 echo "node $(hostname) commit $(git rev-parse HEAD) gpu $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader | head -1)"
-python -c "import torch,h5py,numpy;print('torch',torch.__version__,'cuda',torch.cuda.is_available(),'h5py',h5py.__version__,'numpy',numpy.__version__)"
-python scripts/network/train_network.py "$@"
+$PY -c "import torch,h5py,numpy;print('torch',torch.__version__,'cuda',torch.cuda.is_available(),'h5py',h5py.__version__,'numpy',numpy.__version__)"
+$PY scripts/network/train_network.py "$@"
