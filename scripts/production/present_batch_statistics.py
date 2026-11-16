@@ -38,6 +38,7 @@ def load(run_dir):
     run_dir=Path(run_dir);found=sorted(run_dir.glob('*/statistics/events.h5'))
     if len(found)!=1: raise SystemExit(f'Expected one statistics/events.h5 under {run_dir}, found {len(found)}')
     f=h5py.File(found[0]);e={k:f['events'][k][:] for k in f['events']}
+    cut_values={k:e[k].astype(float) for k in ('electron_energy_keV','itrack_E2_keV','etrack_E2_keV')}      # cuts are compared in double precision
     for arm in ('itrack','etrack'): e[arm+'_extent_r_mm']=np.maximum(e[arm+'_extent_x_mm'],e[arm+'_extent_y_mm'])
     meta=dict(path=found[0],out=found[0].parent,species=text(f['species'][()]),run_label=text(f['run_label'][()]),batches=[text(b) for b in f['batches'][:]],
               tc=tomllib.loads(text(f['track_analysis'][()])),dc=tomllib.loads(text(f['detector'][()])),
@@ -46,7 +47,7 @@ def load(run_dir):
               settings={k:text(v[()]) for k,v in f['selection/settings'].items()},
               fits={k:{n:float(v[()]) for n,v in g.items()} for k,g in f['energy_fits'].items()},
               by_drift={k:{n:v[:] for n,v in g.items()} for k,g in f['energy_fits_by_drift'].items()})
-    return e,meta
+    meta['cut_values']=cut_values;return e,meta
 
 def render(run_dir,classification=None,generated=None,comparison=None):
     e,m=load(run_dir);out=m['out'];plots=out/'plots';plots.mkdir(exist_ok=True)
@@ -144,10 +145,10 @@ def render(run_dir,classification=None,generated=None,comparison=None):
         # With a comparison that defines the ROI: ROI cut, then the track selection of the track
         # (the lattice selection for the itrack when the table has it, one component otherwise)
         keep=np.ones(n,bool);steps=list(common)
-        if roi: keep=(e['electron_energy_keV']>roi[0])&(e['electron_energy_keV']<roi[1]);steps.append((f'ROI cut: electron energy within {roi[0]:.1f}–{roi[1]:.1f} keV',int(keep.sum())))
+        if roi: keep=(m['cut_values']['electron_energy_keV']>roi[0])&(m['cut_values']['electron_energy_keV']<roi[1]);steps.append((f'ROI cut: electron energy within {roi[0]:.1f}–{roi[1]:.1f} keV',int(keep.sum())))
         if arm=='itrack' and 'itrack_selected' in e: one=keep&(e['itrack_selected']==1);steps.append(('Track selection (itrack): no detached deposit; one segment, or up to three joined',int(one.sum())))
         else: one=keep&(e[arm+'_components']==1);steps.append((f'One component in the {arm}',int(one.sum())))
-        if arm in threshold: steps.append((f'E₂ > {threshold[arm]:.0f} keV ({arm})',int((one&(e[arm+"_E2_keV"]>threshold[arm])).sum())))
+        if arm in threshold: steps.append((f'E₂ > {threshold[arm]:.0f} keV ({arm})',int((one&(m["cut_values"][arm+"_E2_keV"]>threshold[arm])).sum())))
         body=''.join(f'<tr><td>{a}</td><td>{v}</td><td>{"" if j==0 else f"{100*v/steps[j-1][1]:.1f}%"}</td><td>{100*v/steps[0][1]:.2f}%</td></tr>' for j,(a,v) in enumerate(steps))
         return f'<h3>{arm}</h3><table><tr><th>Step</th><th>Events</th><th>Of previous step</th><th>Of first step</th></tr>{body}</table>'
     flow_note='The first steps use the Monte Carlo truth and are common to both tracks.'+(' The ROI is one FWHM of the bb0nu electron-energy peak around Qbb, and the E₂ threshold keeps 80% of the bb0nu events that reach that step (<a href="'+html.escape(os.path.relpath(Path(comparison)/'index.html',out))+'">comparison of the two samples</a>).' if comparison else '')

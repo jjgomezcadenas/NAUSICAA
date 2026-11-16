@@ -22,6 +22,7 @@ def text(v): return v.decode() if isinstance(v,bytes) else v
 def events(path):
     with h5py.File(path) as f:
         e={k:f['events'][k][:] for k in f['events']}
+        for k in ('electron_energy_keV','itrack_E2_keV','etrack_E2_keV'): e[k]=e[k].astype(float)      # cuts are compared in double precision, as in prepare_species_comparison.jl
         e['selection']={k:int(v[()]) for k,v in f['selection/total'].items()}
     for arm in ('itrack','etrack'): e[arm+'_extent_r_mm']=np.maximum(e[arm+'_extent_x_mm'],e[arm+'_extent_y_mm'])
     return e
