@@ -1,11 +1,7 @@
 # Python packages used to train the classification network (scripts/network).
-# Versions of the environment that produced the first results (Python 3.13.13, macOS, Apple GPU).
+# Mac (Python 3.13.13, Apple GPU): dense network, tests and pages.
+# Hyperion: requirements-network-hyperion.txt.
 torch==2.13.0
 numpy==2.4.4
 h5py==3.16.0
 matplotlib==3.10.9
-# Hyperion: the module PyTorch/2.1.2-foss-2021a-CUDA-12.1.1 (Python 3.11.3, torch 2.1.2, numpy 1.25.1) with
-# h5py 3.11.0 added in /scratch/jjgomez/network-venv:
-#   module load PyTorch/2.1.2-foss-2021a-CUDA-12.1.1
-#   python3 -m venv --system-site-packages /scratch/jjgomez/network-venv
-#   /scratch/jjgomez/network-venv/bin/python -m pip install h5py==3.11.0

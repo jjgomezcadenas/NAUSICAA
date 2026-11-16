@@ -1,0 +1,8 @@
+# Python packages added on Hyperion to train the classification network (scripts/network),
+# dense and sparse. The module PyTorch/2.1.2-foss-2021a-CUDA-12.1.1 provides Python 3.11.3,
+# torch 2.1.2 and numpy 1.25.1; the environment /scratch/jjgomez/network-venv adds these:
+#   module load PyTorch/2.1.2-foss-2021a-CUDA-12.1.1
+#   python3 -m venv --system-site-packages /scratch/jjgomez/network-venv
+#   /scratch/jjgomez/network-venv/bin/python -m pip install -r requirements-network-hyperion.txt
+h5py==3.11.0
+spconv-cu120==2.3.6     # sparse convolutions; built for CUDA 12.0, runs with the CUDA 12.1 of the module; GPU only

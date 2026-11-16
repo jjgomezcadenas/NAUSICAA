@@ -1,9 +1,11 @@
-"""Checks of the network data and measures: python tests/network/test_itaca_network.py"""
+"""Checks of the network data and measures: python tests/network/test_network.py"""
 import sys
 from pathlib import Path
 import numpy as np,torch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'scripts/network'))
-from itaca_network import Classifier,Transform,dense_batch,padded,separation
+from network_events import Transform,padded
+from network_dense import dense_batch
+from network_classifier import Classifier,separation,sparse_available
 
 def arm(cells):
     # Three events with 2, 0 and 3 hits
@@ -36,6 +38,18 @@ def test_network():
         m=Classifier(arms,channels=(4,8,16,32));z=m(g);assert z.shape==(2,) and torch.isfinite(z).all()
         z.sum().backward();assert all(p.grad is not None for p in m.parameters())
 
+def test_sparse():
+    """The sparse tensor holds the hits of the dense grid; the sparse network runs. Needs spconv (cluster)."""
+    if not sparse_available(): return 'skipped: needs spconv and a CUDA GPU (Hyperion)'
+    from network_sparse import sparse_batch
+    device='cuda';a=arm((6,6,10));rows=np.array([2,0,1]);rng=np.random.default_rng(3);state=rng.bit_generator.state
+    x=sparse_batch(a,rows,Transform(3,rng),device);rng.bit_generator.state=state;d=dense_batch(a,rows,Transform(3,rng),device)
+    assert x.batch_size==3 and tuple(x.spatial_shape)==(8,8,16) and torch.equal(x.dense(),d)
+    torch.manual_seed(0);m=Classifier(('itrack',),channels=(4,8,16,32),sparse=True).to(device);z=m({'itrack':x})
+    assert z.shape==(3,) and torch.isfinite(z).all()          # the event without hits gives a finite output
+    z.sum().backward();assert all(p.grad is not None for p in m.parameters())
+    assert sum(p.numel() for p in m.parameters())==sum(p.numel() for p in Classifier(('itrack',),channels=(4,8,16,32),stem='full').parameters())
+
 def test_separation():
     rng=np.random.default_rng(1);s=rng.normal(1,1,20000);b=rng.normal(-1,1,20000);m=separation(np.r_[s,b],np.r_[np.ones(20000,bool),np.zeros(20000,bool)])
     assert abs(m['area']-0.9214)<0.005            # Phi(2/sqrt(2))
@@ -44,4 +58,4 @@ def test_separation():
 
 if __name__=='__main__':
     for name,f in list(globals().items()):
-        if name.startswith('test_'): f();print('passed',name)
+        if name.startswith('test_'): print(f() or 'passed',name)

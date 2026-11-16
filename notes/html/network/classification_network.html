@@ -10,10 +10,12 @@
 <ol>
 <li>Start from the events accepted by the production: the <a href="../event_analysis/mc_fast_trigger.html#fixed">selection with a fixed frame</a>, which includes the gamma veto.</li>
 <li>Read the feature table of each batch (<code>features.h5</code>, written by <code>prepare_batch_features.jl</code>).</li>
-<li>Keep the events with <code>itrack_components == 1</code> and <code>etrack_components == 1</code>.</li>
+<li>With <code>--roi=COMPARISON.h5</code>, apply the ROI cut: reconstructed electron energy strictly between <code>roi/lower_keV</code> and <code>roi/upper_keV</code> of the comparison file (<code>prepare_species_comparison.jl</code>), compared in double precision.</li>
+<li>Keep the events with <code>itrack_selected == 1</code>, the <a href="../event_analysis/track_selection.html">track selection</a> on the readout lattice. Feature tables written before that selection have no such column; for them, keep the events with <code>itrack_components == 1</code> and <code>etrack_components == 1</code>.</li>
 </ol>
+<p>With the ROI cut the file holds the events that reach the cut on E₂ in the selection tables, so the network and the classical cut act on the same events.</p>
 <p>The components of a track are counted on the hits above the display cut, with the settings of <code>[track_analysis]</code> in the run card.</p>
-<h3>Why one component in each track</h3>
+<h3>Why events without detached deposits</h3>
 <ul>
 <li>The backgrounds are gammas of <sup>214</sup>Bi and <sup>208</sup>Tl. A detached deposit is a signature of background.</li>
 <li>A photoelectric absorption emits a xenon K X-ray of about 30 keV, absorbed about 1 cm away.</li>
@@ -47,11 +49,12 @@
 </section>
 
 <section id="file"><h2>4. Training file</h2>
-<p><code>results/network/&lt;run_label&gt;/events.h5</code>, schema <code>itaca.network_events.v1</code>. One file per run (species). The hits are stored as cell indices and energies; the dense grids are filled during training.</p>
+<p><code>results/network/&lt;run_label&gt;/events.h5</code>, schema <code>itaca.network_events.v1</code>. One file per run (species). The hits are stored as cell indices and energies; the grids are filled during training.</p>
 <table><tr><th>Dataset</th><th>Type</th><th>Content</th></tr>
 <tr><td><code>schema</code>, <code>species</code>, <code>run_label</code></td><td>text</td><td>Schema name, species and run of the events.</td></tr>
 <tr><td><code>batches</code>, <code>hit_file_sha256</code></td><td>text, one per batch</td><td>Batch folders read and the SHA-256 of their hit files.</td></tr>
 <tr><td><code>selection</code></td><td>text</td><td>The selection of section 2.</td></tr>
+<tr><td><code>roi/lower_keV</code>, <code>roi/upper_keV</code>, <code>roi/events</code>, <code>roi/source</code></td><td>Float64, Float64, Int64, text</td><td>Only with the ROI cut: its bounds, the accepted events inside it, and the path and SHA-256 of the comparison file.</td></tr>
 <tr><td><code>accepted_events</code></td><td>Int64</td><td>Accepted events in the batches, before that selection.</td></tr>
 <tr><td><code>frame_side_mm</code></td><td>Float64</td><td>Side of the fixed frame.</td></tr>
 <tr><td><code>track_analysis</code>, <code>detector</code></td><td>TOML text</td><td>Track-analysis and detector settings of the feature tables.</td></tr>
@@ -66,7 +69,7 @@
 </section>
 
 <section id="types"><h2>5. Types and functions</h2>
-<h3>Julia: <code>scripts/network/build_network_events.jl</code></h3>
+<h3>Julia: <code>scripts/network/network_events_builder.jl</code></h3>
 <pre><code>lattice_cells(side_mm::Real, pitch_mm::Real)::Int
 
 lattice_indices(x::AbstractVector{&lt;:Real}, lower::Real, pitch::Real,
@@ -74,12 +77,19 @@ lattice_indices(x::AbstractVector{&lt;:Real}, lower::Real, pitch::Real,
 
 lattice_pitches(resolved::AbstractDict)   # (itrack=(x, y, z), etrack=(x, y, z)) in mm
 
-build_network_events(run_dir::AbstractString,
-                     target::AbstractString="")::String</code></pre>
+roi_of(comparison::AbstractString)::Tuple{Float64,Float64}   # (lower, upper) in keV
+
+in_roi(energy_keV::AbstractVector{&lt;:Real}, roi::Tuple{Float64,Float64})::BitVector
+
+build_network_events(run_dir::AbstractString, target::AbstractString="";
+                     roi::Union{Nothing,Tuple{Float64,Float64}}=nothing,
+                     roi_source::AbstractString="")::String</code></pre>
 <table><tr><th>Function</th><th>What it does</th></tr>
 <tr><td><code>lattice_cells</code></td><td>Cells along one axis: <code>floor(side/pitch)+2</code>, the cells whose centre lies within half a pitch of the frame.</td></tr>
 <tr><td><code>lattice_indices</code></td><td>Cell index of each coordinate along one axis, as in section 3.</td></tr>
 <tr><td><code>lattice_pitches</code></td><td>Cell sizes of the two tracks from the resolved card: pad pitch and ion bucket × ion drift velocity; hole pitch and electron bucket × rebin factor × electron drift velocity.</td></tr>
+<tr><td><code>roi_of</code></td><td>ROI bounds saved in a comparison file.</td></tr>
+<tr><td><code>in_roi</code></td><td>Events with energy strictly between the bounds.</td></tr>
 <tr><td><code>build_network_events</code></td><td>Write the training file of one run and return its path. The default target is <code>results/network/&lt;run_label&gt;/events.h5</code>.</td></tr></table>
 <h3>Processing one run</h3>
 <ol>
@@ -91,13 +101,22 @@ build_network_events(run_dir::AbstractString,
 <li>Append the cell indices, the energies and the feature columns of the event.</li>
 <li>Check that no event number is repeated, then write the file. An existing file is preserved.</li>
 </ol>
-<h3>Python: <code>scripts/network/itaca_network.py</code></h3>
+<h3>Python files</h3>
+<table><tr><th>File</th><th>Content</th><th>Runs on</th></tr>
+<tr><td><code>scripts/network/network_events.py</code></td><td>Training files, merging, symmetry operations, cell indices of a batch.</td><td>Mac, Hyperion</td></tr>
+<tr><td><code>scripts/network/network_dense.py</code></td><td>Dense grids and the dense network.</td><td>Mac, Hyperion</td></tr>
+<tr><td><code>scripts/network/network_sparse.py</code></td><td>Sparse tensors and the sparse network. The only file that imports <code>spconv</code>.</td><td>Hyperion (CUDA GPU)</td></tr>
+<tr><td><code>scripts/network/network_classifier.py</code></td><td>The classifier and the measures of section 8.</td><td>Mac, Hyperion</td></tr>
+<tr><td><code>scripts/network/network_trainer.py</code></td><td>Training and testing (section 7).</td><td>Mac (dense), Hyperion</td></tr>
+<tr><td><code>scripts/network/network_presenter.py</code></td><td>Pages from the saved trainings.</td><td>Mac</td></tr></table>
+<h3><code>network_events.py</code></h3>
 <pre><code>ARMS = ('itrack', 'etrack')
 ENERGY_SCALE_KEV = {'itrack': 20.0, 'etrack': 10.0}
 
 class Sample:
     def __init__(self, path)
     species, run_label    # text
+    selection             # text: the selection recorded in the training file
     frame_side_mm         # float
     events                # column name -> array, one entry per event
     arms                  # track -> datasets of the training file
@@ -113,29 +132,54 @@ class Transform:
     flip        # (n, 3) bool: reverse X, Y, Z
     position    # (n, 3) in [0, 1), or None: place in the padding
 
-dense_batch(arm, rows, transform, device) -> torch.Tensor   # (events, 1, nx, ny, nz)
+batch_cells(arm, rows, transform) -> (event, (ix, iy, iz), energy)   # one entry per hit</code></pre>
+<table><tr><th>Name</th><th>What it does</th></tr>
+<tr><td><code>Sample</code></td><td>Read one training file: the hits of both tracks and the event table. The schema must match.</td></tr>
+<tr><td><code>merge</code></td><td>Join several samples into one set. Returns the hits per track with shifted offsets and the energy scale, the event table, and the index of the sample of each event. The lattices of the samples must be equal.</td></tr>
+<tr><td><code>padded</code></td><td>Grid size: the cells per axis rounded up to a multiple of 8.</td></tr>
+<tr><td><code>Transform</code></td><td>One symmetry operation and one placement per event. Without <code>rng</code>: no operation, lattice centred in the grid. With <code>rng</code>: each of <code>swap</code> and the three <code>flip</code> with probability 1/2, and a uniform placement.</td></tr>
+<tr><td><code>batch_cells</code></td><td>The hits of the events <code>rows</code> of one track: index of the event in the batch, cell indices in the padded grid after the operation and the placement shift, and energy / scale. Exchanging X and Y on a lattice that is not square is an error.</td></tr></table>
+<h3><code>network_dense.py</code></h3>
+<pre><code>dense_batch(arm, rows, transform, device) -> torch.Tensor   # (events, 1, nx, ny, nz)
 
 class Block(nn.Module):
     def __init__(self, c)
 
 class Trunk(nn.Module):
     def __init__(self, channels=(16, 32, 64, 128), stem='stride2')
-    features    # length of the output vector
+    features    # length of the output vector</code></pre>
+<table><tr><th>Name</th><th>What it does</th></tr>
+<tr><td><code>dense_batch</code></td><td>Write the hits of <code>batch_cells</code> into a grid of zeros on the device.</td></tr>
+<tr><td><code>Block</code></td><td>Two 3×3×3 convolutions, each with batch normalisation, and a skip connection.</td></tr>
+<tr><td><code>Trunk</code></td><td>The convolutional part for one track. Returns one vector of 128 values per event.</td></tr></table>
+<h3><code>network_sparse.py</code></h3>
+<pre><code>sparse_batch(arm, rows, transform, device) -> spconv.SparseConvTensor   # one row per hit
+
+class SparseBlock(nn.Module):
+    def __init__(self, c, key)
+
+class Normalised(nn.Module):
+    def __init__(self, c)
+
+class SparseTrunk(nn.Module):
+    def __init__(self, channels=(16, 32, 64, 128))
+    features    # length of the output vector</code></pre>
+<table><tr><th>Name</th><th>What it does</th></tr>
+<tr><td><code>sparse_batch</code></td><td>The hits of <code>batch_cells</code> as a sparse tensor: per hit its event index, its three cell indices and energy / scale.</td></tr>
+<tr><td><code>SparseBlock</code></td><td><code>Block</code> on the cells with charge: its two convolutions keep the set of occupied cells.</td></tr>
+<tr><td><code>Normalised</code></td><td>Batch normalisation and ReLU over the occupied cells.</td></tr>
+<tr><td><code>SparseTrunk</code></td><td>The stages of <code>Trunk</code> with <code>stem = "full"</code> on the occupied cells. Returns one vector of 128 values per event.</td></tr></table>
+<h3><code>network_classifier.py</code></h3>
+<pre><code>sparse_available() -> bool
 
 class Classifier(nn.Module):
-    def __init__(self, arms, channels=(16, 32, 64, 128), stem='stride2')
-    def forward(self, grids)    # grids: track -> tensor; returns (events,)
+    def __init__(self, arms, channels=(16, 32, 64, 128), stem='stride2', sparse=False)
+    def forward(self, grids)    # grids: track -> dense grid or sparse tensor; returns (events,)
 
 separation(score, label, targets=(0.9, 0.8, 0.7, 0.6, 0.5)) -> dict</code></pre>
 <table><tr><th>Name</th><th>What it does</th></tr>
-<tr><td><code>Sample</code></td><td>Read one training file: the hits of both tracks and the event table. The schema must match.</td></tr>
-<tr><td><code>merge</code></td><td>Join several samples into one set. Returns the hits per track with shifted offsets and the energy scale, the event table, and the index of the sample of each event. The lattices of the samples must be equal.</td></tr>
-<tr><td><code>padded</code></td><td>Grid size: the cells per axis rounded up to a multiple of 8.</td></tr>
-<tr><td><code>Transform</code></td><td>One symmetry operation and one placement per event. Without <code>rng</code>: no operation, lattice centred in the grid. With <code>rng</code>: each of <code>swap</code> and the three <code>flip</code> with probability 1/2, and a uniform placement.</td></tr>
-<tr><td><code>dense_batch</code></td><td>Fill the grids of the events <code>rows</code> of one track on the device: apply the operation to the cell indices, add the placement shift, write energy / scale. Exchanging X and Y on a lattice that is not square is an error.</td></tr>
-<tr><td><code>Block</code></td><td>Two 3×3×3 convolutions, each with batch normalisation, and a skip connection.</td></tr>
-<tr><td><code>Trunk</code></td><td>The convolutional part for one track. Returns one vector of 128 values per event.</td></tr>
-<tr><td><code>Classifier</code></td><td>One trunk per input track and the output layer. Returns the logit of bb0nu.</td></tr>
+<tr><td><code>sparse_available</code></td><td>True when <code>spconv</code> is installed and a CUDA GPU is present.</td></tr>
+<tr><td><code>Classifier</code></td><td>One trunk per input track and the output layer. Returns the logit of bb0nu. With <code>sparse=True</code> the trunks are <code>SparseTrunk</code>.</td></tr>
 <tr><td><code>separation</code></td><td>The measures of section 8.</td></tr></table>
 </section>
 
@@ -151,12 +195,21 @@ separation(score, label, targets=(0.9, 0.8, 0.7, 0.6, 0.5)) -> dict</code></pre>
 <tr><td>Output, one track</td><td>linear 128 → 1</td><td></td><td colspan="2">logit of bb0nu</td></tr>
 <tr><td>Output, both tracks</td><td>concatenate; linear 256 → 64; ReLU; linear 64 → 1</td><td></td><td colspan="2">logit of bb0nu</td></tr></table>
 <p>Every convolution is followed by batch normalisation and ReLU, and has no bias.</p>
+<h3>Sparse network</h3>
+<p><code>--model=sparse</code> has the stages of <code>stem = "full"</code>: the first stage works on the input lattice with a 3×3×3 convolution, and three stride-2 convolutions follow. It computes only on the cells with charge.</p>
+<ol>
+<li>Inside a stage, the convolutions keep the set of occupied cells (submanifold convolutions): the charge does not spread into empty cells.</li>
+<li>A stride-2 convolution occupies every coarse cell that has an occupied cell in its 3×3×3 input.</li>
+<li>Batch normalisation takes its statistics over the occupied cells.</li>
+<li>The output vector is the mean over the occupied cells of the last stage.</li>
+</ol>
+<p>The itrack grid has 175,616 cells and a median event occupies 157 of them. The parameters are those of <code>stem = "full"</code>.</p>
 <table><tr><th>Input</th><th>Parameters, <code>stem = "stride2"</code></th><th>Parameters, <code>stem = "full"</code></th></tr>
 <tr><td>itrack or etrack</td><td>1,468,913</td><td>1,467,345</td></tr>
 <tr><td>both</td><td>2,954,081</td><td>2,950,945</td></tr></table>
 <h3>Rationale</h3>
 <ol>
-<li><strong>Dense 3D convolutions.</strong> The frame is fixed and small, so the full grid fits in memory and no sparse library is needed.</li>
+<li><strong>Dense and sparse.</strong> The frame is fixed and small, so the full grid fits in memory and the dense network runs on any device. At lattice resolution the sparse network gives the same separation in a twentieth of the time (<a href="../../../results/network/itaca_100k/round1_full.html">first round</a>: 29 s per epoch against 567 s) and its validation loss has none of the jumps of the dense one. It needs <code>spconv</code> and a CUDA GPU.</li>
 <li><strong>Residual blocks.</strong> A residual network with stages that reduce the grid and double the channels is the family used in the NEXT topology studies (<a href="../../../papers/Next/next_pitch_v5.pdf"><code>papers/Next/next_pitch_v5.pdf</code></a>, built there with sparse convolutions), so results are compared between networks of the same kind.</li>
 <li><strong>Three inputs.</strong> <code>itrack</code>, <code>etrack</code> and <code>both</code> measure which readout separates better and what the second adds. With both, each track has its own trunk; the two vectors are concatenated and pass through a layer of 64 units.</li>
 <li><strong>First convolution.</strong> <code>stem = "stride2"</code> (5×5×5) halves the grid at once and is the default: a training step of 64 events takes 0.7 s on the Apple GPU, against 4.3 s for <code>stem = "full"</code> (3×3×3 at lattice resolution, first stage on the input grid). <code>full</code> is kept for GPUs where it is affordable.</li>
@@ -165,11 +218,12 @@ separation(score, label, targets=(0.9, 0.8, 0.7, 0.6, 0.5)) -> dict</code></pre>
 </section>
 
 <section id="training"><h2>7. Training</h2>
-<p><code>scripts/network/train_network.py SIGNAL.h5 BACKGROUND.h5 OUTPUT_DIR --input=itrack|etrack|both</code>. The label is 1 for the events of <code>SIGNAL.h5</code> and 0 for those of <code>BACKGROUND.h5</code>.</p>
+<p><code>scripts/network/network_trainer.py SIGNAL.h5 BACKGROUND.h5 OUTPUT_DIR --input=itrack|etrack|both</code>. The label is 1 for the events of <code>SIGNAL.h5</code> and 0 for those of <code>BACKGROUND.h5</code>.</p>
 <ol>
-<li>Read the two training files and merge them. The two species must differ.</li>
+<li>With <code>--model=sparse</code> on a machine without <code>spconv</code> or without a CUDA GPU, stop with a message.</li>
+<li>Read the two training files and merge them. The two species must differ and the two files must record the same selection.</li>
 <li>Split the events by production batch: the batches of <code>--validation-batches</code> and <code>--test-batches</code> are held out, the others train. With <code>--fraction</code> below 1, keep that part of the training events, chosen at random (learning curve).</li>
-<li>In each epoch, shuffle the training events and take them in groups of <code>--batch-size</code>. For each group draw one <code>Transform</code>, fill the grids and take one optimisation step.</li>
+<li>In each epoch, shuffle the training events and take them in groups of <code>--batch-size</code>. For each group draw one <code>Transform</code>, fill the grids (dense, or sparse tensors) and take one optimisation step.</li>
 <li>After each epoch, score the validation events without operations, with the lattice centred, and record the losses and the validation measures.</li>
 <li>Keep the weights of the epoch with the lowest validation loss.</li>
 <li>Score the test events with those weights and save the results.</li>
@@ -198,6 +252,8 @@ separation(score, label, targets=(0.9, 0.8, 0.7, 0.6, 0.5)) -> dict</code></pre>
 <tr><td><code>--test-batches</code></td><td>9</td><td>Production batch numbers, separated by commas.</td></tr>
 <tr><td><code>--seed</code></td><td>1</td><td>Seed of the weights, the shuffling and the operations.</td></tr>
 <tr><td><code>--stem</code></td><td><code>stride2</code></td><td>First convolution: <code>stride2</code> or <code>full</code>.</td></tr>
+<tr><td><code>--model</code></td><td><code>dense</code></td><td><code>dense</code> or <code>sparse</code>. <code>sparse</code> sets the first stage at lattice resolution.</td></tr>
+<tr><td><code>--channels</code></td><td>16,32,64,128</td><td>Feature maps of the four stages.</td></tr>
 <tr><td><code>--device</code></td><td><code>cuda</code>, else <code>mps</code>, else <code>cpu</code></td><td>Training device.</td></tr></table>
 </section>
 
@@ -218,7 +274,9 @@ separation(score, label, targets=(0.9, 0.8, 0.7, 0.6, 0.5)) -> dict</code></pre>
 <tr><td><code>schema</code>, <code>input</code></td><td>Schema name and the input used.</td></tr>
 <tr><td><code>signal_species</code>, <code>background_species</code>, <code>signal_run_label</code>, <code>background_run_label</code></td><td>Species and run of the two training files.</td></tr>
 <tr><td><code>signal_sha256</code>, <code>background_sha256</code></td><td>SHA-256 of the two training files.</td></tr>
-<tr><td><code>settings/epochs</code>, <code>batch_size</code>, <code>learning_rate</code>, <code>weight_decay</code>, <code>fraction</code>, <code>seed</code>, <code>stem</code>, <code>validation_batches</code>, <code>test_batches</code></td><td>The options of the run.</td></tr>
+<tr><td><code>signal_selection</code>, <code>background_selection</code></td><td>The selection recorded in each training file.</td></tr>
+<tr><td><code>commit</code></td><td>Commit of the repository that ran the training, followed by <code>+changes</code> when tracked files differed from it.</td></tr>
+<tr><td><code>settings/epochs</code>, <code>batch_size</code>, <code>learning_rate</code>, <code>weight_decay</code>, <code>fraction</code>, <code>seed</code>, <code>stem</code>, <code>model</code>, <code>channels</code>, <code>validation_batches</code>, <code>test_batches</code></td><td>The options of the run.</td></tr>
 <tr><td><code>settings/parameters</code></td><td>Number of parameters of the network.</td></tr>
 <tr><td><code>settings/best_epoch</code></td><td>Epoch of the saved weights, from 1.</td></tr>
 <tr><td><code>settings/train_events</code>, <code>validation_events</code>, <code>test_events</code></td><td>Events in each set.</td></tr>
@@ -226,37 +284,50 @@ separation(score, label, targets=(0.9, 0.8, 0.7, 0.6, 0.5)) -> dict</code></pre>
 <tr><td><code>settings/device</code>, <code>torch</code>, <code>time_s</code></td><td>Device, PyTorch version and training time.</td></tr>
 <tr><td><code>history/train_loss</code>, <code>validation_loss</code>, <code>validation_area</code>, <code>validation_background_at_80</code>, <code>epoch_s</code></td><td>One value per epoch: losses, validation area under the curve, validation background acceptance at 80% signal efficiency, and time.</td></tr>
 <tr><td><code>test/event_number</code>, <code>batch</code>, <code>label</code>, <code>score</code></td><td>One entry per test event. The score is the logit.</td></tr>
-<tr><td><code>test/ion_drift_cm</code>, <code>electron_drift_cm</code>, <code>itrack_E1_keV</code>, <code>itrack_E2_keV</code>, <code>etrack_E1_keV</code>, <code>etrack_E2_keV</code>, <code>itrack_length_mm</code>, <code>etrack_length_mm</code></td><td>Drift lengths and classical quantities of the test events.</td></tr>
+<tr><td><code>test/ion_drift_cm</code>, <code>electron_drift_cm</code>, <code>ion_energy_keV</code>, <code>electron_energy_keV</code>, <code>itrack_E1_keV</code>, <code>itrack_E2_keV</code>, <code>etrack_E1_keV</code>, <code>etrack_E2_keV</code>, <code>itrack_length_mm</code>, <code>etrack_length_mm</code></td><td>Drift lengths, reconstructed energies and classical quantities of the test events.</td></tr>
 <tr><td><code>test/loss</code></td><td>Mean loss of the test events.</td></tr>
 <tr><td><code>test/separation/area</code>, <code>target_signal_efficiency</code>, <code>threshold</code>, <code>signal_efficiency</code>, <code>background_acceptance</code>, <code>background_acceptance_error</code>, <code>signal_events</code>, <code>background_events</code></td><td>The measures of section 8 on the test events.</td></tr></table>
 </section>
 
 <section id="commands"><h2>10. Commands</h2>
 <h3>Environment</h3>
-<p><code>requirements-network.txt</code> pins the Python packages: torch 2.13.0, numpy 2.4.4, h5py 3.16.0 and matplotlib 3.10.9.</p>
+<table><tr><th>Machine</th><th>File</th><th>Packages</th><th>Models</th></tr>
+<tr><td>Mac</td><td><code>requirements-network.txt</code></td><td>torch 2.13.0, numpy 2.4.4, h5py 3.16.0, matplotlib 3.10.9</td><td>dense</td></tr>
+<tr><td>Hyperion</td><td><code>requirements-network-hyperion.txt</code></td><td>module PyTorch 2.1.2 with CUDA 12.1 (Python 3.11.3, numpy 1.25.1); h5py 3.11.0 and spconv-cu120 2.3.6 in <code>/scratch/jjgomez/network-venv</code></td><td>dense, sparse</td></tr></table>
 <pre><code>export JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia"
 python -m pip install -r requirements-network.txt   # in the Python environment used for training</code></pre>
-<h3>Build the two training files</h3>
-<pre><code>julia --project=. scripts/network/build_network_events.jl results/readout/&lt;signal_run_label&gt;
-julia --project=. scripts/network/build_network_events.jl results/readout/&lt;background_run_label&gt;</code></pre>
+<h3>Build the training files</h3>
+<pre><code>ROI=results/readout/&lt;comparison&gt;/comparison.h5
+julia --project=. scripts/network/network_events_builder.jl results/readout/&lt;signal_run_label&gt; results/network/&lt;configuration&gt;/events/&lt;species&gt;/events.h5 --roi=$ROI
+julia --project=. scripts/network/network_events_builder.jl results/readout/&lt;background_run_label&gt; results/network/&lt;configuration&gt;/events/&lt;species&gt;/events.h5 --roi=$ROI</code></pre>
+<p>On Hyperion: <code>sbatch scripts/network/slurm/network_events_builder.slurm RUN_DIR OUTPUT.h5 [--roi=COMPARISON.h5]</code>.</p>
 <h3>Train</h3>
 <pre><code>SIGNAL=results/network/&lt;signal_run_label&gt;/events.h5
 BACKGROUND=results/network/&lt;background_run_label&gt;/events.h5
-work/event-viewer-venv/bin/python scripts/network/train_network.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_itrack --input=itrack
-work/event-viewer-venv/bin/python scripts/network/train_network.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_etrack --input=etrack
-work/event-viewer-venv/bin/python scripts/network/train_network.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_both --input=both</code></pre>
+work/event-viewer-venv/bin/python scripts/network/network_trainer.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_itrack --input=itrack
+work/event-viewer-venv/bin/python scripts/network/network_trainer.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_etrack --input=etrack
+work/event-viewer-venv/bin/python scripts/network/network_trainer.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_both --input=both</code></pre>
+<p>On Hyperion, one training per GPU: <code>sbatch --job-name=NAME scripts/network/slurm/network_trainer.slurm $SIGNAL $BACKGROUND OUTPUT_DIR --input=itrack --model=sparse</code>.</p>
+<h3>Results folder</h3>
+<pre><code>results/network/&lt;configuration&gt;/
+    events/&lt;species&gt;/events.h5        training files (Hyperion)
+    trainings/&lt;name&gt;/training.h5      results of one training, copied to the Mac
+    trainings/&lt;name&gt;/model.pt         its weights
+    trainings/index.html, plots/      pages of network_presenter.py (Mac)</code></pre>
 <h3>Tests</h3>
-<pre><code>julia --project=. tests/network/test_network_events.jl
-work/event-viewer-venv/bin/python tests/network/test_itaca_network.py</code></pre>
+<pre><code>julia --project=. tests/network/test_network_events_builder.jl
+work/event-viewer-venv/bin/python tests/network/test_network.py</code></pre>
 <table><tr><th>Test</th><th>What we check</th></tr>
 <tr><td>Cells per axis</td><td>55, 42 and 50 cells for pitches of 3, 4 and 3.3 mm in 160 mm.</td></tr>
 <tr><td>Cell assignment</td><td>Hits given out of order; a centre just below the lower face is cell 0; a centre half a pitch above the frame is the last cell; a pitch of 3.3 mm.</td></tr>
 <tr><td>Errors</td><td>A hit off the lattice and a hit outside the grid stop the calculation.</td></tr>
 <tr><td>Shorter last time group</td><td>A slice displaced by 0.4 pitch is assigned with tolerance 0.5 and rejected with the default tolerance.</td></tr>
 <tr><td>Pitches</td><td>3, 3, 3.3 mm and 4, 4, 2.842 mm from a resolved card.</td></tr>
+<tr><td>ROI cut</td><td>Strict bounds; a single-precision energy is compared in double precision; the bounds are read from a comparison file.</td></tr>
 <tr><td>Dense grid</td><td>Each hit in its cell, centred in the padding, with energy / scale; an event without hits gives an empty grid.</td></tr>
 <tr><td>Symmetry operations</td><td>Exchange and reflections move the hits to the expected cells; every operation keeps the hits and their energies; exchange on a rectangular lattice is an error.</td></tr>
 <tr><td>Network</td><td>The three inputs give one finite output per event, and every parameter receives a gradient.</td></tr>
+<tr><td>Sparse network (Hyperion; skipped without <code>spconv</code> and a CUDA GPU)</td><td>The sparse tensor of a batch equals the dense grid; an event without hits gives a finite output; every parameter receives a gradient; the parameters are those of the dense network with <code>stem = "full"</code>.</td></tr>
 <tr><td>Measures</td><td>Two unit Gaussians two units apart give the expected area and background acceptance; equal scores give an area of 0.5.</td></tr></table>
 </section>
 </main><footer>ITACA · Classification network</footer></body></html>

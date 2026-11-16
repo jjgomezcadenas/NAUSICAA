@@ -1,5 +1,5 @@
 using Test
-include("../../scripts/network/build_network_events.jl")
+include("../../scripts/network/network_events_builder.jl")
 @testset "Readout lattice inside the frame" begin
     @test lattice_cells(160,3)==55 && lattice_cells(160,4)==42 && lattice_cells(160,3.3)==50
     # Pads every 3 mm with the first centre 1 mm inside the frame, given out of order
@@ -22,6 +22,14 @@ end
     card=Dict("detector"=>Dict("ions"=>Dict("pad_pitch_mm"=>3.0,"ion_bucket_ms"=>20.0),"drift"=>Dict("ion_drift_velocity_cm_s"=>16.5,"electron_drift_velocity_mm_us"=>0.5684),
         "el"=>Dict("hole_pitch_mm"=>4.0),"sipm"=>Dict("electron_bucket_us"=>0.25)),"run"=>Dict("electrons"=>Dict("rebin_factor"=>20)))
     p=lattice_pitches(card);@test p.itrack[1]==3 && p.itrack[3]≈3.3 && p.etrack[1]==4 && p.etrack[3]≈2.842
+end
+@testset "ROI cut" begin
+    # Strict bounds, compared in double precision as in the selection tables
+    @test in_roi(Float32[2451.9,2452.0,2452.1,2463.5,2463.6,2463.7],(2452.0,2463.6))==[false,false,true,true,false,false]
+    lower=2452.0387;e=Float32[prevfloat(Float32(lower)),nextfloat(Float32(lower))];@test in_roi(e,(lower,2463.6))==(Float64.(e).>lower)
+    mktempdir() do dir
+        path=joinpath(dir,"comparison.h5");h5open(f->(f["roi/lower_keV"]=2452.0;f["roi/upper_keV"]=2463.6),path,"w");@test roi_of(path)==(2452.0,2463.6)
+    end
 end
 @testset "One hit per cell" begin
     ix=UInt8[1,2,1,3];iy=UInt8[0,0,0,0];iz=UInt8[5,5,5,5]

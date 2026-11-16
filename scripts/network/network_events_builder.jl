@@ -1,14 +1,17 @@
 #!/usr/bin/env julia
 # Training events of one run for the classification network.
-#   julia --project=. scripts/network/build_network_events.jl results/readout/<run_label> [OUTPUT.h5]
+#   julia --project=. scripts/network/network_events_builder.jl results/readout/<run_label> [OUTPUT.h5] [--roi=COMPARISON.h5]
 # For each batch it reads <output_subdir>/features.h5 and hits.h5, keeps the
 # events passing the track selection of the itrack (itrack_selected; for
 # feature tables without it, one component in each track), and places the
 # saved hits of each track on the readout lattice inside the fixed frame.
+# With --roi it applies the ROI cut before the track selection: reconstructed
+# electron energy between roi/lower_keV and roi/upper_keV of COMPARISON.h5
+# (prepare_species_comparison.jl), so the file holds the events that reach the
+# E2 cut in the selection tables.
 # Writes results/network/<run_label>/events.h5: for each track the voxel
 # indices and energies of every event (sparse, one hit per cell), and one row
-# per event with its
-# features. train_network.py fills the dense grids from this file.
+# per event with its features. network_trainer.py reads this file.
 include("../production/prepare_batch_features.jl")
 
 const NETWORK_EVENTS_SCHEMA="itaca.network_events.v1"
@@ -58,12 +61,21 @@ function lattice_pitches(resolved::AbstractDict)
      etrack=(Float64(d["el"]["hole_pitch_mm"]),Float64(d["el"]["hole_pitch_mm"]),d["sipm"]["electron_bucket_us"]*resolved["run"]["electrons"]["rebin_factor"]*d["drift"]["electron_drift_velocity_mm_us"]))
 end
 
-function build_network_events(run_dir::AbstractString,target::AbstractString="")
+"""ROI bounds (lower, upper in keV) saved by prepare_species_comparison.jl."""
+roi_of(comparison::AbstractString)=h5open(comparison,"r") do f
+    haskey(f,"roi")||error("No ROI bounds in $comparison")
+    (Float64(read(f["roi/lower_keV"])),Float64(read(f["roi/upper_keV"])))
+end
+
+"""Events inside the ROI: reconstructed electron energy strictly between the bounds, as in the selection tables."""
+in_roi(energy_keV::AbstractVector{<:Real},roi::Tuple{Float64,Float64})=(Float64.(energy_keV).>roi[1]).&(Float64.(energy_keV).<roi[2])
+
+function build_network_events(run_dir::AbstractString,target::AbstractString="";roi::Union{Nothing,Tuple{Float64,Float64}}=nothing,roi_source::AbstractString="")
     run_dir=abspath(run_dir);batch_root=joinpath(run_dir,"batches")
     tags=sort(filter(t->occursin(r"^b\d{5}$",t),readdir(batch_root)));isempty(tags)&&error("No batch folders under $batch_root")
     isempty(target)&&(target=joinpath(ROOT,"results/network",basename(run_dir),"events.h5"));target=abspath(target)
     isfile(target)&&error("Preserve existing events: $target");mkpath(dirname(target))
-    started=time();columns=Dict{String,Vector}();accepted=0;selection=nothing;pitches=nothing;side=0.0;first_table=nothing;shas=String[]
+    started=time();columns=Dict{String,Vector}();accepted=0;in_roi_events=0;selection=nothing;pitches=nothing;side=0.0;first_table=nothing;shas=String[]
     arms=Dict(a=>(offsets=Int64[0],ix=UInt8[],iy=UInt8[],iz=UInt8[],energy=Float32[]) for a in ("itrack","etrack"));cells=Dict{String,NTuple{3,Int}}();dropped=Dict("itrack"=>0,"etrack"=>0)
     for t in tags
         dir=joinpath(batch_root,t,batch_output_subdir(joinpath(batch_root,t)));feat=read_batch_features(joinpath(dir,"features.h5"));hits=joinpath(dir,"hits.h5")
@@ -73,7 +85,8 @@ function build_network_events(run_dir::AbstractString,target::AbstractString="")
         end
         e=feat["events"];lattice=haskey(e,"itrack_selected")
         selection===nothing ? (selection=lattice) : (selection==lattice||error("The feature tables of $t and of the earlier batches differ in the track selection"))
-        keep=lattice ? findall(e["itrack_selected"].==1) : findall((e["itrack_components"].==1).&(e["etrack_components"].==1));accepted+=length(e["event_number"]);push!(shas,feat["hit_file_sha256"])
+        pass=lattice ? e["itrack_selected"].==1 : (e["itrack_components"].==1).&(e["etrack_components"].==1)
+        inside=roi===nothing ? trues(length(pass)) : in_roi(e["electron_energy_keV"],roi);in_roi_events+=count(inside);keep=findall(pass.&inside);accepted+=length(e["event_number"]);push!(shas,feat["hit_file_sha256"])
         h5open(hits,"r") do f
             read(f["events/event_number"])==e["event_number"]||error("Event order differs between features and hits in $t")
             thispitch=lattice_pitches(TOML.parse(read(f["configuration/cards/resolved"],String)))
@@ -98,7 +111,9 @@ function build_network_events(run_dir::AbstractString,target::AbstractString="")
     try
         h5open(tmp,"w") do f
             f["schema"]=NETWORK_EVENTS_SCHEMA;f["species"]=first_table["species"];f["run_label"]=first_table["run_label"];f["batches"]=tags;f["hit_file_sha256"]=shas
-            f["selection"]=selection ? "track selection of the itrack on the readout lattice (itrack_selected)" : "one component in the itrack and one in the etrack";f["accepted_events"]=accepted;f["frame_side_mm"]=side
+            f["selection"]=(roi===nothing ? "" : "ROI cut on the reconstructed electron energy, $(roi[1]) to $(roi[2]) keV; ")*(selection ? "track selection of the itrack on the readout lattice (itrack_selected)" : "one component in the itrack and one in the etrack")
+            f["accepted_events"]=accepted;f["frame_side_mm"]=side
+            if roi!==nothing;f["roi/lower_keV"]=roi[1];f["roi/upper_keV"]=roi[2];f["roi/events"]=in_roi_events;f["roi/source"]=String(roi_source);end
             f["track_analysis"]=first_table["track_analysis"];f["detector"]=first_table["detector"]
             f["ion_hit_cut_keV"]=first_table["ion_hit_cut_keV"];f["electron_hit_cut_keV"]=first_table["electron_hit_cut_keV"]
             for (k,v) in columns;f["events/$k"]=v;end
@@ -112,11 +127,16 @@ function build_network_events(run_dir::AbstractString,target::AbstractString="")
     catch
         isfile(tmp)&&rm(tmp);rethrow()
     end
-    println("NETWORK EVENTS $target hits dropped from shared cells: $dropped events=$(length(columns["event_number"])) of $accepted bytes=$(filesize(target)) time_s=$(round(time()-started;digits=1))")
+    println("NETWORK EVENTS $target hits dropped from shared cells: $dropped events=$(length(columns["event_number"])) of $accepted$(roi===nothing ? "" : " ($in_roi_events in the ROI $(roi[1])-$(roi[2]) keV)") bytes=$(filesize(target)) time_s=$(round(time()-started;digits=1))")
     target
 end
 
 if abspath(PROGRAM_FILE)==@__FILE__
-    1<=length(ARGS)<=2||error("Usage: build_network_events.jl results/readout/<run_label> [OUTPUT.h5]")
-    build_network_events(ARGS...)
+    options=filter(a->startswith(a,"--"),ARGS);paths=filter(a->!startswith(a,"--"),ARGS)
+    (1<=length(paths)<=2&&all(o->startswith(o,"--roi="),options)&&length(options)<=1)||error("Usage: network_events_builder.jl results/readout/<run_label> [OUTPUT.h5] [--roi=COMPARISON.h5]")
+    if isempty(options)
+        build_network_events(paths...)
+    else
+        comparison=abspath(split(options[1],"=";limit=2)[2]);build_network_events(paths...;roi=roi_of(comparison),roi_source="$comparison sha256 $(bytes2hex(open(sha256,comparison)))")
+    end
 end
