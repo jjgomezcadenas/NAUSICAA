@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Track selection</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}pre{background:#edf3f6;padding:18px;overflow:auto;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}.status{color:#985a00;background:#fff4d8;padding:12px}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}.contract{border-left:3px solid #146955;padding-left:16px}summary{cursor:pointer;font-weight:600}footer{padding:20px;color:#526776} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}</style></head><body><header><h1>Track selection on the readout lattice</h1><p>Which accepted events are kept as one track, and why.</p></header><main>
+<p><a href="../index.html">ITACA index</a> · results: <a href="../../../results/readout/itaca_track_selection/index.html">selection on bb0nu, single electrons and ²¹⁴Bi</a></p>
+
+<section id="purpose"><h2>Purpose</h2>
+<p>A bb0nu event is one continuous track. The backgrounds at Qbb are gammas of ²¹⁴Bi and ²⁰⁸Tl, and a gamma event rarely leaves one track alone:</p>
+<ul><li>A photoelectric absorption on the xenon K shell emits a K X-ray (29.7 or 33.6 keV) in about three cases of four. At 16 bar the X-ray is absorbed about 1 cm from the start of the track.</li>
+<li>A Compton scattering leaves the scattered gamma, absorbed elsewhere as a second electron.</li>
+<li>Bremsstrahlung photons of the track itself give small deposits near it, in signal and background alike.</li></ul>
+<p>A deposit detached from the track is therefore a signature of background. The selection keeps the events whose itrack is one track with no detached deposit. The events it keeps go to the classical cut on the endpoint energy and to the network.</p></section>
+
+<section id="lattice"><h2>The lattice sets the resolution</h2>
+<p>The itrack is read on pads of 3 mm pitch in frames of 20 ms. With the ion drift velocity of 15.0 cm/s a frame spans 3.0 mm, so a hit is a cell of a cubic 3 mm lattice. Ion diffusion is about 1 mm. A track deposits about 100 keV per centimetre, about 30 keV per cell, well above the 5 keV hit cut: a track is a chain of touching cells.</p>
+<table><tr><th>Connection radius</th><th>Cells connected</th></tr>
+<tr><td>3.5 mm</td><td>the 6 cells sharing a face</td></tr><tr><td>4.6 mm</td><td>also those sharing an edge (18)</td></tr><tr><td>5.5 mm</td><td>all 26 touching cells</td></tr><tr><td>8 mm</td><td>also cells one or two cells apart: bridges a gap in the track</td></tr></table>
+<p>Two deposits can be told apart when one empty cell lies between them. The radius of 5.5 mm expresses that: touching cells belong together, anything else is separate. A radius of 8 mm hides a deposit up to two cells from the track.</p>
+<p>The productions read out before 2026-11-16 used 16.5 cm/s, with frames of 3.3 mm. Their track analysis grouped the hits in 3 mm cells, which left an empty layer every 33 mm in Z and made a radius of 8 mm necessary to keep tracks whole. The components of this page are built from the hits at their own lattice positions and do not have that gap.</p></section>
+
+<section id="selection"><h2>Selection</h2><ol>
+<li>Take the itrack hits above the display cut (<code>ion_hit_cut_keV</code>, 5 keV).</li>
+<li>Connect them at <code>ion_segment_connection_mm</code> = 5.5 mm. Each connected set is a component.</li>
+<li>A component with at least <code>ion_segment_min_hits</code> = 6 hits is a <strong>track segment</strong>.</li>
+<li>A smaller component with at least <code>ion_deposit_min_keV</code> = 10 keV is a <strong>detached deposit</strong>. Smaller components, single hits of 5–10 keV, are ignored as noise.</li>
+<li>Reject the event if it has a detached deposit.</li>
+<li>Accept the event if it has one segment.</li>
+<li>With two or three segments (<code>ion_max_segments</code> = 3), connect the hits again at <code>ion_connection_mm</code> = 8 mm. Accept if all segments fall in one component: the track has a short gap. Reject otherwise: segments that stay apart are separate electrons.</li></ol>
+<p>Step 7 matters. A long component is not always a piece of the track: in gamma events most second segments are Compton electrons of 100–300 keV, centimetres away. In the samples studied, 40% of the bb0nu events with two or three segments join at 8 mm, against 8% of the ²¹⁴Bi ones.</p>
+<p>The endpoints and the endpoint energies E₁ and E₂ of an accepted event are computed on the graph at 8 mm, which is connected by construction.</p></section>
+
+<section id="limit"><h2>What it cannot see</h2>
+<p>A K X-ray absorbed within about 4 mm of a track hit shares cells with the track. No connection radius separates it. About a quarter of the X-rays of photoelectric events are in this case, and another quarter lie at 4–8 mm, where the selection at 5.5 mm finds part of them and a radius of 8 mm found none.</p></section>
+
+<section id="interfaces"><h2>Functions</h2>
+<p>In <code>scripts/production/prepare_batch_features.jl</code>:</p>
+<pre><code>point_components(x, y, z, radius) -> Vector{Int}</code></pre>
+<p>Label of the connected component of each point; points closer than <code>radius</code> are connected.</p>
+<pre><code>itrack_selection(h::SavedHits, tc::AbstractDict)
+    -> (segments, deposits, deposit_keV, segments_joined, selected)</code></pre>
+<p>Applies steps 1–7 with the settings of <code>[track_analysis]</code>. The feature table of each batch stores the result as <code>itrack_segments</code>, <code>itrack_deposits</code>, <code>itrack_deposit_keV</code>, <code>itrack_segments_joined</code> and <code>itrack_selected</code>, so the selection is a column filter and its thresholds can be revised from the saved counts.</p>
+<p>For runs whose feature tables predate these columns:</p><ol>
+<li><code>prepare_track_selection.jl results/readout/&lt;run_label&gt;</code> applies the selection to the hit files and writes <code>track_selection/events.h5</code>.</li>
+<li><code>prepare_second_pass.jl results/readout/&lt;run_label&gt;</code> writes the hits, energy and extent of every component for several radii (<code>second_pass/components_lattice.h5</code>).</li>
+<li><code>xray_truth_distance.py EVENT_LIST OUTPUT.txt NEXUS_FILE...</code> gives, for gamma events, the Monte Carlo distance of the K X-ray to the main track.</li>
+<li><code>present_track_selection.py OUTPUT_DIR SIGNAL_RUN BACKGROUND_RUN... [--truth=RUN_LABEL:TABLE.txt]</code> writes the results page.</li></ol></section>
+
+<section id="roi"><h2>Order of the cuts</h2><ol>
+<li>Energy window of the simulation, fiducial selection and gamma veto (<a href="mc_fast_trigger.html">fast trigger</a>).</li>
+<li><strong>ROI cut</strong>: reconstructed electron energy within one FWHM of Qbb. It removes most of the ²¹⁴Bi line, which lies 10 keV below Qbb, and ²⁰⁸Tl events more strongly still.</li>
+<li>Track selection of this page.</li>
+<li>Separation of one electron from two: the cut on E₂ or the network.</li></ol></section>
+</main></body></html>

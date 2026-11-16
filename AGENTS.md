@@ -17,6 +17,11 @@ in `notes/html/itaca_detector.html`, the scheme in
 `notes/html/detector_configuration.html` (`make itaca-detector`). Cards under
 `config/readout/` and `config/specs/runs/` are records of earlier productions.
 
+- Ion drift velocity: 15.0 cm/s (user design input, 2026-11-16), so that one
+  20 ms frame spans 3.0 mm and the itrack lattice is cubic. Productions read
+  out before that date used 16.5 cm/s; their run cards carry it as an override.
+  The track selection on that lattice (components at 5.5 mm, detached deposits,
+  segments rejoined at 8 mm) is in `notes/html/event_analysis/track_selection.html`.
 - Xe2+ means the molecular ion Xe_2^+, with charge +e, not atomic Xe^{2+}.
 - Extend event readout to both carrier populations: a single-electron or
   double-electron ionisation track produces a trail of electrons and positive

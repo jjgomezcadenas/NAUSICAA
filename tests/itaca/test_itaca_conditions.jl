@@ -76,10 +76,10 @@ end
     @test derived["drift.electron_transverse_spread_mm"] ≈ 2.29 atol = 0.005
     @test derived["drift.electron_longitudinal_spread_mm"] ≈ 3.90 atol = 0.005
     @test derived["drift.electron_longitudinal_spread_us"] ≈ 6.9 atol = 0.05
-    @test derived["drift.ion_max_drift_time_s"] ≈ 7.9 atol = 0.05
+    @test derived["drift.ion_max_drift_time_s"] ≈ 130/15 atol = 1e-9
     @test derived["drift.ion_thermal_spread_mm"] ≈ 1.36 atol = 0.005
-    @test derived["drift.ion_reduced_mobility_cm2_V_s"] ≈ 0.65 * 1.17 atol = 0.01
-    @test derived["drift.ion_bucket_length_mm"] ≈ 3.3 atol = 1e-9
+    @test derived["drift.ion_reduced_mobility_cm2_V_s"] ≈ 0.65 * 1.17 * 15/16.5 atol = 0.01   # adopted velocity of 15.0 cm/s against 16.5 from the mobility
+    @test derived["drift.ion_bucket_length_mm"] ≈ 3.0 atol = 1e-9
     @test derived["voltages.potential_drift_end_kV"] ≈ 53.5 atol = 0.01
     @test derived["voltages.potential_el_entry_kV"] ≈ 53.8 atol = 0.01
     @test derived["voltages.potential_el_exit_kV"] ≈ 68.8 atol = 0.01

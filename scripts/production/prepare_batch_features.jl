@@ -40,6 +40,45 @@ function track_features(h::SavedHits,tc::AbstractDict,arm::AbstractString)
         E1_keV=Float32(e1),E2_keV=Float32(e2))
 end
 
+"""Label of the connected component of each point: points closer than `radius` are connected. Labels run from 1."""
+function point_components(x,y,z,radius::Real)
+    n=length(x);parent=collect(1:n);r2=Float64(radius)^2
+    root(i)=(while parent[i]!=i;parent[i]=parent[parent[i]];i=parent[i];end;i)
+    for i in 1:n-1, j in i+1:n
+        (Float64(x[i])-x[j])^2+(Float64(y[i])-y[j])^2+(Float64(z[i])-z[j])^2<r2 || continue
+        a=root(i);b=root(j);a==b||(parent[max(a,b)]=min(a,b))
+    end
+    names=Dict{Int,Int}();[get!(names,root(i),length(names)+1) for i in 1:n]
+end
+
+"""Track selection of the itrack from its components on the readout lattice.
+
+The hits above the display cut are connected, at their own positions, with the
+radius `ion_segment_connection_mm` (touching cells). A component with at least
+`ion_segment_min_hits` hits is a track segment. A smaller component with at
+least `ion_deposit_min_keV` is a detached deposit: the K X-ray of a
+photoelectric absorption, a bremsstrahlung photon. Smaller components are
+ignored. The event is selected when it has no detached deposit and either one
+segment, or at most `ion_max_segments` segments that belong to one component
+with the radius `ion_connection_mm`: a track with a short gap. Segments that
+stay apart are separate electrons.
+
+Returns the number of segments and of detached deposits, the largest deposit
+energy (keV), whether the segments join, and the selection.
+"""
+function itrack_selection(h::SavedHits,tc::AbstractDict)
+    keep=findall(>(Float32(tc["ion_hit_cut_keV"])),h.energy_keV);none=(segments=0,deposits=0,deposit_keV=0f0,segments_joined=false,selected=false)
+    isempty(keep)&&return none
+    x=h.x_mm[keep];y=h.y_mm[keep];z=h.z_mm[keep];e=h.energy_keV[keep]
+    label=point_components(x,y,z,get(tc,"ion_segment_connection_mm",5.5));n=maximum(label);hits=zeros(Int,n);energy=zeros(Float32,n)
+    for (i,l) in enumerate(label);hits[l]+=1;energy[l]+=e[i];end
+    segment=hits.>=Int(get(tc,"ion_segment_min_hits",6));deposit=.!segment .& (energy.>=Float32(get(tc,"ion_deposit_min_keV",10.0)))
+    wide=point_components(x,y,z,tc["ion_connection_mm"]);joined=length(unique(wide[i] for i in eachindex(label) if segment[label[i]]))<=1
+    segments=count(segment);deposits=count(deposit)
+    (segments=segments,deposits=deposits,deposit_keV=deposits==0 ? 0f0 : maximum(energy[deposit]),segments_joined=joined&&segments>0,
+     selected=deposits==0&&segments>=1&&(segments==1||(segments<=Int(get(tc,"ion_max_segments",3))&&joined)))
+end
+
 batch_number(tag::AbstractString)=parse(Int,tag[2:end])
 
 """Folder of a batch that holds its hit file or its feature table."""
@@ -70,14 +109,15 @@ function compute_batch_features(batch_dir::AbstractString)
         out["species"]=read(r.file["configuration/species"],String);out["run_label"]=dirname(dirname(read(r.file["configuration/run_label"],String)))
         for id in read(r.file["events/event_number"])
             e=read_hit_event(r,id);where=read_hit_location(r,id);f=e.info.frame;c=where.fixed_frame
-            ion=track_features(e.itrack,tc,"itrack");ele=track_features(e.etrack,tc,"etrack")
+            ion=track_features(e.itrack,tc,"itrack");ele=track_features(e.etrack,tc,"etrack");sel=itrack_selection(e.itrack,tc)
             push!(rows,merge((event_number=id,batch=b,ion_energy_keV=e.energy.ion_energy_keV,electron_energy_keV=e.energy.electron_energy_keV,
                 invalid_ion_buckets=e.energy.invalid_ion_buckets,invalid_electron_buckets=e.energy.invalid_electron_buckets,
                 ion_drift_cm=e.info.ion_drift_cm,electron_drift_cm=e.info.electron_drift_cm,
                 vertex_x_mm=where.vertex_mm[1],vertex_y_mm=where.vertex_mm[2],vertex_z_mm=where.vertex_mm[3],
                 frame_side_mm=c.upper_mm[1]-c.lower_mm[1],response_box_side_mm=maximum(f.upper_mm[i]-f.lower_mm[i] for i in 1:3),
                 frame_shift_mm=maximum(abs((f.upper_mm[i]+f.lower_mm[i])/2-(c.upper_mm[i]+c.lower_mm[i])/2) for i in 1:3),
-                itrack_saved_hits=length(e.itrack.x_mm),etrack_saved_hits=length(e.etrack.x_mm)),
+                itrack_saved_hits=length(e.itrack.x_mm),etrack_saved_hits=length(e.etrack.x_mm),
+                itrack_segments=sel.segments,itrack_deposits=sel.deposits,itrack_deposit_keV=sel.deposit_keV,itrack_segments_joined=Int8(sel.segments_joined),itrack_selected=Int8(sel.selected)),
                 NamedTuple{Tuple(Symbol("itrack_",k) for k in keys(ion))}(values(ion)),NamedTuple{Tuple(Symbol("etrack_",k) for k in keys(ele))}(values(ele))))
         end
     finally

@@ -13,5 +13,7 @@ electron_longitudinal_diffusion_relative_error = 0.0461
 # Ions: reduced mobility 0.65 cm2/V/s in xenon (Neves et al., J. Chem. Phys. 133
 # (2010) 124316, via Cortez et al., JINST 12 (2017) P06012, Fig. 3), raised 17 %
 # for helium by Blanc's law; N/N0 = 16.14 at 16 bar, 290 K.
+# That calculation gives 16.5 cm/s at 350 V/cm. The adopted value is 15.0 cm/s, within its
+# uncertainty, so that one 20 ms frame spans 3.0 mm.
 ion_species = "Xe2+ molecular ion, charge +e"
-ion_drift_velocity_cm_s = 16.5
+ion_drift_velocity_cm_s = 15.0          # user design input, 2026-11-16: one 20 ms frame is 3.0 mm, the pad pitch; 16.5 until then

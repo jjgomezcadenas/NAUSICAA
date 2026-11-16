@@ -17,7 +17,8 @@ histogram_bins = 50
 max_vector_bytes = 268435456
 electron_display_rebin = 20       # display only; response vectors retain 250 ns
 
-[overrides]                       # none: the default detector
+[overrides]                       # the ion drift velocity of this production; the default detector has 15.0 since 2026-11-16
+"drift.ion_drift_velocity_cm_s" = 16.5
 
 [selection]
 placement = "generated_vertex"    # ion drift = vertex z, electron drift = length - z

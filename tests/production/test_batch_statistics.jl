@@ -35,3 +35,21 @@ end
         touch(joinpath(d,"vh1_hits","features.h5"));@test batch_output_subdir(d)=="vh1_hits"
     end
 end
+@testset "Track selection on the lattice" begin
+    tc=Dict{String,Any}("ion_hit_cut_keV"=>5.0,"ion_connection_mm"=>8.0,"ion_segment_connection_mm"=>5.5,"ion_segment_min_hits"=>6,"ion_deposit_min_keV"=>10.0,"ion_max_segments"=>3)
+    line(x0,n;y=0f0)=(Float32[x0+3k for k in 0:n-1],fill(y,n),fill(0f0,n),fill(30f0,n))
+    hits(parts...)=SavedHits(vcat((p[1] for p in parts)...),vcat((p[2] for p in parts)...),vcat((p[3] for p in parts)...),vcat((p[4] for p in parts)...))
+    @test point_components(Float32[0,3,9,12],zeros(Float32,4),zeros(Float32,4),5.5)==[1,1,2,2]
+    one=itrack_selection(hits(line(0f0,20)),tc);@test one.segments==1 && one.deposits==0 && one.selected
+    # a deposit of 30 keV one empty cell away from the track: detached at 5.5 mm, although joined at 8 mm
+    xray=itrack_selection(hits(line(0f0,20),(Float32[6],Float32[6],Float32[0],Float32[30])),tc);@test xray.segments==1 && xray.deposits==1 && xray.deposit_keV==30 && !xray.selected
+    # the same position below 10 keV is ignored
+    @test itrack_selection(hits(line(0f0,20),(Float32[6],Float32[6],Float32[0],Float32[8])),tc).selected
+    # a track with one missing cell: two segments that join at 8 mm
+    gap=itrack_selection(hits(line(0f0,10),line(33f0,10)),tc);@test gap.segments==2 && gap.segments_joined && gap.selected
+    # a second electron 30 mm away stays apart
+    far=itrack_selection(hits(line(0f0,10),line(0f0,10;y=30f0)),tc);@test far.segments==2 && !far.segments_joined && !far.selected
+    # four segments, even if joined, exceed the limit
+    many=itrack_selection(hits(line(0f0,6),line(21f0,6),line(42f0,6),line(63f0,6)),tc);@test many.segments==4 && many.segments_joined && !many.selected
+    @test !itrack_selection(SavedHits(Float32[0],Float32[0],Float32[0],Float32[2]),tc).selected
+end
