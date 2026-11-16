@@ -23,3 +23,8 @@ end
         "el"=>Dict("hole_pitch_mm"=>4.0),"sipm"=>Dict("electron_bucket_us"=>0.25)),"run"=>Dict("electrons"=>Dict("rebin_factor"=>20)))
     p=lattice_pitches(card);@test p.itrack[1]==3 && p.itrack[3]≈3.3 && p.etrack[1]==4 && p.etrack[3]≈2.842
 end
+@testset "One hit per cell" begin
+    ix=UInt8[1,2,1,3];iy=UInt8[0,0,0,0];iz=UInt8[5,5,5,5]
+    @test one_hit_per_cell(ix,iy,iz,Float32[3.0,7.0,3.1,4.0])==[2,3,4]
+    @test one_hit_per_cell(ix[1:2],iy[1:2],iz[1:2],Float32[1,2])==[1,2]
+end
