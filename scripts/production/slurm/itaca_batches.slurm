@@ -1,6 +1,6 @@
 #!/bin/bash
 # One input batch of a run card per array task: reduced hit table, detector
-# response and hits. Hyperion cluster.
+# response, hits and the table of track features. Hyperion cluster.
 #   sbatch --array=0-9 --output=LOGDIR/%x.%A_%a.out --error=LOGDIR/%x.%A_%a.err \
 #          itaca_batches.slurm RUN_CARD NEXUS_FILE_PATTERN
 # RUN_CARD is relative to the repository. NEXUS_FILE_PATTERN is the NEXUS file
@@ -27,3 +27,5 @@ cd "$REPO"
 echo "node $(hostname) batch $TAG commit $(git rev-parse HEAD) card $CARD"
 [ -e "${NEXUS_FILE%.next.h5}_hitdf.h5" ] || julia --startup-file=no --project=. scripts/events/extract_hits.jl "$NEXUS_FILE"
 julia --startup-file=no --project=. scripts/production/run_batches.jl "$CARD" "$B" "$B" --no-merge
+BATCH_DIR=results/readout/$(sed -n 's/^run_label *= *"\(.*\)".*/\1/p' "$CARD")/batches/$TAG
+[ -e "$BATCH_DIR"/*/features.h5 ] || julia --startup-file=no --project=. scripts/production/prepare_batch_features.jl "$BATCH_DIR"

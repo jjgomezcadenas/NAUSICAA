@@ -28,3 +28,10 @@ end
     s=sliced_fits(values,by,[0.,1.,2.];minimum_events=200)
     @test s["entries"]==[300,50] && isfinite(s["mu"][1]) && abs(s["mu"][1]-10)<0.2 && isnan(s["mu"][2])
 end
+@testset "Batch folders" begin
+    @test batch_number("b00012")==12
+    mktempdir() do d
+        mkpath(joinpath(d,"vh1_hits"));mkpath(joinpath(d,"detector_response"));@test_throws ErrorException batch_output_subdir(d)
+        touch(joinpath(d,"vh1_hits","features.h5"));@test batch_output_subdir(d)=="vh1_hits"
+    end
+end
