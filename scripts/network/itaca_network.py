@@ -37,7 +37,7 @@ def merge(samples):
     return arms,events,np.concatenate([np.full(s.n,i) for i,s in enumerate(samples)])
 
 def padded(cells,multiple=8):
-    """Grid size: the lattice cells rounded up to a multiple of 8, so that three halvings are exact."""
+    """Grid size: the lattice cells rounded up to a multiple of 8."""
     return tuple(int(-(-int(c)//multiple)*multiple) for c in cells)
 
 class Transform:

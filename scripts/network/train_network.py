@@ -8,9 +8,11 @@
 SIGNAL and BACKGROUND are the files of build_network_events.jl. Events are
 split by production batch: the validation and test batches are held out and
 the others train. --fraction keeps that part of the training events (learning
-curve). --stem selects the resolution of the first stage (itaca_network.Trunk). Each epoch trains with random symmetry operations and shifts, then
+curve). --stem selects the resolution of the first stage (itaca_network.Trunk).
+Each epoch trains with random symmetry operations and shifts, then
 scores the validation events without them. The weights with the lowest
-validation loss score the test events.
+validation loss score the test events; the files are rewritten after every
+epoch, so an interrupted run keeps its selected weights and their test scores.
 
 Writes in OUTPUT_DIR: training.h5 (settings, the history per epoch, and for
 each test event its number, label, score, drift and the classical E2 of each
@@ -61,7 +63,25 @@ def main():
                 scores[i:i+len(part)]=z.float().cpu().numpy()
         return scores,total/len(ids)
 
-    history={k:[] for k in ('train_loss','validation_loss','validation_area','validation_background_at_80','epoch_s')};best=np.inf;best_epoch=-1;started=time.time()
+    def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    hashes=(sha(a.signal),sha(a.background))
+    def save(history,best_epoch,ts,tl,m):
+        """Write training.h5 with the history so far and the test scores of the selected weights."""
+        tmp=out/'training.h5.tmp'
+        with h5py.File(tmp,'w') as f:
+            f['schema']='itaca.network_training.v1';f['input']=a.input;f['signal_species']=samples[0].species;f['background_species']=samples[1].species
+            f['signal_run_label']=samples[0].run_label;f['background_run_label']=samples[1].run_label;f['signal_sha256']=hashes[0];f['background_sha256']=hashes[1]
+            for key,v in dict(epochs=a.epochs,completed_epochs=len(history['train_loss']),batch_size=a.batch_size,learning_rate=a.learning_rate,weight_decay=a.weight_decay,fraction=a.fraction,seed=a.seed,
+                              parameters=parameters,best_epoch=best_epoch+1,train_events=len(train),validation_events=len(val),test_events=len(test),time_s=time.time()-started).items(): f[f'settings/{key}']=v
+            f['settings/validation_batches']=np.array(val_b);f['settings/test_batches']=np.array(test_b);f['settings/stem']=a.stem;f['settings/device']=str(device);f['settings/torch']=str(torch.__version__)
+            for arm in arms: f[f'settings/energy_scale_keV/{arm}']=ENERGY_SCALE_KEV[arm]
+            for key,v in history.items(): f[f'history/{key}']=np.array(v)
+            f['test/event_number']=events['event_number'][test];f['test/batch']=batch[test];f['test/label']=label[test].astype(np.int8);f['test/score']=ts;f['test/loss']=tl
+            for name in ('ion_drift_cm','electron_drift_cm','itrack_E2_keV','etrack_E2_keV','itrack_E1_keV','etrack_E1_keV','itrack_length_mm','etrack_length_mm'): f[f'test/{name}']=events[name][test]
+            for key,v in m.items(): f[f'test/separation/{key}']=v
+        tmp.replace(target)
+
+    history={k:[] for k in ('train_loss','validation_loss','validation_area','validation_background_at_80','epoch_s')};best=np.inf;best_epoch=-1;started=time.time();result=None
     for epoch in range(a.epochs):
         t0=time.time();model.train();order=rng.permutation(train);running=0.0
         for i in range(0,len(order),a.batch_size):
@@ -70,25 +90,12 @@ def main():
             optimizer.zero_grad();loss=loss_fn(model(grids(part,True)),torch.as_tensor(label[part],device=device));loss.backward();optimizer.step();schedule.step();running+=loss.item()*len(part)
         vs,vl=score(val);m=separation(vs,label[val]>0.5);k=int(np.argmin(np.abs(m['target_signal_efficiency']-0.8)))
         for key,v in (('train_loss',running/len(order)),('validation_loss',vl),('validation_area',m['area']),('validation_background_at_80',m['background_acceptance'][k]),('epoch_s',time.time()-t0)): history[key].append(v)
-        if vl<best: best=vl;best_epoch=epoch;torch.save(model.state_dict(),out/'model.pt.tmp')
         print(f"epoch {epoch+1}/{a.epochs}: train loss {history['train_loss'][-1]:.4f}, validation loss {vl:.4f}, area {m['area']:.4f}, background at 80% {100*m['background_acceptance'][k]:.2f}%, {time.time()-t0:.0f} s",flush=True)
-    (out/'model.pt.tmp').rename(out/'model.pt');model.load_state_dict(torch.load(out/'model.pt',map_location=device));ts,tl=score(test);m=separation(ts,label[test]>0.5)
-    k=int(np.argmin(np.abs(m['target_signal_efficiency']-0.8)))
+        if vl<best:      # these weights are the selection so far: keep them and their test scores
+            best=vl;best_epoch=epoch;torch.save(model.state_dict(),out/'model.pt.tmp');(out/'model.pt.tmp').replace(out/'model.pt');ts,tl=score(test);result=(ts,tl,separation(ts,label[test]>0.5))
+        save(history,best_epoch,*result)
+    ts,tl,m=result;k=int(np.argmin(np.abs(m['target_signal_efficiency']-0.8)))
     print(f"test: area {m['area']:.4f}, background at 80% signal {100*m['background_acceptance'][k]:.2f} ± {100*m['background_acceptance_error'][k]:.2f}% ({m['signal_events']} signal, {m['background_events']} background events; weights of epoch {best_epoch+1})",flush=True)
-
-    def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-    tmp=out/'training.h5.tmp'
-    with h5py.File(tmp,'w') as f:
-        f['schema']='itaca.network_training.v1';f['input']=a.input;f['signal_species']=samples[0].species;f['background_species']=samples[1].species
-        f['signal_run_label']=samples[0].run_label;f['background_run_label']=samples[1].run_label;f['signal_sha256']=sha(a.signal);f['background_sha256']=sha(a.background)
-        for key,v in dict(epochs=a.epochs,batch_size=a.batch_size,learning_rate=a.learning_rate,weight_decay=a.weight_decay,fraction=a.fraction,seed=a.seed,parameters=parameters,
-                          best_epoch=best_epoch+1,train_events=len(train),validation_events=len(val),test_events=len(test),time_s=time.time()-started).items(): f[f'settings/{key}']=v
-        f['settings/validation_batches']=np.array(val_b);f['settings/test_batches']=np.array(test_b);f['settings/stem']=a.stem;f['settings/device']=str(device);f['settings/torch']=str(torch.__version__)
-        for arm in arms: f[f'settings/energy_scale_keV/{arm}']=ENERGY_SCALE_KEV[arm]
-        for key,v in history.items(): f[f'history/{key}']=np.array(v)
-        f['test/event_number']=events['event_number'][test];f['test/batch']=batch[test];f['test/label']=label[test].astype(np.int8);f['test/score']=ts;f['test/loss']=tl
-        for name in ('ion_drift_cm','electron_drift_cm','itrack_E2_keV','etrack_E2_keV','itrack_E1_keV','etrack_E1_keV','itrack_length_mm','etrack_length_mm'): f[f'test/{name}']=events[name][test]
-        for key,v in m.items(): f[f'test/separation/{key}']=v
-    tmp.rename(target);print(target)
+    print(target)
 
 if __name__=='__main__': main()

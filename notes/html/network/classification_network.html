@@ -1,0 +1,262 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Classification network · ITACA</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}pre{background:#edf3f6;padding:18px;overflow:auto;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}.status{color:#985a00;background:#fff4d8;padding:12px}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}.contract{border-left:3px solid #146955;padding-left:16px}summary{cursor:pointer;font-weight:600}footer{padding:20px;color:#526776} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}</style></head><body><header><a href="../index.html">ITACA documentation</a><h1>Classification network</h1><p>bb0nu against single electrons from the reconstructed itrack and etrack</p></header><main>
+<nav><a href="#purpose">Purpose</a><a href="#events">Events</a><a href="#input">Input</a><a href="#file">Training file</a><a href="#types">Types and functions</a><a href="#architecture">Architecture</a><a href="#training">Training</a><a href="#measures">Measures</a><a href="#outputs">Outputs</a><a href="#commands">Commands</a></nav>
+
+<section id="purpose"><h2>1. Purpose</h2>
+<p>The network separates bb0nu events (two electrons) from single electrons of the same energy. It reads the reconstructed hits of the itrack (ions, TopMetal pads) and of the etrack (electrons, EL and SiPMs).</p>
+<p>The reference is the classical cut on E₂, the smaller of the two endpoint energies of the main track (<a href="../event_analysis/plots_viewer.html#statistics">definition and comparison of two samples</a>).</p>
+</section>
+
+<section id="events"><h2>2. Events used</h2>
+<ol>
+<li>Start from the events accepted by the production: the <a href="../event_analysis/mc_fast_trigger.html#fixed">selection with a fixed frame</a>, which includes the gamma veto.</li>
+<li>Read the feature table of each batch (<code>features.h5</code>, written by <code>prepare_batch_features.jl</code>).</li>
+<li>Keep the events with <code>itrack_components == 1</code> and <code>etrack_components == 1</code>.</li>
+</ol>
+<p>The components of a track are counted on the hits above the display cut, with the settings of <code>[track_analysis]</code> in the run card.</p>
+<h3>Why one component in each track</h3>
+<ul>
+<li>The backgrounds are gammas of <sup>214</sup>Bi and <sup>208</sup>Tl. A detached deposit is a signature of background.</li>
+<li>A photoelectric absorption emits a xenon K X-ray of about 30 keV, absorbed about 1 cm away.</li>
+<li>A Compton event leaves separated deposits.</li>
+<li>Events with detached deposits are rejected before the network. The network addresses the remaining question: one blob or two on a single track.</li>
+</ul>
+</section>
+
+<section id="input"><h2>3. Input</h2>
+<p>Each track of an event is a 3D grid: the readout lattice inside the fixed frame of 160 mm. Every event has the same grid, so a dense network can be used.</p>
+<table><tr><th></th><th>itrack</th><th>etrack</th></tr>
+<tr><td>Cell in X and Y</td><td>3 mm (pad pitch)</td><td>4 mm (hole pitch)</td></tr>
+<tr><td>Cell in Z</td><td>3.3 mm (20 ms frame at 16.5 cm/s)</td><td>2.842 mm (20 buckets of 250 ns at 0.5684 mm/µs)</td></tr>
+<tr><td>Cells per axis, <code>floor(side/pitch)+2</code></td><td>55 × 55 × 50</td><td>42 × 42 × 58</td></tr>
+<tr><td>Grid, padded to multiples of 8</td><td>56 × 56 × 56</td><td>48 × 48 × 64</td></tr>
+<tr><td>Value of a cell</td><td>hit energy in keV / 20</td><td>hit energy in keV / 10</td></tr></table>
+<ul>
+<li>The pitches are read from the resolved card saved in the hit file; the frame side from the saved frame of each event.</li>
+<li>All saved hits of the event are used, noise hits included: this is what the detector delivers, and the network must cope with noise. The saved hits are those above the hit cuts of the hit file (<code>ion_hit_cut_keV</code>, <code>electron_hit_cut_keV</code>).</li>
+<li>A cell without a hit holds zero. Two hits in one cell are an error.</li>
+</ul>
+<h3>Assignment of hits to cells</h3>
+<p><code>lattice_indices</code> treats each axis separately. Hit coordinates are channel centres, so they lie on a lattice of the given pitch.</p>
+<ol>
+<li>Group the coordinates by their position within one pitch. Take as reference the coordinate whose lattice holds most hits.</li>
+<li>Give the reference the cell <code>floor((x0 − lower + pitch/2) / pitch)</code>, where <code>lower</code> is the lower face of the frame. Cell 0 is centred within half a pitch of that face.</li>
+<li>Give every other hit the cell of the reference plus the rounded number of pitches between them.</li>
+<li>Stop with an error if a hit is off the lattice by more than the tolerance, or if a cell falls outside <code>0:cells-1</code>.</li>
+</ol>
+<p>The tolerance is 0.02 pitch, and 0.5 pitch on the Z axis of the etrack. The last time group of an event is shorter than the others, and its hits are centred on its actual span; they are assigned to the nearest cell.</p>
+</section>
+
+<section id="file"><h2>4. Training file</h2>
+<p><code>results/network/&lt;run_label&gt;/events.h5</code>, schema <code>itaca.network_events.v1</code>. One file per run (species). The hits are stored as cell indices and energies; the dense grids are filled during training.</p>
+<table><tr><th>Dataset</th><th>Type</th><th>Content</th></tr>
+<tr><td><code>schema</code>, <code>species</code>, <code>run_label</code></td><td>text</td><td>Schema name, species and run of the events.</td></tr>
+<tr><td><code>batches</code>, <code>hit_file_sha256</code></td><td>text, one per batch</td><td>Batch folders read and the SHA-256 of their hit files.</td></tr>
+<tr><td><code>selection</code></td><td>text</td><td>The selection of section 2.</td></tr>
+<tr><td><code>accepted_events</code></td><td>Int64</td><td>Accepted events in the batches, before that selection.</td></tr>
+<tr><td><code>frame_side_mm</code></td><td>Float64</td><td>Side of the fixed frame.</td></tr>
+<tr><td><code>track_analysis</code>, <code>detector</code></td><td>TOML text</td><td>Track-analysis and detector settings of the feature tables.</td></tr>
+<tr><td><code>ion_hit_cut_keV</code>, <code>electron_hit_cut_keV</code></td><td>Float32</td><td>Hit cuts of the hit files.</td></tr>
+<tr><td><code>events/&lt;column&gt;</code></td><td>one entry per event</td><td>The columns of the feature table for the kept events: <code>event_number</code>, <code>batch</code>, energies, drift lengths, vertex, and for each track the hits, components, length, extensions, <code>E1_keV</code> and <code>E2_keV</code>.</td></tr>
+<tr><td><code>itrack/pitch_mm</code>, <code>etrack/pitch_mm</code></td><td>Float64 (3)</td><td>Cell size in X, Y, Z.</td></tr>
+<tr><td><code>itrack/cells</code>, <code>etrack/cells</code></td><td>Int64 (3)</td><td>Cells per axis.</td></tr>
+<tr><td><code>itrack/offsets</code>, <code>etrack/offsets</code></td><td>Int64 (events + 1)</td><td>The hits of event <code>i</code> (from 0) are entries <code>offsets[i]</code> to <code>offsets[i+1]-1</code>.</td></tr>
+<tr><td><code>itrack/ix</code>, <code>iy</code>, <code>iz</code>; same for <code>etrack</code></td><td>UInt8, one per hit</td><td>Cell indices, from 0.</td></tr>
+<tr><td><code>itrack/energy_keV</code>, <code>etrack/energy_keV</code></td><td>Float32, one per hit</td><td>Hit energy.</td></tr>
+<tr><td><code>time_s</code></td><td>Float64</td><td>Time taken to build the file.</td></tr></table>
+</section>
+
+<section id="types"><h2>5. Types and functions</h2>
+<h3>Julia: <code>scripts/network/build_network_events.jl</code></h3>
+<pre><code>lattice_cells(side_mm::Real, pitch_mm::Real)::Int
+
+lattice_indices(x::AbstractVector{&lt;:Real}, lower::Real, pitch::Real,
+                cells::Int; tolerance::Real=0.02)::Vector{UInt8}
+
+lattice_pitches(resolved::AbstractDict)   # (itrack=(x, y, z), etrack=(x, y, z)) in mm
+
+build_network_events(run_dir::AbstractString,
+                     target::AbstractString="")::String</code></pre>
+<table><tr><th>Function</th><th>What it does</th></tr>
+<tr><td><code>lattice_cells</code></td><td>Cells along one axis: <code>floor(side/pitch)+2</code>, the cells whose centre lies within half a pitch of the frame.</td></tr>
+<tr><td><code>lattice_indices</code></td><td>Cell index of each coordinate along one axis, as in section 3.</td></tr>
+<tr><td><code>lattice_pitches</code></td><td>Cell sizes of the two tracks from the resolved card: pad pitch and ion bucket × ion drift velocity; hole pitch and electron bucket × rebin factor × electron drift velocity.</td></tr>
+<tr><td><code>build_network_events</code></td><td>Write the training file of one run and return its path. The default target is <code>results/network/&lt;run_label&gt;/events.h5</code>.</td></tr></table>
+<h3>Processing one run</h3>
+<ol>
+<li>List the batch folders <code>batches/bNNNNN</code> of the run.</li>
+<li>For each batch, read <code>features.h5</code> and check that the SHA-256 of <code>hits.h5</code> is the one recorded in the table.</li>
+<li>Check that the settings, the lattice pitches and the frame side are the same in every batch, and that the hit file lists the events in the order of the table.</li>
+<li>Select the events of section 2.</li>
+<li>For each selected event and each track, read its hits and the lower face of its frame, and call <code>lattice_indices</code> on X, Y and Z.</li>
+<li>Append the cell indices, the energies and the feature columns of the event.</li>
+<li>Check that no event number is repeated, then write the file. An existing file is preserved.</li>
+</ol>
+<h3>Python: <code>scripts/network/itaca_network.py</code></h3>
+<pre><code>ARMS = ('itrack', 'etrack')
+ENERGY_SCALE_KEV = {'itrack': 20.0, 'etrack': 10.0}
+
+class Sample:
+    def __init__(self, path)
+    species, run_label    # text
+    frame_side_mm         # float
+    events                # column name -> array, one entry per event
+    arms                  # track -> datasets of the training file
+    n                     # number of events
+
+merge(samples) -> (arms, events, which)
+
+padded(cells, multiple=8) -> tuple
+
+class Transform:
+    def __init__(self, n, rng=None)
+    swap        # (n,) bool: exchange X and Y
+    flip        # (n, 3) bool: reverse X, Y, Z
+    position    # (n, 3) in [0, 1), or None: place in the padding
+
+dense_batch(arm, rows, transform, device) -> torch.Tensor   # (events, 1, nx, ny, nz)
+
+class Block(nn.Module):
+    def __init__(self, c)
+
+class Trunk(nn.Module):
+    def __init__(self, channels=(16, 32, 64, 128), stem='stride2')
+    features    # length of the output vector
+
+class Classifier(nn.Module):
+    def __init__(self, arms, channels=(16, 32, 64, 128), stem='stride2')
+    def forward(self, grids)    # grids: track -> tensor; returns (events,)
+
+separation(score, label, targets=(0.9, 0.8, 0.7, 0.6, 0.5)) -> dict</code></pre>
+<table><tr><th>Name</th><th>What it does</th></tr>
+<tr><td><code>Sample</code></td><td>Read one training file: the hits of both tracks and the event table. The schema must match.</td></tr>
+<tr><td><code>merge</code></td><td>Join several samples into one set. Returns the hits per track with shifted offsets and the energy scale, the event table, and the index of the sample of each event. The lattices of the samples must be equal.</td></tr>
+<tr><td><code>padded</code></td><td>Grid size: the cells per axis rounded up to a multiple of 8.</td></tr>
+<tr><td><code>Transform</code></td><td>One symmetry operation and one placement per event. Without <code>rng</code>: no operation, lattice centred in the grid. With <code>rng</code>: each of <code>swap</code> and the three <code>flip</code> with probability 1/2, and a uniform placement.</td></tr>
+<tr><td><code>dense_batch</code></td><td>Fill the grids of the events <code>rows</code> of one track on the device: apply the operation to the cell indices, add the placement shift, write energy / scale. Exchanging X and Y on a lattice that is not square is an error.</td></tr>
+<tr><td><code>Block</code></td><td>Two 3×3×3 convolutions, each with batch normalisation, and a skip connection.</td></tr>
+<tr><td><code>Trunk</code></td><td>The convolutional part for one track. Returns one vector of 128 values per event.</td></tr>
+<tr><td><code>Classifier</code></td><td>One trunk per input track and the output layer. Returns the logit of bb0nu.</td></tr>
+<tr><td><code>separation</code></td><td>The measures of section 8.</td></tr></table>
+</section>
+
+<section id="architecture"><h2>6. Architecture</h2>
+<p>A 3D residual network. The table gives the grid of each stage with the default first convolution.</p>
+<table><tr><th>Stage</th><th>Layers</th><th>Channels</th><th>itrack grid</th><th>etrack grid</th></tr>
+<tr><td>Input</td><td></td><td>1</td><td>56 × 56 × 56</td><td>48 × 48 × 64</td></tr>
+<tr><td>1</td><td>5×5×5 convolution, stride 2; <code>Block</code></td><td>16</td><td>28 × 28 × 28</td><td>24 × 24 × 32</td></tr>
+<tr><td>2</td><td>3×3×3 convolution, stride 2; <code>Block</code></td><td>32</td><td>14 × 14 × 14</td><td>12 × 12 × 16</td></tr>
+<tr><td>3</td><td>3×3×3 convolution, stride 2; <code>Block</code></td><td>64</td><td>7 × 7 × 7</td><td>6 × 6 × 8</td></tr>
+<tr><td>4</td><td>3×3×3 convolution, stride 2; <code>Block</code></td><td>128</td><td>4 × 4 × 4</td><td>3 × 3 × 4</td></tr>
+<tr><td>Average</td><td>mean over the grid</td><td>128</td><td colspan="2">one vector per event</td></tr>
+<tr><td>Output, one track</td><td>linear 128 → 1</td><td></td><td colspan="2">logit of bb0nu</td></tr>
+<tr><td>Output, both tracks</td><td>concatenate; linear 256 → 64; ReLU; linear 64 → 1</td><td></td><td colspan="2">logit of bb0nu</td></tr></table>
+<p>Every convolution is followed by batch normalisation and ReLU, and has no bias.</p>
+<table><tr><th>Input</th><th>Parameters, <code>stem = "stride2"</code></th><th>Parameters, <code>stem = "full"</code></th></tr>
+<tr><td>itrack or etrack</td><td>1,468,913</td><td>1,467,345</td></tr>
+<tr><td>both</td><td>2,954,081</td><td>2,950,945</td></tr></table>
+<h3>Rationale</h3>
+<ol>
+<li><strong>Dense 3D convolutions.</strong> The frame is fixed and small, so the full grid fits in memory and no sparse library is needed.</li>
+<li><strong>Residual blocks.</strong> A residual network with stages that reduce the grid and double the channels is the family used in the NEXT topology studies (<a href="../../../papers/Next/next_pitch_v5.pdf"><code>papers/Next/next_pitch_v5.pdf</code></a>, built there with sparse convolutions), so results are compared between networks of the same kind.</li>
+<li><strong>Three inputs.</strong> <code>itrack</code>, <code>etrack</code> and <code>both</code> measure which readout separates better and what the second adds. With both, each track has its own trunk; the two vectors are concatenated and pass through a layer of 64 units.</li>
+<li><strong>First convolution.</strong> <code>stem = "stride2"</code> (5×5×5) halves the grid at once and is the default: a training step of 64 events takes 0.7 s on the Apple GPU, against 4.3 s for <code>stem = "full"</code> (3×3×3 at lattice resolution, first stage on the input grid). <code>full</code> is kept for GPUs where it is affordable.</li>
+<li><strong>Global average.</strong> The output does not depend on where the track sits in the frame.</li>
+</ol>
+</section>
+
+<section id="training"><h2>7. Training</h2>
+<p><code>scripts/network/train_network.py SIGNAL.h5 BACKGROUND.h5 OUTPUT_DIR --input=itrack|etrack|both</code>. The label is 1 for the events of <code>SIGNAL.h5</code> and 0 for those of <code>BACKGROUND.h5</code>.</p>
+<ol>
+<li>Read the two training files and merge them. The two species must differ.</li>
+<li>Split the events by production batch: the batches of <code>--validation-batches</code> and <code>--test-batches</code> are held out, the others train. With <code>--fraction</code> below 1, keep that part of the training events, chosen at random (learning curve).</li>
+<li>In each epoch, shuffle the training events and take them in groups of <code>--batch-size</code>. For each group draw one <code>Transform</code>, fill the grids and take one optimisation step.</li>
+<li>After each epoch, score the validation events without operations, with the lattice centred, and record the losses and the validation measures.</li>
+<li>Keep the weights of the epoch with the lowest validation loss.</li>
+<li>Score the test events with those weights and save the results.</li>
+</ol>
+<h3>Symmetry operations and placement</h3>
+<ul>
+<li>Exchange of X and Y, and reflection of each axis: the eight symmetries of the square in the transverse plane, and the Z reflection.</li>
+<li>The detector response does not depend on the transverse orientation. Diffusion depends on the drift length of the event, not on the direction of the track.</li>
+<li>Random placement of the lattice inside the padding of the grid, independently on each axis.</li>
+<li>The itrack and the etrack of an event receive the same operation and the same placement draw.</li>
+</ul>
+<h3>Optimisation</h3>
+<ul>
+<li>Loss: binary cross-entropy on the logit.</li>
+<li>Optimiser: AdamW with <code>--weight-decay</code>.</li>
+<li>Learning rate: one cycle over all steps, with maximum <code>--learning-rate</code>.</li>
+</ul>
+<table><tr><th>Option</th><th>Default</th><th>Meaning</th></tr>
+<tr><td><code>--input</code></td><td>required</td><td><code>itrack</code>, <code>etrack</code> or <code>both</code>.</td></tr>
+<tr><td><code>--epochs</code></td><td>20</td><td>Passes over the training events.</td></tr>
+<tr><td><code>--batch-size</code></td><td>64</td><td>Events per optimisation step.</td></tr>
+<tr><td><code>--learning-rate</code></td><td>1e-3</td><td>Maximum learning rate.</td></tr>
+<tr><td><code>--weight-decay</code></td><td>1e-4</td><td>Weight decay of AdamW.</td></tr>
+<tr><td><code>--fraction</code></td><td>1.0</td><td>Part of the training events used.</td></tr>
+<tr><td><code>--validation-batches</code></td><td>8</td><td>Production batch numbers, separated by commas.</td></tr>
+<tr><td><code>--test-batches</code></td><td>9</td><td>Production batch numbers, separated by commas.</td></tr>
+<tr><td><code>--seed</code></td><td>1</td><td>Seed of the weights, the shuffling and the operations.</td></tr>
+<tr><td><code>--stem</code></td><td><code>stride2</code></td><td>First convolution: <code>stride2</code> or <code>full</code>.</td></tr>
+<tr><td><code>--device</code></td><td><code>cuda</code>, else <code>mps</code>, else <code>cpu</code></td><td>Training device.</td></tr></table>
+</section>
+
+<section id="measures"><h2>8. Measures</h2>
+<p><code>separation(score, label)</code> takes the scores and the labels of a set of events.</p>
+<ol>
+<li><strong>Area under the curve.</strong> The probability that a signal event scores higher than a background event, computed from the ranks of the scores; tied scores share their mean rank.</li>
+<li><strong>Threshold.</strong> For each target signal efficiency (90, 80, 70, 60 and 50%), the quantile of the signal scores that keeps that fraction of the signal.</li>
+<li><strong>Background acceptance.</strong> The fraction of background events with score &gt; threshold, with binomial error √(a(1 − a)/N) for acceptance a and N background events.</li>
+</ol>
+<p>The same efficiencies are used for the classical cut on E₂.</p>
+</section>
+
+<section id="outputs"><h2>9. Outputs</h2>
+<p><code>OUTPUT_DIR/model.pt</code>: the weights of the epoch with the lowest validation loss (PyTorch <code>state_dict</code>).</p>
+<p><code>OUTPUT_DIR/training.h5</code>, schema <code>itaca.network_training.v1</code>. An existing file is preserved.</p>
+<table><tr><th>Dataset</th><th>Content</th></tr>
+<tr><td><code>schema</code>, <code>input</code></td><td>Schema name and the input used.</td></tr>
+<tr><td><code>signal_species</code>, <code>background_species</code>, <code>signal_run_label</code>, <code>background_run_label</code></td><td>Species and run of the two training files.</td></tr>
+<tr><td><code>signal_sha256</code>, <code>background_sha256</code></td><td>SHA-256 of the two training files.</td></tr>
+<tr><td><code>settings/epochs</code>, <code>batch_size</code>, <code>learning_rate</code>, <code>weight_decay</code>, <code>fraction</code>, <code>seed</code>, <code>stem</code>, <code>validation_batches</code>, <code>test_batches</code></td><td>The options of the run.</td></tr>
+<tr><td><code>settings/parameters</code></td><td>Number of parameters of the network.</td></tr>
+<tr><td><code>settings/best_epoch</code></td><td>Epoch of the saved weights, from 1.</td></tr>
+<tr><td><code>settings/train_events</code>, <code>validation_events</code>, <code>test_events</code></td><td>Events in each set.</td></tr>
+<tr><td><code>settings/energy_scale_keV/&lt;track&gt;</code></td><td>Energy scale of each input track.</td></tr>
+<tr><td><code>settings/device</code>, <code>torch</code>, <code>time_s</code></td><td>Device, PyTorch version and training time.</td></tr>
+<tr><td><code>history/train_loss</code>, <code>validation_loss</code>, <code>validation_area</code>, <code>validation_background_at_80</code>, <code>epoch_s</code></td><td>One value per epoch: losses, validation area under the curve, validation background acceptance at 80% signal efficiency, and time.</td></tr>
+<tr><td><code>test/event_number</code>, <code>batch</code>, <code>label</code>, <code>score</code></td><td>One entry per test event. The score is the logit.</td></tr>
+<tr><td><code>test/ion_drift_cm</code>, <code>electron_drift_cm</code>, <code>itrack_E1_keV</code>, <code>itrack_E2_keV</code>, <code>etrack_E1_keV</code>, <code>etrack_E2_keV</code>, <code>itrack_length_mm</code>, <code>etrack_length_mm</code></td><td>Drift lengths and classical quantities of the test events.</td></tr>
+<tr><td><code>test/loss</code></td><td>Mean loss of the test events.</td></tr>
+<tr><td><code>test/separation/area</code>, <code>target_signal_efficiency</code>, <code>threshold</code>, <code>signal_efficiency</code>, <code>background_acceptance</code>, <code>background_acceptance_error</code>, <code>signal_events</code>, <code>background_events</code></td><td>The measures of section 8 on the test events.</td></tr></table>
+</section>
+
+<section id="commands"><h2>10. Commands</h2>
+<h3>Environment</h3>
+<p><code>requirements-network.txt</code> pins the Python packages: torch 2.13.0, numpy 2.4.4, h5py 3.16.0 and matplotlib 3.10.9.</p>
+<pre><code>export JULIA_DEPOT_PATH="$PWD/work/julia-depot:$HOME/.julia"
+python -m pip install -r requirements-network.txt   # in the Python environment used for training</code></pre>
+<h3>Build the two training files</h3>
+<pre><code>julia --project=. scripts/network/build_network_events.jl results/readout/&lt;signal_run_label&gt;
+julia --project=. scripts/network/build_network_events.jl results/readout/&lt;background_run_label&gt;</code></pre>
+<h3>Train</h3>
+<pre><code>SIGNAL=results/network/&lt;signal_run_label&gt;/events.h5
+BACKGROUND=results/network/&lt;background_run_label&gt;/events.h5
+work/event-viewer-venv/bin/python scripts/network/train_network.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_itrack --input=itrack
+work/event-viewer-venv/bin/python scripts/network/train_network.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_etrack --input=etrack
+work/event-viewer-venv/bin/python scripts/network/train_network.py $SIGNAL $BACKGROUND results/network/&lt;name&gt;_both --input=both</code></pre>
+<h3>Tests</h3>
+<pre><code>julia --project=. tests/network/test_network_events.jl
+work/event-viewer-venv/bin/python tests/network/test_itaca_network.py</code></pre>
+<table><tr><th>Test</th><th>What we check</th></tr>
+<tr><td>Cells per axis</td><td>55, 42 and 50 cells for pitches of 3, 4 and 3.3 mm in 160 mm.</td></tr>
+<tr><td>Cell assignment</td><td>Hits given out of order; a centre just below the lower face is cell 0; a centre half a pitch above the frame is the last cell; a pitch of 3.3 mm.</td></tr>
+<tr><td>Errors</td><td>A hit off the lattice and a hit outside the grid stop the calculation.</td></tr>
+<tr><td>Shorter last time group</td><td>A slice displaced by 0.4 pitch is assigned with tolerance 0.5 and rejected with the default tolerance.</td></tr>
+<tr><td>Pitches</td><td>3, 3, 3.3 mm and 4, 4, 2.842 mm from a resolved card.</td></tr>
+<tr><td>Dense grid</td><td>Each hit in its cell, centred in the padding, with energy / scale; an event without hits gives an empty grid.</td></tr>
+<tr><td>Symmetry operations</td><td>Exchange and reflections move the hits to the expected cells; every operation keeps the hits and their energies; exchange on a rectangular lattice is an error.</td></tr>
+<tr><td>Network</td><td>The three inputs give one finite output per event, and every parameter receives a gradient.</td></tr>
+<tr><td>Measures</td><td>Two unit Gaussians two units apart give the expected area and background acceptance; equal scores give an area of 0.5.</td></tr></table>
+</section>
+</main><footer>ITACA · Classification network</footer></body></html>
