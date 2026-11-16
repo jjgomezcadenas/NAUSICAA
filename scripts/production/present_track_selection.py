@@ -4,8 +4,8 @@
   python scripts/production/present_track_selection.py OUTPUT_DIR SIGNAL_RUN BACKGROUND_RUN... [--truth=RUN_LABEL:TABLE.txt]
 
 Each RUN is results/readout/<run_label> with the run statistics (events.h5),
-the selection of prepare_track_selection.jl and the components of
-prepare_second_pass.jl. The first run is the signal. --truth gives, for a
+the selection (in the feature tables, or from prepare_track_selection.jl)
+and, optionally, the components of prepare_second_pass.jl. The first run is the signal. --truth gives, for a
 gamma sample, the table of xray_truth_distance.py. The ROI is one FWHM of the
 signal electron-energy peak around Qbb. Writes plots and index.html.
 """
@@ -23,11 +23,19 @@ def load(run):
     run=Path(run);sub=next(p.parent.parent for p in run.glob('*/statistics/events.h5'))
     with h5py.File(sub/'statistics/events.h5') as f:
         e={k:f['events'][k][:] for k in f['events']};species=text(f['species'][()]);label=text(f['run_label'][()]);sigma=float(f['energy_fits/electron_energy_keV/sigma'][()])
-    with h5py.File(sub/'track_selection/events.h5') as f:
-        assert np.array_equal(f['event_number'][:],e['event_number']);s={k:f[k][:] for k in ('segments','deposits','deposit_keV','segments_joined','selected')};settings={k:f['settings'][k][()] for k in f['settings']}
-    with h5py.File(sub/'second_pass/components_lattice.h5') as f:
-        assert np.array_equal(f['event_number'][:],e['event_number']);radii=list(f['radii_mm'][:]);k=radii.index(float(settings['ion_segment_connection_mm']))+1
-        comp={n:f[f'radius_{k}'][n][:] for n in ('offsets','voxels','energy_keV')}
+    defaults=dict(ion_segment_connection_mm=5.5,ion_segment_min_hits=6,ion_deposit_min_keV=10.0,ion_max_segments=3)
+    if 'itrack_selected' in e:       # feature tables with the selection
+        with h5py.File(sub/'statistics/events.h5') as f: tc=tomllib.loads(text(f['track_analysis'][()]))
+        s={'segments':e['itrack_segments'],'deposits':e['itrack_deposits'],'deposit_keV':e['itrack_deposit_keV'],'segments_joined':e['itrack_segments_joined'],'selected':e['itrack_selected']}
+        settings={k:tc.get(k,v) for k,v in defaults.items()};settings['ion_connection_mm']=tc['ion_connection_mm'];settings['ion_hit_cut_keV']=tc['ion_hit_cut_keV']
+    else:
+        with h5py.File(sub/'track_selection/events.h5') as f:
+            assert np.array_equal(f['event_number'][:],e['event_number']);s={k:f[k][:] for k in ('segments','deposits','deposit_keV','segments_joined','selected')};settings={k:f['settings'][k][()] for k in f['settings']}
+    comp=None
+    if (sub/'second_pass/components_lattice.h5').exists():
+        with h5py.File(sub/'second_pass/components_lattice.h5') as f:
+            assert np.array_equal(f['event_number'][:],e['event_number']);radii=list(f['radii_mm'][:]);k=radii.index(float(settings['ion_segment_connection_mm']))+1
+            comp={n:f[f'radius_{k}'][n][:] for n in ('offsets','voxels','energy_keV')}
     return dict(dir=run,events=e,sel=s,settings=settings,comp=comp,species=species,name=LABEL.get(species,species),run_label=run.name,sigma=sigma)
 
 def render(out,runs,truth):
@@ -55,8 +63,9 @@ def render(out,runs,truth):
     gain=f'<table><tr><th>Background</th><th>ROI cut</th><th>One component at 8 mm</th><th>Selection on the lattice</th><th>Ratio of the last two</th></tr>{gain}</table>'
 
     # Components beyond the largest, by hits and energy
-    fig,axes=plt.subplots(1,len(R),figsize=(6.2*len(R),5),layout='constrained',squeeze=False);hb=np.arange(.5,21.5,1);eb=np.logspace(np.log10(5),np.log10(1000),40)
-    for ax,r in zip(axes[0],R):
+    C=[r for r in R if r['comp'] is not None]
+    fig,axes=plt.subplots(1,max(len(C),1),figsize=(6.2*max(len(C),1),5),layout='constrained',squeeze=False);hb=np.arange(.5,21.5,1);eb=np.logspace(np.log10(5),np.log10(1000),40)
+    for ax,r in zip(axes[0],C):
         c=r['comp'];off=c['offsets'];first=np.zeros(len(c['voxels']),bool);first[off[:-1][np.diff(off)>0]]=True;ev=np.repeat(np.arange(len(off)-1),np.diff(off));m=~first&r['roi'][ev]
         h=ax.hist2d(np.clip(c['voxels'][m],1,20),c['energy_keV'][m],bins=[hb,eb],cmin=1,cmap='viridis');fig.colorbar(h[3],ax=ax,label='Components')
         ax.axvline(float(st['ion_segment_min_hits'])-.5,color='k',ls='--',lw=1);ax.plot([.5,float(st['ion_segment_min_hits'])-.5],[float(st['ion_deposit_min_keV'])]*2,color='k',ls=':',lw=1)
@@ -101,7 +110,7 @@ def render(out,runs,truth):
 <p>Runs {', '.join(f"<code>{html.escape(r['run_label'])}</code>" for r in R)}. The selection and its reasons: <a href="{back}notes/html/event_analysis/track_selection.html">track selection</a>.</p>
 <h2>Selection</h2><p>Itrack hits above {float(st['ion_hit_cut_keV']):g} keV are connected at {float(st['ion_segment_connection_mm']):g} mm. A component with at least {int(st['ion_segment_min_hits'])} hits is a segment; a smaller one with at least {float(st['ion_deposit_min_keV']):g} keV is a detached deposit. An event is selected with no detached deposit and one segment, or up to {int(st['ion_max_segments'])} segments that join at {float(st['ion_connection_mm']):g} mm. The ROI is one FWHM ({fwhm:.1f} keV) of the {sig['name']} electron-energy peak around Qbb = {qbb:g} keV.</p>{table}
 <h3>Gain in signal over the square root of background</h3><p>Each number is the signal efficiency of the step divided by the square root of the background efficiency of the same step.</p>{gain}
-<h2>What the components are</h2><img src="plots/components.png" alt="Hits and energy of the components beyond the largest"><img src="plots/deposit_energy.png" alt="Energy of the largest detached deposit">
+<h2>What the components are</h2>{'<img src="plots/components.png" alt="Hits and energy of the components beyond the largest">' if C else ''}<img src="plots/deposit_energy.png" alt="Energy of the largest detached deposit">
 {truth_html}</body></html>'''
     (out/'index.html').write_text(page);print(out/'index.html')
 

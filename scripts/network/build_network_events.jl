@@ -2,7 +2,8 @@
 # Training events of one run for the classification network.
 #   julia --project=. scripts/network/build_network_events.jl results/readout/<run_label> [OUTPUT.h5]
 # For each batch it reads <output_subdir>/features.h5 and hits.h5, keeps the
-# events with one component in the itrack and one in the etrack, and places the
+# events passing the track selection of the itrack (itrack_selected; for
+# feature tables without it, one component in each track), and places the
 # saved hits of each track on the readout lattice inside the fixed frame.
 # Writes results/network/<run_label>/events.h5: for each track the voxel
 # indices and energies of every event (sparse, one hit per cell), and one row
@@ -62,7 +63,7 @@ function build_network_events(run_dir::AbstractString,target::AbstractString="")
     tags=sort(filter(t->occursin(r"^b\d{5}$",t),readdir(batch_root)));isempty(tags)&&error("No batch folders under $batch_root")
     isempty(target)&&(target=joinpath(ROOT,"results/network",basename(run_dir),"events.h5"));target=abspath(target)
     isfile(target)&&error("Preserve existing events: $target");mkpath(dirname(target))
-    started=time();columns=Dict{String,Vector}();accepted=0;pitches=nothing;side=0.0;first_table=nothing;shas=String[]
+    started=time();columns=Dict{String,Vector}();accepted=0;selection=nothing;pitches=nothing;side=0.0;first_table=nothing;shas=String[]
     arms=Dict(a=>(offsets=Int64[0],ix=UInt8[],iy=UInt8[],iz=UInt8[],energy=Float32[]) for a in ("itrack","etrack"));cells=Dict{String,NTuple{3,Int}}();dropped=Dict("itrack"=>0,"etrack"=>0)
     for t in tags
         dir=joinpath(batch_root,t,batch_output_subdir(joinpath(batch_root,t)));feat=read_batch_features(joinpath(dir,"features.h5"));hits=joinpath(dir,"hits.h5")
@@ -70,7 +71,9 @@ function build_network_events(run_dir::AbstractString,target::AbstractString="")
         first_table===nothing ? (first_table=feat) : for k in ("track_analysis","detector","ion_hit_cut_keV","electron_hit_cut_keV","species","run_label","settings")
             feat[k]==first_table[k]||error("Setting $k differs in batch $t")
         end
-        e=feat["events"];keep=findall((e["itrack_components"].==1).&(e["etrack_components"].==1));accepted+=length(e["event_number"]);push!(shas,feat["hit_file_sha256"])
+        e=feat["events"];lattice=haskey(e,"itrack_selected")
+        selection===nothing ? (selection=lattice) : (selection==lattice||error("The feature tables of $t and of the earlier batches differ in the track selection"))
+        keep=lattice ? findall(e["itrack_selected"].==1) : findall((e["itrack_components"].==1).&(e["etrack_components"].==1));accepted+=length(e["event_number"]);push!(shas,feat["hit_file_sha256"])
         h5open(hits,"r") do f
             read(f["events/event_number"])==e["event_number"]||error("Event order differs between features and hits in $t")
             thispitch=lattice_pitches(TOML.parse(read(f["configuration/cards/resolved"],String)))
@@ -95,7 +98,7 @@ function build_network_events(run_dir::AbstractString,target::AbstractString="")
     try
         h5open(tmp,"w") do f
             f["schema"]=NETWORK_EVENTS_SCHEMA;f["species"]=first_table["species"];f["run_label"]=first_table["run_label"];f["batches"]=tags;f["hit_file_sha256"]=shas
-            f["selection"]="one component in the itrack and one in the etrack";f["accepted_events"]=accepted;f["frame_side_mm"]=side
+            f["selection"]=selection ? "track selection of the itrack on the readout lattice (itrack_selected)" : "one component in the itrack and one in the etrack";f["accepted_events"]=accepted;f["frame_side_mm"]=side
             f["track_analysis"]=first_table["track_analysis"];f["detector"]=first_table["detector"]
             f["ion_hit_cut_keV"]=first_table["ion_hit_cut_keV"];f["electron_hit_cut_keV"]=first_table["electron_hit_cut_keV"]
             for (k,v) in columns;f["events/$k"]=v;end

@@ -15,3 +15,9 @@ include("../../scripts/production/prepare_species_comparison.jl")
     rng=Xoshiro(1);c=cut_curve(randn(rng,200_000).+1,randn(rng,200_000));@test isapprox(c.area,0.7602;atol=0.003)
     @test issorted(c.signal_efficiency;rev=true) && issorted(c.background_acceptance;rev=true)
 end
+@testset "ROI and track selection" begin
+    lo,hi=roi_bounds(2457.83,5.0);@test hi-lo≈11.774 && (lo+hi)/2≈2457.83
+    d=Dict("itrack_components"=>[1,1,2],"etrack_components"=>[1,2,1],"itrack_selected"=>Int8[0,1,1])
+    @test track_selected(d,"itrack")==[false,true,true] && track_selected(d,"etrack")==[true,false,true]
+    delete!(d,"itrack_selected");@test track_selected(d,"itrack")==[true,true,false]      # tables without the lattice selection
+end

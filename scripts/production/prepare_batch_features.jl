@@ -9,9 +9,24 @@ include("prepare_hit_presentation.jl")
 
 const FEATURE_SCHEMA="itaca.batch_features.v1"
 
+"""Coordinates shifted so that hits on a lattice of pitch `width` sit at the centres of the cells of that width.
+
+Hits on such a lattice at an arbitrary position can lie on a cell boundary,
+where rounding splits one layer between two cells. When every coordinate is
+within 2% of the pitch of the lattice of the first one, all are shifted by the
+same amount; otherwise (a readout pitch different from the cell width) they
+are returned unchanged.
+"""
+function cell_centred(x::AbstractVector{Float32},width::Float32)
+    isempty(x)&&return x
+    steps=(Float64.(x).-Float64(x[1]))./width;all(s->abs(s-round(s))<0.02,steps)||return x
+    Float32.(Float64.(x).-(mod(Float64(x[1]),Float64(width))-width/2))
+end
+
 """Graph features of one track of one event, from its retained hits.
 
-Hits above the display cut are voxelised and connected as in the event
+Hits above the display cut are voxelised, in cells centred on the readout
+lattice where its pitch equals the cell width, and connected as in the event
 presentation (`[track_analysis]` of the run card). The main track is the
 component with most voxels. Its length is the length of the tree path between
 its two endpoints; its extensions are the ranges of its voxel centres plus one
@@ -25,7 +40,7 @@ function track_features(h::SavedHits,tc::AbstractDict,arm::AbstractString)
     nothing_found=(hits=count(keep),components=0,main_keV=0f0,second_keV=0f0,main_voxels=0,length_mm=NaN32,
         extent_x_mm=NaN32,extent_y_mm=NaN32,extent_z_mm=NaN32,E1_keV=NaN32,E2_keV=NaN32)
     any(keep)||return nothing_found
-    df=EventAnalysis.DataFrame(x=h.x_mm[keep],y=h.y_mm[keep],z=h.z_mm[keep],energy=h.energy_keV[keep]./1000f0)
+    df=EventAnalysis.DataFrame(x=cell_centred(h.x_mm[keep],width),y=cell_centred(h.y_mm[keep],width),z=cell_centred(h.z_mm[keep],width),energy=h.energy_keV[keep]./1000f0)
     tracks=make_tracks(voxelize_event(df,width);method="KDT",max_distance_mm=radius,energy_threshold_kev=0f0)
     isempty(tracks)&&return nothing_found
     energies=sort(Float32[1000sum(t.voxels.energy) for t in tracks];rev=true)

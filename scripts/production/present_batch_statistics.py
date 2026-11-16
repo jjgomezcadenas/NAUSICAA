@@ -134,17 +134,23 @@ def render(run_dir,classification=None,generated=None,comparison=None):
     common=([('Generated',generated)] if generated else [])+[('Energy deposited in the gas inside the Geant4 window',n0),
         (f"Fiducial: track inside the detector, {float(m['settings'].get('el_exclusion_mm',0)):g} mm from the EL, not larger than the frame; frame inside the detector",fid),
         ('Gamma veto: no gamma deposit above the cut outside the frame',t['accepted_events'])]
-    threshold={}
+    threshold={};roi=None
     if comparison:
         with h5py.File(Path(comparison)/'comparison.h5') as c:
+            if 'roi' in c: roi=(float(c['roi/lower_keV'][()]),float(c['roi/upper_keV'][()]))
             for arm in ('itrack','etrack'):
-                w=c[f'E2_cut/{arm}/one_component/working_points'];threshold[arm]=float(w['threshold_keV'][int(np.argmin(np.abs(w['target_signal_efficiency'][:]-0.8)))])
+                w=c[f"E2_cut/{arm}/{'selected' if roi else 'one_component'}/working_points"];threshold[arm]=float(w['threshold_keV'][int(np.argmin(np.abs(w['target_signal_efficiency'][:]-0.8)))])
     def flow(arm):
-        one=e[arm+'_components']==1;steps=common+[(f'One component in the {arm}',int(one.sum()))]
+        # With a comparison that defines the ROI: ROI cut, then the track selection of the track
+        # (the lattice selection for the itrack when the table has it, one component otherwise)
+        keep=np.ones(n,bool);steps=list(common)
+        if roi: keep=(e['electron_energy_keV']>roi[0])&(e['electron_energy_keV']<roi[1]);steps.append((f'ROI cut: electron energy within {roi[0]:.1f}–{roi[1]:.1f} keV',int(keep.sum())))
+        if arm=='itrack' and 'itrack_selected' in e: one=keep&(e['itrack_selected']==1);steps.append(('Track selection (itrack): no detached deposit; one segment, or up to three joined',int(one.sum())))
+        else: one=keep&(e[arm+'_components']==1);steps.append((f'One component in the {arm}',int(one.sum())))
         if arm in threshold: steps.append((f'E₂ > {threshold[arm]:.0f} keV ({arm})',int((one&(e[arm+"_E2_keV"]>threshold[arm])).sum())))
         body=''.join(f'<tr><td>{a}</td><td>{v}</td><td>{"" if j==0 else f"{100*v/steps[j-1][1]:.1f}%"}</td><td>{100*v/steps[0][1]:.2f}%</td></tr>' for j,(a,v) in enumerate(steps))
         return f'<h3>{arm}</h3><table><tr><th>Step</th><th>Events</th><th>Of previous step</th><th>Of first step</th></tr>{body}</table>'
-    flow_note='The first steps use the Monte Carlo truth and are common to both tracks.'+(' The E₂ threshold keeps 80% of the bb0nu events with one component (<a href="'+html.escape(os.path.relpath(Path(comparison)/'index.html',out))+'">comparison of the two samples</a>).' if comparison else '')
+    flow_note='The first steps use the Monte Carlo truth and are common to both tracks.'+(' The ROI is one FWHM of the bb0nu electron-energy peak around Qbb, and the E₂ threshold keeps 80% of the bb0nu events that reach that step (<a href="'+html.escape(os.path.relpath(Path(comparison)/'index.html',out))+'">comparison of the two samples</a>).' if comparison else '')
     cutflow=f'<h2>Selection</h2><p>Events remaining after each step, applied in this order. {flow_note}</p>{flow("itrack")}{flow("etrack")}'
     b=m['batch'];per_batch=''.join(f"<tr><td>{tag}</td><td>{b['input_events'][i]}</td><td>{b['accepted_events'][i]}</td><td>{100*b['accepted_events'][i]/b['input_events'][i]:.1f}%</td></tr>" for i,tag in enumerate(m['batches']))
     fi,fe=m['fits']['ion_energy_keV'],m['fits']['electron_energy_keV']

@@ -53,3 +53,11 @@ end
     many=itrack_selection(hits(line(0f0,6),line(21f0,6),line(42f0,6),line(63f0,6)),tc);@test many.segments==4 && many.segments_joined && !many.selected
     @test !itrack_selection(SavedHits(Float32[0],Float32[0],Float32[0],Float32[2]),tc).selected
 end
+@testset "Cells centred on the lattice" begin
+    # a lattice lying on the cell boundaries, with rounding noise: one layer could fall in two cells
+    x=Float32[2.9999995,6.0000005,9.0,12.000001];c=cell_centred(x,3f0)
+    @test floor.(Int,c./3f0)==[0,1,2,3] && all(abs.(mod.(c,3f0).-1.5f0).<1f-3) && c[2]-c[1]≈3     # consecutive cells
+    @test floor.(Int,x./3f0)==[0,2,3,4]                                 # what the uncentred cells would give
+    z=Float32[0,3.3,6.6,9.9];@test cell_centred(z,3f0)===z             # another pitch: unchanged
+    @test isempty(cell_centred(Float32[],3f0))
+end

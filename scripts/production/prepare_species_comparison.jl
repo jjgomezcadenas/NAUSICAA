@@ -4,8 +4,19 @@
 # The inputs are the statistics files of prepare_batch_statistics.jl. For each
 # track and for a cut E2 > threshold, saves the signal efficiency and the
 # background acceptance against the threshold, the area under that curve and
-# the background acceptance at fixed signal efficiencies.
-using HDF5,SHA,Statistics
+# the background acceptance at fixed signal efficiencies, for three sets of
+# events: all accepted, those with one component in that track, and "selected":
+# inside the ROI and passing the track selection of that track (the lattice
+# selection `itrack_selected` for the itrack, one component for the etrack).
+# The ROI is one FWHM of the signal electron-energy peak around Qbb
+# (config/detector/energy.toml).
+using HDF5,SHA,Statistics,TOML
+
+"""ROI bounds (keV): one FWHM of a Gaussian of the given sigma, centred on Qbb."""
+roi_bounds(qbb_keV::Real,sigma_keV::Real)=(qbb_keV-2.3548sigma_keV/2,qbb_keV+2.3548sigma_keV/2)
+
+"""Events passing the track selection of a track: the lattice selection of the itrack, one component in the etrack."""
+track_selected(d::AbstractDict,arm::AbstractString)=arm=="itrack"&&haskey(d,"itrack_selected") ? d["itrack_selected"].==1 : d["$(arm)_components"].==1
 
 """Efficiencies of the cut `value > threshold` for signal and background values.
 
@@ -34,6 +45,8 @@ function prepare_species_comparison(signal_path,background_path,out_dir)
     read_events(p)=h5open(p,"r") do f;Dict(k=>read(f["events"][k]) for k in keys(f["events"])),read(f["species"]),read(f["run_label"]),read(f["track_analysis"]);end
     s,sname,slabel,scard=read_events(signal_path);b,bname,blabel,bcard=read_events(background_path)
     scard==bcard||error("The two samples use different track settings")
+    qbb=TOML.parsefile(joinpath(@__DIR__,"../../config/detector/energy.toml"))["qbb_keV"];sigma=h5open(f->read(f["energy_fits/electron_energy_keV/sigma"]),signal_path,"r")
+    lower,upper=roi_bounds(qbb,sigma);in_roi(d)=(d["electron_energy_keV"].>lower).&(d["electron_energy_keV"].<upper)
     tmp=target*".tmp"
     try
         h5open(tmp,"w") do f
@@ -41,7 +54,13 @@ function prepare_species_comparison(signal_path,background_path,out_dir)
             f["signal/events"]=length(s["event_number"]);f["background/events"]=length(b["event_number"])
             f["signal/file"]=relpath(signal_path,out_dir);f["background/file"]=relpath(background_path,out_dir)
             f["signal/sha256"]=bytes2hex(open(sha256,signal_path));f["background/sha256"]=bytes2hex(open(sha256,background_path));f["track_analysis"]=scard
-            for arm in ("itrack","etrack"), (selection,keep) in (("all",(d)->trues(length(d["event_number"]))),("one_component",(d)->d["$(arm)_components"].==1))
+            f["roi/lower_keV"]=lower;f["roi/upper_keV"]=upper;f["roi/qbb_keV"]=qbb;f["roi/signal_sigma_keV"]=sigma
+            for (side,d) in (("signal",s),("background",b))
+                f["flow/$side/accepted"]=length(d["event_number"]);f["flow/$side/roi"]=count(in_roi(d))
+                for arm in ("itrack","etrack");f["flow/$side/$(arm)_selected"]=count(in_roi(d).&track_selected(d,arm));end
+            end
+            f["itrack_selection"]=haskey(s,"itrack_selected")&&haskey(b,"itrack_selected") ? "lattice" : "one_component"
+            for arm in ("itrack","etrack"), (selection,keep) in (("all",(d)->trues(length(d["event_number"]))),("one_component",(d)->d["$(arm)_components"].==1),("selected",(d)->in_roi(d).&track_selected(d,arm)))
                 ks=keep(s);kb=keep(b);c=cut_curve(s["$(arm)_E2_keV"][ks],b["$(arm)_E2_keV"][kb]);g="E2_cut/$arm/$selection"
                 # The curve has one point per event; save it thinned to at most 2000 points
                 step=max(1,length(c.thresholds)÷2000);idx=unique(vcat(1:step:length(c.thresholds),length(c.thresholds)))
