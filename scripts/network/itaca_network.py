@@ -19,7 +19,7 @@ class Sample:
             if text(f['schema'][()])!='itaca.network_events.v1': raise ValueError(f'Unexpected schema in {path}')
             self.species=text(f['species'][()]);self.run_label=text(f['run_label'][()]);self.frame_side_mm=float(f['frame_side_mm'][()])
             self.events={k:f['events'][k][:] for k in f['events']}
-            self.arms={a:{k:f[a][k][:] for k in f[a]} for a in ARMS}
+            self.arms={a:{k:f[a][k][()] for k in f[a]} for a in ARMS}
         self.n=len(self.events['event_number'])
 
 def merge(samples):
