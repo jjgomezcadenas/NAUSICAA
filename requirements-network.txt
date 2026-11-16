@@ -1,0 +1,6 @@
+# Python packages used to train the classification network (scripts/network).
+# Versions of the environment that produced the first results (Python 3.13.13, macOS, Apple GPU).
+torch==2.13.0
+numpy==2.4.4
+h5py==3.16.0
+matplotlib==3.10.9
