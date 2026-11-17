@@ -1,5 +1,11 @@
 # Storage archive of 2026-11-17
 
+Status at 13:50 CET: every folder below is archived and verified, and its
+original removed. Mac: 566 files (production_pilot) and 209,587 files
+(elm_matched_production) identical. Hyperion: `/scratch/jjgomez/NAUSICAA-runs/nexus`
+is empty; for `prod_bi214_20M` the only difference was a `SHA256SUMS` list
+present only in the `/data` copy.
+
 Data moved off the working disks to `/data/jjgomez` on the DIPC Hyperion cluster
 (`hyperion.sw.ehu.es`), on the user's instruction of 2026-11-17. Every file is
 compared by SHA-256 on both sides before the original is removed; the checksum
