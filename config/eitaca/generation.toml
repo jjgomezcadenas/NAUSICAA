@@ -6,6 +6,11 @@ step_limit_mm = 1.0                  # maximum step in the gas
 # An event is saved when the energy deposited in the gas lies in this window.
 saved_energy_min_keV = 2300.0
 saved_energy_max_keV = 2470.0
+# Gamma samples (bi214, tl208): every event that can reach the ROI after the
+# energy smearing deposits 2420-2490 keV in the gas; the narrower window saves
+# fewer events per generated gamma.
+gamma_saved_energy_min_keV = 2420.0
+gamma_saved_energy_max_keV = 2490.0
 volume_region = "GAS"                # bb0nu and single electrons: uniform in the gas
 single_electron_energy_keV = 2457.83 # single electrons of the Qbb energy
 # Gamma backgrounds: one gamma of the line, emitted isotropically from a point

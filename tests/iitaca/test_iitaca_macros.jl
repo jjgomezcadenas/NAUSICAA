@@ -18,7 +18,8 @@ include(joinpath(@__DIR__, "../../scripts/iitaca/write_iitaca_macros.jl"))
         for s in SAMPLES
             c = files["ItacaChamber.$s.config.mac"]
             @test occursin("/control/execute macros/iitaca/$variant/ItacaChamber.mac", c)
-            @test occursin("/Actions/DefaultEventAction/min_energy 2300. keV", c) && occursin("/Actions/DefaultEventAction/max_energy 2470. keV", c)
+            lo, hi = s in ("bi214", "tl208") ? ("2420.", "2490.") : ("2300.", "2470.")       # gamma window for the gamma samples
+            @test occursin("/Actions/DefaultEventAction/min_energy $lo keV", c) && occursin("/Actions/DefaultEventAction/max_energy $hi keV", c)
         end
         @test occursin("min_energy 2614.511 keV", files["ItacaChamber.tl208.config.mac"]) && occursin("region INNER_SURFACE", files["ItacaChamber.tl208.config.mac"])
         @test occursin("min_energy 2447.86 keV", files["ItacaChamber.bi214.config.mac"]) && occursin("particle gamma", files["ItacaChamber.bi214.config.mac"])

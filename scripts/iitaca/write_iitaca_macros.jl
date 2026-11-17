@@ -11,7 +11,7 @@ templates ItacaChamber.<sample>.config.mac and ItacaChamber.<sample>.init.mac,
 in which the job script replaces @SEED@, @START_ID@, @OUTPUT@ and @CONFIG@
 (simulation/nexus/slurm/run_iitaca_nexus_batch.sh). Gas, pressure, temperature,
 radius and length come from the resolved detector; step limit, saved energy
-window, energies and regions from its generation card. The macros are
+windows (the gamma window for bi214 and tl208), energies and regions from its generation card. The macros are
 committed; tests/iitaca/test_iitaca_macros.jl requires them to equal what the
 cards give.
 =#
@@ -63,6 +63,11 @@ function generator(sim, sample)
     end
 end
 
+"""Saved energy window of a sample, in keV: the gamma window for bi214 and tl208, the general one otherwise."""
+saved_window(sim, sample) = sample in ("bi214", "tl208") ?
+    (min = sim["generation.gamma_saved_energy_min_keV"], max = sim["generation.gamma_saved_energy_max_keV"]) :
+    (min = sim["generation.saved_energy_min_keV"], max = sim["generation.saved_energy_max_keV"])
+
 """Configuration template of a sample: geometry, generator, saved energy window, seed and output."""
 function config_macro(sim, variant, sample; family = "iitaca")
     lines, _, event_type, description = generator(sim, sample)
@@ -78,8 +83,8 @@ function config_macro(sim, variant, sample; family = "iitaca")
 
 $lines
 
-/Actions/DefaultEventAction/min_energy $(number(sim["generation.saved_energy_min_keV"])) keV
-/Actions/DefaultEventAction/max_energy $(number(sim["generation.saved_energy_max_keV"])) keV
+/Actions/DefaultEventAction/min_energy $(number(saved_window(sim, sample).min)) keV
+/Actions/DefaultEventAction/max_energy $(number(saved_window(sim, sample).max)) keV
 
 /nexus/random_seed @SEED@
 /nexus/persistency/start_id @START_ID@

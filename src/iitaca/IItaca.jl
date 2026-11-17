@@ -214,7 +214,7 @@ Consistency of a resolved detector:
 - the frame of the VH1 card equals `ions.frame_ms` (with `root`);
 - potentials rise from the pads to the IFG;
 - the guide with its gas gap fits in the EL cell;
-- the ROI inside the energy window of the saved Geant4 events;
+- the ROI inside the energy windows of the saved Geant4 events (general and gamma);
 - known resolution scaling and frame placement.
 """
 function check_detector(d::AbstractDict; root = nothing)
@@ -265,6 +265,7 @@ function check_detector(d::AbstractDict; root = nothing)
     gn["step_limit_mm"] > 0 && 0 <= gn["saved_energy_min_keV"] < gn["saved_energy_max_keV"] || throw(ArgumentError("Invalid generation step limit or saved energy window"))
     r = roi_keV(en)
     gn["saved_energy_min_keV"] < r.lower && r.upper < gn["saved_energy_max_keV"] || throw(ArgumentError("The ROI is not inside the saved energy window of the generation"))
+    gn["gamma_saved_energy_min_keV"] < r.lower && r.upper < gn["gamma_saved_energy_max_keV"] || throw(ArgumentError("The ROI is not inside the saved energy window of the gamma samples"))
     all(gn[k] > 0 for k in ("single_electron_energy_keV", "bi214_gamma_keV", "tl208_gamma_keV")) || throw(ArgumentError("Generation energies must be positive"))
     nothing
 end

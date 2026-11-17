@@ -21,8 +21,8 @@
 /Generator/SingleParticle/max_energy 2447.86 keV
 /Generator/SingleParticle/region INNER_SURFACE
 
-/Actions/DefaultEventAction/min_energy 2300. keV
-/Actions/DefaultEventAction/max_energy 2470. keV
+/Actions/DefaultEventAction/min_energy 2420. keV
+/Actions/DefaultEventAction/max_energy 2490. keV
 
 /nexus/random_seed @SEED@
 /nexus/persistency/start_id @START_ID@
