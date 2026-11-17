@@ -170,7 +170,20 @@ function resolve_run(run_path::AbstractString; root::AbstractString = repository
     physical = Set(k for s in SECTIONS for k in keys(set.cards[s]))
     stray = [k for k in keys(run) if k in physical]
     isempty(stray) || throw(ArgumentError("Physical keys $(join(stray, ", ")) in the run card; use [overrides]"))
-    ResolvedRun(String(run_path), run, set, apply_overrides(set, overrides), overrides)
+    r = ResolvedRun(String(run_path), run, set, apply_overrides(set, overrides), overrides)
+    check_vh1_frame(r, root)
+    r
+end
+
+"""The VH1 readout frame is the ion bucket: the frame comes from the VH1 card
+and the bucket from the detector, so a run with a VH1 card must have them equal."""
+function check_vh1_frame(r::ResolvedRun, root::AbstractString)
+    response = get(r.run, "response", Dict{String,Any}())
+    haskey(response, "vh1_card") || return nothing
+    card = TOML.parsefile(joinpath(root, response["vh1_card"]))
+    frame = Float64(card["frame_ms"]); bucket = Float64(r.detector["ions"]["ion_bucket_ms"])
+    frame == bucket || throw(ArgumentError("VH1 frame of $frame ms in $(response["vh1_card"]) differs from the ion bucket of $bucket ms; override ions.ion_bucket_ms or use a card with that frame"))
+    nothing
 end
 
 """Repository root: the parent of the `config/` directory that holds the card."""

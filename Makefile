@@ -436,6 +436,15 @@ test-itaca:
 
 # Event display: main-track box and zoom cube, and the headless viewer check on a presentation folder (PRESENTATION=...)
 PRESENTATION ?= results/readout/bb0nu_itaca_pilot_10x100/vh1_hits/presentation
+# VH1 with 15 ms frames: card tests, then the comparison of the 15 ms pilot with the 20 ms reference on batches 0 and 1
+.PHONY: test-vh1-frame15ms vh1-frame-comparison
+test-vh1-frame15ms:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/vh1/test_vh1_frame15ms.jl
+vh1-frame-comparison:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/production/reduce_vh1_frame_comparison.jl config/runs/bb0nu_itaca_pilot_10x100_ion20_15ms.toml config/runs/bb0nu_itaca_pilot_10x100_ion15.toml 0 1
+	$(VIEWER_PYTHON) scripts/production/present_vh1_frame_comparison.py results/readout/bb0nu_itaca_pilot_10x100_ion20_15ms/vh1_frame_comparison/comparison.h5
+	$(VIEWER_PYTHON) scripts/production/present_vh1_comparison.py
+
 .PHONY: test-track-zoom
 test-track-zoom:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/production/test_track_zoom.jl

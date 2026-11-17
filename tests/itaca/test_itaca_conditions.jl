@@ -152,6 +152,16 @@ end
     bad = tempname() * ".toml"
     write(bad, replace(read(r.run_path, String), "seed = 42" => "seed = 42\npressure_bar = 15.0"))
     @test_throws ArgumentError resolve_run(bad; root = ROOT)
+    # the VH1 frame must equal the ion bucket of the resolved detector
+    pilot15 = joinpath(ROOT, "config/runs/bb0nu_itaca_pilot_10x100_ion15.toml")
+    mismatch = tempname() * ".toml"
+    write(mismatch, replace(read(pilot15, String), "vh1_device_changes_cf20f.toml" => "vh1_device_changes_cf20f_15ms.toml"))
+    @test_throws ArgumentError resolve_run(mismatch; root = ROOT)
+    f15 = resolve_run(joinpath(ROOT, "config/runs/bb0nu_itaca_pilot_10x100_ion20_15ms.toml"); root = ROOT)
+    @test f15.detector["ions"]["ion_bucket_ms"] == 15.0 && f15.detector["drift"]["ion_drift_velocity_cm_s"] == 20.0
+    @test f15.set.cards["ions"]["ion_bucket_ms"] == 20.0 && length(f15.overrides) == 2
+    @test event_settings(f15, p).ion_bucket_ms == 15f0 && event_settings(f15, p).ion_transport.ion_drift_velocity_mm_ms == 0.2f0
+    @test event_settings(f15, p).ion_transport.sigma_t_mm == event_settings(resolve_run(pilot15; root = ROOT), p).ion_transport.sigma_t_mm
     # configuration writing: detector stage is shared by run cards with the same detector response, hits stage is per output
     tmp = mktempdir()
     reldir = write_configuration(r, tmp)

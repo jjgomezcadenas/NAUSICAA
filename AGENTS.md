@@ -22,6 +22,11 @@ in `notes/html/itaca_detector.html`, the scheme in
   out before that date used 16.5 cm/s; their run cards carry it as an override.
   The track selection on that lattice (components at 5.5 mm, detached deposits,
   segments rejoined at 8 mm) is in `notes/html/event_analysis/track_selection.html`.
+  The iItaca variant II_L1000_D500 uses 20.0 cm/s and 15 ms frames (user design
+  input, 2026-11-17), as run-card overrides with the VH1 card
+  `vh1_device_changes_cf20f_15ms.toml`; the resolver requires the VH1 frame to
+  equal the ion bucket. The 15 ms readout matches the 20 ms one on the pilot
+  events (`make vh1-frame-comparison`).
 - Xe2+ means the molecular ion Xe_2^+, with charge +e, not atomic Xe^{2+}.
 - Extend event readout to both carrier populations: a single-electron or
   double-electron ionisation track produces a trail of electrons and positive
