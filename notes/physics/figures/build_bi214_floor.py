@@ -3,8 +3,12 @@
   python notes/physics/figures/build_bi214_floor.py [floor.h5]
 
 Reads results/iitaca/II_L1000_D500_bi214_floor/floor.h5 (written by
-scripts/iitaca/prepare_bi214_floor.jl) and writes, without repeating any
-physical calculation:
+scripts/iitaca/prepare_bi214_floor.jl), and for the 2 mm production
+results/iitaca/II_L1000_D500_pitch_comparison/comparison.h5
+(prepare_iitaca_pitch_comparison.jl) and
+results/iitaca/II_L1000_D500_P2_bi214_truth/summary.h5 (summarize_iitaca_truth.jl),
+and writes, without repeating any physical calculation:
+  notes/physics/figures/bi214_floor_pitch.pdf       Compton acceptance against distance, 3 and 2 mm pads
   notes/physics/figures/bi214_floor_displays.pdf    event displays
   notes/physics/figures/bi214_floor_distance.pdf    acceptance against the distance of the second electron
   notes/physics/figures/bi214_floor_thirds.pdf      single-electron acceptance in thirds of the drift
@@ -20,6 +24,8 @@ import matplotlib.pyplot as plt
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "../../.."))
 SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "results/iitaca/II_L1000_D500_bi214_floor/floor.h5")
+PITCH = os.path.join(ROOT, "results/iitaca/II_L1000_D500_pitch_comparison/comparison.h5")
+TRUTH2 = os.path.join(ROOT, "results/iitaca/II_L1000_D500_P2_bi214_truth/summary.h5")
 FIG = os.path.join(ROOT, "notes/physics/figures")
 GEN = os.path.join(ROOT, "notes/physics/generated")
 BLUE, ORANGE, AQUA, YELLOW, GRAY = "#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#8a8a85"
@@ -251,11 +257,80 @@ for i, w in enumerate("ABC"): put(f"PitchDist{w}Events", num(P["events"][i]))
 put("PitchComptPassed", f"{P['compton_passed']:.0f}"); put("PitchComptNet", pct(P["compton_fraction"], 0))
 put("PitchTotalNet", pct(P["total_fraction"], 2)); put("PitchOthers", num(P["others_passed"]))
 put("PitchIrreducible", f"{P['events'][0] * P['acceptance_3mm'][0]:.0f}")
+put("BiPerRoi", f"{1000 * nb / flow['roi']:.2f}")
+put("PitchPerRoi", f"{1000 * P['total_fraction'] * nn / flow['roi']:.2f}")
+
+# ---- 2 mm production, II_L1000_D500_P2 ---------------------------------------------------------
+# cut flow, E2 cut and network from the pitch comparison; truth classes from the 2 mm truth summary
+Q = h5py.File(PITCH, "r")
+q3, q2 = Q["II_L1000_D500"], Q["II_L1000_D500_P2"]
+i80 = int(np.argmin(np.abs(q2["network/signal_efficiency"][()] - 0.8)))
+def flow_of(g, s): return dict(zip([x.decode() for x in g[f"flow/{s}/step"][()]], g[f"flow/{s}/events"][()]))
+f2 = {s: flow_of(q2, s) for s in ("bb0nu", "bi214")}; f3 = {s: flow_of(q3, s) for s in ("bb0nu", "bi214")}
+assert f3["bi214"]["track"] == flow["track"] and f2["bi214"]["roi"] == flow["roi"]
+put("BbSelFrac", pct(f3["bb0nu"]["track"] / f3["bb0nu"]["roi"])); put("TwoBbSelFrac", pct(f2["bb0nu"]["track"] / f2["bb0nu"]["roi"]))
+put("TwoBiSelected", num(f2["bi214"]["track"])); put("TwoBiTrackFraction", pct(f2["bi214"]["track"] / f2["bi214"]["roi"]))
+nb2, nn2 = q2["network/bi214/accepted"][i80], q2["network/bi214/events"][()]
+tb2, tn2 = q2["network/single_electrons/accepted"][i80], q2["network/single_electrons/events"][()]
+assert nn2 == f2["bi214"]["track"]
+put("TwoBiNet", pct(nb2 / nn2, 2)); put("TwoBiNetErr", pct(np.sqrt(nb2 / nn2 * (1 - nb2 / nn2) / nn2), 2)); put("TwoBiNetPassed", num(nb2))
+put("TwoSeNet", pct(tb2 / tn2, 2)); put("TwoSeNetErr", pct(np.sqrt(tb2 / tn2 * (1 - tb2 / tn2) / tn2), 2))
+put("TwoSeNetPassed", num(tb2)); put("TwoSeNetEvents", num(tn2)); put("TwoBiNetRatio", f"{(nb2 / nn2) / (tb2 / tn2):.1f}")
+put("TwoEtwoThreshold", f"{q2['e2/threshold_keV'][()][i80]:.1f}")
+put("TwoBiEtwo", pct(q2["e2/bi214/acceptance"][()][i80])); put("TwoBiEtwoErr", pct(q2["e2/bi214/error"][()][i80]))
+put("TwoSeEtwo", pct(q2["e2/single_electrons/acceptance"][()][i80])); put("TwoSeEtwoErr", pct(q2["e2/single_electrons/error"][()][i80]))
+put("TwoBiPerRoi", f"{1000 * nb2 / f2['bi214']['roi']:.2f}")
+put("TwoSelGain", f"{flow['track'] / f2['bi214']['track']:.2f}"); put("TwoNetGain", f"{(nb / nn) / (nb2 / nn2):.2f}"); put("TwoGain", f"{nb / nb2:.2f}")
+put("TwoSegJoin", f"{float(q2['track_settings'][()].decode().split('connection_mm = ')[1].split()[0]):.1f}")
+S2 = h5py.File(TRUTH2, "r")
+H2 = {k: S2[f"bi214/by_history/{k}"][()] for k in ("events", "passed", "fraction", "error")}
+assert H2["events"].sum() == nn2 and H2["passed"].sum() == nb2
+put("TwoPhotEvents", num(H2["events"][1])); put("TwoPhotPassed", num(H2["passed"][1])); put("TwoPhotNet", pct(H2["fraction"][1], 2)); put("TwoPhotNetErr", pct(H2["error"][1], 2))
+put("TwoComptEvents", num(H2["events"][2])); put("TwoComptPassed", num(H2["passed"][2])); put("TwoComptNet", pct(H2["fraction"][2])); put("TwoComptNetErr", pct(H2["error"][2]))
+put("TwoComptShareSelected", pct(H2["events"][2] / nn2)); put("TwoComptSharePassed", pct(H2["passed"][2] / nb2, 0))
+D2 = {k: S2[f"bi214/by_second_distance/{k}"][()] for k in ("events", "passed", "fraction", "error", "e2_passed")}
+for i, tag in enumerate("ABC"):
+    put(f"TwoDist{tag}Events", num(D2["events"][i])); put(f"TwoDist{tag}Passed", num(D2["passed"][i]))
+    put(f"TwoDist{tag}Net", pct(D2["fraction"][i])); put(f"TwoDist{tag}NetErr", pct(D2["error"][i]))
+    put(f"TwoDist{tag}Etwo", pct(D2["e2_passed"][i] / D2["events"][i], 0))
+cls2, sd2, ps2 = S2["bi214/class"][()], S2["bi214/second_distance_mm"][()], S2["bi214/passed"][()]
+comp2 = cls2 == 3
+# Compton classes in units of the pitch: edges 4/3 and 8/3 of the pitch (4 and 8 mm at 3 mm)
+def by_pitch(d, p, c):
+    u = d / p; out = []
+    for lo, hi in ((0, 4 / 3), (4 / 3, 8 / 3), (8 / 3, np.inf)):
+        m = (u >= lo) & (u < hi); k, n = int(c[m].sum()), int(m.sum()); out.append((n, k, k / n, np.sqrt(k / n * (1 - k / n) / n)))
+    return out
+U3, U2 = by_pitch(sd[comp], 3.0, ps[comp] == 1), by_pitch(sd2[comp2], 2.0, ps2[comp2] == 1)
+for i, tag in enumerate("ABC"):
+    n, k, a, e = U2[i]
+    put(f"TwoPitch{tag}Events", num(n)); put(f"TwoPitch{tag}Passed", num(k)); put(f"TwoPitch{tag}Net", pct(a)); put(f"TwoPitch{tag}NetErr", pct(e))
+
+fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.9), gridspec_kw={"wspace": 0.3})
+pos = np.array([1.0, 2.0, 3.0])
+for k, (lab_x, rows3, rows2) in enumerate(((["< 4 mm", "4–8 mm", "> 8 mm"], list(zip(D["events"], D["passed"], D["fraction"], D["error"])),
+                                            list(zip(D2["events"], D2["passed"], D2["fraction"], D2["error"]))),
+                                           (["< 4/3", "4/3–8/3", "> 8/3"], U3, U2))):
+    for rows, col, mk, dx, lab, se in ((rows3, BLUE, "o", -0.08, "3 mm pads", tb / tn), (rows2, ORANGE, "s", 0.08, "2 mm pads", tb2 / tn2)):
+        n_, k_, a_, e_ = (np.array(v, dtype=float) for v in zip(*rows))
+        ax[k].errorbar(pos + dx, 100 * a_, yerr=100 * e_, fmt=mk, color=col, ms=6, capsize=3, label=lab)
+        ax[k].axhline(100 * se, color=col, lw=1, ls="--")
+        for x, kk, nn_ in zip(pos + dx, k_, n_):
+            ax[k].annotate(f"{kk:.0f}/{nn_:.0f}", (x, 100 * kk / nn_), textcoords="offset points", xytext=(7 if dx > 0 else -7, 6), ha="left" if dx > 0 else "right", fontsize=6.5)
+    ax[k].set_xticks(pos, lab_x); ax[k].set_xlim(0.5, 3.5); ax[k].set_ylim(0, 55)
+ax[0].set_ylabel("network acceptance at 80 % signal (%)")
+ax[0].set_xlabel("second electron: distance to main track (mm)")
+ax[1].set_xlabel("second electron: distance / pad pitch")
+ax[0].set_title("selected $^{214}$Bi, Compton class; dashed: single e$^-$", fontsize=8.5)
+ax[1].set_title("same events, distance over the pad pitch", fontsize=8.5)
+ax[0].legend(fontsize=7, frameon=False, loc="upper right")
+fig.savefig(os.path.join(FIG, "bi214_floor_pitch.pdf")); plt.close(fig)
 
 # ---- macros ------------------------------------------------------------------------------------
-sha = hashlib.sha256(open(SRC, "rb").read()).hexdigest()
 with open(os.path.join(GEN, "bi214_floor_values.tex"), "w") as out:
-    out.write(f"% Generated by notes/physics/figures/build_bi214_floor.py from {os.path.relpath(SRC, ROOT)}\n% sha256 {sha}\n")
+    out.write("% Generated by notes/physics/figures/build_bi214_floor.py from\n")
+    for p in (SRC, PITCH, TRUTH2):
+        out.write(f"%   {os.path.relpath(p, ROOT)}  sha256 {hashlib.sha256(open(p, 'rb').read()).hexdigest()}\n")
     for k, v in macros.items():
         out.write(f"\\newcommand{{\\{k}}}{{{v}}}\n")
 print("wrote", len(macros), "macros")

@@ -504,7 +504,7 @@ obtained from the full chain.
 The irreducible part is the Compton events whose second electron starts
 within one or two cells of the main track; the distance classes of
 Table~\ref{tab:distance} are in units of the 3~mm pitch. A run with 2~mm pads,
-II\_L1000\_D500\_P2, is being prepared.
+II\_L1000\_D500\_P2, tests it.
 
 \paragraph{Prediction.} If the network acceptance of a Compton event depends
 on the distance of its second electron in units of the pitch, the classes
@@ -521,16 +521,79 @@ Compton events at the track selection, and the ion spread at full drift
 becomes half the 2~mm pitch.
 
 \paragraph{Comparison with II\_L1000\_D500\_P2.}
-\todo{cut flow, \Etwo\ and network acceptance at 2~mm; truth classes and the
-distance table of the 2~mm production; comparison with the prediction above.}
+The 2~mm run reads the same Geant4 events, with the same seeds and ion drift,
+on 2~mm pads with 10~ms frames (2~mm along the drift). Hits are kept above
+3~keV, and the track selection uses a hit cut of 3~keV, since at 5~keV the
+smaller cells break the track. Its radii are scaled to the lattice: components
+at 3.7~mm, segments of at least 9 hits, joined at \TwoSegJoin~mm; the
+detached-deposit threshold (10~keV) and the end-point spheres (7~mm) are
+unchanged. A network of the same architecture is trained on the 2~mm itracks
+of \bbonu and single electrons, and the truth study is repeated on the
+selected \BI events (\code{results/iitaca/II_L1000_D500_pitch_comparison/}).
+Table~\ref{tab:pitch} compares the two pitches.
+
+\begin{table}[htbp]
+\centering
+\caption{\BI and single electrons on 3~mm and 2~mm pads, same Geant4 events and
+\BiROI\ \BI events in the ROI. Acceptances at 80\,\% signal; the network
+acceptance of single electrons is that of the test sample of each training.}
+\label{tab:pitch}
+\begin{tabular}{lrr}
+\toprule
+ & 3~mm & 2~mm \\
+\midrule
+\bbonu: track selection (\% of the ROI) & \BbSelFrac & \TwoBbSelFrac \\
+\BI: track selection (events, \% of the ROI) & \BiSelected\ (\BiTrackFraction) & \TwoBiSelected\ (\TwoBiTrackFraction) \\
+\Etwo threshold (keV) & \EtwoThreshold & \TwoEtwoThreshold \\
+\Etwo cut: \BI, single electrons (\%) & \BiEtwo, \SeEtwo & \TwoBiEtwo, \TwoSeEtwo \\
+Network: single electrons (\%) & \SeNet$\pm$\SeNetErr & \TwoSeNet$\pm$\TwoSeNetErr \\
+Network: \BI (\%) & \BiNet$\pm$\BiNetErr\ (\BiNetPassed) & \TwoBiNet$\pm$\TwoBiNetErr\ (\TwoBiNetPassed) \\
+\quad photoelectric absorption only & \PhotNet\ (\PhotPassed/\PhotEvents) & \TwoPhotNet\ (\TwoPhotPassed/\TwoPhotEvents) \\
+\quad Compton, then absorption & \ComptNet\ (\ComptPassed/\ComptEvents) & \TwoComptNet\ (\TwoComptPassed/\TwoComptEvents) \\
+\quad\quad second electron $<4$~mm & \DistANet\ (\DistAPassed/\DistAEvents) & \TwoDistANet\ (\TwoDistAPassed/\TwoDistAEvents) \\
+\quad\quad 4--8~mm & \DistBNet\ (\DistBPassed/\DistBEvents) & \TwoDistBNet\ (\TwoDistBPassed/\TwoDistBEvents) \\
+\quad\quad $>8$~mm & \DistCNet\ (\DistCPassed/\DistCEvents) & \TwoDistCNet\ (\TwoDistCPassed/\TwoDistCEvents) \\
+\BI passing the network, per 1000 ROI events & \BiPerRoi & \TwoBiPerRoi \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The track selection keeps fewer \BI events at 2~mm, \TwoBiSelected\ against
+\BiSelected, and the loss is in the Compton class: \TwoComptEvents\ events
+against \ComptEvents. Segments joined at \TwoSegJoin~mm instead of 8~mm leave
+apart the second electrons that start away from the main track: the class
+beyond 8~mm falls from \DistCEvents\ to \TwoDistCEvents\ events and the 4--8~mm
+class from \DistBEvents\ to \TwoDistBEvents, while the class below 4~mm falls
+only from \DistAEvents\ to \TwoDistAEvents. The Compton events that remain are
+the harder ones and pass the network at \TwoComptNet\,\%, against \ComptNet\,\%.
+Below 4~mm the acceptance is \TwoDistANet$\pm$\TwoDistANetErr\,\%, against
+\DistANet$\pm$\DistANetErr\,\% at 3~mm: when the second electron touches the
+main track, the finer lattice does not separate it. These \TwoDistAPassed\ of
+the \TwoBiNetPassed\ passing events are the floor. Photoelectric events
+pass at \TwoPhotNet\,\%, against \TwoSeNet\,\% for single electrons
+(\PhotNet\ and \SeNet\,\% at 3~mm).
+
+In units of the pitch (Figure~\ref{fig:pitch}, right) the acceptance below
+$4/3$ of the pitch is the same at both pitches, \TwoPitchANet$\pm$\TwoPitchANetErr\,\%
+at 2~mm (\TwoPitchAPassed\ of \TwoPitchAEvents, below \PitchEdgeOne~mm), as the
+prediction assumed. Beyond, the 2~mm acceptance is higher,
+\TwoPitchBNet\ and \TwoPitchCNet\,\% against \DistBNet\ and \DistCNet\,\%,
+because the track selection has already removed most of the separated events.
+The prediction gave \PitchComptPassed\ passing Compton events and
+\PitchIrreducible\ below \PitchEdgeOne~mm; the run gives \TwoComptPassed\ and
+\TwoPitchAPassed. Per thousand ROI events, \TwoBiPerRoi\ \BI events pass the
+track selection and the network at 2~mm, against \BiPerRoi\ at 3~mm and
+\PitchPerRoi\ predicted. The reduction, a factor \TwoGain, comes in equal parts
+from the track selection (\TwoSelGain) and from the network (\TwoNetGain).
 
 \begin{figure}[htbp]
 \centering
-\fbox{\parbox[c][4.5cm][c]{0.8\textwidth}{\centering
-\todo{figure: network acceptance of the Compton class against the distance
-of the second electron, in mm and in units of the pitch, for 3~mm and 2~mm
-pads}}}
-\caption{Placeholder for the comparison of the 3~mm and 2~mm productions.}
+\includegraphics[width=\textwidth]{bi214_floor_pitch}
+\caption{Network acceptance at 80\,\% signal of the selected \BI Compton
+events on 3~mm and 2~mm pads, against the smallest distance of the second
+electron to the main track. Left: in mm, the classes of
+Table~\ref{tab:distance}; right: in units of the pad pitch. Labels: passing
+over selected events; dashed lines: single electrons.}
 \label{fig:pitch}
 \end{figure}
 
@@ -550,6 +613,9 @@ pads}}}
   the track selection; the background it gives is an underestimate.
 \item With 2~mm pads, the scaling estimate gives \PitchTotalNet\,\%, with about
   \PitchIrreducible\ events from second electrons within \PitchEdgeOne~mm.
+  The 2~mm run gives \TwoBiNet\,\% of a smaller selected sample,
+  \TwoBiPerRoi\ instead of \BiPerRoi\ passing events per thousand in the ROI;
+  second electrons below 4~mm still pass at \TwoDistANet\,\%.
 \end{enumerate}
 
 \appendix
