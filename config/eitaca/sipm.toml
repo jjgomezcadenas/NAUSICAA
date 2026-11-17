@@ -1,0 +1,12 @@
+# SiPM plane: one SiPM per EL hole, on the hole pitch of el.toml, directly
+# against the EL anode, with TPB on its window. The response model (statistical
+# recovery, substeps, initial state) and the ASIC are the cards of the hybrid
+# production, unchanged; check_detector requires their PDE, bucket and
+# illuminated microcells to agree with the values here.
+schema = "nausicaa.eitaca_sipm.v1"
+device = "Hamamatsu S14160-3015PS"
+side_mm = 3.0
+pde = 0.32                          # peak PDE at 460 nm, used for the TPB spectrum
+electron_bucket_us = 0.25
+response_card = "config/specs/response/sipm/elm_pitch4mm_3015ps_tau12p5ns_recovered.toml"
+asic_card = "config/specs/response/sipm_electronics/readout_v1.toml"

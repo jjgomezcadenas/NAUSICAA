@@ -166,3 +166,8 @@ results/ltspice/noise_audit/decks/*.db
 
 # iItaca hit files and feature tables of the batches; the statistics of each run are tracked.
 results/iitaca/*/batches/
+
+# eITACA per-batch outputs; the pilot summary and pages are tracked.
+results/eitaca/*/*/batches/
+# Monte Carlo truth tables of the truth studies (regenerable); summaries and pages are tracked.
+results/iitaca/*_truth/truth_*.h5

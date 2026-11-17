@@ -1,0 +1,26 @@
+# Electroluminescent plane: holes, light production and optics. The EL depth is
+# in geometry.toml, the gate and anode potentials in voltages.toml, the SiPMs
+# in sipm.toml. One SiPM per hole.
+schema = "nausicaa.eitaca_el.v1"
+hole_pitch_mm = 4.0
+hole_diameter_mm = 2.5
+# Yield: photons per electron = gain x (E/p - threshold) x P[bar] x d[cm].
+# Threshold: papers/xehe_paper.pdf, Section 5.3, 15.8 % He, 1.083 +- 0.007
+# kV/cm/bar, from the linear range above 1.3 kV/cm/bar. Slope: the paper gives
+# the slope of the mixtures equal to pure xenon within 10 %; 134 follows from
+# the measured ratio to pure xenon at 1.6 kV/cm/bar, 0.64 +- 0.01, with pure
+# xenon at Y/p = 140 E/p - 116 (Monteiro et al., JINST 2 (2007) P05001, the
+# normalisation of the paper, Section 4.4): 0.64 x 108 / (1.6 - 1.083) = 134.
+yield_gain_photons_per_electron_kV = 134.0
+yield_threshold_kV_cm_bar = 1.083
+variance_ratio_J = 0.030            # as config/detector/el.toml: user reading of Oliveira et al., Fig. 6 (2026-11-04), E/P = 2
+# Optics. "direct_tpb_on_sipm": no light guides; TPB on the SiPM window, the
+# SiPM against the hole exit (src/eitaca/EItaca.jl, direct_light_acceptance).
+# "light_guides": the ITACA module of docs/elm.tex (elm_light_acceptance), for
+# reference runs; it reads the two refractive indices below.
+optics = "direct_tpb_on_sipm"
+photon_band = "blue_tpb"
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5        # read only with optics = "light_guides"
+gap_refractive_index = 1.0          # read only with optics = "light_guides"

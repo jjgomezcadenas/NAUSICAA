@@ -1,0 +1,5 @@
+# Ionisation constants, as config/detector/energy.toml.
+schema = "nausicaa.eitaca_energy.v1"
+W_eV = 21.9
+fano_factor = 0.15
+qbb_keV = 2457.83                   # Xe-136, Redshaw et al., PRL 98 (2007) 053003

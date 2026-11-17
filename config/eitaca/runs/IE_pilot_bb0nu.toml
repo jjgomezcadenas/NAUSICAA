@@ -1,0 +1,22 @@
+# eITACA pilot on the Mac: bb0nu, the Xe/He pilot of 10 batches of 100 generated events
+# (pilot_10x100, as config/runs/bb0nu_itaca_pilot_10x100.toml). The NEXUS files were generated in
+# Xe-15 % He at 16 bar in a chamber of 1.8 m radius and 1.3 m length: the overrides
+# below set that radius and length so that the fast trigger and the drift lengths match
+# the files. Light per SiPM does not depend on them.
+# Batches: julia --project=. scripts/eitaca/run_eitaca_batch.jl <this card> --batch=N, with NAUSICAA_DATA set.
+schema = "nausicaa.eitaca_run.v1"
+detector = "config/eitaca/eitaca.toml"
+variant = "config/eitaca/variants/IE_L1500_D400.toml"
+run_label = "pilot/IE_pilot_bb0nu"
+sample = "bb0nu"
+hits = "$NAUSICAA_DATA/pilot_10x100/bb0nu/bb0nu_{batch}_hitdf.h5"
+particles = "$NAUSICAA_DATA/pilot_10x100/bb0nu/bb0nu_{batch}.next.h5"
+generated_events_per_batch = 100
+max_events = 0                    # 0: all events of the batch
+seed = 42                         # same streams as the hybrid pilot: same primary pairs and diffusion draws
+electronics_seed = 20261113
+max_vector_bytes = 268435456
+
+[overrides]
+"geometry.fiducial_diameter_cm" = 360.0
+"geometry.fiducial_length_cm" = 130.0

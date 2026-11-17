@@ -1,0 +1,5 @@
+# Variant IE_L1500_D400: 1.5 m drift at 400 V/cm. It is the default set.
+schema = "nausicaa.eitaca_variant.v1"
+name = "IE_L1500_D400"
+
+[overrides]

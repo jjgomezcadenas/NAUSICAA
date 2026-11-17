@@ -1,0 +1,9 @@
+# Event frame and fast trigger, emulated from the Monte Carlo
+# (notes/html/event_analysis/mc_fast_trigger.html), as in the hybrid production.
+schema = "nausicaa.eitaca_trigger.v1"
+frame_side_mm = 160.0               # fixed cube around the main-track box; larger tracks are rejected
+frame_placement = "inside_detector" # cube centred on the track, moved inward at the detector boundary
+simulation_margin_mm = 20.0         # detector response on the track and contained deposits plus this margin, inside the cube
+gamma_energy_cut_keV = 3.0          # a gamma deposit above this outside the frame vetoes the event
+el_exclusion_mm = 50.0              # the main track stays this far from the EL entry
+frame_track = "primary_and_delta_electrons"

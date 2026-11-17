@@ -1,0 +1,8 @@
+# Independent potentials. EL anode and SiPMs at ground; the high voltage is
+# negative, on the gate and the cathode. The simulation reads the gate and the
+# anode (EL field); the cathode potential follows from the gate, the drift
+# field of drift.toml and the drift length: -15 kV - 400 V/cm x 150 cm = -75 kV.
+schema = "nausicaa.eitaca_voltages.v1"
+gate_V = -15000.0                   # EL entry, end of the drift
+el_anode_V = 0.0                    # EL exit
+sipm_plane_V = 0.0                  # directly against the anode

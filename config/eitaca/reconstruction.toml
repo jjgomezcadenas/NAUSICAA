@@ -1,0 +1,6 @@
+# Electron reconstruction, as the [electrons] and [hit_output] settings of the
+# hybrid production cards (config/runs/bb0nu_itaca_pilot_10x100.toml).
+schema = "nausicaa.eitaca_reconstruction.v1"
+subtract_mean_dark = true           # subtract the stationary mean dark charge before the recovery inverse
+rebin_factor = 20                   # 20 x 250 ns buckets per saved bucket
+electron_hit_cut_keV = 1.0          # hits above this are written

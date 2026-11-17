@@ -1,0 +1,15 @@
+# Drift region: field and electron transport.
+schema = "nausicaa.eitaca_drift.v1"
+field_V_cm = 400.0                  # 25 V/cm/bar at 16 bar
+electron_lifetime_ms = 100.0
+# NEXT-DEMO++, papers/xehe_paper.pdf, Table 1, 15.8 % He, E/p = 25 V/cm/bar
+# (P = 8.84 bar in the measurement). Reduced coefficients D* in
+# um sqrt(bar)/sqrt(cm); the simulation uses D = D* / sqrt(P) at the card
+# pressure, for the same E/p. Uncertainties are statistical and systematic combined.
+transport_reduced_field_V_cm_bar = 25.0
+electron_drift_velocity_mm_us = 0.49            # from the Kr uniformity map (marked with a dagger in Table 1)
+electron_drift_velocity_error_mm_us = 0.05
+electron_reduced_transverse_diffusion_um_sqrtbar_sqrtcm = 1094.0
+electron_reduced_transverse_diffusion_error_um_sqrtbar_sqrtcm = 157.0
+electron_reduced_longitudinal_diffusion_um_sqrtbar_sqrtcm = 1489.0
+electron_reduced_longitudinal_diffusion_error_um_sqrtbar_sqrtcm = 81.0

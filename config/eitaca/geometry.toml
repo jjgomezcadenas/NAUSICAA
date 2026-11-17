@@ -1,0 +1,10 @@
+# Geometry: fiducial cylinder and the EL gap. The potentials are in voltages.toml.
+# z along the drift, z = 0 at the cathode, z = fiducial length at the EL entry
+# (gate). An event at z has electron drift length (fiducial length - z). The
+# drift ends at the gate: there is no ion plane and no transfer gap.
+# x and y from the detector axis.
+schema = "nausicaa.eitaca_geometry.v1"
+fiducial_diameter_cm = 400.0
+fiducial_length_cm = 150.0          # drift length, cathode to gate
+z_origin = "cathode"
+el_depth_mm = 5.0                   # EL gap, gate to anode; the SiPMs sit on the anode
