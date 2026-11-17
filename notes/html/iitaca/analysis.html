@@ -11,6 +11,7 @@
 
 <section id="features"><h2>2. Feature table of a batch</h2>
 <p><code>prepare_iitaca_features.jl</code> reads <code>hits.h5</code> of a batch and writes <code>features.h5</code> beside it (schema <code>iitaca.features.v1</code>), one row per event accepted by the trigger. The settings are those of the resolved configuration stored in the hit file.</p>
+<p>With <code>--tracks-variant=&lt;variant card&gt;</code> the selection and the features use the tracks card of that variant, which may differ from the variant of the hit file only in <code>tracks.*</code> (same saved hit cut). The table is written to the batch folder of the run of that variant (the variant name replaced in the run label), with a link <code>hits.h5</code> to the shared hit file. The readout is run once for both track settings.</p>
 <ol>
 <li>Copy the event columns of the hit file (<a href="simulation.html#file">hit file</a>) and the trigger counts.</li>
 <li><code>in_roi</code>: the ROI cut on <code>energy_keV</code>.</li>
@@ -50,10 +51,11 @@ write_comparison(out_dir, signal_dir, background_dirs) -> String</pre></section>
 <section id="tests"><h2>6. Tests</h2>
 <ul>
 <li><code>tests/track_selection/test_track_selection.jl</code>: each rule of the selection on a synthetic 3 mm lattice; the saved ITACA feature tables reproduced exactly.</li>
-<li><code>tests/iitaca/test_iitaca_analysis.jl</code>: the cut on E₂ on known samples; on the pilot read with the ITACA ion settings, the selection and the track features equal the itrack columns of the ITACA feature tables, event by event; the cut flow is consistent with the tables; a sample compared with itself gives no separation.</li>
+<li><code>tests/iitaca/test_iitaca_analysis.jl</code>: the cut on E₂ on known samples; on the pilot read with the ITACA ion settings, the selection and the track features equal the itrack columns of the ITACA feature tables, event by event; the cut flow is consistent with the tables; a sample compared with itself gives no separation; the feature table of a tracks variant equals the selection recomputed with its settings, and a variant that changes the readout or the saved hits is refused.</li>
 </ul></section>
 
 <section id="commands"><h2>7. Commands</h2>
 <pre>make iitaca-statistics RUN_DIR=results/iitaca/&lt;run_label&gt;
-make iitaca-comparison OUT=results/iitaca/&lt;name&gt; SIGNAL=results/iitaca/&lt;signal run&gt; BACKGROUNDS="results/iitaca/&lt;background run&gt; ..."</pre></section>
+make iitaca-comparison OUT=results/iitaca/&lt;name&gt; SIGNAL=results/iitaca/&lt;signal run&gt; BACKGROUNDS="results/iitaca/&lt;background run&gt; ..."
+make iitaca-pitch-comparison                     # II_L1000_D500 on 3 mm and on 2 mm pads</pre></section>
 </main><footer>iItaca · Analysis</footer></body></html>

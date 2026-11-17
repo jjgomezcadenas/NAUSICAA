@@ -463,6 +463,14 @@ iitaca-comparison:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/prepare_iitaca_comparison.jl $(OUT) $(SIGNAL) $(BACKGROUNDS)
 	$(VIEWER_PYTHON) scripts/iitaca/present_iitaca_comparison.py $(OUT)
 
+# The same events on 3 mm and on 2 mm pads (two track settings): reduction and page
+.PHONY: iitaca-pitch-comparison iitaca-pitch-comparison-present
+iitaca-pitch-comparison:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/prepare_iitaca_pitch_comparison.jl results/iitaca/II_L1000_D500_pitch_comparison II_L1000_D500 II_L1000_D500_P2 II_L1000_D500_P2_R3
+	$(MAKE) iitaca-pitch-comparison-present
+iitaca-pitch-comparison-present:
+	$(VIEWER_PYTHON) scripts/iitaca/present_iitaca_pitch_comparison.py results/iitaca/II_L1000_D500_pitch_comparison
+
 .PHONY: itaca-detector itaca-detector-present test-itaca
 # ITACA operating conditions: derived values (Julia, HDF5) and the detector page (Python).
 itaca-detector:
