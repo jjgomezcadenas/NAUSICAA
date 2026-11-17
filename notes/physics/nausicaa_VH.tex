@@ -58,6 +58,8 @@ describe its simulation.
 %  \SI{20}{fF} at \SI{3}{mm} pitch and \SI{30}{fF} at \SI{4}{mm}
 %  (Section~\ref{sec:vh1range}).
 \item $A$: open-loop voltage gain of the amplifier.
+\item $g_m$: transconductance of the input transistor, the change of its
+  drain current per unit change of its gate voltage, in \si{A/V}.
 % dimensionless and
   %negative in sign convention, written $-A$ with $A>0$.
 \item $e_n^2(f)$: one-sided spectral density of the voltage noise referred to
@@ -250,7 +252,7 @@ The feedback resistor $R_f$ of Fig.~\ref{fig:csa} lets the collected charge
 leak away with the time constant $\tau_f=R_f\Cf$, so that the output returns
 to its resting value and the amplifier never saturates. The baseline NAUSICAA
 amplifier used a transistor for this purpose, with a measured
-small-signal decay time of \SI{19.5}{s}. The VH1 design, now the standard,
+small-signal decay time of \SI{19.5}{s}. The VH1 design, instead, 
 removes the resistor and resets the amplifier with a switch, using the
 two-capacitor architecture of Section~\ref{sec:swap}. 
 %The choice
@@ -262,98 +264,69 @@ two-capacitor architecture of Section~\ref{sec:swap}.
 %
 \begin{figure}[htbp]\centering
 \includegraphics[width=.5\linewidth]{nausicaa_vh_noise.pdf}
-\caption{Noise model. The input transistor contributes two voltage sources
-referred to its gate, thermal $e_t$ and flicker $e_f$; they are independent,
-so their mean squares add, $e_n^2=e_t^2+e_f^2$. They sit between the gate of M1,
-where the pad and the feedback branch meet, and the rest of the amplifier,
-which has no noise left once the sources are placed in front of it and whose
-input $v_i$ is the virtual ground. A feedback resistor, if present, injects its
+\caption{Noise model. The input transistor contributes two independent voltage sources
+referred to its gate, thermal $e_t$ and flicker $e_f$. A feedback resistor, if present, injects its
 current noise $i_R$ directly into the gate node, in parallel with $\Cf$.}
 \label{fig:noise}
 \end{figure}
-The amplifier $A$ of Fig.~\ref{fig:csa} is a transistor circuit. 
-Fig.~\ref{fig:cascode} shows a possible implementation (a cascode). The noise of
+
+Fig.~\ref{fig:cascode} shows a possible implementation (a cascode) of the CSA circuit (Fig.~\ref{fig:csa}). 
+The noise of
 the circuit is dominated by the input transistor (M1 in the figure)\footnote{The
 pad is directly connected to M1 gate and the noise of all the other transistors
 referred to that gate is suppressed by their
 gain.}.
 
-The noise of M1 is represented by voltage sources in series with its gate,
-chosen to produce the same drain-current fluctuation as the transistor
-itself (the companion note on electronic noise~\cite{GomezCadenas2026noise}
-constructs them for the thermal part).
-What remains behind the sources is the amplifier with its noise removed,
-whose input is still the virtual ground. The gate of M1 is thus split in
-two: the physical gate node, where the pad and the feedback branch connect,
-and the input of the noiseless amplifier, with the noise sources between
-them.
+The noise of M1 is referred to its gate. A noisy transistor is equivalent
+to a noiseless one with a voltage source in series with its gate, whose
+spectrum is chosen so that, multiplied by the transconductance $g_m$, it
+reproduces the fluctuations of the drain current. With this replacement
+the amplifier itself is noiseless, and all of its noise is concentrated in
+sources placed between the gate node, where the pad and the feedback
+branch connect, and the amplifier input, which stays at the virtual ground.
 
 Fig.~\ref{fig:noise} shows the resulting model with the relevant sources
-of noise. The companion note~\cite{GomezCadenas2026noise} derives their
-spectral densities from the thermal motion of charge.
+of noise. 
+%The companion note~\cite{GomezCadenas2026noise} derives their
+%spectral densities from the thermal motion of charge.
 %
 \begin{itemize}
 \item Thermal noise of the input transistor, $e_t^2 = 4kT_{\rm K}\gamma/g_m$
 with $\gamma$ between $2/3$ and about $1$, and $g_m$ the transconductance.
 \item Flicker noise of the same transistor, $e_f^2=A_f/f$, from charge
   trapping at the oxide interface. It dominates below the corner frequency
-  $f_c$, which for small transistors lies between \si{kHz} and \si{MHz}.
+  $f_c=A_f/e_t^2$, where the two are equal, which for small transistors lies
+  between \si{kHz} and \si{MHz}.
 \item Thermal noise of the feedback resistor, $i_R^2=4kT_{\rm K}/R_f$. It is a
   current injected directly into the input node.
 \end{itemize}
 
 % ----------------------------------------------------------------------
-\subsection{Voltage noise becomes a charge through the pad capacitance}
+\subsection{From noise voltage to noise charge}
 %
+The two transistor sources are combined into one
+voltage source $e_n$ between the gate of M1 and the noiseless amplifier
+(Fig.~\ref{fig:noise}). Since the amplifier holds its input at the virtual
+ground, the gate sits at $e_n$. The gate's charge, shared by $\CD$ and $\Cf$, must be conserved. Thus:
+%
+\[
+ \CD\,e_n + \Cf\,(e_n-v_o) = 0
+ \quad\Rightarrow\quad
+ v_o = \frac{\CD+\Cf}{\Cf}\,e_n .
+\]
+%
+Taking $\CD= \SI{1.25}{pF}$ and $\Cf=\SI{20}{fF}$, the noise gain
+$(\CD+\Cf)/\Cf$ is about 60. 
 
-The two transistor sources act at the same place and are treated together as
-one voltage source $e_n$. It sits between the gate of M1 and the noiseless
-amplifier behind it (Fig.~\ref{fig:noise}). The gate is
-the summing node of the circuit: the pad capacitance and the feedback
-capacitor both connect to it. The question is how far the output moves when
-$e_n$ takes a value, and which signal charge would move it by the same
-amount. Four steps answer it.
-%
-\begin{itemize}
-\item The amplifier forces its own input, the terminal of $e_n$ on its
-  side, to the virtual ground. The gate, on the other terminal, is therefore
-  not at zero but at $e_n$. The virtual ground follows the noise source.
-\item The pad capacitance has one plate on the gate and the other at
-  ground, so it now holds the charge $\CD e_n$. Before the fluctuation it
-  held none.
-\item That charge must come from somewhere. The gate node is isolated: the
-  transistor draws no current and there is no resistor. The only element
-  connected to it, besides the pad, is $\Cf$. The charge $\CD e_n$ is
-  therefore taken from the plate of $\Cf$ on the gate, which is left with
-  $-\CD e_n$. Since that plate has $e_n$ on its own side and $v_o$ on the
-  other, its charge is also $\Cf(e_n-v_o)$. Conservation of charge on the
-  gate node reads
-%
-  \[
-   \CD\,e_n + \Cf\,(e_n-v_o) = 0 .
-  \]
-%
-\item Solving for the output,
-%
-  \[
-   v_o = \frac{\CD+\Cf}{\Cf}\,e_n .
-  \]
-%
-  The noise voltage appears at the output multiplied by $(\CD+\Cf)/\Cf$,
-  the noise gain of the stage. For the NAUSICAA values, \SI{1.25}{pF} and
-  \SI{20}{fF}, that gain is about 60. The
-  signal per ion, $e/\Cf$, falls by the same factor, so the noise expressed
-  as a charge at the pad does not depend on $\Cf$.
-\end{itemize}
-%
-A signal charge $Q$ arriving at the pad moves the output by $Q/\Cf$ in
-magnitude, Eq.~\eqref{eq:qoverc}. The output excursion caused by $e_n$ is
-therefore indistinguishable from a signal charge\footnote{Had $e_n$ been
-placed outside the loop, in series with the pad alone, the same steps would
-give $q_n=\CD e_n$ exactly: the feedback capacitor would then be at the
-virtual ground and hold no noise charge. The gate-referred noise of a
-transistor is inside the loop, hence the factor $\CD+\Cf$. The difference
-is $\Cf$, negligible against $\CD$ here.}
+A signal charge $Q$ at the pad gives
+$v_o=-Q/\Cf$, Eq.~\eqref{eq:qoverc}. The two outputs are equal in magnitude
+for $|Q|=(\CD+\Cf)\,e_n$, which defines the noise charge
+%\footnote{Had $e_n$ been
+%placed outside the loop, in series with the pad alone, the same steps would
+%give $q_n=\CD e_n$ exactly: the feedback capacitor would then be at the
+%virtual ground and hold no noise charge. The gate-referred noise of a
+%transistor is inside the loop, hence the factor $\CD+\Cf$. The difference
+%is $\Cf$, negligible against $\CD$ here.}
 %
 \begin{equation}
  q_n = (\CD+\Cf)\,e_n \simeq \CD\,e_n ,
@@ -362,49 +335,84 @@ is $\Cf$, negligible against $\CD$ here.}
 \label{eq:qn}
 \end{equation}
 %
-The relation holds frequency by frequency, which is why it is written for
-the spectral densities: the noise charge spectrum is the noise voltage
+That is, the noise charge spectrum is the noise voltage
 spectrum scaled by $\CD^2$.
-The same result follows from a source transformation: the voltage source
-$e_n$ in series with the amplifier input, whose impedance is
-$Z_i=1/(A\Cf s)$, is equivalent to a current source $i_{An}=e_n/Z_i$ in
-parallel with it, and the charge that this current deposits on $\CD$ is again
-$\CD e_n$. A feedback resistor does not alter this conversion as long as
-$R_f$ is much larger than $|Z_i|$ at the frequencies of interest, so that it
-diverts no current.
+%The same result follows from a source transformation: the voltage source
+%$e_n$ in series with the amplifier input, whose impedance is
+%$Z_i=1/(A\Cf s)$, is equivalent to a current source $i_{An}=e_n/Z_i$ in
+%parallel with it, and the charge that this current deposits on $\CD$ is again
+%$\CD e_n$. A feedback resistor does not alter this conversion as long as
+%$R_f$ is much larger than $|Z_i|$ at the frequencies of interest, so that it
+%diverts no current.
 
-Equation~\eqref{eq:qn} is the central fact of low-noise front ends: the
-voltage noise of the transistor is multiplied by the capacitance seen at its
-gate. A pad of \SI{5}{pF} gives four times the noise charge of a pad of
-\SI{1.25}{pF} for the same transistor. The reference point of every noise
-figure in this note is the sensor: all noise is expressed as charge at the
-TopMetal pad, and that is what ENC means below.
+%Equation~\eqref{eq:qn} is the central fact of low-noise front ends: the
+%voltage noise of the transistor is multiplied by the capacitance seen at its
+%gate. A pad of \SI{5}{pF} gives four times the noise charge of a pad of
+%\SI{1.25}{pF} for the same transistor. The reference point of every noise
+%figure in this note is the sensor: all noise is expressed as charge at the
+%TopMetal pad, and that is what ENC means below.
 
 % ----------------------------------------------------------------------
-\subsection{Resistor noise becomes a charge by integration}
+\subsection{From noise current to noise charge}
 %
-The current $i_R$ enters the input node and is integrated by $\Cf$ like a
-signal. In the frequency domain the integrated charge is $i_R/(j\omega)$, so
+The noise charge associated to the noise current $i_R$ is:
 %
 \begin{equation}
- q_R^2(f) = \frac{4kT_{\rm K}}{R_f}\,\frac{1}{(2\pi f)^2} .
+ q_R(t)=\int_0^t i_R(t')\,\dd t'
+ \quad\Rightarrow\quad
+ q_R(f)=\frac{i_R(f)}{j\,2\pi f} ,
+ \qquad
+ \boxed{\;q_R^2(f) = \frac{4kT_{\rm K}}{R_f}\,\frac{1}{(2\pi f)^2}\;} .
 \label{eq:qR}
 \end{equation}
 %
-This spectrum rises without bound at low frequency. Integrated between a low
-limit $f_l$ and a high limit $f_h$ it gives
-$q_R^2=\dfrac{4kT_{\rm K}}{4\pi^2R_f}\left(\dfrac1{f_l}-\dfrac1{f_h}\right)$.
-The low limit is set
-by the measurement: a charge measured over a window $T$ cannot see
-fluctuations slower than about $1/T$. Section~\ref{sec:gated} makes this
-precise.
+Notice that the spectrum diverges for $ \rightarrow 0$. 
+%Integrated in a give interal ($f_l$, $f_h$), gives:
+%\[
+%q_R^2=\dfrac{4kT_{\rm K}}{4\pi^2R_f}\left(\dfrac1{f_l}-\dfrac1{f_h}\right).
+%\]
+%The low limit is set
+%by the measurement: a charge measured over a window $T$ cannot see
+%fluctuations slower than about $1/T$. Section~\ref{sec:gated} makes this
+%precise.
 
 % ----------------------------------------------------------------------
-\subsection{Definition of ENC}
+\subsection{Equivalent Noise Charge (ENC)}
 %
-A measurement is a linear operation on the output, with a transfer function
-$W(f)$ normalised so that a signal charge $Q$ gives $Q$. The noise charge of
-the measurement is then
+The noise charge at the pad, $q(t)$, comes from the two independent sources described by
+Eqs.~\eqref{eq:qn} and~\eqref{eq:qR}:
+%
+\begin{equation}
+ S_q(f)=\CD^2e_n^2(f)+q_R^2(f).
+\end{equation}
+%
+The readout operations described below are linear and time-invariant, and
+can thus be written as a convolution of the charge with a weighting
+function $w(t)$:
+%
+\begin{equation}
+ m(t)=\int w(t-t')\,q(t')\,\dd t' .
+\end{equation}
+%
+The Fourier transform of a convolution is the product of the transforms:
+%
+\begin{equation}
+ M(f)=W(f)\,Q(f) .
+\end{equation}
+%
+A spectral density is the mean of the squared amplitude,
+%
+\begin{equation}
+ S_m(f)=|W(f)|^2\,S_q(f) .
+\end{equation}
+%
+Finally, the variance is the integral of the one-sided spectral density:
+%
+\begin{equation}
+ \langle m^2\rangle=\int_0^\infty S_m(f)\,\dd f=\int_0^\infty S_q(f)\,|W(f)|^2\,\dd f .
+\end{equation}
+%
+In electrons, $\mathrm{ENC}^2=\langle m^2\rangle/e^2$:
 %
 \begin{equation}
  \boxed{\;\mathrm{ENC}^2 = \frac{1}{e^2}\int_0^\infty
@@ -412,7 +420,7 @@ the measurement is then
 \label{eq:enc}
 \end{equation}
 %
-Everything that follows is the choice of $W$.
+%Everything that follows is the choice of $W$.
 
 % ----------------------------------------------------------------------
 \section{Integrating over a frame: the gated integrator}
@@ -421,9 +429,9 @@ Everything that follows is the choice of $W$.
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{nausicaa_vh_windows.pdf}
 \caption{Left: the gated integrator. The current of one frame is integrated
-over a window of length $T$; the shaded area is the charge $Q$. Right: the
-frame sequence. Consecutive windows follow each other without gaps, the
-output is read at the end of each one, and the measurement is the difference
+over a window of length $T$. Right: the
+frame sequence. The
+output is read at the end of each window, and the measurement is the difference
 of consecutive readings, $\Tcds$ apart.}
 \label{fig:windows}
 \end{figure}
@@ -436,151 +444,190 @@ that window:
  Q = \int_0^T i(t)\,\dd t .
 \end{equation}
 %
-As a filter acting on the current, this is a convolution with a rectangle of
+The integral is is a convolution with a rectangle of
 height 1 and length $T$. Its Fourier transform is
 %
 \begin{equation}
- H(f) = T\,\sinc(\pi fT)\,e^{-j\pi fT},
+ H(f) = \int_0^T e^{-j2\pi ft}\,\dd t
+      = \frac{1-e^{-j2\pi fT}}{j2\pi f}
+      = T\,\sinc(\pi fT)\,e^{-j\pi fT},
  \qquad \sinc x = \frac{\sin x}{x},
 \label{eq:sinc}
 \end{equation}
 %
-equivalently $T\,\sinc(\omega T/2)$ with $\omega=2\pi f$. The factor $T$
-is the DC gain of the window: a constant current $i$ gives the
-charge $iT$. Applied to the noise charge, the same window must be normalised
-by $1/T$, because a constant charge on the input gives that charge and not
-$T$ times it. The normalised weighting is therefore
+Each window averages the charge over its width, so $W=H/T$:
 %
 \begin{equation}
  |W(f)|^2 = \sinc^2(\pi fT).
 \label{eq:W1}
 \end{equation}
 %
-Keeping the factor $T$ in both the signal and the noise expression gives the
-same ENC, since it cancels in the ratio. The sinc function equals 1 at
-$f=0$, has its first zero at $f=1/T$ and decays as $1/f^2$ beyond. Two
-consequences follow.
+\begin{figure}[htbp!]\centering
+\includegraphics[width=.6\linewidth]{nausicaa_vh_sinc.pdf}
+\caption{Weighting of one window of length $T$, $|W(f)|^2=\sinc^2(\pi fT)$,
+with its envelope $1/(\pi fT)^2$.}
+\label{fig:sinc}
+\end{figure}
+
+The function $\sinc^2(\pi fT)$
+equals 1 at $f=0$, has its first zero at $f=1/T$ and decays as $1/f^2$ beyond
+(Fig.~\ref{fig:sinc}). 
 %
-\begin{itemize}
-\item White noise above $1/T$ is averaged away. With
-  $\int_0^\infty\sinc^2(\pi fT)\,\dd f=1/(2T)$, the thermal contribution is
+
+White noise verifies $e_n^2=e_t^2$, constant. Thus:
 %
   \begin{equation}
-   \mathrm{ENC}_t^2 = \frac{\CD^2\,e_t^2}{2T\,e^2}.
+   \mathrm{ENC}_t^2
+   = \frac{\CD^2 e_t^2}{e^2}\int_0^\infty \sinc^2(\pi fT)\,\dd f
+   = \frac{\CD^2 e_t^2}{e^2}\,\frac{1}{\pi T}\int_0^\infty \frac{\sin^2 x}{x^2}\,\dd x
+   = \frac{\CD^2\,e_t^2}{2T\,e^2},
   \label{eq:enct}
   \end{equation}
 %
-  A longer frame gives less thermal noise. For $\CD=\SI{1.25}{pF}$,
-  $e_t=\SI{5}{nV/\sqrt{Hz}}$ and $T=\SI{40}{ms}$ this is 0.14 electrons: the
-  white part is irrelevant at frame time scales.
-\item Flicker noise below $1/T$ is not averaged (Fig.~\ref{fig:spectra},
-  left). The flicker contribution is
-  $\CD^2A_f\int\sinc^2(\pi fT)\,\dd f/f$, which diverges logarithmically at
-  low frequency. It must be cut at the lowest frequency the measurement can
-  resolve, $f_l$, which is the inverse of the time between the reference
-  level and the measurement. The result is of order
-  $\CD^2A_f\,\ln[1/(\pi f_lT)]$. The longer the amplifier runs between
-  references, the larger this term.
-\end{itemize}
+  with $x=\pi fT$ and $\int_0^\infty \sin^2x/x^2\,\dd x=\pi/2$.
+  
+  Equation~\eqref{eq:enct} establishes that a longer frame gives less thermal noise. For $\CD=\SI{1.25}{pF}$,
+  $e_t=\SI{5}{nV/\sqrt{Hz}}$ and $T=\SI{40}{ms}$ we obtain a negligible value of 0.14 electrons.
+  
+
+  Flicker noise, $e_n^2=A_f/f$, gives, with the same $x=\pi fT$,
 %
-The resistor term with the same window is dominated by its low-frequency
-end, where the window equals 1 and the spectrum of Eq.~\eqref{eq:qR} rises
-as $1/f^2$. The cleaner statement is in the time domain: a white current
-noise integrated over $T$ gives a charge variance
+  \begin{equation}
+   \mathrm{ENC}_f^2
+   = \frac{\CD^2A_f}{e^2}\int_0^\infty \sinc^2(\pi fT)\,\frac{\dd f}{f}
+   = \frac{\CD^2A_f}{e^2}\int_0^\infty \frac{\sin^2x}{x^3}\,\dd x .
+  \end{equation}
+%
+  The result is independent of $T$, so a longer window has no effect on the flicker noise.
+  Near $x=0$ the integrand is $1/x$, and therefore the integral diverges. 
+  
+ In practice, the charge is measured against a reference taken a time $\Tcds$
+  earlier. The
+  integral then starts at $f_l=1/\Tcds$, i.e.\ at $x_l=\pi T/\Tcds$:
+%
+  \begin{equation}
+   \mathrm{ENC}_f^2 \simeq \frac{\CD^2A_f}{e^2}\int_{x_l}^\infty\frac{\sin^2x}{x^3}\,\dd x
+   = \frac{\CD^2A_f}{e^2}\left[\ln\frac{\Tcds}{\pi T} + \frac32-\gamma-\ln 2\right],
+   \qquad \Tcds\gg T,
+  \label{eq:encf}
+  \end{equation}
+%
+  where $\gamma$ is Euler's constant and $3/2-\gamma-\ln2\simeq0.23$. The
+  longer the amplifier runs between references, the larger this term, but
+  only logarithmically. For consecutive frames, $\Tcds=T$, the subtraction
+  gives the exact factor $4\ln2$, Eq.~\eqref{eq:closed}.
+
+%
+Resistor noise, $q_R^2\propto 1/f^2$ (Eq.~\eqref{eq:qR}), makes the
+single-window integral diverge: the output holds all the charge $i_R$ has
+deposited since the amplifier was switched on. The readout subtracts the
+level at the start of the frame, so only the charge added during the frame
+counts:
+%
+\begin{equation}
+ q_R=\int_0^T i_R(t)\,\dd t ,
+ \qquad
+ \langle i_R(t)\,i_R(t')\rangle=\frac{i_R^2}{2}\,\delta(t-t')
+ \quad\Rightarrow\quad
+ \langle q_R^2\rangle=\frac{i_R^2}{2}\,T ,
+\end{equation}
+%
+where $i_R^2/2$ is the two-sided spectral density. Hence
 %
 \begin{equation}
  \boxed{\;\mathrm{ENC}_R^2 = \frac{4kT_{\rm K}}{R_f}\,\frac{T}{2\,e^2}\;}.
 \label{eq:encR}
 \end{equation}
 %
-This term grows with the frame length, the opposite of the thermal term. If
-the NAUSICAA feedback transistor behaved as a resistor at \SI{300}{K} with
-the value implied by its \SI{19.5}{s} decay and $\Cf=\SI{3}{fF}$, about
-\SI{6.5}{T\ohm}, a \SI{40}{ms} frame would carry 44 electrons of resistor
-noise. The transistor operates in weak inversion and its noise is the SPICE
-spectrum reported in \code{csa_design.tex}, which is the number to compare
-with. The decisive point is architectural: an amplifier that is reset by a
-switch has no $R_f$ and no such term at all.
+In summary:
+%
+\begin{equation}
+ \mathrm{ENC}^2 \simeq \frac{1}{e^2}\left[
+   \frac{\CD^2e_t^2}{2T}
+ + \CD^2A_f\left(\ln\frac{\Tcds}{\pi T}+0.23\right)
+ + \frac{4kT_{\rm K}}{R_f}\,\frac{T}{2}\right].
+\end{equation}
+%
+The three sources of noise depend differently of the frame length. Thermal noise falls with $T$, flicker noise is almost independent of $T$, and
+resistor noise grows with it.
 
 % ----------------------------------------------------------------------
 \section{Correlated double sampling}
 \label{sec:cds}
 %
-The flicker term of Section~\ref{sec:gated} depends on how long the amplifier
-runs since its reference. Correlated double sampling removes that
-dependence. The measurement is the difference of two samples of the output
+The dependence of the flicker noise on the amplifier running time can be removed using
+correlated double sampling, that is the difference of two samples of the output
 taken $\Tcds$ apart (Fig.~\ref{fig:windows}, right),
 %
 \begin{equation}
- y(t) = x(t) - x(t-\Tcds).
+ y(t) = x(t) - x(t-\Tcds)
+      = \int h(t-t')\,x(t')\,\dd t' ,
+ \qquad h(t)=\delta(t)-\delta(t-\Tcds).
 \end{equation}
 %
-This is a linear filter with impulse response
-$h(t)=\delta(t)-\delta(t-\Tcds)$ and transfer function
+The transfer function is the Fourier transform of $h(t)$:
 %
-\begin{equation}
- h(f) = 1-e^{-j2\pi f\Tcds}
-      = e^{-j\pi f\Tcds}\,2j\,\sin(\pi f\Tcds),
- \qquad
- |h(f)|^2 = 4\sin^2(\pi f\Tcds).
+\begin{align}
+ h(f) &= \int h(t)\,e^{-j2\pi ft}\,\dd t = 1-e^{-j2\pi f\Tcds}
+       = e^{-j\pi f\Tcds}\left(e^{j\pi f\Tcds}-e^{-j\pi f\Tcds}\right) \nonumber\\
+      &= 2j\,e^{-j\pi f\Tcds}\sin(\pi f\Tcds),
+ \qquad |h(f)|^2 = 4\sin^2(\pi f\Tcds).
 \label{eq:cds}
-\end{equation}
+\end{align}
 %
 At low frequency $\sin x\simeq x$ and
 %
 \begin{equation}
- |h(f)|^2 \simeq 4\pi^2 f^2\Tcds^2 = \omega^2\Tcds^2 ,
+ \boxed{\;|h(f)|^2 \simeq 4\pi^2 f^2\Tcds^2\;} ,
  \qquad f\ll 1/\Tcds .
 \label{eq:cdslow}
 \end{equation}
 %
-The filter multiplies the spectrum by $f^2$ at low frequency. Three things
-disappear.
+Hence:
 %
 \begin{itemize}
-\item A constant offset of the amplifier, $\Voff$, is the same in both
-  samples and cancels exactly. It is the $f=0$ component.
-\item Slow drifts, with periods longer than $\Tcds$, are strongly attenuated.
-\item Flicker noise, whose $1/f$ spectrum would diverge, is multiplied by
-  $f^2$ and becomes integrable. The low-frequency cut $f_l$ of
-  Section~\ref{sec:gated} is no longer needed.
+\item $|h(0)|^2=0$: a constant offset $\Voff$ cancels.
+\item Slow fluctuations, $f\ll1/\Tcds$, are reduced by
+  $|h(f)|^2\simeq(2\pi f\Tcds)^2\ll1$.
+\item Flicker noise: $\dfrac{A_f}{f}\,|h(f)|^2\simeq4\pi^2A_f\Tcds^2\,f$,
+  the $1/f$ is cancelled and its integral converges without the cut $f_l$.
+\item For $f\gg1/\Tcds$, $|h(f)|^2$ averages to $\langle4\sin^2\rangle=2$:
+  white noise doubles, since the two samples are independent.
 \end{itemize}
-%
-Noise above $1/\Tcds$ has twice the mean square after the subtraction,
-since the two samples are then independent and the variance of their
-difference is the sum of their variances. This is the price
-of the subtraction.
-
-In NAUSICAA the reconstruction already forms the difference of consecutive
-frame readings, $u(t_n)-u(t_{n-1})$, in the digital domain. That difference
-is this filter with $\Tcds=T$.
 
 % ----------------------------------------------------------------------
-\section{Total noise with both filters}
+\section{Total noise with frame subtraction}
 \label{sec:total}
 %
-Applying the window of Eq.~\eqref{eq:W1} and the subtraction of
-Eq.~\eqref{eq:cds} in sequence, the weighting function is their product and
+Each frame is read at its end and consecutive readings are subtracted
+(Fig.~\ref{fig:windows}, right). With
+%
+\[
+ |W(f)|^2=\sinc^2(\pi fT)\cdot4\sin^2(\pi f\Tcds),
+ \qquad
+ e_n^2=e_t^2+\frac{A_f}{f},
+\]
+%
+from Eqs.~\eqref{eq:W1} and~\eqref{eq:cds}, and without $q_R^2$ (end of
+this section), Eq.~\eqref{eq:enc} becomes
 %
 \begin{equation}
- \mathrm{ENC}^2 = \frac{\CD^2}{e^2}\int_0^\infty
- \sinc^2(\pi fT)\;4\sin^2(\pi f\Tcds)\;
- \left[e_t^2+\frac{A_f}{f}\right]\dd f ,
+ \mathrm{ENC}^2=\frac{1}{e^2}\int_0^\infty
+ \underbrace{\CD^2\left[e_t^2+\frac{A_f}{f}\right]}_{\text{noise}}\;
+ \underbrace{\sinc^2(\pi fT)\;4\sin^2(\pi f\Tcds)}_{|W(f)|^2}\,\dd f .
 \label{eq:total}
 \end{equation}
 %
-The integrand has three factors: the sinc falling from 1, the noise profile
-falling as $1/f$ then flat, and the subtraction rising as $f^2$ then
-oscillating. The product is small at both ends and peaks near $1/T$
+The integrand is small at both ends and peaks near $1/T$
 (Fig.~\ref{fig:spectra}).
 %
-\begin{figure}[htbp]\centering
+\begin{figure}[htbp!]\centering
 \includegraphics[width=\linewidth]{nausicaa_vh_spectra.pdf}
 \caption{The three factors of Eq.~\eqref{eq:total} on a linear frequency
 axis, in arbitrary units, for a corner frequency $f_c=0.5/T$. Left: the
 gated integrator alone. The window $\sinc^2(\pi fT)$ averages the white
 noise above $1/T$, but the product with the $1/f$ profile diverges at low
-frequency; its integral depends on the low-frequency cut. Right: with the
+frequency. Right: with the
 subtraction of consecutive frames. The factor $4\sin^2(\pi fT)$ rises as
 $f^2$ and cancels the divergence; the product is now concentrated between
 $0$ and $1/T$ and its integral is the closed form of
@@ -589,8 +636,7 @@ Eq.~\eqref{eq:closed}.}
 \end{figure}
 %
 
-For consecutive frames, $\Tcds=T$, both integrals have closed forms. With
-$x=\pi fT$:
+For consecutive frames, $\Tcds=T$, and with $x=\pi fT$:
 %
 \begin{align}
  \int_0^\infty \sinc^2(\pi fT)\,4\sin^2(\pi fT)\,\dd f
@@ -601,28 +647,31 @@ $x=\pi fT$:
  &= 4\int_0^\infty\frac{\sin^4x}{x^3}\,\dd x = 4\ln 2 .
 \end{align}
 %
-The two definite integrals are standard~\cite{Gradshteyn2007}. Hence
+Hence
 %
 \begin{equation}
  \boxed{\;\mathrm{ENC}^2 = \frac{\CD^2}{e^2}\left[\frac{e_t^2}{T} + 4\ln 2\,A_f\right]\;}.
 \label{eq:closed}
 \end{equation}
 %
-The thermal term is twice that of a single window, Eq.~\eqref{eq:enct}, as
-expected for a difference of two independent averages. The flicker term is a
-pure number times $\CD^2A_f$: it no longer depends on the frame length, nor
-on how long the amplifier has been running. With $f_c=\SI{1}{kHz}$ and the
-values above it amounts to 2 electrons; the single-window estimate with a
-reference \SI{100}{s} earlier would give 3. For a corner at \SI{100}{kHz} the
-two numbers are 20 and 32. The subtraction removes the offset completely and
-reduces the flicker noise by the logarithm of the time since the last
-reference. In words, the largest noise component is strongly reduced; in
-numbers, the reduction is that logarithm.
+Compared with a single window, Eqs.~\eqref{eq:enct} and~\eqref{eq:encf}:
+%
+\[
+ \frac{\CD^2e_t^2}{2T\,e^2}\;\to\;\frac{\CD^2e_t^2}{T\,e^2},
+ \qquad
+ \frac{\CD^2A_f}{e^2}\left[\ln\frac{\Tcds}{\pi T}+0.23\right]\;\to\;
+ \frac{\CD^2A_f}{e^2}\,4\ln2 .
+\]
+%
+The thermal term doubles, since the two readings are independent. The
+flicker term no longer depends on $T$ or on the time since the last
+reference. For $\CD=\SI{1.25}{pF}$, $e_t=\SI{5}{nV/\sqrt{Hz}}$,
+$T=\SI{40}{ms}$ and $A_f=e_t^2f_c$, the flicker ENC is 2 electrons for
+$f_c=\SI{1}{kHz}$ and 20 for $f_c=\SI{100}{kHz}$, against 3 and 32 for a
+single window with a reference \SI{100}{s} earlier.
 
-The resistor term, if present, is of the same size with or without the
-subtraction: the difference of two integrals of a white current has the
-variance of Eq.~\eqref{eq:encR}. This is the reason the reset architecture
-is attractive at long frame times.
+The resistor term is unchanged by the subtraction: the difference of two
+integrals of a white current has the variance of Eq.~\eqref{eq:encR}.
 
 % ----------------------------------------------------------------------
 \section{The two-capacitor architecture}
@@ -638,15 +687,13 @@ $\Vref$; in frame 2 the roles are exchanged.}
 \label{fig:swap}
 \end{figure}
 %
-A circuit can perform the subtraction of Section~\ref{sec:cds} without a
-second sample. Two equal capacitors
-$C_{f1}=C_{f2}$ alternate between the feedback position and a parking
-position at the reference voltage $\Vref$ (Fig.~\ref{fig:swap}). The
-amplifier has an offset $\Voff$: it holds its input node at $\Voff$, so the
-virtual ground sits at that voltage. The analysis is charge conservation at
-the input node, which is isolated except for the signal charge $Q_{i}$ that
-arrives during each frame. The charge on $C_T$ is $C_T\Voff$ in every phase
-and drops out of every balance below.
+An alternative way to perform the subtraction of Section~\ref{sec:cds}  is to use a circuit in which two equal capacitors
+$C_{f1}=C_{f2}$ alternate between the feedback position and an idle
+position at the reference voltage $\Vref$ (Fig.~\ref{fig:swap}). A real
+amplifier holds its input node at an offset $\Voff$.
+The input node is isolated except for the signal charge $Q_i$ of each
+frame, so its charge is conserved. $C_T$ holds the same charge,
+$C_T\Voff$, in every phase and cancels in the equations below.
 
 %
 \paragraph{Reset.} Both capacitors have one plate at the input node, at
@@ -701,7 +748,7 @@ Eqs.~\eqref{eq:vo1} and \eqref{eq:vo2}.
 \begin{itemize}
 \item Each output is referred to $\Vref$, a clean external voltage, and the
   amplifier offset never appears. This is the subtraction of
-  Section~\ref{sec:cds} done by the capacitor swap: the parked capacitor
+  Section~\ref{sec:cds} done by the capacitor swap: the idle capacitor
   carries the reference into the feedback position.
 \item The charge accumulates: $v_{o2}$ holds $Q_{i1}+Q_{i2}$, and after $n$
   frames the output holds the sum of all charge since reset. The charge of
