@@ -24,7 +24,7 @@ const STATISTICS_SCHEMA = "iitaca.statistics.v1"
 
 """Join the feature tables of a run: columns, summed counts, cut flow and identity."""
 function run_statistics(run_dir::AbstractString)
-    tables = [read_features(joinpath(b, "features.h5")) for b in batch_folders(run_dir) if isfile(joinpath(b, "features.h5"))]
+    tables = [read_features(joinpath(b, "features.h5")) for b in batch_folders(run_dir; file = "features.h5")]      # the hit files may stay on the cluster
     isempty(tables) && error("No feature tables in $run_dir")
     first_table = first(tables)
     for t in tables, k in ("sample", "variant", "frame_track", "settings", "roi_lower_keV", "roi_upper_keV")

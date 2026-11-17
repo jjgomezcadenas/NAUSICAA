@@ -208,6 +208,12 @@ in `notes/html/itaca_detector.html`, the scheme in
   input-file size is not a valid universal bound. Investigate unexpected growth
   immediately. See docs/reviews/file_copy_failure_2026-11-08.md.
 - Keep scratch files in work/.
+- Archive of 2026-11-17 (`docs/reviews/storage_archive_2026-11-17.md`):
+  `results/simulations/production_pilot` and `results/elm_matched_production`
+  (including the training study of the nonlinear CSA calibration) moved from the
+  Mac to `/data/jjgomez/NAUSICAA-mac-archive/` on Hyperion; hybrid and iItaca
+  Geant4 files moved from `/scratch` to `/data`. `/data` is read-only on
+  compute nodes.
 - Storage cleanup records live in `docs/reviews/storage_cleanup_2026-11-08.md`
   and `results/storage_cleanup/2026-11-08/`. Retired corrected responses resolve
   through checksum-verified `.canonical.toml` receipts to published files;

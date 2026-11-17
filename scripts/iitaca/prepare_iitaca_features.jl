@@ -102,10 +102,10 @@ function read_features(path::AbstractString)
     end
 end
 
-"""Folders of the batches of a run that hold a hit file, in batch order."""
-function batch_folders(run_dir::AbstractString)
+"""Folders of the batches of a run that hold `file` (the hit file by default), in batch order."""
+function batch_folders(run_dir::AbstractString; file::AbstractString = "hits.h5")
     base = joinpath(run_dir, "batches"); isdir(base) || error("No batches folder in $run_dir")
-    [joinpath(base, d) for d in sort(readdir(base)) if isfile(joinpath(base, d, "hits.h5"))]
+    [joinpath(base, d) for d in sort(readdir(base)) if isfile(joinpath(base, d, file))]
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
