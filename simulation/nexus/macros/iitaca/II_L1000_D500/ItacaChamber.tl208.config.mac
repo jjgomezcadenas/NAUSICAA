@@ -1,0 +1,30 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.tl208.config.mac
+##
+## Template. The job script replaces @SEED@, @START_ID@ and @OUTPUT@.
+## Gammas of the 2614.511 keV line of 208Tl, emitted isotropically from the inner
+## surface of the gas cylinder.
+## Events are saved when the energy deposited in the gas lies in the window below.
+## Written by scripts/iitaca/write_iitaca_macros.jl from the cards of config/iitaca
+## (variant II_L1000_D500). Do not edit: change the cards and write it again.
+## ----------------------------------------------------------------------------
+
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+/control/execute macros/iitaca/II_L1000_D500/ItacaChamber.mac
+
+/Generator/SingleParticle/particle gamma
+/Generator/SingleParticle/min_energy 2614.511 keV
+/Generator/SingleParticle/max_energy 2614.511 keV
+/Generator/SingleParticle/region INNER_SURFACE
+
+/Actions/DefaultEventAction/min_energy 2300. keV
+/Actions/DefaultEventAction/max_energy 2470. keV
+
+/nexus/random_seed @SEED@
+/nexus/persistency/start_id @START_ID@
+/nexus/persistency/output_file @OUTPUT@
+/nexus/persistency/event_type background

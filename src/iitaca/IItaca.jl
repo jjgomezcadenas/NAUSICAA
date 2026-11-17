@@ -4,8 +4,8 @@ the resolved configuration.
 
 Three layers:
 
-1. Detector set: an index (`config/iitaca/iitaca.toml`) naming nine cards,
-   gas, geometry, drift, voltages, ions, energy, el, trigger, tracks. Design values
+1. Detector set: an index (`config/iitaca/iitaca.toml`) naming ten cards,
+   gas, geometry, drift, voltages, ions, energy, el, trigger, tracks, generation. Design values
    only; nothing derived is typed in them. Values under a `[documentation]`
    table are not read by the simulation: `simulation_inputs` leaves them out
    and `documentation_inputs` returns them.
@@ -39,7 +39,7 @@ export SECTIONS, load_iitaca_set, load_variant, ResolvedDetector, resolve_detect
 const SET_SCHEMA = "nausicaa.iitaca_set.v1"
 const VARIANT_SCHEMA = "nausicaa.iitaca_variant.v1"
 const RUN_SCHEMA = "nausicaa.iitaca_run.v1"
-const SECTIONS = ("gas", "geometry", "drift", "voltages", "ions", "energy", "el", "trigger", "tracks")
+const SECTIONS = ("gas", "geometry", "drift", "voltages", "ions", "energy", "el", "trigger", "tracks", "generation")
 "FWHM of a Gaussian over its sigma, 2 sqrt(2 ln 2)."
 const FWHM_PER_SIGMA = 2 * sqrt(2 * log(2))
 const CARD_SCHEMAS = Dict(s => "nausicaa.iitaca_$s.v1" for s in SECTIONS)
@@ -49,7 +49,7 @@ const CARD_SCHEMAS = Dict(s => "nausicaa.iitaca_$s.v1" for s in SECTIONS)
 """
     load_iitaca_set(index_path)::DetectorSet
 
-Read the index and its nine cards. Require the set schema, every section of
+Read the index and its ten cards. Require the set schema, every section of
 `SECTIONS` exactly once, and each card's own schema.
 """
 function load_iitaca_set(index_path::AbstractString)::DetectorSet
@@ -214,6 +214,7 @@ Consistency of a resolved detector:
 - the frame of the VH1 card equals `ions.frame_ms` (with `root`);
 - potentials rise from the pads to the IFG;
 - the guide with its gas gap fits in the EL cell;
+- the ROI inside the energy window of the saved Geant4 events;
 - known resolution scaling and frame placement.
 """
 function check_detector(d::AbstractDict; root = nothing)
@@ -260,6 +261,11 @@ function check_detector(d::AbstractDict; root = nothing)
     0 <= tk["saved_hit_cut_keV"] <= tk["hit_cut_keV"] || throw(ArgumentError("Require 0 <= tracks.saved_hit_cut_keV <= tracks.hit_cut_keV"))
     0 <= tk["deposit_min_keV"] || throw(ArgumentError("tracks.deposit_min_keV must not be negative"))
     tk["segment_connection_mm"] <= tk["connection_mm"] || throw(ArgumentError("tracks.segment_connection_mm exceeds tracks.connection_mm"))
+    gn = d["generation"]
+    gn["step_limit_mm"] > 0 && 0 <= gn["saved_energy_min_keV"] < gn["saved_energy_max_keV"] || throw(ArgumentError("Invalid generation step limit or saved energy window"))
+    r = roi_keV(en)
+    gn["saved_energy_min_keV"] < r.lower && r.upper < gn["saved_energy_max_keV"] || throw(ArgumentError("The ROI is not inside the saved energy window of the generation"))
+    all(gn[k] > 0 for k in ("single_electron_energy_keV", "bi214_gamma_keV", "tl208_gamma_keV")) || throw(ArgumentError("Generation energies must be positive"))
     nothing
 end
 

@@ -176,7 +176,16 @@ def render():
     ['Segments', one('tracks.max_segments'), '', f"at most this many, joined at {one('tracks.connection_mm')} mm"],
     ['Cells of the track graph', one('tracks.voxel_width_mm'), 'mm', ''],
     ['Endpoint sphere', one('tracks.blob_radius_mm'), 'mm', 'radius for the endpoint energies E₁ and E₂']])}
-<p>Method: <a href="event_analysis/track_selection.html">track selection on the readout lattice</a>; code in <code>src/track_selection/TrackSelection.jl</code>.</p></section>
+<p>Method: <a href="event_analysis/track_selection.html">track selection on the readout lattice</a>; code in <code>src/track_selection/TrackSelection.jl</code>.</p>
+<h3>Geant4 generation</h3>
+{table(quantity, [
+    ['Maximum step in the gas', one('generation.step_limit_mm'), 'mm', ''],
+    ['Saved events', f"{one('generation.saved_energy_min_keV')} to {one('generation.saved_energy_max_keV')}", 'keV', 'energy deposited in the gas'],
+    ['bb0nu and single electrons', one('generation.volume_region'), '', f"uniform in the gas; single electrons of {I0['generation.single_electron_energy_keV']:.2f} keV"],
+    ['Gamma backgrounds', one('generation.gamma_region'), '', 'one gamma of the line from a point uniform on the inner surface of the gas cylinder, isotropic'],
+    ['²¹⁴Bi line', f"{I0['generation.bi214_gamma_keV']:.2f}", 'keV', ''],
+    ['²⁰⁸Tl line', f"{I0['generation.tl208_gamma_keV']:.3f}", 'keV', '']])}
+<p>Macros and samples: <a href="iitaca/simulation.html#generation">generation of the Monte Carlo samples</a>.</p></section>
 
 <section id="variants"><h2>3. The variants</h2>
 {table(by_variant, [
@@ -300,7 +309,7 @@ def render():
 </ol></section>
 
 <section id="cards"><h2>6. Cards</h2>
-<p>The detector set is <code>{index}</code>: nine cards (gas, geometry, drift, voltages, ions, energy, el, trigger, tracks) with design values only. Values under a <code>[documentation]</code> table are not passed to the simulation (<code>IItaca.simulation_inputs</code>); changing one changes this page and no result. A variant is a card with overrides, dotted keys into the set. A run card names the set, optionally a variant, and may add its own overrides, applied after those of the variant: radius, length, pressure, fields, potentials, pitch, frame and energy resolution are all changed that way.</p>
+<p>The detector set is <code>{index}</code>: ten cards (gas, geometry, drift, voltages, ions, energy, el, trigger, tracks, generation) with design values only. Values under a <code>[documentation]</code> table are not passed to the simulation (<code>IItaca.simulation_inputs</code>); changing one changes this page and no result. A variant is a card with overrides, dotted keys into the set. A run card names the set, optionally a variant, and may add its own overrides, applied after those of the variant: radius, length, pressure, fields, potentials, pitch, frame and energy resolution are all changed that way.</p>
 <p>When the cards are resolved (<code>IItaca.resolve_detector</code>) the result is checked: lengths, fields, velocity and frame positive; ion velocity × frame equal to the length drifted in one frame of the ions card; the frame of the VH1 card equal to the frame of the detector; potentials rising from the pads to the IFG.</p>
 {overrides}</section>
 

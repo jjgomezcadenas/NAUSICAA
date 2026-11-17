@@ -50,8 +50,8 @@ end
     @test count(E -> in_roi(en, E), bi) / n ≈ expected atol = 7 * sqrt(expected * (1 - expected) / n)
     @test 0.15 < expected < 0.25
     @test !in_roi(en, roi_keV(en).lower) && !in_roi(en, roi_keV(en).upper) && in_roi(en, Q)      # strict bounds
-    wide = resolve_detector(INDEX; overrides = Dict("energy.resolution_fwhm_at_qbb_keV" => 24.5783)).detector["energy"]
-    @test std([emulated_energy_keV(r, Q, wide) for r in (Xoshiro(4),) for _ in 1:n]) ≈ 24.5783 / FWHM_PER_SIGMA rtol = 5 / sqrt(2n)
+    wide = resolve_detector(INDEX; overrides = Dict("energy.resolution_fwhm_at_qbb_keV" => 20.0)).detector["energy"]
+    @test std([emulated_energy_keV(r, Q, wide) for r in (Xoshiro(4),) for _ in 1:n]) ≈ 20.0 / FWHM_PER_SIGMA rtol = 5 / sqrt(2n)
 end
 
 @testset "Track settings from the card" begin

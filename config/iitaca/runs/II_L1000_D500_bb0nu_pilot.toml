@@ -1,0 +1,20 @@
+# Pilot of the variant II_L1000_D500: neutrinoless double beta decays, 4 batches of 5,000 generated events
+# (simulation/nexus/slurm/run_iitaca_nexus_batch.sh, macros of simulation/nexus/macros/iitaca/II_L1000_D500).
+# Batches: scripts/iitaca/slurm/iitaca_batches.slurm, or make iitaca-batch, with
+# NAUSICAA_DATA set to the folder that holds II_L1000_D500/.
+schema = "nausicaa.iitaca_run.v1"
+detector = "config/iitaca/iitaca.toml"
+variant = "config/iitaca/variants/II_L1000_D500.toml"
+run_label = "II_L1000_D500_bb0nu_pilot"
+sample = "bb0nu"
+hits = "$NAUSICAA_DATA/II_L1000_D500/pilot/bb0nu/bb0nu_{batch}_hitdf.h5"
+particles = "$NAUSICAA_DATA/II_L1000_D500/pilot/bb0nu/bb0nu_{batch}.next.h5"
+generated_events_per_batch = 5000
+max_events = 0                    # 0: all events of the batch
+seed = 42
+electronics_seed = 20261113
+frame_track = "primary_and_delta_electrons"
+max_vector_bytes = 268435456
+vh1_minimum_samples = 32768
+
+[overrides]                       # none

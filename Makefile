@@ -437,6 +437,12 @@ test-iitaca:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/track_selection/test_track_selection.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_equivalence.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_analysis.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_macros.jl
+
+# NEXUS macros of the iItaca variants, from the detector cards
+.PHONY: iitaca-macros
+iitaca-macros:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/write_iitaca_macros.jl
 
 # One batch of an iItaca run: make iitaca-batch RUN=config/iitaca/runs/<card>.toml BATCH=0, with NAUSICAA_DATA set
 .PHONY: iitaca-batch

@@ -146,8 +146,11 @@ end
     @test resolution_fwhm_keV(en, 2457.83 / 4) ≈ 11.5988 / 2          # sqrt(E)
     @test resolution_fwhm_keV(en, 0) == 0
     @test_throws ArgumentError resolution_fwhm_keV(en, -1)
-    wide = resolve_detector(INDEX; overrides = Dict("energy.resolution_fwhm_at_qbb_keV" => 24.5783, "energy.roi_width_fwhm" => 2.0)).detector["energy"]
-    @test collect(roi_keV(wide)) ≈ [2457.83 - 24.5783, 2457.83 + 24.5783]
+    wide = resolve_detector(INDEX; overrides = Dict("energy.resolution_fwhm_at_qbb_keV" => 8.0, "energy.roi_width_fwhm" => 2.0)).detector["energy"]
+    @test collect(roi_keV(wide)) ≈ [2457.83 - 8.0, 2457.83 + 8.0]
+    # a ROI reaching beyond the energy window of the saved Geant4 events is refused
+    @test_throws ArgumentError resolve_detector(INDEX; overrides = Dict("energy.resolution_fwhm_at_qbb_keV" => 24.5783, "energy.roi_width_fwhm" => 2.0))
+    @test resolve_detector(INDEX; overrides = Dict("energy.resolution_fwhm_at_qbb_keV" => 24.5783, "energy.roi_width_fwhm" => 2.0, "generation.saved_energy_max_keV" => 2500.0)) isa ResolvedDetector
 end
 
 # Scaling with the free parameters: mass with R^2 L, spread with sqrt(L/E), ladder with E L.
