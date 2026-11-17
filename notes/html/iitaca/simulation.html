@@ -1,0 +1,106 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>iItaca simulation chain</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}td:nth-child(2){white-space:nowrap}table.variants td:nth-child(3){white-space:nowrap}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}footer{padding:20px;color:#526776}li{margin:6px 0} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}pre{background:#edf3f6;padding:16px;overflow:auto;font:14px/1.55 ui-monospace,monospace}</style></head><body><header><a href="../index.html">Documentation index</a> · <a href="index.html">iItaca</a><h1>iItaca simulation chain</h1><p>From one batch of Monte Carlo events to its hit file: fast trigger, event energy, ion transport, VH1 readout and hits.</p></header><main><nav><a href="#scope">Scope</a><a href="#card">Run card</a><a href="#steps">Processing</a><a href="#streams">Random streams</a><a href="#file">Hit file</a><a href="#functions">Functions</a><a href="#check">Check against ITACA</a><a href="#commands">Commands</a></nav>
+
+<section id="scope"><h2>1. Scope</h2>
+<ol>
+<li>The driver <code>scripts/iitaca/run_iitaca_batch.jl</code> reads one batch of Geant4 events and writes one hit file.</li>
+<li>The ions are simulated with the modules of the ITACA chain, unchanged: fast trigger and frame (<a href="../event_analysis/mc_fast_trigger.html">MC fast trigger</a>), ion detector response (<a href="../event_analysis/sim_detector_response.html">detector response</a>), VH1 electronics and reconstruction (<a href="../event_analysis/sim_vh1_readout.html">VH1 readout</a>), hits (<a href="../event_analysis/reco_hits.html">hit output</a>).</li>
+<li>The electrons are not simulated. The start time is the Monte Carlo one, and the event energy is the energy deposited in the simulated box, smeared with the resolution of the energy card.</li>
+<li>The driver receives <code>IItaca.simulation_inputs</code> of the resolved detector and nothing else of it: no value under a <code>[documentation]</code> table reaches the simulation (<a href="../iitaca_detector.html#cards">cards</a>).</li>
+</ol></section>
+
+<section id="card"><h2>2. Run card</h2>
+<p>A run card (<code>config/iitaca/runs/</code>, schema <code>nausicaa.iitaca_run.v1</code>) names the detector set, optionally a variant, and holds the run parameters. Detector values change only under <code>[overrides]</code>, applied after those of the variant.</p>
+<table><tr><th>Key</th><th>Content</th></tr>
+<tr><td><code>detector</code></td><td>index of the detector set, <code>config/iitaca/iitaca.toml</code></td></tr>
+<tr><td><code>variant</code></td><td>optional variant card, <code>config/iitaca/variants/&lt;name&gt;.toml</code></td></tr>
+<tr><td><code>run_label</code></td><td>folder of the run under <code>results/iitaca/</code></td></tr>
+<tr><td><code>sample</code></td><td>species: bb0nu, single_electrons, bi214, tl208</td></tr>
+<tr><td><code>hits</code>, <code>particles</code></td><td>reduced hit table and NEXUS file of a batch, with <code>{batch}</code> for the batch tag and <code>$NAUSICAA_DATA</code> for the data folder of the machine</td></tr>
+<tr><td><code>seed</code></td><td>ion pairs, pad lattice offset, ion drift and emulated energy</td></tr>
+<tr><td><code>electronics_seed</code></td><td>VH1 noise, converter and frame noise hits</td></tr>
+<tr><td><code>frame_track</code></td><td>main track of the event, below</td></tr>
+<tr><td><code>max_events</code></td><td>optional; 0 reads the whole batch</td></tr>
+<tr><td><code>[overrides]</code></td><td>dotted keys into the detector set, for example <code>"geometry.fiducial_length_cm" = 150.0</code></td></tr></table>
+<h3>Main track</h3>
+<ul>
+<li><code>primary_and_delta_electrons</code>: the generated electrons and all their electron descendants whose mother chain contains no gamma. For bb0nu and single electrons.</li>
+<li><code>leading_gamma_electron</code>: for events generated as one gamma (²¹⁴Bi, ²⁰⁸Tl). The main track is the electron of highest initial kinetic energy among those produced directly by the generated gamma, with its electron descendants; its creation point is the event position. The other products of the gamma (further Compton electrons, the K X-ray) are gamma deposits: inside the frame they add energy and appear as detached deposits, outside it they belong to the veto.</li>
+</ul></section>
+
+<section id="steps"><h2>3. Processing one event</h2>
+<ol>
+<li>Read the Monte Carlo hits (positions in mm, energies in keV) and the particle table; centre the hits on the event position.</li>
+<li>Fast trigger with the fixed frame: a cube of <code>trigger.frame_side_mm</code> around the box of the main track, moved inward at the detector boundary. The event is rejected, in this order, when a main-track hit or an energetic gamma deposit lies outside the detector; when the main track is closer to the EL entry than <code>trigger.el_exclusion_mm</code>; when the track is larger than the frame; when the frame does not fit in the detector; when a gamma deposit above <code>trigger.gamma_energy_cut_keV</code> is not fully inside the frame. The decision of every event is saved.</li>
+<li>Box of the ion response: the main track and the gamma deposits inside the frame, enlarged by <code>trigger.simulation_margin_mm</code> and limited to the frame. Only the hits in this box are simulated.</li>
+<li>True energy: the sum of the energies of those hits. Event energy: the true energy plus one Gaussian deviate of σ = FWHM(E) / 2.355, with FWHM(E) = <code>energy.resolution_fwhm_at_qbb_keV</code> × √(E / Q<sub>ββ</sub>).</li>
+<li>Ions of each hit: mean E / W with the Fano factor.</li>
+<li>Ion response: each ion drifts to the pad plane with the thermal spread √(2 k T L / (e E)) for the drift length of the event, in x, y and z; it is assigned to its pad (pitch <code>ions.pad_pitch_mm</code>, random lattice offset per event) and to its frame (<code>ions.frame_ms</code>). All pads overlapping the box are read.</li>
+<li>VH1 electronics: converter readings of every pad and frame, with noise.</li>
+<li>VH1 reconstruction: ions per pad and frame, and the ion energy of the event (ions × W).</li>
+<li>Hits: one per pad and frame with positive reconstructed charge and energy above <code>tracks.saved_hit_cut_keV</code>, at the pad centre and the frame centre, relative to the event position. The cells of the frame outside the simulated box receive noise hits drawn from the Gaussian tail above the cut.</li>
+</ol>
+<p>The track selection, the endpoint energies and the ROI cut are applied afterwards, from the hit file.</p></section>
+
+<section id="streams"><h2>4. Random streams</h2>
+<p>Each event has one stream per purpose, seeded with the first 64 bits of SHA-256 of <code>"framed-v1|seed|event number|part"</code> (<code>IItaca.event_seed</code>). An event gives the same result whatever the batch, the order or the other events.</p>
+<table><tr><th>Part</th><th>Seed of the run card</th><th>Use</th></tr>
+<tr><td><code>emulated_energy</code></td><td><code>seed</code></td><td>Gaussian deviate of the event energy</td></tr>
+<tr><td><code>pairs</code></td><td><code>seed</code></td><td>ions of each hit</td></tr>
+<tr><td><code>ion_grid</code></td><td><code>seed</code></td><td>offset of the pad lattice</td></tr>
+<tr><td><code>ions</code></td><td><code>seed</code></td><td>diffusion of each ion</td></tr>
+<tr><td><code>vh1_noise</code>, <code>vh1_adc</code></td><td><code>electronics_seed</code></td><td>VH1 noise and converter</td></tr>
+<tr><td><code>frame_noise</code></td><td><code>electronics_seed</code></td><td>noise hits of the frame outside the box</td></tr></table></section>
+
+<section id="file"><h2>5. Hit file</h2>
+<p><code>results/iitaca/&lt;run_label&gt;/batches/&lt;tag&gt;/hits.h5</code>, schema <code>iitaca.hits.v1</code>. One file per batch, written once and never overwritten.</p>
+<table><tr><th>Group</th><th>Content</th></tr>
+<tr><td><code>configuration</code></td><td>run label, sample, variant, batch, seeds, main-track option; the run card, the detector cards, the variant card and the VH1 card as text; the resolved configuration; <code>simulation_inputs</code>, the detector values the driver read; SHA-256 of the two input files, of the VH1 card and of every code file</td></tr>
+<tr><td><code>selection/events</code></td><td>every event read: <code>event_number</code>, <code>decision</code> (0 accepted, 1 outside detector, 3 gamma outside the frame, 4 track larger than the frame, 5 frame outside the detector, 6 main track near the EL), <code>ion_drift_cm</code></td></tr>
+<tr><td><code>selection/counts</code></td><td>events per decision</td></tr>
+<tr><td><code>events</code></td><td>one row per accepted event, below</td></tr>
+<tr><td><code>itrack</code></td><td><code>x_mm</code>, <code>y_mm</code>, <code>z_mm</code>, <code>energy_keV</code> of all hits, Float32, in mm relative to the event position; the hits of event j are rows <code>hit_offset</code>[j] + 1 to <code>hit_offset</code>[j] + <code>hit_count</code>[j]</td></tr>
+<tr><td><code>timing</code></td><td>seconds per stage, events read and accepted</td></tr></table>
+<h3>Columns of <code>events</code></h3>
+<table><tr><th>Column</th><th>Unit</th><th>Content</th></tr>
+<tr><td><code>event_number</code></td><td></td><td>Monte Carlo event number</td></tr>
+<tr><td><code>energy_keV</code></td><td>keV</td><td>event energy, emulated; the ROI cut uses it</td></tr>
+<tr><td><code>energy_true_keV</code></td><td>keV</td><td>energy deposited in the box</td></tr>
+<tr><td><code>energy_outside_box_keV</code></td><td>keV</td><td>energy deposited in the gas outside the box</td></tr>
+<tr><td><code>ion_energy_keV</code></td><td>keV</td><td>reconstructed ions × W; NaN if a pad is invalid</td></tr>
+<tr><td><code>invalid_ion_buckets</code>, <code>saturated_pads</code></td><td></td><td>pad-frames without a valid reconstruction; pads outside the linear window</td></tr>
+<tr><td><code>ion_drift_cm</code>, <code>ion_sigma_mm</code></td><td>cm, mm</td><td>drift length of the event and its thermal spread</td></tr>
+<tr><td><code>ion_noise_ions</code></td><td>ions</td><td>noise per pad and frame after reconstruction</td></tr>
+<tr><td><code>vertex_x_mm</code>, <code>vertex_y_mm</code>, <code>vertex_z_mm</code></td><td>mm</td><td>event position in detector coordinates</td></tr>
+<tr><td><code>frame_*_mm</code></td><td>mm</td><td>bounds of the fixed frame, relative to the event position</td></tr>
+<tr><td><code>box_*_mm</code></td><td>mm</td><td>bounds of the simulated box</td></tr>
+<tr><td><code>pads</code>, <code>frames</code></td><td></td><td>pads and frames read</td></tr>
+<tr><td><code>hit_offset</code>, <code>hit_count</code></td><td></td><td>rows of the event in <code>itrack</code></td></tr></table></section>
+
+<section id="functions"><h2>6. Functions</h2>
+<p>In <code>src/iitaca/IItaca.jl</code>:</p>
+<pre>resolve_run(run_path; root) -> ResolvedRun            # run card, variant and overrides; checked
+resolved_text(r::ResolvedRun, root) -> String          # resolved configuration as TOML, with hashes
+simulation_inputs(detector) -> Dict{String,Any}        # the values the simulation may read
+event_seed(seed, event_number, part) -> UInt64         # seed of one stream of one event
+frame_energy_keV(hits::MCEventHits, box::EventFrame) -> Float64
+emulated_energy_keV(rng, E_keV, energy_card) -> Float64
+roi_keV(energy_card) -> (lower, upper);  in_roi(energy_card, E_keV) -> Bool</pre>
+<p>In <code>scripts/iitaca/run_iitaca_batch.jl</code>:</p>
+<pre>trigger_settings(sim) -> FixedFrameTriggerSettings
+ion_event_settings(sim, seed, placement) -> DetectorResponseSettings   # electron entries unused
+run_iitaca_batch(card; batch, limit=0, output_root) -> String          # path of the hit file</pre></section>
+
+<section id="check"><h2>7. Check against the ITACA production</h2>
+<p><code>tests/iitaca/test_iitaca_equivalence.jl</code> reads the bb0nu pilot (batches 0 and 1) with the ion settings of the ITACA run <code>bb0nu_itaca_pilot_10x100_ion15</code> as overrides (<code>config/iitaca/runs/hybrid_equivalence_bb0nu_pilot.toml</code>) and compares with the ITACA hit files.</p>
+<ul>
+<li>Same accepted events, in the same order: 130 of 164.</li>
+<li>Same itrack hits, bit for bit: 20,987 hits, positions and energies.</li>
+<li>Same ion energy and drift length per event; the true energy equals the energy in the frame recorded by the ITACA detector-response stage.</li>
+</ul></section>
+
+<section id="commands"><h2>8. Commands</h2>
+<pre>export NAUSICAA_DATA=&lt;folder of the input files&gt;
+make iitaca-batch RUN=config/iitaca/runs/&lt;card&gt;.toml BATCH=0
+julia --project=. scripts/iitaca/run_iitaca_batch.jl &lt;card&gt; --batch=0 --limit=100    # first 100 events, separate folder
+make test-iitaca</pre></section>
+</main><footer>iItaca · Simulation chain</footer></body></html>

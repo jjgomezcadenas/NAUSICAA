@@ -435,6 +435,12 @@ test-iitaca:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_conditions.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_energy.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/track_selection/test_track_selection.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_equivalence.jl
+
+# One batch of an iItaca run: make iitaca-batch RUN=config/iitaca/runs/<card>.toml BATCH=0, with NAUSICAA_DATA set
+.PHONY: iitaca-batch
+iitaca-batch:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/run_iitaca_batch.jl $(RUN) --batch=$(BATCH)
 
 .PHONY: itaca-detector itaca-detector-present test-itaca
 # ITACA operating conditions: derived values (Julia, HDF5) and the detector page (Python).

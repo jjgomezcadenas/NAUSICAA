@@ -33,10 +33,12 @@ using ..ItacaConditions: DetectorSet, apply_overrides, flatten, gas_state, enric
 
 export SECTIONS, load_iitaca_set, load_variant, ResolvedDetector, resolve_detector, check_detector,
        simulation_inputs, documentation_inputs, potentials_kV, resolution_fwhm_keV, roi_keV, in_roi, derived_conditions,
-       FWHM_PER_SIGMA, frame_energy_keV, emulated_energy_keV, selection_settings, feature_settings
+       FWHM_PER_SIGMA, frame_energy_keV, emulated_energy_keV, selection_settings, feature_settings,
+       ResolvedRun, resolve_run, resolved_text, event_seed
 
 const SET_SCHEMA = "nausicaa.iitaca_set.v1"
 const VARIANT_SCHEMA = "nausicaa.iitaca_variant.v1"
+const RUN_SCHEMA = "nausicaa.iitaca_run.v1"
 const SECTIONS = ("gas", "geometry", "drift", "voltages", "ions", "energy", "el", "trigger", "tracks")
 "FWHM of a Gaussian over its sigma, 2 sqrt(2 ln 2)."
 const FWHM_PER_SIGMA = 2 * sqrt(2 * log(2))
@@ -112,6 +114,75 @@ function resolve_detector(index_path::AbstractString; variant = nothing, overrid
     check_detector(detector; root)
     ResolvedDetector(set, name, vpath, vtext, all, detector)
 end
+
+"""A run card resolved against the detector set and its variant."""
+struct ResolvedRun
+    run_path::String
+    run::Dict{String,Any}                 # the run card without its overrides
+    resolved::ResolvedDetector
+end
+
+"Keys every run card holds."
+const RUN_KEYS = ("detector", "run_label", "sample", "hits", "particles", "seed", "electronics_seed", "frame_track")
+
+"""
+    resolve_run(run_path; root)::ResolvedRun
+
+Load a run card (schema `nausicaa.iitaca_run.v1`): the detector index, an
+optional variant card and `[overrides]`, applied after those of the variant.
+The other keys are the run parameters: `run_label`, `sample`, the input files
+`hits` and `particles`, `seed` (transport and emulated energy),
+`electronics_seed` (VH1 noise and converter), `frame_track`
+(`primary_and_delta_electrons` or `leading_gamma_electron`) and optionally
+`max_events` (0: all) and `max_vector_bytes`. Paths are relative to `root`.
+A detector key at the top level of the run card is refused.
+"""
+function resolve_run(run_path::AbstractString; root::AbstractString)::ResolvedRun
+    run = TOML.parsefile(run_path)
+    get(run, "schema", "") == RUN_SCHEMA || throw(ArgumentError("Expected schema $RUN_SCHEMA in $run_path"))
+    for k in RUN_KEYS
+        haskey(run, k) || throw(ArgumentError("Run card without '$k': $run_path"))
+    end
+    run["frame_track"] in ("primary_and_delta_electrons", "leading_gamma_electron") ||
+        throw(ArgumentError("frame_track must be primary_and_delta_electrons or leading_gamma_electron"))
+    variant = haskey(run, "variant") ? joinpath(root, run["variant"]) : nothing
+    r = resolve_detector(joinpath(root, run["detector"]); variant, overrides = get(run, "overrides", Dict{String,Any}()), root)
+    physical = Set(k for s in SECTIONS for k in keys(r.set.cards[s]))
+    stray = [k for k in keys(run) if k in physical]
+    isempty(stray) || throw(ArgumentError("Detector keys $(join(stray, ", ")) in the run card; use [overrides]"))
+    ResolvedRun(String(run_path), Dict{String,Any}(k => v for (k, v) in run if k != "overrides"), r)
+end
+
+"""
+    resolved_text(r::ResolvedRun, root)::String
+
+The resolved configuration as TOML: identity and SHA-256 of the detector cards,
+of the variant card and of the run card, the overrides, the detector values
+after the overrides, and the run parameters.
+"""
+function resolved_text(r::ResolvedRun, root::AbstractString)::String
+    d = r.resolved
+    out = Dict{String,Any}(
+        "schema" => "nausicaa.iitaca_resolved_run.v1",
+        "detector_set" => Dict("index" => relpath(d.set.index_path, root), "name" => d.set.name, "date" => d.set.date, "sha256" => d.set.sha256),
+        "variant" => Dict("name" => d.variant, "card" => d.variant_path == "" ? "" : relpath(d.variant_path, root),
+                          "sha256" => d.variant_text == "" ? "" : bytes2hex(sha256(d.variant_text))),
+        "overrides" => d.overrides, "detector" => d.detector, "run" => r.run,
+        "run_card" => Dict("path" => relpath(r.run_path, root), "sha256" => bytes2hex(sha256(read(r.run_path, String)))))
+    sprint(io -> TOML.print(io, out; sorted = true))
+end
+
+"""
+    event_seed(seed, event_number, part)::UInt64
+
+Seed of one random stream of one event: the first 64 bits of the SHA-256 of
+`"framed-v1|seed|event_number|part"`. Each part (`pairs`, `ions`, `ion_grid`,
+`vh1_noise`, `vh1_adc`, `frame_noise`, `emulated_energy`) has its own stream,
+so a stage can be repeated or left out without changing the others. The same
+rule as the ITACA production (`seedfor`), which makes the two chains draw the
+same numbers for the same event.
+"""
+event_seed(seed, event_number, part) = parse(UInt64, bytes2hex(sha256("framed-v1|$seed|$event_number|$part"))[1:16]; base = 16)
 
 """
     simulation_inputs(detector)::Dict{String,Any}

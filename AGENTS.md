@@ -357,6 +357,13 @@ in `notes/html/itaca_detector.html`, the scheme in
   Z cell, VH1 frame = detector frame). Variants: II_L1000_D500 (default; 1.0 m,
   500 V/cm, 20.0 cm/s, 15 ms) and II_L1500_D350 (1.5 m, 350 V/cm, 15.0 cm/s,
   20 ms); the velocities are user design inputs.
+- `scripts/iitaca/run_iitaca_batch.jl` reads one batch and writes
+  `results/iitaca/<run_label>/batches/<tag>/hits.h5` (schema `iitaca.hits.v1`):
+  trigger, emulated energy, ion transport, VH1, hits, in one pass. It uses the
+  per-event random streams of the ITACA production, so with the ITACA ion
+  settings as overrides it reproduces the ITACA itrack hits bit for bit
+  (`tests/iitaca/test_iitaca_equivalence.jl`); keep that test passing when
+  touching either chain. Chain and file format: `notes/html/iitaca/simulation.html`.
 - `make iitaca-detector` regenerates `notes/html/iitaca_detector.html` from the
   cards; `make test-iitaca` runs the tests. All iItaca documentation and
   results are reached from `notes/html/iitaca/index.html`; results obtained

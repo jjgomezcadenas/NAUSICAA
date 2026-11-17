@@ -159,3 +159,26 @@ end
     hot = table(resolve_detector(INDEX; overrides = Dict("gas.temperature_K" => 300.0)).detector)
     @test hot["gas.density_kg_m3"] < a["gas.density_kg_m3"] && hot["drift.ion_thermal_spread_mm"] > a["drift.ion_thermal_spread_mm"]
 end
+
+@testset "Run cards" begin
+    card = joinpath(ROOT, "config/iitaca/runs/hybrid_equivalence_bb0nu_pilot.toml")
+    r = resolve_run(card; root = ROOT)
+    @test r.run["run_label"] == "hybrid_equivalence_bb0nu_pilot" && !haskey(r.run, "overrides")
+    @test r.resolved.detector["geometry"]["fiducial_length_cm"] == 130.0 && r.resolved.detector["ions"]["frame_ms"] == 20.0
+    text = resolved_text(r, ROOT); again = TOML.parse(text)
+    @test again["detector"]["drift"]["field_V_cm"] == 350.0 && again["overrides"]["drift.field_V_cm"] == 350.0
+    @test length(again["run_card"]["sha256"]) == 64 && again["detector_set"]["index"] == "config/iitaca/iitaca.toml"
+    @test resolved_text(resolve_run(card; root = ROOT), ROOT) == text
+    # the random streams of an event: fixed, distinct per event, part and seed, and those of the ITACA production
+    @test event_seed(42, 7, "ions") == event_seed(42, 7, "ions")
+    @test length(unique([event_seed(42, 7, "ions"), event_seed(42, 8, "ions"), event_seed(42, 7, "pairs"), event_seed(43, 7, "ions")])) == 4
+    @test event_seed(42, 7, "ions") == parse(UInt64, bytes2hex(IItaca.sha256("framed-v1|42|7|ions"))[1:16]; base = 16)
+    mktempdir() do dir
+        write(joinpath(dir, "a.toml"), replace(read(card, String), "frame_track = \"primary_and_delta_electrons\"" => "frame_track = \"all\""))
+        @test_throws ArgumentError resolve_run(joinpath(dir, "a.toml"); root = ROOT)
+        write(joinpath(dir, "b.toml"), replace(read(card, String), "seed = 42\n" => "seed = 42\nfield_V_cm = 300.0\n"))
+        @test_throws ArgumentError resolve_run(joinpath(dir, "b.toml"); root = ROOT)         # a detector key outside [overrides]
+        write(joinpath(dir, "c.toml"), replace(read(card, String), "electronics_seed = 20261113\n" => ""))
+        @test_throws ArgumentError resolve_run(joinpath(dir, "c.toml"); root = ROOT)
+    end
+end
