@@ -1,0 +1,21 @@
+# Production of the variant II_L1000_D500_P2 (2 mm pads, 10 ms frames): gammas of the 2614.511 keV line of 208Tl from the inner surface,
+# 1,000 batches of 100,000 generated gammas (100 million), saved when the energy deposited in the gas lies in the gamma window
+# 2420-2490 keV (generation.gamma_saved_energy_*_keV). Geant4 files of the II_L1000_D500_P2 macros (geometry of II_L1000_D500),
+# seed offset 3000, independent of II_L1000_D500_P2_tl208.
+# Batches: scripts/iitaca/slurm/iitaca_batches.slurm with NAUSICAA_DATA set to the folder that holds II_L1000_D500/.
+schema = "nausicaa.iitaca_run.v1"
+detector = "config/iitaca/iitaca.toml"
+variant = "config/iitaca/variants/II_L1000_D500_P2.toml"
+run_label = "II_L1000_D500_P2_tl208_w"
+sample = "tl208"
+hits = "$NAUSICAA_DATA/II_L1000_D500/prod_tl208_w/tl208_{batch}_hitdf.h5"
+particles = "$NAUSICAA_DATA/II_L1000_D500/prod_tl208_w/tl208_{batch}.next.h5"
+generated_events_per_batch = 100000
+max_events = 0                    # 0: all events of the batch
+seed = 42
+electronics_seed = 20261113
+frame_track = "leading_gamma_electron"
+max_vector_bytes = 268435456
+vh1_minimum_samples = 32768
+
+[overrides]                       # none

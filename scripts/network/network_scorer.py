@@ -2,6 +2,7 @@
 """Apply a trained classification network to other samples.
 
   python scripts/network/network_scorer.py TRAINING_DIR SAMPLE.h5 [SAMPLE.h5 ...]
+  python scripts/network/network_scorer.py TRAINING_DIR SAMPLE.h5 --other-selection=TAG
 
 TRAINING_DIR holds training.h5 and model.pt of network_trainer.py; each SAMPLE.h5
 is a file of network_events_builder.jl or build_iitaca_network_events.jl,
@@ -15,6 +16,11 @@ selected as the training files were (the same selection text). For each sample:
 Writes TRAINING_DIR/scores_<species>.h5 (schema itaca.network_scores.v1): the
 score of every event, the thresholds, the accepted fractions, and the identity
 of the training and of the sample. An existing file is preserved.
+
+--other-selection=TAG scores samples selected differently from the training
+files (for instance on an energy window instead of the ROI): the thresholds
+still come from the training's test events. The output is
+TRAINING_DIR/scores_<species>_<TAG>.h5 and records both selection texts.
 """
 import argparse,hashlib,sys
 from pathlib import Path
@@ -34,6 +40,7 @@ def load_training(directory):
 def main():
     p=argparse.ArgumentParser(description=__doc__,formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('training');p.add_argument('samples',nargs='+');p.add_argument('--batch-size',type=int,default=256)
+    p.add_argument('--other-selection',metavar='TAG',help='accept samples selected differently from the training files; write scores_<species>_<TAG>.h5')
     p.add_argument('--device',default='cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
     a=p.parse_args();directory=Path(a.training);t=load_training(directory);sparse=t['model']=='sparse'
     if sparse and not sparse_available(): raise SystemExit('The sparse model needs spconv and a CUDA GPU; it runs on Hyperion (requirements-network-hyperion.txt).')
@@ -47,8 +54,8 @@ def main():
     print(f'training {directory} ({t["signal"]} against {t["background"]}, input {t["input"]}, model {t["model"]}); device {device}',flush=True)
     for path in a.samples:
         sample=Sample(path)
-        if sample.selection!=t['selection']: raise SystemExit(f'{path} was selected differently from the training files:\n  {sample.selection}\n  {t["selection"]}')
-        target=directory/f'scores_{sample.species}.h5'
+        if sample.selection!=t['selection'] and not a.other_selection: raise SystemExit(f'{path} was selected differently from the training files (use --other-selection):\n  {sample.selection}\n  {t["selection"]}')
+        target=directory/(f'scores_{sample.species}_{a.other_selection}.h5' if a.other_selection else f'scores_{sample.species}.h5')
         if target.exists(): raise SystemExit(f'Preserve existing scores: {target}')
         data,events,_=merge([sample]);missing=[arm for arm in arms if arm not in data]
         if missing: raise SystemExit(f'{path} holds no {", ".join(missing)}')
@@ -60,7 +67,7 @@ def main():
         accepted=np.array([(scores>h).sum() for h in thresholds]);fraction=accepted/sample.n;error=np.sqrt(fraction*(1-fraction)/sample.n)
         tmp=target.with_suffix('.h5.tmp')
         with h5py.File(tmp,'w') as f:
-            f['schema']='itaca.network_scores.v1';f['species']=sample.species;f['run_label']=sample.run_label;f['selection']=sample.selection
+            f['schema']='itaca.network_scores.v1';f['species']=sample.species;f['run_label']=sample.run_label;f['selection']=sample.selection;f['training_selection']=t['selection']
             f['sample_sha256']=hashlib.sha256(Path(path).read_bytes()).hexdigest();f['model_sha256']=weights;f['training_commit']=t['commit']
             f['events/event_number']=events['event_number'];f['events/score']=scores
             for k in ('ion_drift_cm','itrack_E2_keV','energy_keV'):

@@ -34,6 +34,12 @@ else
         @test all(in(a.columns), ("itrack_E2_keV", "itrack_E1_keV", "itrack_length_mm", "ion_drift_cm", "energy_keV", "batch", "event_number"))
         @test occursin("ROI cut on the event energy", a.selection)
         @test_throws ErrorException build_iitaca_network_events(run_dir, joinpath(dir, "iitaca.h5"))   # an existing file is preserved
+        w = build_iitaca_network_events(run_dir, joinpath(dir, "window.h5"); window = (2420.0, 2490.0))    # box-energy window instead of the ROI
+        h5open(w, "r") do f
+            @test occursin("window cut on the box energy (energy_true_keV), 2420.0 to 2490.0 keV", read(f["selection"]))
+            E = read(f["events/energy_true_keV"]); @test all(2420 .<= E .<= 2490) && all(==(1), read(f["events/selected"]))
+            @test read(f["roi/selected_events"]) == length(a.ids)
+        end
     end
     rm(dir; recursive = true)
 end
