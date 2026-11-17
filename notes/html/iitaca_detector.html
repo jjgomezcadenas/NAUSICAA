@@ -1,0 +1,174 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>iItaca detector and operating conditions</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}pre{background:#edf3f6;padding:18px;overflow:auto;font:14px/1.6 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}td:nth-child(2){white-space:nowrap}table.variants td:nth-child(3){white-space:nowrap}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}footer{padding:20px;color:#526776}li{margin:6px 0} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}</style></head><body><header><a href="index.html">Documentation index</a><h1>iItaca detector and operating conditions</h1><p>The ion-reading version of ITACA in pure xenon (iItaca, also written ITACAi or II): common design values, the two variants II_L1000_D500 and II_L1500_D350, and the quantities derived from them.</p></header><main><nav><a href="#principle">Principle</a><a href="#common">Common design values</a><a href="#variants">The two variants</a><a href="#derived">Derived quantities</a><a href="#simulation">Simulation</a><a href="#open">Open items</a><a href="#sources">Sources</a></nav><p>Design values: user design inputs of 2026-11-17. The detector cards of iItaca and the ion-only simulation mode are to be written from this page. Layout and formulas follow <a href="itaca_detector.html">the ITACA detector page</a>; the derived values are computed with <code>work/iitaca/iitaca_numbers.py</code>.</p>
+
+<section id="principle"><h2>1. Purpose and principle</h2>
+<ol>
+<li>The ions give the track. The Xe<sub>2</sub><sup>+</sup> molecular ions (written Xe2+, charge +e) drift to the TopMetal pads with a thermal spread of 1.0 to 1.5 mm and are read on a cubic 3 mm lattice.</li>
+<li>The electrons give the start time, the fast trigger and the event energy. They drift to the EL plane, read by SiPMs at 8 mm pitch.</li>
+<li>The gas is pure xenon enriched in Xe-136, without helium. The electron spread at full drift is about 10 mm, so the electron plane gives a coarse image and the track topology comes from the ions.</li>
+<li>The simulation covers the ion side: Geant4, ion transport, VH1 electronics, reconstruction, hits and tracks. The electron side is emulated: the fast trigger from the Geant4 deposits and the energy from their sum smeared with the energy resolution.</li>
+</ol></section>
+
+<section id="common"><h2>2. Common design values</h2>
+<h3>Gas</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Gas</td><td>pure xenon</td><td></td><td>enriched in Xe-136, no helium</td></tr>
+<tr><td>Xenon isotopic fractions</td><td>Xe136 = 0.902616</td><td></td><td>NEXUS GXeEnriched, as in <code>config/detector/gas.toml</code></td></tr>
+<tr><td>Pressure</td><td>16</td><td>bar</td><td></td></tr>
+<tr><td>Temperature</td><td>290</td><td>K</td><td></td></tr></table>
+<h3>Geometry</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Fiducial radius</td><td>2.0</td><td>m</td><td></td></tr>
+<tr><td>Fiducial length (drift)</td><td>1.0 or 1.5</td><td>m</td><td>the two variants, Section 3</td></tr>
+<tr><td>Origin of z</td><td>TopMetal pad plane</td><td></td><td>z along the drift; an event at z has ion drift length z</td></tr></table>
+<h3>Ion plane</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Readout chip</td><td>TopMetal</td><td></td><td></td></tr>
+<tr><td>Pad pitch</td><td>3</td><td>mm</td><td></td></tr>
+<tr><td>Collecting electrode side</td><td>0.5</td><td>mm</td><td></td></tr>
+<tr><td>Ion focusing grid (IFG) thickness</td><td>10</td><td>mm</td><td></td></tr>
+<tr><td>Pad gap</td><td>5</td><td>mm</td><td>pad-facing IFG face to the pads</td></tr>
+<tr><td>Pads</td><td>0</td><td>kV</td><td>ground</td></tr>
+<tr><td>Pad-facing IFG face</td><td>3</td><td>kV</td><td>6 kV/cm in the pad gap</td></tr>
+<tr><td>TPC-facing IFG face</td><td>8</td><td>kV</td><td>5 kV/cm across the IFG</td></tr>
+<tr><td>Ion</td><td>Xe2+ molecular ion, charge +e</td><td></td><td>Xe<sub>2</sub><sup>+</sup></td></tr>
+<tr><td>Length of one frame</td><td>3.0</td><td>mm</td><td>ion velocity × frame, both variants: cubic 3 mm lattice</td></tr>
+<tr><td>Ion electronics</td><td>VH1, 20 fF capacitors</td><td></td><td><a href="event_analysis/sim_vh1_readout.html">VH1 readout</a>, validated at 20 ms frames</td></tr></table>
+<h3>EL plane and SiPMs (present in the detector, not simulated)</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Role</td><td>start time, fast trigger, energy</td><td></td><td></td></tr>
+<tr><td>EL hole and SiPM pitch</td><td>8</td><td>mm</td><td>one SiPM per hole</td></tr>
+<tr><td>Transfer gap</td><td>10</td><td>mm</td><td>end of the drift to the EL entry electrode</td></tr>
+<tr><td>Transfer-gap field</td><td>300</td><td>V/cm</td><td>0.3 kV across</td></tr>
+<tr><td>EL gap</td><td>5</td><td>mm</td><td></td></tr>
+<tr><td>Voltage across the EL</td><td>15</td><td>kV</td><td>30 kV/cm, 1.875 kV/cm/bar</td></tr>
+<tr><td>SiPM plane</td><td>0</td><td>kV</td><td>ground, behind the light guides</td></tr>
+<tr><td>Hole diameter, guide dimensions, SiPM size</td><td>open</td><td></td><td>Section 6</td></tr></table>
+<h3>Energy</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Energy per electron–ion pair, W</td><td>21.9</td><td>eV</td><td></td></tr>
+<tr><td>Fano factor</td><td>0.15</td><td></td><td></td></tr>
+<tr><td>Q<sub>ββ</sub> of Xe-136</td><td>2457.83</td><td>keV</td><td></td></tr>
+<tr><td>Energy resolution, FWHM at Q<sub>ββ</sub></td><td>0.47 %</td><td></td><td>11.60 keV, Gaussian σ = 4.93 keV; scales as √E. Value obtained in the full simulation of the Xe/He electron readout, kept unchanged</td></tr>
+<tr><td>ROI</td><td>2452.03 to 2463.63</td><td>keV</td><td>one FWHM around Q<sub>ββ</sub></td></tr></table></section>
+
+<section id="variants"><h2>3. The two variants</h2>
+<table class="variants"><tr><th>Quantity</th><th>II_L1000_D500</th><th>II_L1500_D350</th><th>Definition</th></tr>
+<tr><td>Drift length</td><td>1.0 m</td><td>1.5 m</td><td></td></tr>
+<tr><td>Drift field</td><td>500 V/cm</td><td>350 V/cm</td><td></td></tr>
+<tr><td>Reduced drift field</td><td>31.25 V/cm/bar</td><td>21.9 V/cm/bar</td><td>plain pressure</td></tr>
+<tr><td>Fiducial volume</td><td>12.57 m³</td><td>18.85 m³</td><td>π R² L</td></tr>
+<tr><td>Xenon mass</td><td>1,247 kg</td><td>1,870 kg</td><td>density × volume</td></tr>
+<tr><td>Xe-136 mass</td><td>1,127 kg</td><td>1,691 kg</td><td>Xe-136 mass fraction 90.4 %</td></tr>
+<tr><td>Drift voltage</td><td>50 kV</td><td>52.5 kV</td><td>E<sub>d</sub> L</td></tr>
+<tr><td>Ion drift velocity</td><td>20.0 cm/s</td><td>15.0 cm/s</td><td>user design input</td></tr>
+<tr><td>Frame</td><td>15 ms</td><td>20 ms</td><td>one frame spans 3.0 mm</td></tr>
+<tr><td>Longest ion drift time</td><td>5.0 s</td><td>10 s</td><td>L / v<sub>ion</sub>; 333 and 500 frames</td></tr>
+<tr><td>Ion thermal spread at full drift</td><td>1.00 mm</td><td>1.46 mm</td><td>√(2 k T L / (e E))</td></tr></table>
+<h3>Potentials along the axis, anode at top</h3>
+<p>The pads and the SiPM plane are at ground. The potential rises from the TPC-facing face of the IFG through the drift region, the transfer gap and the EL region, and is graded back to ground along the light guides.</p>
+<table class="variants"><tr><th>Electrode or region</th><th>II_L1000_D500</th><th>II_L1500_D350</th><th>Length and field</th></tr>
+<tr><td>SiPM plane</td><td>0 kV</td><td>0 kV</td><td>sensors at ground</td></tr>
+<tr><td>Light guides</td><td>73.3 → 0 kV</td><td>75.8 → 0 kV</td><td>guide length open</td></tr>
+<tr><td>EL exit (highest potential)</td><td>73.3 kV</td><td>75.8 kV</td><td></td></tr>
+<tr><td>EL region</td><td>58.3 → 73.3 kV</td><td>60.8 → 75.8 kV</td><td>5 mm, 15 kV across, 30 kV/cm</td></tr>
+<tr><td>EL entry</td><td>58.3 kV</td><td>60.8 kV</td><td></td></tr>
+<tr><td>Transfer gap</td><td>58.0 → 58.3 kV</td><td>60.5 → 60.8 kV</td><td>10 mm, 300 V/cm</td></tr>
+<tr><td>End of drift</td><td>58.0 kV</td><td>60.5 kV</td><td></td></tr>
+<tr><td>Drift region</td><td>8 → 58.0 kV</td><td>8 → 60.5 kV</td><td>1,000 mm at 500 V/cm; 1,500 mm at 350 V/cm</td></tr>
+<tr><td>TPC-facing IFG face</td><td>8 kV</td><td>8 kV</td><td></td></tr>
+<tr><td>Ion focusing grid (IFG)</td><td>3 → 8 kV</td><td>3 → 8 kV</td><td>10 mm, 5 kV/cm</td></tr>
+<tr><td>Pad-facing IFG face</td><td>3 kV</td><td>3 kV</td><td></td></tr>
+<tr><td>Pad gap</td><td>0 → 3 kV</td><td>0 → 3 kV</td><td>5 mm, 6 kV/cm</td></tr>
+<tr><td>Pads (z = 0)</td><td>0 kV</td><td>0 kV</td><td>ground</td></tr></table>
+<h3>Ion drift velocity</h3>
+<p>The reduced mobility K<sub>0</sub> = 0.65 cm²/(V·s) of Xe<sub>2</sub><sup>+</sup> in xenon (Neves et al., via Cortez et al.) and N/N<sub>0</sub> = 16.39 for pure xenon at 16 bar, 290 K give v = K<sub>0</sub> E N<sub>0</sub>/N = 19.8 cm/s at 500 V/cm and 13.9 cm/s at 350 V/cm. The adopted 20.0 and 15.0 cm/s make the frames of 15 and 20 ms span exactly 3.0 mm.</p></section>
+
+<section id="derived"><h2>4. Derived quantities</h2>
+<h3>Gas</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Molar mass of the enriched xenon</td><td>135.7</td><td>g/mol</td><td>isotopic fractions of the card</td></tr>
+<tr><td>Xe-136 mass fraction</td><td>90.4 %</td><td></td><td>mole fraction 90.26 %</td></tr>
+<tr><td>Xenon compressibility z</td><td>0.9074</td><td></td><td>second virial, 16 bar, 290 K</td></tr>
+<tr><td>Gas density</td><td>99.22</td><td>kg/m³</td><td>P M / (z R T)</td></tr>
+<tr><td>Number density</td><td>4.404e+26</td><td>m⁻³</td><td></td></tr>
+<tr><td>Number density relative to STP, N/N₀</td><td>16.39</td><td></td><td>N₀ at 273.15 K and 101325 Pa</td></tr></table>
+<p>Density model: z = 1 + (a − b / T<sub>r</sub><sup>1.6</sup>) P<sub>r</sub> / T<sub>r</sub>, with a = 0.083, b = 0.422, T<sub>r</sub> = T / 289.7 K, P<sub>r</sub> = P / 58.42 bar; ρ = P M<sub>Xe</sub> / (z R T). NEXT DocDB 1183, as in <code>config/detector/gas.toml</code>.</p>
+<h3>Readout planes</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Area of each end</td><td>12.57</td><td>m²</td><td>π R²</td></tr>
+<tr><td>Pads</td><td>1.40e6</td><td></td><td>end area over the pad pitch squared</td></tr>
+<tr><td>Electrode area over cell area</td><td>2.8 %</td><td></td><td>collecting electrode over cell area</td></tr>
+<tr><td>EL holes and SiPMs</td><td>196,350</td><td></td><td>end area over the 8 mm pitch squared</td></tr></table>
+<h3>Ions</h3>
+<p>The ion spread is thermal and does not depend on the ion velocity: σ = √(2 k T L / (e E)), the same in x, y and z (ITACA revisited, Eq. (2.1); implementation in <code>src/event_analysis/production.jl</code>).</p>
+<table class="variants"><tr><th>Quantity</th><th>II_L1000_D500</th><th>II_L1500_D350</th><th>Definition</th></tr>
+<tr><td>Ion thermal spread at full drift</td><td>1.00 mm</td><td>1.46 mm</td><td>uniform field, singly charged ions</td></tr>
+<tr><td>Spread over pad pitch</td><td>0.33</td><td>0.49</td><td>σ / 3 mm</td></tr>
+<tr><td>Longest ion drift time</td><td>5.0 s</td><td>10 s</td><td>L / v<sub>ion</sub></td></tr>
+<tr><td>Ion velocity from K<sub>0</sub> = 0.65 cm²/(V·s)</td><td>19.8 cm/s</td><td>13.9 cm/s</td><td>K<sub>0</sub> E N<sub>0</sub>/N</td></tr>
+<tr><td>Reduced mobility implied by the adopted velocity</td><td>0.656 cm²/(V·s)</td><td>0.702 cm²/(V·s)</td><td>v N / (N<sub>0</sub> E)</td></tr></table>
+<h3>Electrons (design values, not simulated)</h3>
+<p>Diffusion in pure xenon from Table 1 of the NEXT-DEMO++ paper (<code>papers/xehe_paper.pdf</code>), measured at about 8.7 bar. Conversion: D = D* / √P at 16 bar, assuming that the reduced coefficients depend only on E/p; 1,000 µm·√bar/√cm is 2.5 mm/√m at 16 bar.</p>
+<table><tr><th>E/p (V/cm/bar)</th><th>D*<sub>L</sub> (µm·√bar/√cm)</th><th>D*<sub>T</sub> (µm·√bar/√cm)</th><th>D<sub>L</sub> at 16 bar (mm/√m)</th><th>D<sub>T</sub> at 16 bar (mm/√m)</th></tr>
+<tr><td>25</td><td>1752 ± 122</td><td>3834 ± 119</td><td>4.38</td><td>9.59</td></tr>
+<tr><td>25</td><td>1611 ± 82</td><td>4124 ± 442</td><td>4.03</td><td>10.31</td></tr>
+<tr><td>35</td><td>1191 ± 58</td><td>3677 ± 249</td><td>2.98</td><td>9.19</td></tr>
+<tr><td>40</td><td>1082 ± 21</td><td>4121 ± 200</td><td>2.71</td><td>10.30</td></tr></table>
+<table class="variants"><tr><th>Quantity</th><th>II_L1000_D500</th><th>II_L1500_D350</th><th>Definition</th></tr>
+<tr><td>Reduced drift field</td><td>31.25 V/cm/bar</td><td>21.9 V/cm/bar</td><td></td></tr>
+<tr><td>Source of the coefficients</td><td>interpolated between 25 and 35–40 V/cm/bar</td><td>measurement at 25 V/cm/bar</td><td>21.9 V/cm/bar is below the lowest measured point</td></tr>
+<tr><td>Transverse diffusion coefficient</td><td>9.3–10.3 mm/√m</td><td>9.6–10.3 mm/√m</td><td>range of the two data sets</td></tr>
+<tr><td>Longitudinal diffusion coefficient</td><td>3.5 mm/√m</td><td>4.0–4.4 mm/√m</td><td>interpolations give 3.4–3.7 at 31.25 V/cm/bar; the coefficient rises towards low field</td></tr>
+<tr><td>Transverse spread at full drift</td><td>9.3–10.3 mm</td><td>12–13 mm</td><td>D<sub>T</sub> √L</td></tr>
+<tr><td>Longitudinal spread at full drift</td><td>3.5 mm</td><td>4.9–5.4 mm</td><td>D<sub>L</sub> √L</td></tr>
+<tr><td>Electron drift velocity</td><td>open</td><td>open</td><td>not reported for pure xenon at these fields</td></tr></table>
+<p>With an electron spread of about 10 mm and 8 mm pitch, the electron plane gives the energy, the start time and a coarse image.</p>
+<h3>EL yield and energy</h3>
+<table><tr><th>Quantity</th><th>Value</th><th>Unit</th><th>Definition</th></tr>
+<tr><td>Reduced EL field</td><td>1.875</td><td>kV/cm/bar</td><td>V<sub>EL</sub> / (d P)</td></tr>
+<tr><td>Yield threshold</td><td>0.869</td><td>kV/cm/bar</td><td>pure xenon, NEXT-DEMO++ paper, Section 5.3</td></tr>
+<tr><td>Reduced yield</td><td>146.5</td><td>photons/(electron·cm·bar)</td><td>Y/p = 140 E/p − 116, E/p in kV/cm/bar</td></tr>
+<tr><td>Photons per electron</td><td>1,172</td><td></td><td>(Y/p) × P × d, with P = 16 bar, d = 0.5 cm</td></tr>
+<tr><td>Electrons at Q<sub>ββ</sub></td><td>112,230</td><td></td><td>Q / W</td></tr>
+<tr><td>EL photons at Q<sub>ββ</sub></td><td>1.3e8</td><td></td><td>before attachment and optical collection</td></tr>
+<tr><td>Fano-limited FWHM at Q<sub>ββ</sub></td><td>6.69</td><td>keV</td><td>2.355 √(F W Q); 0.272 %</td></tr></table></section>
+
+<section id="simulation"><h2>5. What the simulation does</h2>
+<h3>Simulated</h3>
+<ol>
+<li>Geant4 in pure enriched xenon at 16 bar, 290 K, with the geometry of each variant (radius 2.0 m; length 1.0 m or 1.5 m).</li>
+<li>Ion transport to the pad plane with the thermal spread of the variant and its ion velocity, on the 3 mm lattice with frames of 15 ms or 20 ms.</li>
+<li>VH1 readout with 20 fF capacitors and linear reconstruction of the ion signal (<a href="event_analysis/sim_vh1_readout.html">VH1 readout</a>).</li>
+<li>Hits and tracks from the reconstructed ion signal.</li>
+</ol>
+<h3>Emulated</h3>
+<ol>
+<li>Fast trigger and event frame from the Geant4 deposits (<a href="event_analysis/mc_fast_trigger.html">MC fast trigger</a>). The frame is the box of the main track plus 20 mm per side.</li>
+<li>Event energy: sum of the Geant4 deposits inside the event frame, smeared with a Gaussian of 0.47 % FWHM at Q<sub>ββ</sub>, scaling as √E.</li>
+</ol>
+<h3>Order of the cuts</h3>
+<ol>
+<li>Fast trigger: energy window, fiducial selection, gamma veto on deposits outside the frame.</li>
+<li>ROI cut on the emulated energy: 2452.03 to 2463.63 keV.</li>
+<li>Track selection on the ion lattice: components at 5.5 mm, detached deposits, segments rejoined at 8 mm (<a href="event_analysis/track_selection.html">track selection</a>).</li>
+<li>Endpoint-energy cut or classification network (<a href="network/classification_network.html">classification network</a>).</li>
+</ol></section>
+
+<section id="open"><h2>6. Open items</h2>
+<ul>
+<li>EL module at 8 mm pitch: hole diameter, light-guide dimensions and SiPM size.</li>
+<li>Electron drift velocity in pure xenon at 16 bar, at 500 and 350 V/cm: a Magboltz run is needed.</li>
+<li>Electron lifetime.</li>
+<li>VH1 with 15 ms frames, for II_L1000_D500: check described in <code>docs/handoffs/vh1_frame_15ms.md</code>.</li>
+</ul></section>
+
+<section id="sources"><h2>7. Sources</h2>
+<ul>
+<li>Design values: user design inputs of 2026-11-17, including the ion drift velocities of 20.0 and 15.0 cm/s.</li>
+<li>Gas density: NEXT DocDB 1183 (xenon compressibility), model and isotopic fractions of <code>config/detector/gas.toml</code> (NEXUS <code>GXeEnriched</code>).</li>
+<li>Ion mobility: P. N. B. Neves et al., J. Chem. Phys. 133 (2010) 124316, as plotted in A. F. V. Cortez et al., JINST 12 (2017) P06012, Fig. 3; comment in <code>config/detector/drift.toml</code>.</li>
+<li>Ion thermal spread: ITACA revisited, arXiv:2604.02443, Eq. (2.1); implementation in <code>src/event_analysis/production.jl</code>.</li>
+<li>Electron diffusion and EL yield in pure xenon: NEXT-DEMO++ paper, <code>papers/xehe_paper.pdf</code>, Table 1 and Section 5.3.</li>
+<li>Potentials of the ion plane: <code>manuscripts/itaca3/itaca3.tex</code> (IFG at 8 kV, sensors at ground).</li>
+<li>Energy resolution: full simulation of the Xe/He electron readout. Q<sub>ββ</sub>: M. Redshaw et al., PRL 98 (2007) 053003.</li>
+</ul></section></main><footer>iItaca · Detector and operating conditions</footer></body></html>
