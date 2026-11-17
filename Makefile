@@ -438,6 +438,7 @@ test-iitaca:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_equivalence.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_analysis.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_macros.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_network_events.jl
 
 # NEXUS macros of the iItaca variants, from the detector cards
 .PHONY: iitaca-macros

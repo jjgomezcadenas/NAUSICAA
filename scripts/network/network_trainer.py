@@ -59,6 +59,8 @@ def main():
     if samples[0].species==samples[1].species: raise SystemExit('Signal and background are the same species')
     if samples[0].selection!=samples[1].selection: raise SystemExit(f'The two files were selected differently:\n  {samples[0].selection}\n  {samples[1].selection}')
     data,events,which=merge(samples);batch=events['batch'];label=(which==0).astype(np.float32)   # label 1 for the signal sample
+    missing=[arm for arm in arms if arm not in data]
+    if missing: raise SystemExit(f'The files hold no {", ".join(missing)}: choose --input among {", ".join(data)}')
     val_b,test_b=batches_of(a.validation_batches),batches_of(a.test_batches)
     if set(val_b)&set(test_b): raise SystemExit('Validation and test batches overlap')
     is_val=np.isin(batch,val_b);is_test=np.isin(batch,test_b);train=np.flatnonzero(~is_val&~is_test);val=np.flatnonzero(is_val);test=np.flatnonzero(is_test)
@@ -96,7 +98,8 @@ def main():
             for arm in arms: f[f'settings/energy_scale_keV/{arm}']=ENERGY_SCALE_KEV[arm]
             for key,v in history.items(): f[f'history/{key}']=np.array(v)
             f['test/event_number']=events['event_number'][test];f['test/batch']=batch[test];f['test/label']=label[test].astype(np.int8);f['test/score']=ts;f['test/loss']=tl
-            for name in ('ion_drift_cm','electron_drift_cm','ion_energy_keV','electron_energy_keV','itrack_E2_keV','etrack_E2_keV','itrack_E1_keV','etrack_E1_keV','itrack_length_mm','etrack_length_mm'): f[f'test/{name}']=events[name][test]
+            for name in ('ion_drift_cm','electron_drift_cm','ion_energy_keV','electron_energy_keV','energy_keV','itrack_E2_keV','etrack_E2_keV','itrack_E1_keV','etrack_E1_keV','itrack_length_mm','etrack_length_mm'):
+                if name in events: f[f'test/{name}']=events[name][test]   # the columns of the files; iItaca files have no etrack
             for key,v in m.items(): f[f'test/separation/{key}']=v
         tmp.replace(target)
 

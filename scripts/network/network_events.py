@@ -12,19 +12,22 @@ ENERGY_SCALE_KEV={'itrack':20.0,'etrack':10.0}   # typical hit energy; the grids
 def text(v): return v.decode() if isinstance(v,bytes) else v
 
 class Sample:
-    """Events of one species: the sparse hits of both tracks and the event table."""
+    """Events of one species: the sparse hits of the tracks in the file (itrack, etrack or both) and the event table."""
     def __init__(self,path):
         with h5py.File(path) as f:
             if text(f['schema'][()])!='itaca.network_events.v1': raise ValueError(f'Unexpected schema in {path}')
             self.species=text(f['species'][()]);self.run_label=text(f['run_label'][()]);self.frame_side_mm=float(f['frame_side_mm'][()]);self.selection=text(f['selection'][()])
             self.events={k:f['events'][k][:] for k in f['events']}
-            self.arms={a:{k:f[a][k][()] for k in f[a]} for a in ARMS}
+            self.arms={a:{k:f[a][k][()] for k in f[a]} for a in ARMS if a in f}
         self.n=len(self.events['event_number'])
 
 def merge(samples):
-    """Events of several samples as one set: arms, event table and the index of the sample of each event."""
+    """Events of several samples as one set: arms, event table and the index of the sample of each event.
+
+    The arms are those present in every sample; the event table keeps the columns common to all samples.
+    """
     arms={}
-    for a in ARMS:
+    for a in [a for a in ARMS if all(a in s.arms for s in samples)]:
         parts=[s.arms[a] for s in samples]
         for q in parts[1:]:
             if not (np.array_equal(q['cells'],parts[0]['cells']) and np.allclose(q['pitch_mm'],parts[0]['pitch_mm'])): raise ValueError(f'The {a} lattices of the samples differ')
@@ -32,7 +35,7 @@ def merge(samples):
         arms[a]={k:np.concatenate([q[k] for q in parts]) for k in ('ix','iy','iz','energy_keV')}
         arms[a]['offsets']=np.concatenate([parts[0]['offsets']]+[q['offsets'][1:]+d for q,d in zip(parts[1:],shift[1:])])
         arms[a]['cells']=parts[0]['cells'];arms[a]['pitch_mm']=parts[0]['pitch_mm'];arms[a]['scale']=np.float32(ENERGY_SCALE_KEV[a])
-    events={k:np.concatenate([s.events[k] for s in samples]) for k in samples[0].events}
+    events={k:np.concatenate([s.events[k] for s in samples]) for k in samples[0].events if all(k in s.events for s in samples)}
     return arms,events,np.concatenate([np.full(s.n,i) for i,s in enumerate(samples)])
 
 def padded(cells,multiple=8):
