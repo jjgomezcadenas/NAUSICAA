@@ -7,6 +7,7 @@
 # results/network/<variant>/events/<sample>/events.h5 (build_iitaca_network_events.jl).
 #SBATCH --job-name=iitaca_network_events
 #SBATCH --partition=general
+#SBATCH --exclude=hyperion-219   # this node fails to resolve the user: tasks there are requeued and held ("user env retrieval failed", 2026-11-17)
 #SBATCH --qos=serial
 #SBATCH --nodes=1
 #SBATCH --ntasks=1

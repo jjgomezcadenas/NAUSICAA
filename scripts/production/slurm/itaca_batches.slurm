@@ -8,6 +8,7 @@
 # beside it if absent. NAUSICAA_DATA must be exported to the job (--export).
 #SBATCH --job-name=itaca_batches
 #SBATCH --partition=general
+#SBATCH --exclude=hyperion-219   # this node fails to resolve the user: tasks there are requeued and held ("user env retrieval failed", 2026-11-17)
 #SBATCH --qos=serial
 #SBATCH --nodes=1
 #SBATCH --ntasks=1

@@ -4,6 +4,7 @@
 #   sbatch --qos=test --time=00:10:00 --output=LOGDIR/%x.%j.out network_check.slurm SIGNAL.h5 BACKGROUND.h5 SCRATCH_DIR
 #SBATCH --job-name=network_check
 #SBATCH --partition=general
+#SBATCH --exclude=hyperion-219   # this node fails to resolve the user: tasks there are requeued and held ("user env retrieval failed", 2026-11-17)
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4

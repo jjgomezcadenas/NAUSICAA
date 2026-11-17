@@ -5,6 +5,7 @@
 # Paths are relative to the repository. Any GPU type of the partition is accepted.
 #SBATCH --job-name=network_scorer
 #SBATCH --partition=general
+#SBATCH --exclude=hyperion-219   # this node fails to resolve the user: tasks there are requeued and held ("user env retrieval failed", 2026-11-17)
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4

@@ -6,6 +6,7 @@
 # batch*EVENTS; see run_nexus_batch.sh.
 #SBATCH --job-name=nexus_itaca
 #SBATCH --partition=general
+#SBATCH --exclude=hyperion-219   # this node fails to resolve the user: tasks there are requeued and held ("user env retrieval failed", 2026-11-17)
 #SBATCH --qos=serial
 #SBATCH --constraint=icelake
 #SBATCH --nodes=1

@@ -3,6 +3,7 @@
 #   sbatch --dependency=afterok:<array job> --output=... itaca_chain.slurm RUN_CARD FIRST LAST
 #SBATCH --job-name=itaca_chain
 #SBATCH --partition=general
+#SBATCH --exclude=hyperion-219   # this node fails to resolve the user: tasks there are requeued and held ("user env retrieval failed", 2026-11-17)
 #SBATCH --qos=serial
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
