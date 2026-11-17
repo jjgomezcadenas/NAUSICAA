@@ -1,0 +1,44 @@
+% Schematic of the selection of Compton events of the 214Bi line (bi214_compton_floor.tex).
+% Not to scale. Requires tikz with the libraries decorations.pathmorphing, arrows.meta, positioning.
+\begin{tikzpicture}[
+    font=\footnotesize,
+    electron/.style={draw=blue!70!black, line width=1.4pt, decorate, decoration={random steps, segment length=3pt, amplitude=1.2pt}},
+    second/.style={draw=orange!85!black, line width=1.4pt, decorate, decoration={random steps, segment length=2.5pt, amplitude=1pt}},
+    photon/.style={draw=black!70, line width=0.7pt, decorate, decoration={snake, amplitude=1.1pt, segment length=5pt, post length=2pt}, -{Stealth[length=4pt]}},
+    note/.style={align=left, text width=4.3cm, inner sep=1pt}]
+  % detector boundary and event frame
+  \draw[black!50, line width=0.6pt] (-1.2,-2.6) rectangle (12.6,3.4);
+  \node[anchor=north west, black!60] at (-1.15,3.35) {gas volume};
+  \draw[black!60, dashed, line width=0.7pt] (-0.6,-1.9) rectangle (5.6,2.3);
+  \node[anchor=north west, black!70] at (-0.55,2.25) {event frame, 160 mm cube};
+  % incoming gamma
+  \draw[photon] (-1.2,-0.9) -- node[below, sloped, pos=0.45] {2448 keV} (0.7,0.0);
+  % Compton vertex and main electron
+  \fill (0.7,0.0) circle (2.2pt);
+  \node[anchor=north, align=center] at (0.75,-0.15) {Compton\\ vertex};
+  \draw[electron] (0.7,0.0) .. controls (1.6,0.9) and (2.4,-0.6) .. (3.3,0.4) .. controls (3.9,1.1) and (4.4,0.3) .. (4.6,0.9);
+  \fill[blue!70!black] (4.6,0.9) circle (3pt);
+  \node[blue!70!black, anchor=west] at (4.65,0.95) {end blob};
+  % (a) absorbed within about 1 cm
+  \draw[photon] (0.7,0.0) -- (0.45,0.55);
+  \draw[second] (0.45,0.55) .. controls (0.2,0.9) and (0.6,1.15) .. (0.35,1.35);
+  \fill[orange!85!black] (0.35,1.35) circle (2.6pt);
+  \node[anchor=south, orange!85!black] at (0.35,1.45) {(a)};
+  % (b) absorbed inside the frame, centimetres away
+  \draw[photon] (0.7,0.0) -- (2.9,-1.3);
+  \draw[second] (2.9,-1.3) .. controls (3.3,-1.1) and (3.5,-1.6) .. (3.9,-1.45);
+  \node[anchor=north, orange!85!black] at (3.4,-1.55) {(b)};
+  % (c) absorbed outside the frame
+  \draw[photon] (0.7,0.0) -- (7.2,1.9);
+  \draw[second] (7.2,1.9) .. controls (7.5,2.2) and (7.8,1.8) .. (8.1,2.1);
+  \node[anchor=south, orange!85!black] at (7.6,2.15) {(c)};
+  % (d) escapes
+  \draw[photon] (0.7,0.0) -- (12.6,-1.8);
+  \node[anchor=north, black!70] at (11.6,-1.6) {(d)};
+  % explanations
+  \node[note, anchor=north west] at (6.4,1.25) {%
+    (a) photon absorbed within about 1\,cm: one itrack with two dense ends; kept by the track selection and often accepted by the network.\\[3pt]
+    (b) absorbed in the frame, centimetres away: separate segment, rejected by the track selection.\\[3pt]
+    (c) deposit outside the frame: gamma veto of the trigger.\\[3pt]
+    (d) escapes: energy below the ROI.};
+\end{tikzpicture}
