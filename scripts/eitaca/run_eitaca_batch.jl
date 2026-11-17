@@ -8,7 +8,10 @@ and write the electron file of the batch.
 For every event of the batch:
 
  1. Fast trigger and fixed frame from the Monte Carlo (EventAnalysis.mc_fast_trigger),
-    with the exclusion of tracks near the EL entry.
+    with the exclusion of tracks near the EL entry. With trigger.frame_track =
+    "leading_gamma_electron" (gamma samples) the main track is the electron of
+    highest energy produced by the generated gamma, with its descendants, as
+    in scripts/iitaca/run_iitaca_batch.jl.
  2. Box of the response: main track and the gamma deposits inside the frame, with the margin.
  3. Electron-ion pairs of each deposit (W, Fano); attachment, diffusion to the EL
     holes and 250 ns buckets, EL photons and blue photons at the SiPM
@@ -125,6 +128,7 @@ function run_eitaca_batch(card::AbstractString; batch::Integer, limit::Integer =
     end
     get(c, "max_events", 0) > 0 && (ids = ids[1:min(length(ids), c["max_events"])])
     parts = read_mc_particles(pp, ids)
+    leading = d["trigger"]["frame_track"] == "leading_gamma_electron" ? read_leading_gamma_electrons(pp, ids) : nothing
     trigger = trigger_settings(d); L = trigger.chamber_length_mm; margin = Float32(d["trigger"]["simulation_margin_mm"])
     W = Float32(d["energy"]["W_eV"]); fano = Float32(d["energy"]["fano_factor"]); seed = c["seed"]; eseed = c["electronics_seed"]
     max_bytes = get(c, "max_vector_bytes", 268435456); rc = d["reconstruction"]
@@ -140,6 +144,7 @@ function run_eitaca_batch(card::AbstractString; batch::Integer, limit::Integer =
             event_started = time()
             timing[1] += @elapsed begin
                 h, info = read_mc_event(f, id; event_row = row)
+                leading === nothing || (info = leading_electron_info(info, leading[id]))
                 h = center_hits(h, info); p = placement_from_vertex(info, L); o = mc_fast_trigger(h, info, parts[id], p, trigger)
                 stats = update_statistics(stats, o)
                 push!(decisions, (event_number = id, decision = Int(o.decision), electron_drift_cm = p.electron_drift_cm))

@@ -1,0 +1,19 @@
+# eITACA production of the variant IE_L1500_D400: gammas of the 2447.86 keV line of 214Bi, 100000 generated events per batch.
+# Geant4 files: $NAUSICAA_DATA/IE_L1500_D400/prod/bi214/ (seed offset 2000).
+# Batches: scripts/eitaca/slurm/eitaca_batches.slurm with NAUSICAA_DATA set to the
+# folder that holds IE_L1500_D400/.
+schema = "nausicaa.eitaca_run.v1"
+detector = "config/eitaca/eitaca.toml"
+variant = "config/eitaca/variants/IE_L1500_D400.toml"
+run_label = "IE_L1500_D400_bi214"
+sample = "bi214"
+hits = "$NAUSICAA_DATA/IE_L1500_D400/prod/bi214/bi214_{batch}_hitdf.h5"
+particles = "$NAUSICAA_DATA/IE_L1500_D400/prod/bi214/bi214_{batch}.next.h5"
+generated_events_per_batch = 100000
+max_events = 0                    # 0: all events of the batch
+seed = 42
+electronics_seed = 20261113
+max_vector_bytes = 268435456
+
+[overrides]
+"trigger.frame_track" = "leading_gamma_electron"   # the electron of highest energy produced by the generated gamma, with its descendants

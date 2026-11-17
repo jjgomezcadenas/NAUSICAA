@@ -198,7 +198,8 @@ Consistency of a resolved detector:
 - with `root`: the response card has the PDE and SiPM side of the sipm card,
   the ASIC bucket equals the electron bucket, and the illuminated microcells
   are the microcells under the hole disk, round(M pi r^2 / side^2);
-- known frame placement and non-negative trigger margins.
+- known frame placement and frame track (`primary_and_delta_electrons` or
+  `leading_gamma_electron`), non-negative trigger margins.
 """
 function check_detector(d::AbstractDict; root = nothing)
     gas = d["gas"]; geo = d["geometry"]; dr = d["drift"]; v = d["voltages"]; el = d["el"]; si = d["sipm"]; tr = d["trigger"]
@@ -229,7 +230,7 @@ function check_detector(d::AbstractDict; root = nothing)
             throw(ArgumentError("Illuminated microcells of the response card differ from the hole disk"))
     end
     tr["frame_placement"] == "inside_detector" || throw(ArgumentError("Unsupported trigger.frame_placement '$(tr["frame_placement"])'"))
-    tr["frame_track"] == "primary_and_delta_electrons" || throw(ArgumentError("Unsupported trigger.frame_track '$(tr["frame_track"])'"))
+    tr["frame_track"] in ("primary_and_delta_electrons", "leading_gamma_electron") || throw(ArgumentError("Unsupported trigger.frame_track '$(tr["frame_track"])'"))
     0 <= tr["simulation_margin_mm"] && 0 <= tr["el_exclusion_mm"] && 0 <= tr["gamma_energy_cut_keV"] ||
         throw(ArgumentError("Trigger margins and cuts must not be negative"))
     rc = d["reconstruction"]
