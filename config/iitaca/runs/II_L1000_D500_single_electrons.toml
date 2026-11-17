@@ -1,7 +1,7 @@
-# Production of the variant II_L1000_D500: single electrons of the Qbb energy, 40 batches of 5,000 generated events (200,000).
+# Production of the variant II_L1000_D500: single electrons of the Qbb energy, 60 batches of 5,000 generated events (300,000).
 # NEXUS: simulation/nexus/slurm/iitaca_nexus_array.slurm II_L1000_D500 electron 5000 <folder> 1000
-# (seed offset 1000; the pilot used 0), array 0-39.
-# Batches: scripts/iitaca/slurm/iitaca_batches.slurm, array 0-39, with
+# (seed offset 1000; the pilot used 0), array 0-59.
+# Batches: scripts/iitaca/slurm/iitaca_batches.slurm, array 0-59, with
 # NAUSICAA_DATA set to the folder that holds II_L1000_D500/.
 schema = "nausicaa.iitaca_run.v1"
 detector = "config/iitaca/iitaca.toml"
