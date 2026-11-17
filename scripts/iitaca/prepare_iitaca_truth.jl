@@ -2,13 +2,16 @@
 #=
 iItaca: Monte Carlo truth of the selected events of a run, against the network score.
 
-  julia --project=. scripts/iitaca/prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B]
+  julia --project=. scripts/iitaca/prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B] [--run-label=L]
 
 <run card>: config/iitaca/runs/II_L1000_D500_bi214.toml (or _single_electrons).
 <scores>: the scores of a trained network, either scores_<sample>.h5 (every
 selected event of the sample) or training.h5 (its test background events).
 NAUSICAA_DATA must point to the folder holding <variant>/prod/ (NEXUS files and
-reduced hit tables). --batches limits the batches read, for tests.
+reduced hit tables). --batches limits the batches read, for tests. --run-label
+takes the statistics of run L instead of the run of the card: a run of a tracks
+variant that reads the hit files of the card (prepare_iitaca_features.jl
+--tracks-variant).
 
 For every scored event:
 
@@ -211,8 +214,8 @@ function event_truth(h::MCEventHits, info::MCEventInfo, parts::Vector{TruthParti
     ev, dep
 end
 
-function prepare_truth(card::AbstractString, scores::AbstractString, output::AbstractString; batches = nothing)
-    c = TOML.parsefile(card); label = c["run_label"]; gamma_event = c["frame_track"] == "leading_gamma_electron"
+function prepare_truth(card::AbstractString, scores::AbstractString, output::AbstractString; batches = nothing, run_label = nothing)
+    c = TOML.parsefile(card); label = run_label === nothing ? c["run_label"] : run_label; gamma_event = c["frame_track"] == "leading_gamma_electron"
     statistics = joinpath(ROOT, "results/iitaca", label, "statistics/events.h5")
     s = scored_events(scores, statistics)
     keep = batches === nothing ? trues(length(s.event_number)) : in.(s.batch, Ref(batches))
@@ -267,8 +270,9 @@ function prepare_truth(card::AbstractString, scores::AbstractString, output::Abs
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    k = findall(startswith("--batches="), ARGS); args = ARGS[setdiff(eachindex(ARGS), k)]
+    k = findall(startswith("--batches="), ARGS); l = findall(startswith("--run-label="), ARGS); args = ARGS[setdiff(eachindex(ARGS), k, l)]
     batches = isempty(k) ? nothing : (r = parse.(Int, split(split(ARGS[k[1]], "=")[2], ":")); r[1]:r[end])
-    length(args) == 3 || error("Usage: prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B]")
-    prepare_truth(abspath(args[1]), abspath(args[2]), abspath(args[3]); batches)
+    run_label = isempty(l) ? nothing : String(split(ARGS[l[1]], "=")[2])
+    length(args) == 3 || error("Usage: prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B] [--run-label=L]")
+    prepare_truth(abspath(args[1]), abspath(args[2]), abspath(args[3]); batches, run_label)
 end

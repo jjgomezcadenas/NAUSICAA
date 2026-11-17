@@ -2,11 +2,11 @@
 #=
 iItaca: classes of the Monte Carlo truth of the selected events and their network acceptance.
 
-  julia --project=. scripts/iitaca/summarize_iitaca_truth.jl <folder>
+  julia --project=. scripts/iitaca/summarize_iitaca_truth.jl <folder> [comparison.h5]
 
 Reads <folder>/truth_bi214.h5 and <folder>/truth_single_electrons.h5
 (prepare_iitaca_truth.jl) and the E₂ thresholds of the comparison of the
-variant, and writes <folder>/summary.h5 (schema iitaca.truth_summary.v1).
+variant (default results/iitaca/II_L1000_D500_comparison/comparison.h5), and writes <folder>/summary.h5 (schema iitaca.truth_summary.v1).
 Python makes the page (scripts/iitaca/present_iitaca_truth.py).
 
  1. Secondary deposit: a deposit of the truth table with at least 10 keV (the
@@ -88,8 +88,7 @@ function acceptance(label, m, passed, e2)
     (events = n, passed = k, fraction = f.(k, n), error = err.(k, n), e2_passed = k2, e2_fraction = f.(k2, n), e2_error = err.(k2, n))
 end
 
-function summarize(folder::AbstractString)
-    comparison = joinpath(ROOT, "results/iitaca/II_L1000_D500_comparison/comparison.h5")
+function summarize(folder::AbstractString, comparison::AbstractString = joinpath(ROOT, "results/iitaca/II_L1000_D500_comparison/comparison.h5"))
     e2_threshold = h5open(comparison, "r") do f
         read(f["thresholds_keV"])[findfirst(t -> isapprox(t, 0.8), read(f["targets"]))]
     end
@@ -138,6 +137,6 @@ function summarize(folder::AbstractString)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    length(ARGS) == 1 || error("Usage: summarize_iitaca_truth.jl <folder>")
-    summarize(abspath(ARGS[1]))
+    1 <= length(ARGS) <= 2 || error("Usage: summarize_iitaca_truth.jl <folder> [comparison.h5]")
+    summarize(abspath.(ARGS)...)
 end
