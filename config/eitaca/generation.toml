@@ -1,0 +1,15 @@
+# Geant4 generation of the Monte Carlo samples (NEXUS, ItacaChamber geometry:
+# a cylinder of the gas of gas.toml with the radius and length of geometry.toml).
+# scripts/eitaca/write_eitaca_macros.jl writes the NEXUS macros from these values.
+schema = "nausicaa.eitaca_generation.v1"
+step_limit_mm = 1.0                  # maximum step in the gas
+# An event is saved when the energy deposited in the gas lies in this window.
+saved_energy_min_keV = 2300.0
+saved_energy_max_keV = 2470.0
+volume_region = "GAS"                # bb0nu and single electrons: uniform in the gas
+single_electron_energy_keV = 2457.83 # single electrons of the Qbb energy
+# Gamma backgrounds: one gamma of the line, emitted isotropically from a point
+# uniform on the inner surface of the gas cylinder (barrel and both end faces).
+gamma_region = "INNER_SURFACE"
+bi214_gamma_keV = 2447.86            # 214Bi line
+tl208_gamma_keV = 2614.511           # 208Tl line

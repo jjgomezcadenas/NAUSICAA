@@ -26,12 +26,12 @@ const SAMPLES = ("bb0nu", "electron", "bi214", "tl208")
 const MACRO_ROOT = "simulation/nexus/macros/iitaca"
 number(x) = (s = string(Float64(x)); endswith(s, ".0") ? s[1:end-1] : s)       # 200.0 -> "200."
 
-header(name, variant, lines) = join(vcat("## " * "-"^76, "## nexus | $name", "##", ["## " * l for l in lines]...,
-    "## Written by scripts/iitaca/write_iitaca_macros.jl from the cards of config/iitaca", "## (variant $variant). Do not edit: change the cards and write it again.", "## " * "-"^76), "\n") * "\n"
+header(name, variant, lines; family = "iitaca") = join(vcat("## " * "-"^76, "## nexus | $name", "##", ["## " * l for l in lines]...,
+    "## Written by scripts/$family/write_$(family)_macros.jl from the cards of config/$family", "## (variant $variant). Do not edit: change the cards and write it again.", "## " * "-"^76), "\n") * "\n"
 
 """Geometry macro of the gas cylinder from the simulation inputs."""
-geometry_macro(sim, variant) = header("ItacaChamber.mac", variant, ["iItaca gas volume: radius $(number(sim["geometry.fiducial_diameter_cm"] / 2)) cm, length $(number(sim["geometry.fiducial_length_cm"])) cm,",
-        "enriched xenon with a helium mole fraction of $(sim["gas.helium_mole_fraction"]) at $(number(sim["gas.pressure_bar"])) bar and $(number(sim["gas.temperature_K"])) K."]) * """
+geometry_macro(sim, variant; family = "iitaca") = header("ItacaChamber.mac", variant, ["$(family == "iitaca" ? "iItaca" : "eITACA") gas volume: radius $(number(sim["geometry.fiducial_diameter_cm"] / 2)) cm, length $(number(sim["geometry.fiducial_length_cm"])) cm,",
+        "enriched xenon with a helium mole fraction of $(sim["gas.helium_mole_fraction"]) at $(number(sim["gas.pressure_bar"])) bar and $(number(sim["gas.temperature_K"])) K."]; family) * """
 
 /Geometry/ItacaChamber/radius $(number(sim["geometry.fiducial_diameter_cm"] / 2)) cm
 /Geometry/ItacaChamber/length $(number(sim["geometry.fiducial_length_cm"])) cm
@@ -64,17 +64,17 @@ function generator(sim, sample)
 end
 
 """Configuration template of a sample: geometry, generator, saved energy window, seed and output."""
-function config_macro(sim, variant, sample)
+function config_macro(sim, variant, sample; family = "iitaca")
     lines, _, event_type, description = generator(sim, sample)
     header("ItacaChamber.$sample.config.mac", variant, vcat("Template. The job script replaces @SEED@, @START_ID@ and @OUTPUT@.", description,
-        "Events are saved when the energy deposited in the gas lies in the window below.")) * """
+        "Events are saved when the energy deposited in the gas lies in the window below."); family) * """
 
 /run/verbose 1
 /event/verbose 0
 /tracking/verbose 0
 /process/em/verbose 0
 
-/control/execute macros/iitaca/$variant/ItacaChamber.mac
+/control/execute macros/$family/$variant/ItacaChamber.mac
 
 $lines
 
@@ -89,9 +89,9 @@ $lines
 end
 
 """Initialisation template of a sample: physics list, geometry, generator and actions."""
-function init_macro(sim, variant, sample)
+function init_macro(sim, variant, sample; family = "iitaca")
     _, name, _, _ = generator(sim, sample)
-    header("ItacaChamber.$sample.init.mac", variant, ["Template. The job script replaces @CONFIG@ with the configuration macro of the job."]) * """
+    header("ItacaChamber.$sample.init.mac", variant, ["Template. The job script replaces @CONFIG@ with the configuration macro of the job."]; family) * """
 
 /control/execute macros/physics/DefaultPhysicsList.mac
 

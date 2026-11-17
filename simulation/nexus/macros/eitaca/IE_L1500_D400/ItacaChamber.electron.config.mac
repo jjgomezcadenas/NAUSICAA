@@ -1,0 +1,29 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.electron.config.mac
+##
+## Template. The job script replaces @SEED@, @START_ID@ and @OUTPUT@.
+## Single electrons of 2457.83 keV, isotropic, uniform in the gas.
+## Events are saved when the energy deposited in the gas lies in the window below.
+## Written by scripts/eitaca/write_eitaca_macros.jl from the cards of config/eitaca
+## (variant IE_L1500_D400). Do not edit: change the cards and write it again.
+## ----------------------------------------------------------------------------
+
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+/control/execute macros/eitaca/IE_L1500_D400/ItacaChamber.mac
+
+/Generator/SingleParticle/particle e-
+/Generator/SingleParticle/min_energy 2457.83 keV
+/Generator/SingleParticle/max_energy 2457.83 keV
+/Generator/SingleParticle/region GAS
+
+/Actions/DefaultEventAction/min_energy 2300. keV
+/Actions/DefaultEventAction/max_energy 2470. keV
+
+/nexus/random_seed @SEED@
+/nexus/persistency/start_id @START_ID@
+/nexus/persistency/output_file @OUTPUT@
+/nexus/persistency/event_type background

@@ -35,7 +35,7 @@ export SECTIONS, load_eitaca_set, load_variant, ResolvedDetector, resolve_detect
 const SET_SCHEMA = "nausicaa.eitaca_set.v1"
 const VARIANT_SCHEMA = "nausicaa.eitaca_variant.v1"
 const RUN_SCHEMA = "nausicaa.eitaca_run.v1"
-const SECTIONS = ("gas", "geometry", "drift", "voltages", "el", "sipm", "energy", "trigger", "reconstruction")
+const SECTIONS = ("gas", "geometry", "drift", "voltages", "el", "sipm", "energy", "trigger", "reconstruction", "generation")
 const CARD_SCHEMAS = Dict(s => "nausicaa.eitaca_$s.v1" for s in SECTIONS)
 const OPTICS = ("direct_tpb_on_sipm", "light_guides")
 "Elementary charge, C."
@@ -46,7 +46,7 @@ const E_CHARGE_C = 1.602176634e-19
 """
     load_eitaca_set(index_path)::DetectorSet
 
-Read the index and its nine cards. Require the set schema, every section of
+Read the index and its ten cards. Require the set schema, every section of
 `SECTIONS` exactly once, and each card's own schema.
 """
 function load_eitaca_set(index_path::AbstractString)::DetectorSet

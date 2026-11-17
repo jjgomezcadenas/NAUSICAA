@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run one NEXUS batch of an iItaca variant.
+# Run one NEXUS batch of an iItaca (or eITACA) variant.
 #   run_iitaca_nexus_batch.sh VARIANT SAMPLE BATCH EVENTS OUTDIR [SEED_OFFSET]
 # VARIANT: folder of macros/iitaca (II_L1000_D500, II_L1500_D350), written from
 # the detector cards by scripts/iitaca/write_iitaca_macros.jl.
@@ -14,8 +14,8 @@ set -eo pipefail
 VARIANT=$1; SAMPLE=$2; BATCH=$3; EVENTS=$4; OUTDIR=$5; SEED_OFFSET=${6:-0}
 NEXUS=${NEXUS_DIR:-/scratch/jjgomez/nexus}
 BUILD=${NEXUS_BUILD:-$NEXUS/build-icelake}
-MACROS="$NEXUS/macros/iitaca/$VARIANT"
-[ -d "$MACROS" ] || { echo "No macros for variant $VARIANT in $NEXUS/macros/iitaca"; exit 2; }
+MACROS="$NEXUS/macros/${MACRO_SET:-iitaca}/$VARIANT"   # MACRO_SET=eitaca for the eITACA macros
+[ -d "$MACROS" ] || { echo "No macros for variant $VARIANT in $NEXUS/macros/${MACRO_SET:-iitaca}"; exit 2; }
 case $SAMPLE in bb0nu) SEED_BASE=1100000;; electron) SEED_BASE=1200000;; bi214) SEED_BASE=1300000;; tl208) SEED_BASE=1400000;; *) echo "Unknown sample $SAMPLE"; exit 2;; esac
 SEED=$((SEED_BASE + SEED_OFFSET + BATCH)); START=$((BATCH * EVENTS))
 TAG=$(printf "%s_b%05d" "$SAMPLE" "$BATCH")
