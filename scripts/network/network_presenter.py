@@ -84,15 +84,16 @@ def render(root):
     axes[1].set(xlabel='Epoch',ylabel='Background accepted at 80% signal (%)',title='Validation events');axes[1].set_yscale('log');axes[1].grid(alpha=.15,which='both')
     fig.suptitle(f"Training history · {int(ref['settings']['validation_events'])} validation events");fig.savefig(plots/'history.png',dpi=140);plt.close(fig)
 
-    fig,axes=plt.subplots(1,2,figsize=(15,5.4),layout='constrained');edges=np.linspace(0,np.ceil(ref['test']['ion_drift_cm'].max()/10)*10,7);mid=(edges[:-1]+edges[1:])/2
+    dk='ion_drift_cm' if 'ion_drift_cm' in ref['test'] else 'electron_drift_cm';dname='Ion drift' if dk=='ion_drift_cm' else 'Electron drift'   # eITACA files hold the electron drift only
+    fig,axes=plt.subplots(1,2,figsize=(15,5.4),layout='constrained');edges=np.linspace(0,np.ceil(ref['test'][dk].max()/10)*10,7);mid=(edges[:-1]+edges[1:])/2
     for r in full:
-        acc,err,eff=by_drift(r['test']['score'].astype(float),r['label'],ref['test']['ion_drift_cm'],edges)
+        acc,err,eff=by_drift(r['test']['score'].astype(float),r['label'],ref['test'][dk],edges)
         axes[0].errorbar(mid,100*acc,100*err,color=COLOR[r['input']],ls=style(r),marker='o',ms=4,capsize=2,label=r['name']);axes[1].plot(mid,100*eff,color=COLOR[r['input']],ls=style(r),marker='o',ms=4,label=r['name'])
     for arm,c in classical.items():
-        acc,err,eff=by_drift(c['score'],ref['label'],ref['test']['ion_drift_cm'],edges)
+        acc,err,eff=by_drift(c['score'],ref['label'],ref['test'][dk],edges)
         axes[0].errorbar(mid,100*acc,100*err,color=COLOR[arm],ls=':',marker='s',ms=4,capsize=2,label=f'E₂ cut, {arm}');axes[1].plot(mid,100*eff,color=COLOR[arm],ls=':',marker='s',ms=4,label=f'E₂ cut, {arm}')
-    axes[0].set(xlabel='Ion drift (cm); electron drift is the chamber length minus this',ylabel='Background accepted (%)',title='One threshold per method, set for 80% of all signal events',ylim=(0,None));axes[0].grid(alpha=.15);axes[0].legend(fontsize=7.5)
-    axes[1].set(xlabel='Ion drift (cm)',ylabel='Signal accepted (%)',title='Signal efficiency with the same threshold');axes[1].grid(alpha=.15)
+    axes[0].set(xlabel=f'{dname} (cm)'+('; electron drift is the chamber length minus this' if dk=='ion_drift_cm' else ''),ylabel='Background accepted (%)',title='One threshold per method, set for 80% of all signal events',ylim=(0,None));axes[0].grid(alpha=.15);axes[0].legend(fontsize=7.5)
+    axes[1].set(xlabel=f'{dname} (cm)',ylabel='Signal accepted (%)',title='Signal efficiency with the same threshold');axes[1].grid(alpha=.15)
     fig.suptitle(f'Separation against drift · {names} in {len(mid)} drift intervals');fig.savefig(plots/'drift.png',dpi=140);plt.close(fig)
 
     groups={}

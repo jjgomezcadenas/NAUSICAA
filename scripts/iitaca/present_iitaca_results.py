@@ -288,7 +288,8 @@ h3.pitch{{margin-top:30px;padding-top:14px;border-top:2px solid #185b83}}.pendin
 <li><a href="{pc}">3 mm against 2 mm pads</a>: cut flows, E₂ and network, truth, rejection factors</li>
 <li><a href="{up}results/iitaca/II_L1000_D500_bi214_truth/index.html">²¹⁴Bi passing the network: Monte Carlo truth (3 mm)</a></li>
 <li>Trainings: <a href="{up}results/network/II_L1000_D500/trainings/index.html">3 mm</a> · <a href="{up}results/network/II_L1000_D500_P2/trainings/index.html">2 mm</a></li>
-<li><a href="../../physics/bi214_compton_floor.pdf">Note: the ²¹⁴Bi background that passes the topological selection</a></li></ul></section>
+<li><a href="../../physics/bi214_compton_floor.pdf">Note: the ²¹⁴Bi background that passes the topological selection</a></li>
+<li><a href="../eitaca/results.html">eITACA against iItaca 2 mm</a>: the same analysis on the electron track</li></ul></section>
 
 <section id="inputs"><h2>Inputs</h2><p class="meta">Page: <code>python scripts/iitaca/present_iitaca_results.py</code>. SHA-256 of the files read:</p>
 <div class="scroll">{table(['File', 'SHA-256'], [[f'<code>{p}</code>', f'<code>{h[:16]}…</code>'] for p, h in INPUTS])}</div></section>
