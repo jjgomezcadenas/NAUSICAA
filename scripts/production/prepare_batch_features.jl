@@ -9,90 +9,27 @@ include("prepare_hit_presentation.jl")
 
 const FEATURE_SCHEMA="itaca.batch_features.v1"
 
-"""Coordinates shifted so that hits on a lattice of pitch `width` sit at the centres of the cells of that width.
+# Track selection and track features: src/track_selection/TrackSelection.jl, shared with the iItaca chain.
+# The functions below apply them to saved hits with the settings of [track_analysis] of the run card.
+isdefined(@__MODULE__,:TrackSelection)||include(joinpath(@__DIR__,"../../src/track_selection/TrackSelection.jl"))
+using .TrackSelection
 
-Hits on such a lattice at an arbitrary position can lie on a cell boundary,
-where rounding splits one layer between two cells. When every coordinate is
-within 2% of the pitch of the lattice of the first one, all are shifted by the
-same amount; otherwise (a readout pitch different from the cell width) they
-are returned unchanged.
-"""
-function cell_centred(x::AbstractVector{Float32},width::Float32)
-    isempty(x)&&return x
-    steps=(Float64.(x).-Float64(x[1]))./width;all(s->abs(s-round(s))<0.02,steps)||return x
-    Float32.(Float64.(x).-(mod(Float64(x[1]),Float64(width))-width/2))
-end
-
-"""Graph features of one track of one event, from its retained hits.
-
-Hits above the display cut are voxelised, in cells centred on the readout
-lattice where its pitch equals the cell width, and connected as in the event
-presentation (`[track_analysis]` of the run card). The main track is the
-component with most voxels. Its length is the length of the tree path between
-its two endpoints; its extensions are the ranges of its voxel centres plus one
-voxel width. E1 >= E2 are the energies in spheres around the two endpoints.
-"""
+"""Graph features of one track of one event, from its retained hits (`TrackSelection.track_features`),
+with the hit cut, voxel width, connection radius and blob radius of the track (`ion_` or `electron_` keys)."""
 function track_features(h::SavedHits,tc::AbstractDict,arm::AbstractString)
     prefix=arm=="itrack" ? "ion" : "electron"
-    cut=Float32(tc["$(prefix)_hit_cut_keV"]);width=Float32(tc["$(prefix)_voxel_width_mm"])
-    radius=Float32(tc["$(prefix)_connection_mm"]);blob=Float64(tc["$(prefix)_blob_radius_mm"])
-    keep=h.energy_keV .> cut
-    nothing_found=(hits=count(keep),components=0,main_keV=0f0,second_keV=0f0,main_voxels=0,length_mm=NaN32,
-        extent_x_mm=NaN32,extent_y_mm=NaN32,extent_z_mm=NaN32,E1_keV=NaN32,E2_keV=NaN32)
-    any(keep)||return nothing_found
-    df=EventAnalysis.DataFrame(x=cell_centred(h.x_mm[keep],width),y=cell_centred(h.y_mm[keep],width),z=cell_centred(h.z_mm[keep],width),energy=h.energy_keV[keep]./1000f0)
-    tracks=make_tracks(voxelize_event(df,width);method="KDT",max_distance_mm=radius,energy_threshold_kev=0f0)
-    isempty(tracks)&&return nothing_found
-    energies=sort(Float32[1000sum(t.voxels.energy) for t in tracks];rev=true)
-    track=tracks[argmax([size(t.voxels,1) for t in tracks])];v=track.voxels
-    u,w,path,_,_=EventAnalysis.find_extremes_mst_diameter(track,EventAnalysis.extract_coords(track))
-    len=sum(sqrt((v.x[path[i+1]]-v.x[path[i]])^2+(v.y[path[i+1]]-v.y[path[i]])^2+(v.z[path[i+1]]-v.z[path[i]])^2) for i in 1:length(path)-1;init=0.0)
-    b=EventAnalysis.energy_in_spheres_around_extremes(track,(extremes=(v[u,:],v[w,:]),),blob)
-    e1,e2=1000 .*(max(b.blob1_energy,b.blob2_energy),min(b.blob1_energy,b.blob2_energy))
-    extent(c)=Float32(maximum(c)-minimum(c)+width)
-    (hits=count(keep),components=length(tracks),main_keV=1000f0*Float32(sum(v.energy)),second_keV=length(energies)<2 ? 0f0 : energies[2],
-        main_voxels=size(v,1),length_mm=Float32(len),extent_x_mm=extent(v.x),extent_y_mm=extent(v.y),extent_z_mm=extent(v.z),
-        E1_keV=Float32(e1),E2_keV=Float32(e2))
+    TrackSelection.track_features(h.x_mm,h.y_mm,h.z_mm,h.energy_keV;hit_cut_keV=tc["$(prefix)_hit_cut_keV"],voxel_width_mm=tc["$(prefix)_voxel_width_mm"],
+        connection_mm=tc["$(prefix)_connection_mm"],blob_radius_mm=tc["$(prefix)_blob_radius_mm"])
 end
 
-"""Label of the connected component of each point: points closer than `radius` are connected. Labels run from 1."""
-function point_components(x,y,z,radius::Real)
-    n=length(x);parent=collect(1:n);r2=Float64(radius)^2
-    root(i)=(while parent[i]!=i;parent[i]=parent[parent[i]];i=parent[i];end;i)
-    for i in 1:n-1, j in i+1:n
-        (Float64(x[i])-x[j])^2+(Float64(y[i])-y[j])^2+(Float64(z[i])-z[j])^2<r2 || continue
-        a=root(i);b=root(j);a==b||(parent[max(a,b)]=min(a,b))
-    end
-    names=Dict{Int,Int}();[get!(names,root(i),length(names)+1) for i in 1:n]
-end
-
-"""Track selection of the itrack from its components on the readout lattice.
-
-The hits above the display cut are connected, at their own positions, with the
-radius `ion_segment_connection_mm` (touching cells). A component with at least
-`ion_segment_min_hits` hits is a track segment. A smaller component with at
-least `ion_deposit_min_keV` is a detached deposit: the K X-ray of a
-photoelectric absorption, a bremsstrahlung photon. Smaller components are
-ignored. The event is selected when it has no detached deposit and either one
-segment, or at most `ion_max_segments` segments that belong to one component
-with the radius `ion_connection_mm`: a track with a short gap. Segments that
-stay apart are separate electrons.
+"""Track selection of the itrack from its components on the readout lattice (`TrackSelection.track_selection`).
 
 Returns the number of segments and of detached deposits, the largest deposit
 energy (keV), whether the segments join, and the selection.
 """
-function itrack_selection(h::SavedHits,tc::AbstractDict)
-    keep=findall(>(Float32(tc["ion_hit_cut_keV"])),h.energy_keV);none=(segments=0,deposits=0,deposit_keV=0f0,segments_joined=false,selected=false)
-    isempty(keep)&&return none
-    x=h.x_mm[keep];y=h.y_mm[keep];z=h.z_mm[keep];e=h.energy_keV[keep]
-    label=point_components(x,y,z,get(tc,"ion_segment_connection_mm",5.5));n=maximum(label);hits=zeros(Int,n);energy=zeros(Float32,n)
-    for (i,l) in enumerate(label);hits[l]+=1;energy[l]+=e[i];end
-    segment=hits.>=Int(get(tc,"ion_segment_min_hits",6));deposit=.!segment .& (energy.>=Float32(get(tc,"ion_deposit_min_keV",10.0)))
-    wide=point_components(x,y,z,tc["ion_connection_mm"]);joined=length(unique(wide[i] for i in eachindex(label) if segment[label[i]]))<=1
-    segments=count(segment);deposits=count(deposit)
-    (segments=segments,deposits=deposits,deposit_keV=deposits==0 ? 0f0 : maximum(energy[deposit]),segments_joined=joined&&segments>0,
-     selected=deposits==0&&segments>=1&&(segments==1||(segments<=Int(get(tc,"ion_max_segments",3))&&joined)))
-end
+itrack_selection(h::SavedHits,tc::AbstractDict)=track_selection(h.x_mm,h.y_mm,h.z_mm,h.energy_keV;hit_cut_keV=tc["ion_hit_cut_keV"],
+    segment_connection_mm=get(tc,"ion_segment_connection_mm",5.5),segment_min_hits=get(tc,"ion_segment_min_hits",6),
+    deposit_min_keV=get(tc,"ion_deposit_min_keV",10.0),max_segments=get(tc,"ion_max_segments",3),connection_mm=tc["ion_connection_mm"])
 
 batch_number(tag::AbstractString)=parse(Int,tag[2:end])
 

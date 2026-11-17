@@ -338,14 +338,17 @@ in `notes/html/itaca_detector.html`, the scheme in
 - iItaca (ITACAi, II) is the ion-reading detector in pure xenon. It has its own
   cards, module, scripts and results, apart from the hybrid ITACA detector:
   `config/iitaca/`, `src/iitaca/`, `scripts/iitaca/`, `tests/iitaca/`,
-  `results/iitaca/`. The validated modules (ion transport, fast trigger, VH1,
+  `results/iitaca/`. The track selection and track features are in
+  `src/track_selection/TrackSelection.jl`, shared by both chains: change them
+  there, and keep `tests/track_selection` reproducing the saved feature tables.
+  The validated modules (ion transport, fast trigger, VH1,
   reconstruction, hits, tracks) are used as they are; do not add iItaca
   switches to the hybrid drivers or cards.
 - The electron side is not simulated. The fast trigger and frame are emulated
   from the Monte Carlo; the event energy is the Geant4 energy deposited inside
   the frame, smeared with the resolution of `config/iitaca/energy.toml`.
 - Every physical number is in a card. The set is `config/iitaca/iitaca.toml`
-  (gas, geometry, drift, voltages, ions, energy, el, trigger); a variant under
+  (gas, geometry, drift, voltages, ions, energy, el, trigger, tracks); a variant under
   `config/iitaca/variants/` and a run card change values only through
   overrides. Values under a `[documentation]` table (potentials, gaps, EL
   module, SiPMs, electron diffusion) are not read by the simulation, which

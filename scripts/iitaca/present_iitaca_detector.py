@@ -165,7 +165,18 @@ def render():
     ['Frame placement', 'inside the detector', '', 'cube centred on the track, moved inward at the detector boundary'],
     ['Margin of the ion response', one('trigger.simulation_margin_mm'), 'mm', 'around the track and the contained deposits, inside the cube'],
     ['Gamma veto', one('trigger.gamma_energy_cut_keV'), 'keV', 'a gamma deposit above this outside the frame rejects the event'],
-    ['Distance to the EL entry', one('trigger.el_exclusion_mm'), 'mm', 'the main track stays this far from the EL entry']])}</section>
+    ['Distance to the EL entry', one('trigger.el_exclusion_mm'), 'mm', 'the main track stays this far from the EL entry']])}
+<h3>Hits and track selection</h3>
+{table(quantity, [
+    ['Saved hits', one('tracks.saved_hit_cut_keV'), 'keV', 'hits above this are written to the hit file'],
+    ['Hit cut', one('tracks.hit_cut_keV'), 'keV', 'hits above this enter the selection and the track'],
+    ['Radius of a component', one('tracks.segment_connection_mm'), 'mm', 'touching cells of the lattice'],
+    ['Track segment', one('tracks.segment_min_hits'), 'hits', 'a component with at least this many hits'],
+    ['Detached deposit', one('tracks.deposit_min_keV'), 'keV', 'a smaller component with at least this energy rejects the event'],
+    ['Segments', one('tracks.max_segments'), '', f"at most this many, joined at {one('tracks.connection_mm')} mm"],
+    ['Cells of the track graph', one('tracks.voxel_width_mm'), 'mm', ''],
+    ['Endpoint sphere', one('tracks.blob_radius_mm'), 'mm', 'radius for the endpoint energies E₁ and E₂']])}
+<p>Method: <a href="event_analysis/track_selection.html">track selection on the readout lattice</a>; code in <code>src/track_selection/TrackSelection.jl</code>.</p></section>
 
 <section id="variants"><h2>3. The variants</h2>
 {table(by_variant, [
@@ -278,7 +289,7 @@ def render():
 <h3>Emulated</h3>
 <ol>
 <li>Fast trigger and event frame from the Geant4 deposits (<a href="event_analysis/mc_fast_trigger.html">MC fast trigger</a>).</li>
-<li>Event energy: sum of the Geant4 deposits inside the event frame, smeared with a Gaussian of {resolution} FWHM at Q<sub>ββ</sub>, scaling as √E.</li>
+<li>Event energy: sum of the Geant4 deposits inside the box given to the ion response (<code>IItaca.frame_energy_keV</code>), smeared with a Gaussian of {resolution} FWHM at Q<sub>ββ</sub>, scaling as √E (<code>IItaca.emulated_energy_keV</code>).</li>
 </ol>
 <h3>Order of the cuts</h3>
 <ol>
@@ -289,7 +300,7 @@ def render():
 </ol></section>
 
 <section id="cards"><h2>6. Cards</h2>
-<p>The detector set is <code>{index}</code>: eight cards (gas, geometry, drift, voltages, ions, energy, el, trigger) with design values only. Values under a <code>[documentation]</code> table are not passed to the simulation (<code>IItaca.simulation_inputs</code>); changing one changes this page and no result. A variant is a card with overrides, dotted keys into the set. A run card names the set, optionally a variant, and may add its own overrides, applied after those of the variant: radius, length, pressure, fields, potentials, pitch, frame and energy resolution are all changed that way.</p>
+<p>The detector set is <code>{index}</code>: nine cards (gas, geometry, drift, voltages, ions, energy, el, trigger, tracks) with design values only. Values under a <code>[documentation]</code> table are not passed to the simulation (<code>IItaca.simulation_inputs</code>); changing one changes this page and no result. A variant is a card with overrides, dotted keys into the set. A run card names the set, optionally a variant, and may add its own overrides, applied after those of the variant: radius, length, pressure, fields, potentials, pitch, frame and energy resolution are all changed that way.</p>
 <p>When the cards are resolved (<code>IItaca.resolve_detector</code>) the result is checked: lengths, fields, velocity and frame positive; ion velocity × frame equal to the length drifted in one frame of the ions card; the frame of the VH1 card equal to the frame of the detector; potentials rising from the pads to the IFG.</p>
 {overrides}</section>
 

@@ -433,6 +433,8 @@ iitaca-detector-present:
 
 test-iitaca:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_conditions.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_energy.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/track_selection/test_track_selection.jl
 
 .PHONY: itaca-detector itaca-detector-present test-itaca
 # ITACA operating conditions: derived values (Julia, HDF5) and the detector page (Python).

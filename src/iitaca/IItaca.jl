@@ -4,8 +4,8 @@ the resolved configuration.
 
 Three layers:
 
-1. Detector set: an index (`config/iitaca/iitaca.toml`) naming eight cards,
-   gas, geometry, drift, voltages, ions, energy, el, trigger. Design values
+1. Detector set: an index (`config/iitaca/iitaca.toml`) naming nine cards,
+   gas, geometry, drift, voltages, ions, energy, el, trigger, tracks. Design values
    only; nothing derived is typed in them. Values under a `[documentation]`
    table are not read by the simulation: `simulation_inputs` leaves them out
    and `documentation_inputs` returns them.
@@ -16,6 +16,9 @@ Three layers:
 
 `resolve_detector` returns the detector values after the overrides and checks
 them; `derived_conditions` computes the physics of a resolved detector.
+`frame_energy_keV` and `emulated_energy_keV` give the event energy of the
+electron side, which is not simulated; `selection_settings` and
+`feature_settings` pass the tracks card to `TrackSelection`.
 
 Load `src/event_analysis/EventAnalysis.jl` and `src/itaca/ItacaConditions.jl`
 first: the thermal ion spread, the EL yield, the gas state and the override
@@ -23,16 +26,20 @@ rules come from there. Units are in the key names; Float64 throughout.
 """
 module IItaca
 using TOML, SHA
-using ..EventAnalysis: el_photon_yield, sigma_t_ion_mm, elm_light_acceptance
+using Random
+using ..EventAnalysis: el_photon_yield, sigma_t_ion_mm, elm_light_acceptance, MCEventHits, EventFrame
 using ..ItacaConditions: DetectorSet, apply_overrides, flatten, gas_state, enriched_xenon_molar_mass_g_mol,
                          XENON_ISOTOPE_MASS_g_mol, K_B_J_K, TD_V_m2
 
 export SECTIONS, load_iitaca_set, load_variant, ResolvedDetector, resolve_detector, check_detector,
-       simulation_inputs, documentation_inputs, potentials_kV, resolution_fwhm_keV, roi_keV, derived_conditions
+       simulation_inputs, documentation_inputs, potentials_kV, resolution_fwhm_keV, roi_keV, in_roi, derived_conditions,
+       FWHM_PER_SIGMA, frame_energy_keV, emulated_energy_keV, selection_settings, feature_settings
 
 const SET_SCHEMA = "nausicaa.iitaca_set.v1"
 const VARIANT_SCHEMA = "nausicaa.iitaca_variant.v1"
-const SECTIONS = ("gas", "geometry", "drift", "voltages", "ions", "energy", "el", "trigger")
+const SECTIONS = ("gas", "geometry", "drift", "voltages", "ions", "energy", "el", "trigger", "tracks")
+"FWHM of a Gaussian over its sigma, 2 sqrt(2 ln 2)."
+const FWHM_PER_SIGMA = 2 * sqrt(2 * log(2))
 const CARD_SCHEMAS = Dict(s => "nausicaa.iitaca_$s.v1" for s in SECTIONS)
 
 # ---------------------------------------------------------------- detector set
@@ -40,7 +47,7 @@ const CARD_SCHEMAS = Dict(s => "nausicaa.iitaca_$s.v1" for s in SECTIONS)
 """
     load_iitaca_set(index_path)::DetectorSet
 
-Read the index and its eight cards. Require the set schema, every section of
+Read the index and its nine cards. Require the set schema, every section of
 `SECTIONS` exactly once, and each card's own schema.
 """
 function load_iitaca_set(index_path::AbstractString)::DetectorSet
@@ -128,6 +135,8 @@ documentation_inputs(d::AbstractDict) = Dict{String,Any}(k => v for (k, v) in fl
 Consistency of a resolved detector:
 
 - positive pressure, temperature, lengths, pitch, field, velocity and frame;
+- track settings: saved hit cut at most the hit cut, segment radius at most
+  the connection radius;
 - the length drifted in one frame, velocity x frame, equals `ions.z_cell_mm`;
 - the frame of the VH1 card equals `ions.frame_ms` (with `root`);
 - potentials rise from the pads to the IFG;
@@ -171,6 +180,13 @@ function check_detector(d::AbstractDict; root = nothing)
     tr["frame_placement"] == "inside_detector" || throw(ArgumentError("Unsupported trigger.frame_placement '$(tr["frame_placement"])'"))
     0 <= tr["simulation_margin_mm"] && 0 <= tr["el_exclusion_mm"] && 0 <= tr["gamma_energy_cut_keV"] ||
         throw(ArgumentError("Trigger margins and cuts must not be negative"))
+    tk = d["tracks"]
+    for key in ("segment_connection_mm", "connection_mm", "voxel_width_mm", "blob_radius_mm", "segment_min_hits", "max_segments")
+        tk[key] > 0 || throw(ArgumentError("tracks.$key must be positive, found $(tk[key])"))
+    end
+    0 <= tk["saved_hit_cut_keV"] <= tk["hit_cut_keV"] || throw(ArgumentError("Require 0 <= tracks.saved_hit_cut_keV <= tracks.hit_cut_keV"))
+    0 <= tk["deposit_min_keV"] || throw(ArgumentError("tracks.deposit_min_keV must not be negative"))
+    tk["segment_connection_mm"] <= tk["connection_mm"] || throw(ArgumentError("tracks.segment_connection_mm exceeds tracks.connection_mm"))
     nothing
 end
 
@@ -206,6 +222,50 @@ function roi_keV(en::AbstractDict)
     half = en["roi_width_fwhm"] * en["resolution_fwhm_at_qbb_keV"] / 2
     (lower = en["qbb_keV"] - half, upper = en["qbb_keV"] + half)
 end
+
+"""
+    in_roi(energy_card, E_keV)::Bool
+
+True for an energy strictly inside the region of interest.
+"""
+in_roi(en::AbstractDict, E_keV::Real) = (r = roi_keV(en); r.lower < E_keV < r.upper)
+
+"""
+    frame_energy_keV(hits::MCEventHits, box::EventFrame)::Float64
+
+Energy deposited inside the box: the sum, in Float64, of the Monte Carlo hits
+whose position lies in the box, edges included. Hits and box must be in the
+same coordinate frame. With the box given to the ion response, this is the
+energy of the deposits that the ion readout sees.
+"""
+function frame_energy_keV(h::MCEventHits, box::EventFrame)::Float64
+    h.frame == box.frame || throw(ArgumentError("Coordinate frames differ"))
+    total = 0.0
+    @inbounds for i in eachindex(h.x_mm)
+        p = (h.x_mm[i], h.y_mm[i], h.z_mm[i])
+        all(box.lower_mm[k] <= p[k] <= box.upper_mm[k] for k in 1:3) && (total += Float64(h.energy_keV[i]))
+    end
+    total
+end
+
+"""
+    emulated_energy_keV(rng, E_keV, energy_card)::Float64
+
+Energy measured by the electron side, emulated: `E_keV` plus a Gaussian
+deviate of sigma = FWHM(E) / (2 sqrt(2 ln 2)), with `resolution_fwhm_keV`.
+One `randn` is drawn from `rng`. Zero energy is returned unchanged.
+"""
+function emulated_energy_keV(rng::AbstractRNG, E_keV::Real, en::AbstractDict)::Float64
+    E_keV + resolution_fwhm_keV(en, E_keV) / FWHM_PER_SIGMA * randn(rng)
+end
+
+"""Keywords of `TrackSelection.track_selection` from the tracks card."""
+selection_settings(d::AbstractDict) = (t = d["tracks"]; (hit_cut_keV = t["hit_cut_keV"], segment_connection_mm = t["segment_connection_mm"],
+    segment_min_hits = t["segment_min_hits"], deposit_min_keV = t["deposit_min_keV"], max_segments = t["max_segments"], connection_mm = t["connection_mm"]))
+
+"""Keywords of `TrackSelection.track_features` from the tracks card."""
+feature_settings(d::AbstractDict) = (t = d["tracks"]; (hit_cut_keV = t["hit_cut_keV"], voxel_width_mm = t["voxel_width_mm"],
+    connection_mm = t["connection_mm"], blob_radius_mm = t["blob_radius_mm"]))
 
 """
     derived_conditions(detector::Dict)::Vector{Tuple{String,String,Float64,String,String}}
@@ -314,13 +374,13 @@ function derived_conditions(d::AbstractDict)
 
     roi = roi_keV(en); fwhm = en["resolution_fwhm_at_qbb_keV"]; F = en["fano_factor"]; J = el["variance_ratio_J"]
     put!("energy", "electrons_at_qbb", N, "", "Q / W")
-    put!("energy", "fano_fwhm_at_qbb_keV", 2.355 * sqrt(F * en["W_eV"] * Q * 1000) / 1000, "keV", "2.355 sqrt(F W Q)")
-    put!("energy", "fano_fwhm_at_qbb_percent", 235.5 * sqrt(F / N), "%", "2.355 sqrt(F / N)")
-    put!("energy", "el_fluctuation_fwhm_at_qbb_percent", 235.5 * sqrt(J / N), "%", "2.355 sqrt(J / N)")
-    put!("energy", "photoelectron_fwhm_at_qbb_percent", 235.5 / sqrt(N_pe), "%", "2.355 / sqrt(N_pe)")
-    put!("energy", "expected_fwhm_at_qbb_percent", 235.5 * sqrt((F + J) / N + 1 / N_pe), "%", "2.355 sqrt((F + J) / N + 1 / N_pe)")
+    put!("energy", "fano_fwhm_at_qbb_keV", FWHM_PER_SIGMA * sqrt(F * en["W_eV"] * Q * 1000) / 1000, "keV", "2.355 sqrt(F W Q)")
+    put!("energy", "fano_fwhm_at_qbb_percent", 100 * FWHM_PER_SIGMA * sqrt(F / N), "%", "2.355 sqrt(F / N)")
+    put!("energy", "el_fluctuation_fwhm_at_qbb_percent", 100 * FWHM_PER_SIGMA * sqrt(J / N), "%", "2.355 sqrt(J / N)")
+    put!("energy", "photoelectron_fwhm_at_qbb_percent", 100 * FWHM_PER_SIGMA / sqrt(N_pe), "%", "2.355 / sqrt(N_pe)")
+    put!("energy", "expected_fwhm_at_qbb_percent", 100 * FWHM_PER_SIGMA * sqrt((F + J) / N + 1 / N_pe), "%", "2.355 sqrt((F + J) / N + 1 / N_pe)")
     put!("energy", "resolution_fwhm_at_qbb_percent", 100 * fwhm / Q, "%", "FWHM of the card over Qbb; used by the simulation")
-    put!("energy", "resolution_sigma_at_qbb_keV", fwhm / 2.355, "keV", "FWHM / 2.355")
+    put!("energy", "resolution_sigma_at_qbb_keV", fwhm / FWHM_PER_SIGMA, "keV", "FWHM / 2.355")
     put!("energy", "roi_lower_keV", roi.lower, "keV", "Qbb - roi_width_fwhm x FWHM / 2")
     put!("energy", "roi_upper_keV", roi.upper, "keV", "Qbb + roi_width_fwhm x FWHM / 2")
     out

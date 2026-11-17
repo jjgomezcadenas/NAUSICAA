@@ -1,0 +1,12 @@
+# Hits and track selection on the ion lattice
+# (notes/html/event_analysis/track_selection.html).
+schema = "nausicaa.iitaca_tracks.v1"
+saved_hit_cut_keV = 3.0             # hits above this are written to the hit file
+hit_cut_keV = 5.0                   # hits above this enter the selection and the track
+segment_connection_mm = 5.5         # touching cells of the 3 mm lattice: the components of the selection
+segment_min_hits = 6                # a component with at least this many hits is a track segment
+deposit_min_keV = 10.0              # a smaller component with at least this energy is a detached deposit
+max_segments = 3                    # more segments than this reject the event
+connection_mm = 8.0                 # segments within this radius are one track with a short gap; graph of the track
+voxel_width_mm = 3.0                # cells of the track graph
+blob_radius_mm = 7.0                # sphere around each endpoint for E1 and E2

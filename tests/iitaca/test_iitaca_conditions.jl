@@ -84,7 +84,7 @@ end
         @test t["el.sensor_fraction_of_guide_exit"] ≈ sensor
         @test t["el.photoelectrons_per_el_photon"] ≈ guide * sensor * 0.32 rtol = 1e-5
         @test t["el.photoelectrons_at_qbb"] ≈ t["el.photons_at_qbb"] * guide * sensor * 0.32 rtol = 1e-5
-        @test t["energy.photoelectron_fwhm_at_qbb_percent"] ≈ 235.5 / sqrt(t["el.photoelectrons_at_qbb"])
+        @test t["energy.photoelectron_fwhm_at_qbb_percent"] ≈ 100 * FWHM_PER_SIGMA / sqrt(t["el.photoelectrons_at_qbb"])
         @test t["energy.expected_fwhm_at_qbb_percent"]^2 ≈ t["energy.fano_fwhm_at_qbb_percent"]^2 + t["energy.el_fluctuation_fwhm_at_qbb_percent"]^2 + t["energy.photoelectron_fwhm_at_qbb_percent"]^2
     end
     @test a["voltages.grading_field_kV_cm"] ≈ 7.33 && b["voltages.grading_field_kV_cm"] ≈ 7.58
