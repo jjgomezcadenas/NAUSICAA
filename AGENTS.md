@@ -364,6 +364,11 @@ in `notes/html/itaca_detector.html`, the scheme in
   settings as overrides it reproduces the ITACA itrack hits bit for bit
   (`tests/iitaca/test_iitaca_equivalence.jl`); keep that test passing when
   touching either chain. Chain and file format: `notes/html/iitaca/simulation.html`.
+- Analysis of a run, from the hit files: `prepare_iitaca_features.jl` (ROI cut,
+  track selection and track features per batch), `prepare_iitaca_statistics.jl`
+  (cut flow and joined table), `prepare_iitaca_comparison.jl` (signal against
+  backgrounds, cut on E2), each with its Python page; `make iitaca-statistics`
+  and `make iitaca-comparison`. Described in `notes/html/iitaca/analysis.html`.
 - `make iitaca-detector` regenerates `notes/html/iitaca_detector.html` from the
   cards; `make test-iitaca` runs the tests. All iItaca documentation and
   results are reached from `notes/html/iitaca/index.html`; results obtained

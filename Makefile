@@ -436,11 +436,25 @@ test-iitaca:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_energy.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/track_selection/test_track_selection.jl
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_equivalence.jl
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_analysis.jl
 
 # One batch of an iItaca run: make iitaca-batch RUN=config/iitaca/runs/<card>.toml BATCH=0, with NAUSICAA_DATA set
 .PHONY: iitaca-batch
 iitaca-batch:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/run_iitaca_batch.jl $(RUN) --batch=$(BATCH)
+
+# Analysis of an iItaca run: make iitaca-statistics RUN_DIR=results/iitaca/<run_label>
+# (features of the batches without them, statistics of the run, page), and
+# make iitaca-comparison OUT=results/iitaca/<name> SIGNAL=<run folder> BACKGROUNDS="<run folder> ..."
+.PHONY: iitaca-statistics iitaca-comparison
+iitaca-statistics:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/prepare_iitaca_features.jl $(RUN_DIR)
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/prepare_iitaca_statistics.jl $(RUN_DIR)
+	$(VIEWER_PYTHON) scripts/iitaca/present_iitaca_statistics.py $(RUN_DIR)
+
+iitaca-comparison:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/prepare_iitaca_comparison.jl $(OUT) $(SIGNAL) $(BACKGROUNDS)
+	$(VIEWER_PYTHON) scripts/iitaca/present_iitaca_comparison.py $(OUT)
 
 .PHONY: itaca-detector itaca-detector-present test-itaca
 # ITACA operating conditions: derived values (Julia, HDF5) and the detector page (Python).

@@ -1,0 +1,59 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>iItaca analysis</title><style>body{font:17px/1.65 system-ui;color:#203343;background:#f3f6f8;margin:0}header{background:#17394b;color:white;padding:30px max(24px,calc((100vw - 1100px)/2))}header a{color:#d4ecf6}main{max-width:1100px;margin:auto;padding:28px 24px}section{background:white;border:1px solid #d8e3e8;border-radius:10px;padding:25px;margin-bottom:24px;scroll-margin-top:15px}h1,h2,h3{line-height:1.25}h2{color:#185b83}a{color:#185b83}code{font-family:ui-monospace,monospace;font-size:.9em}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;padding:10px;border-bottom:1px solid #d8e3e8;vertical-align:top}th{background:#edf3f6}td:nth-child(2){white-space:nowrap}table.variants td:nth-child(3){white-space:nowrap}nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-bottom:25px}footer{padding:20px;color:#526776}li{margin:6px 0} @media(max-width:650px){main{padding:15px}section{padding:18px}table{display:block;overflow:auto}}pre{background:#edf3f6;padding:16px;overflow:auto;font:14px/1.55 ui-monospace,monospace}</style></head><body><header><a href="../index.html">Documentation index</a> · <a href="index.html">iItaca</a><h1>iItaca analysis</h1><p>From the hit files of a run to its selection table, its statistics and the comparison of signal and backgrounds.</p></header><main><nav><a href="#order">Order of the cuts</a><a href="#features">Feature table</a><a href="#statistics">Statistics of a run</a><a href="#comparison">Comparison</a><a href="#functions">Functions</a><a href="#tests">Tests</a><a href="#commands">Commands</a></nav>
+
+<section id="order"><h2>1. Order of the cuts</h2>
+<ol>
+<li>Fast trigger, applied when the batch is read (<a href="simulation.html#steps">simulation chain</a>): detector, distance to the EL entry, frame, gamma veto.</li>
+<li>ROI cut: event energy strictly between the bounds of the energy card, Q<sub>ββ</sub> ± <code>roi_width_fwhm</code> × FWHM / 2.</li>
+<li>Track selection on the ion lattice (<a href="../event_analysis/track_selection.html">track selection</a>), with the settings of the tracks card.</li>
+<li>Separation of one electron from two: the cut on E₂, or the classification network (<a href="../network/classification_network.html">classification network</a>).</li>
+</ol>
+<p>Steps 2 and 3 are columns of the feature table, so their thresholds can be studied without reading the events again.</p></section>
+
+<section id="features"><h2>2. Feature table of a batch</h2>
+<p><code>prepare_iitaca_features.jl</code> reads <code>hits.h5</code> of a batch and writes <code>features.h5</code> beside it (schema <code>iitaca.features.v1</code>), one row per event accepted by the trigger. The settings are those of the resolved configuration stored in the hit file.</p>
+<ol>
+<li>Copy the event columns of the hit file (<a href="simulation.html#file">hit file</a>) and the trigger counts.</li>
+<li><code>in_roi</code>: the ROI cut on <code>energy_keV</code>.</li>
+<li>Track selection (<code>TrackSelection.track_selection</code>): <code>segments</code>, <code>deposits</code>, <code>deposit_keV</code> (largest detached deposit), <code>segments_joined</code>, <code>selected</code>.</li>
+<li>Main track (<code>TrackSelection.track_features</code>): <code>hits</code> above the hit cut, <code>components</code>, <code>main_keV</code>, <code>second_keV</code>, <code>main_voxels</code>, <code>length_mm</code>, <code>extent_x_mm</code>, <code>extent_y_mm</code>, <code>extent_z_mm</code>, and the endpoint energies <code>E1_keV</code> ≥ <code>E2_keV</code>.</li>
+</ol></section>
+
+<section id="statistics"><h2>3. Statistics of a run</h2>
+<p><code>prepare_iitaca_statistics.jl</code> joins the feature tables of the batches of a run into <code>statistics/events.h5</code> (schema <code>iitaca.statistics.v1</code>) with the summed trigger counts and the cut flow; <code>present_iitaca_statistics.py</code> writes <code>statistics/index.html</code>.</p>
+<table><tr><th>Step of the cut flow</th><th>Events</th></tr>
+<tr><td>generated</td><td>generated in Geant4, from <code>generated_events_per_batch</code> of the run card when stated</td></tr>
+<tr><td>read</td><td>in the input files (for the gamma samples, those saved by the energy window of the generation)</td></tr>
+<tr><td>trigger</td><td>accepted by the fast trigger; the rejected ones are listed per decision</td></tr>
+<tr><td>roi</td><td>of those, event energy in the ROI</td></tr>
+<tr><td>track</td><td>of those, selected by the track selection</td></tr></table>
+<p>The page shows the cut flow, the energy deposited, emulated and reconstructed from the ions, the segments and detached deposits of the events in the ROI, the endpoint energies and length of the selected tracks, and the drift length, hits and noise.</p></section>
+
+<section id="comparison"><h2>4. Signal against backgrounds</h2>
+<p><code>prepare_iitaca_comparison.jl</code> takes the statistics of a signal run and of one or more background runs of the same variant, ROI and track settings, and writes <code>comparison.h5</code> (schema <code>iitaca.comparison.v1</code>); <code>present_iitaca_comparison.py</code> writes the page.</p>
+<ol>
+<li>Cut flow of each run, side by side.</li>
+<li>For the events in the ROI that pass the track selection: E₁ and E₂.</li>
+<li>Cut on E₂: an event is accepted when E₂ exceeds a threshold. For signal efficiencies of 90, 80, 70 and 60 % the threshold is the corresponding quantile of the signal; each background gets its accepted fraction with its binomial error.</li>
+<li>The curve of background acceptance against signal efficiency for every threshold, and its area.</li>
+</ol></section>
+
+<section id="functions"><h2>5. Functions</h2>
+<pre>compute_features(hits_path) -> Dict                    # table of one batch
+write_features(batch_dir) -> String;  read_features(path) -> Dict
+batch_folders(run_dir) -> Vector{String}
+run_statistics(run_dir) -> (events, counts, flow, ...);  write_statistics(run_dir) -> String
+accepted(values, threshold) -> (fraction, error, events)
+threshold_for(signal, target) -> Float64
+curve(signal, background) -> (threshold, efficiency, acceptance, area)
+write_comparison(out_dir, signal_dir, background_dirs) -> String</pre></section>
+
+<section id="tests"><h2>6. Tests</h2>
+<ul>
+<li><code>tests/track_selection/test_track_selection.jl</code>: each rule of the selection on a synthetic 3 mm lattice; the saved ITACA feature tables reproduced exactly.</li>
+<li><code>tests/iitaca/test_iitaca_analysis.jl</code>: the cut on E₂ on known samples; on the pilot read with the ITACA ion settings, the selection and the track features equal the itrack columns of the ITACA feature tables, event by event; the cut flow is consistent with the tables; a sample compared with itself gives no separation.</li>
+</ul></section>
+
+<section id="commands"><h2>7. Commands</h2>
+<pre>make iitaca-statistics RUN_DIR=results/iitaca/&lt;run_label&gt;
+make iitaca-comparison OUT=results/iitaca/&lt;name&gt; SIGNAL=results/iitaca/&lt;signal run&gt; BACKGROUNDS="results/iitaca/&lt;background run&gt; ..."</pre></section>
+</main><footer>iItaca · Analysis</footer></body></html>

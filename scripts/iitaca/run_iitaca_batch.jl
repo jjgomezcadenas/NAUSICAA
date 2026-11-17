@@ -153,6 +153,7 @@ function run_iitaca_batch(card::AbstractString; batch::Integer, limit::Integer =
             g = create_group(f, "configuration")
             g["run_label"] = c["run_label"]; g["sample"] = c["sample"]; g["variant"] = r.resolved.variant; g["batch"] = batch_tag(batch)
             g["seed"] = seed; g["electronics_seed"] = eseed; g["frame_track"] = c["frame_track"]
+            g["generated_events"] = Int(get(c, "generated_events_per_batch", 0))     # events generated in Geant4 for this batch; 0: not stated
             g["resolved"] = resolved_text(r, ROOT); g["run_card"] = read(card, String); g["vh1_card"] = read(joinpath(ROOT, sim["ions.vh1_card"]), String)
             for (name, text) in r.resolved.set.texts; g["cards/$name"] = text; end
             r.resolved.variant_text == "" || (g["cards/variant"] = r.resolved.variant_text)

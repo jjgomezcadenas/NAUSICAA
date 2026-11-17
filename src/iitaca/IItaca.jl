@@ -134,7 +134,9 @@ The other keys are the run parameters: `run_label`, `sample`, the input files
 `hits` and `particles`, `seed` (transport and emulated energy),
 `electronics_seed` (VH1 noise and converter), `frame_track`
 (`primary_and_delta_electrons` or `leading_gamma_electron`) and optionally
-`max_events` (0: all) and `max_vector_bytes`. Paths are relative to `root`.
+`max_events` (0: all), `max_vector_bytes` and `generated_events_per_batch`
+(events generated in Geant4 per batch, when the input files hold only part of
+them). Paths are relative to `root`.
 A detector key at the top level of the run card is refused.
 """
 function resolve_run(run_path::AbstractString; root::AbstractString)::ResolvedRun
