@@ -9,9 +9,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-def render(path):
+def render(path,output=None,viewer_events=None,viewer_note=''):
  from plotly.offline import get_plotlyjs
- out=path.parent;plots=out/'plots';plots.mkdir(exist_ok=True)
+ src=path.parent;out=Path(output) if output else src;out.mkdir(parents=True,exist_ok=True);plots=out/'plots';plots.mkdir(exist_ok=True)
  assets=out/'viewer';assets.mkdir(exist_ok=True)
  (assets/'plotly.min.js').write_text(get_plotlyjs())
  with h5py.File(path) as f:
@@ -20,6 +20,10 @@ def render(path):
     sample_label={'bb0nu':'bb0nu','single_electrons':'single electrons'}.get(species,species)
     e=f['events'];all_ids=[str(v) for v in e['event_number'][:]];positions={id:j for j,id in enumerate(all_ids)}
     ids=sorted(f['track_examples'],key=lambda id:positions[id]);summary=f['track_summary']
+    if viewer_events is not None:   # event displays restricted to the given event numbers
+        missing=[v for v in viewer_events if v not in ids]
+        if missing: raise SystemExit(f'No event display saved for events {missing}')
+        ids=[id for id in ids if id in set(viewer_events)]
     ion_setting=(f"Fixed itrack voxel width {tc['ion_voxel_width_mm']:g} mm and connection radius {tc['ion_connection_mm']:g} mm."
                  if tc.get('ion_graph_mode')=='fixed' else
                  'Itrack uses Petit’s event-dependent voxel width and connection radius.')
@@ -33,17 +37,17 @@ def render(path):
                    'Itrack sphere radius: 5σₜ; etrack sphere radius: 3σₜ.')
     single_ion=int(summary['itrack_components/counts'][1])
     comparison=''
-    earlier=out.parent/'presentation_kdt_v2'
+    earlier=src.parent/'presentation_kdt_v2'
     if tc.get('ion_graph_mode')=='fixed' and (earlier/'controls.h5').exists():
         with h5py.File(earlier/'controls.h5') as old:
             previous=int(old['track_summary/itrack_components/counts'][1])
         comparison=f'<p>Single itrack component: {single_ion}/{len(all_ids)} with the fixed 3 mm / 6 mm settings; <a href="../presentation_kdt_v2/index.html">{previous}/{len(all_ids)} with Petit’s diffusion-scaled settings</a>.</p>'
-    prior_cut=out.parent/'presentation_ionflat_components'/'controls.h5'
+    prior_cut=src.parent/'presentation_ionflat_components'/'controls.h5'
     if tc['ion_hit_cut_keV']==5 and prior_cut.exists():
         with h5py.File(prior_cut) as old:
             previous=int(np.count_nonzero(old['events/itrack_component_count'][:]>1))
         comparison=f'<p>Multi-component itracks: {previous}/{len(all_ids)} at 3 keV; {len(all_ids)-single_ion}/{len(all_ids)} at 5 keV. Voxel width and connection radius are 3 and 6 mm in both runs.</p>'
-    prior_geometry=out.parent/'presentation_ionflat_5keV'/'controls.h5'
+    prior_geometry=src.parent/'presentation_ionflat_5keV'/'controls.h5'
     if tc.get('ion_connection_mm')==7 and tc.get('electron_connection_mm')==8 and prior_geometry.exists():
         with h5py.File(prior_geometry) as old:
             pi=int(np.count_nonzero(old['events/itrack_component_count'][:]>1))
@@ -76,14 +80,14 @@ def render(path):
     if 'itrack_component_count' in e:
         components=e['itrack_component_count'][:]
         failure_note=f'<p>{np.count_nonzero(components>1)} events have more than one itrack component.</p>'
-        truth=out/'component_mc_classification.h5'
+        truth=src/'component_mc_classification.h5'
         if truth.exists():
             with h5py.File(truth) as mc:
                 clear=int(np.count_nonzero(mc['all_secondary_gamma'][:]))
                 broken=int(len(mc['all_secondary_gamma'])-clear)
                 broken_ids=', '.join(map(str,mc['event_number'][:][~mc['all_secondary_gamma'][:].astype(bool)]))
             failure_note=f'<p><strong>MC classification at {tc["ion_hit_cut_keV"]:g} keV:</strong> {clear} events have secondary components matching gamma deposits; {broken} have a disconnected primary track'+(f' (MC events {broken_ids})' if broken else '')+f'. A secondary component matches a gamma deposit when at least 80% of its energy lies within {tc["ion_connection_mm"]:g} mm of MC gamma hits and nearer to those hits than to other MC hits. <a href="component_mc_classification.h5">Numerical classification</a>.</p>'+failure_note
-        electron_truth=out/'etrack_component_mc_classification.h5'
+        electron_truth=src/'etrack_component_mc_classification.h5'
         if electron_truth.exists():
             with h5py.File(electron_truth) as mc:
                 clear_e=int(np.count_nonzero(mc['all_secondary_gamma'][:]))
@@ -103,7 +107,7 @@ def render(path):
         if isinstance(value,list):return [clean(v) for v in value]
         if isinstance(value,float) and not np.isfinite(value):return None
         return value
-    source=out/f['hit_file'][()].decode()
+    source=src/f['hit_file'][()].decode()
     with h5py.File(source) as hits_file:
         ion_drift_cm=hits_file['events/ion_drift_cm'][:]
         electron_drift_cm=hits_file['events/electron_drift_cm'][:]
@@ -152,7 +156,7 @@ def render(path):
     page='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ITACA · Event energy and tracks</title>
 <style>body{font:17px/1.5 system-ui;color:#203343;max-width:1800px;margin:auto;padding:24px}img{max-width:100%}.views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plot{height:440px;min-width:0}.viewer-frame{height:980px;min-height:980px;border:1px solid #ccd6dc;border-radius:8px;padding:12px;box-sizing:border-box;overflow:hidden}.track-panel{height:100%;display:none;grid-template-rows:36px minmax(0,1fr)}.track-panel.active{display:grid}.track-panel .views{min-height:0;grid-template-rows:repeat(2,minmax(0,1fr))}.track-panel .plot{height:100%;min-height:0}.tabs button[aria-selected="true"]{background:#203343;color:white}select,button{font:inherit;padding:7px}nav{background:#fff;padding:12px 0;border-bottom:1px solid #ddd}table{border-collapse:collapse}th,td{padding:8px 14px;border-bottom:1px solid #ddd;text-align:left}a{color:#185b83}@media(max-width:750px){body{padding:10px}.plot{font-size:12px}}</style>
 <script src="viewer/plotly.min.js"></script></head><body><a href="../../../../../notes/html/index.html">ITACA index</a><h1>bb0nu · Event energy and tracks</h1>
-'''+f'''<p>{len(all_ids)} events; {len(ids)} event displays (one per {tc.get('example_every',1)}). TopMetal pitch {dc['ion_pitch_mm']:g} mm; time buckets {dc['ion_bucket_ms']:g} ms. SiPM pitch {dc['EL_pitch_mm']:g} mm; reconstructed time buckets {dc['electron_bucket_us']*rc['electrons']['rebin_factor']:g} μs.</p>{selection_section}
+'''+f'''<p>{len(all_ids)} events; {len(ids)} event displays ({viewer_note or 'one per '+str(tc.get('example_every',1))}). TopMetal pitch {dc['ion_pitch_mm']:g} mm; time buckets {dc['ion_bucket_ms']:g} ms. SiPM pitch {dc['EL_pitch_mm']:g} mm; reconstructed time buckets {dc['electron_bucket_us']*rc['electrons']['rebin_factor']:g} μs.</p>{selection_section}
 <h2 id="results">Event energy before the hit cut</h2><p>Sum all signed reconstructed charges. Ions include CSA deconvolution; electrons include SiPM and mean attachment corrections.</p><img src="plots/event_energy.png" alt="Ion and electron energy estimates before the hit cut">
 <h2>Track components and endpoint blobs</h2><p>Both distributions use all {len(all_ids)} events. {ion_setting} {electron_setting} {short_radius_note}{single_ion} events have one itrack component. E₁ and E₂ sum voxel energies around the endpoints of the largest component, with E₁ ≥ E₂. {blob_settings}</p>{comparison}<img src="plots/track_components.png" alt="Connected component counts for itracks and etracks">{failure_note}<img src="plots/blob_energies.png" alt="Endpoint blob energy correlations for itracks and etracks">
 <p>Incomplete estimates are excluded: {invalid_i} ion events and {invalid_e} electron events.</p>
@@ -212,4 +216,11 @@ selector.onchange=loadEvent;document.getElementById('prev').onclick=()=>{if(sele
 </script></body></html>'''
     (out/'index.html').write_text(page.replace('<h1>bb0nu ·',f'<h1>{sample_label} ·'))
  print(out/'index.html')
-if __name__=='__main__':render(Path(sys.argv[1]))
+if __name__=='__main__':
+ # present_tracks.py CONTROLS.h5 [--output=DIR] [--viewer-events=N,N,...] [--viewer-note=TEXT]
+ # --output writes the page in DIR instead of beside CONTROLS.h5; --viewer-events limits the event displays.
+ options=dict(a[2:].split('=',1) for a in sys.argv[2:])
+ unknown=set(options)-{'output','viewer-events','viewer-note'}
+ if unknown: raise SystemExit(f'Unknown options {sorted(unknown)}')
+ events=options.get('viewer-events')
+ render(Path(sys.argv[1]),options.get('output'),events.split(',') if events else None,options.get('viewer-note',''))
