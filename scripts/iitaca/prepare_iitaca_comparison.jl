@@ -4,7 +4,8 @@ iItaca: signal against backgrounds after the selection, with the cut on the endp
 
   julia --project=. scripts/iitaca/prepare_iitaca_comparison.jl <output folder> <signal run folder> <background run folder>...
 
-Reads statistics/events.h5 of each run (prepare_iitaca_statistics.jl) and
+Reads statistics/events.h5 of each run (prepare_iitaca_statistics.jl, or
+prepare_eitaca_features.jl for eITACA, which saves the electron drift) and
 writes comparison.h5 in the output folder (schema iitaca.comparison.v1). The
 runs must share the variant, the ROI and the track settings.
 
@@ -28,12 +29,12 @@ const TARGETS = (0.9, 0.8, 0.7, 0.6)
 """Selected events of a run and its identity, from statistics/events.h5."""
 function read_run(run_dir::AbstractString)
     h5open(joinpath(run_dir, "statistics/events.h5"), "r") do f
-        read(f["schema"]) == "iitaca.statistics.v1" || error("Unexpected schema in $run_dir")
+        read(f["schema"]) in ("iitaca.statistics.v1", "eitaca.statistics.v1") || error("Unexpected schema in $run_dir")
         keep = (read(f["events/in_roi"]) .== 1) .& (read(f["events/selected"]) .== 1)
         column(k) = Float64.(read(f["events/$k"])[keep])
         (run_label = read(f["run_label"]), sample = read(f["sample"]), variant = read(f["variant"]), settings = read(f["settings"]),
          roi = (read(f["roi_lower_keV"]), read(f["roi_upper_keV"])), flow_step = read(f["cut_flow/step"]), flow_events = read(f["cut_flow/events"]),
-         E1 = column("E1_keV"), E2 = column("E2_keV"), drift = column("ion_drift_cm"), event_number = read(f["events/event_number"])[keep])
+         E1 = column("E1_keV"), E2 = column("E2_keV"), drift_name = haskey(f["events"], "ion_drift_cm") ? "ion_drift_cm" : "electron_drift_cm", drift = column(haskey(f["events"], "ion_drift_cm") ? "ion_drift_cm" : "electron_drift_cm"), event_number = read(f["events/event_number"])[keep])
     end
 end
 
@@ -77,7 +78,7 @@ function write_comparison(out_dir::AbstractString, signal_dir::AbstractString, b
             for (role, runs) in (("signal", [signal]), ("background", backgrounds)), (j, r) in enumerate(runs)
                 g = create_group(f, role == "signal" ? "signal" : "backgrounds/$(lpad(j, 2, '0'))")
                 g["run_label"] = r.run_label; g["sample"] = r.sample; g["flow_step"] = r.flow_step; g["flow_events"] = r.flow_events
-                g["E1_keV"] = r.E1; g["E2_keV"] = r.E2; g["ion_drift_cm"] = r.drift; g["event_number"] = r.event_number
+                g["E1_keV"] = r.E1; g["E2_keV"] = r.E2; g[r.drift_name] = r.drift; g["event_number"] = r.event_number
                 role == "signal" && continue
                 rows = [accepted(r.E2, t) for t in thresholds]
                 g["acceptance"] = [x.fraction for x in rows]; g["acceptance_error"] = [x.error for x in rows]; g["accepted_events"] = [x.events for x in rows]

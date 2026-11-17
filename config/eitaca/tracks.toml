@@ -1,0 +1,23 @@
+# eITACA analysis card: event energy of the ROI cut, and track selection and
+# features of the etrack (notes/html/event_analysis/track_selection.html).
+# Read by scripts/eitaca/prepare_eitaca_features.jl; not part of the detector set.
+# The settings follow the rules of the iItaca tracks cards, in cells of the
+# etrack lattice: 4 mm SiPM pitch in x and y, 20 x 250 ns at 0.49 mm/us = 2.45 mm in z.
+schema = "nausicaa.eitaca_tracks.v1"
+hit_cut_keV = 1.0                   # the saved hit cut; the noise of one hit is 0.007 keV (results/eitaca/IE_L1500_D400_comparison/index.html)
+segment_connection_mm = 6.5         # touching cells: cell diagonal sqrt(4^2 + 4^2 + 2.45^2) = 6.17 mm
+segment_min_hits = 33               # hits of 18 mm of track: 1.83 hits per mm, median over selected bb0nu events (batch b00000)
+deposit_min_keV = 10.0              # a smaller component with at least this energy is a detached deposit
+max_segments = 3                    # more segments than this reject the event
+connection_mm = 10.7                # across one empty cell: iItaca 8 mm x 4 mm / 3 mm; graph of the track
+voxel_width_mm = 4.0                # cells of the track graph, as the hybrid etrack analysis
+blob_radius_mm = 10.0               # sphere around each endpoint for E1 and E2, as the hybrid etrack analysis
+
+# Event energy of the ROI cut: the energy deposited in the simulated box
+# (energy_true_keV of the electron file) smeared with a Gaussian of this
+# resolution, as iItaca (config/iitaca/energy.toml), so that the comparison
+# with ions isolates the topology. Deviate: stream "emulated_energy" of the run seed.
+[energy]
+resolution_fwhm_at_qbb_keV = 11.5988   # 0.472 % FWHM at Qbb
+resolution_scaling = "sqrt_energy"     # FWHM(E) = FWHM(Qbb) sqrt(E / Qbb)
+roi_width_fwhm = 1.0                   # the ROI is Qbb +- half of this many FWHM
