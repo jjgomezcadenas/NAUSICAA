@@ -1,0 +1,21 @@
+# Production of the variant II_L1000_D500: gammas of the 2614.511 keV line of 208Tl from the inner surface, 300 batches of 100,000 generated gammas (30 million).
+# NEXUS: simulation/nexus/slurm/iitaca_nexus_array.slurm II_L1000_D500 tl208 100000 <folder> 1000
+# (seed offset 1000; the pilot used 0), array 0-299.
+# Batches: scripts/iitaca/slurm/iitaca_batches.slurm, array 0-299, with
+# NAUSICAA_DATA set to the folder that holds II_L1000_D500/.
+schema = "nausicaa.iitaca_run.v1"
+detector = "config/iitaca/iitaca.toml"
+variant = "config/iitaca/variants/II_L1000_D500.toml"
+run_label = "II_L1000_D500_tl208"
+sample = "tl208"
+hits = "$NAUSICAA_DATA/II_L1000_D500/prod/tl208/tl208_{batch}_hitdf.h5"
+particles = "$NAUSICAA_DATA/II_L1000_D500/prod/tl208/tl208_{batch}.next.h5"
+generated_events_per_batch = 100000
+max_events = 0                    # 0: all events of the batch
+seed = 42
+electronics_seed = 20261113
+frame_track = "leading_gamma_electron"
+max_vector_bytes = 268435456
+vh1_minimum_samples = 32768
+
+[overrides]                       # none

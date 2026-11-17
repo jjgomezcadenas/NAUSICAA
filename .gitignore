@@ -163,3 +163,6 @@ results/ltspice/noise_audit/decks/*.db
 /results/readout/**/*.h5
 /results/readout/**/*.tmp
 /results/readout/*_first10/
+
+# iItaca hit files and feature tables of the batches; the statistics of each run are tracked.
+results/iitaca/*/batches/

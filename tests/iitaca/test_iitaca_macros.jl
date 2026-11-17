@@ -35,5 +35,8 @@ end
         @test r.resolved.variant == "II_L1000_D500" && isempty(r.resolved.overrides)
         @test (r.run["sample"], r.run["frame_track"], r.run["generated_events_per_batch"]) == (sample, track, n)
         @test occursin("{batch}", r.run["hits"]) && occursin("{batch}", r.run["particles"]) && occursin("II_L1000_D500/pilot", r.run["hits"])
+        p = resolve_run(joinpath(ROOT, "config/iitaca/runs/II_L1000_D500_$(key).toml"); root = ROOT)          # the production card of the same sample
+        @test p.resolved.detector == r.resolved.detector && p.run["frame_track"] == track && p.run["sample"] == sample
+        @test p.run["seed"] == r.run["seed"] && occursin("II_L1000_D500/prod", p.run["hits"]) && p.run["run_label"] == "II_L1000_D500_$(key)"
     end
 end
