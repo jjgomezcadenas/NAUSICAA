@@ -11,8 +11,8 @@
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\code}[1]{\path{#1}}
 \newcommand{\sinc}{\operatorname{sinc}}
-\newcommand{\CD}{C_D}
-\newcommand{\Cf}{C_f}
+\newcommand{\CD}{\ensuremath{C_D}}
+\newcommand{\Cf}{\ensuremath{C_f}}
 \newcommand{\Tcds}{T_{\rm CDS}}
 \newcommand{\Vref}{V_{\rm REF}}
 \newcommand{\Voff}{V_{\rm OFF}}
@@ -34,8 +34,9 @@ over a frame and of subtracting consecutive frames, and the charge
 bookkeeping of a two-capacitor architecture that performs that subtraction in
 the analogue domain. It then analyses a cascode amplifier with source degeneration, the
 bandwidth and stability constraints of a real amplifier, and the role of the
-pad capacitance. The last section compares the reset architecture with the
-continuous-discharge amplifier simulated and calibrated in this repository.
+pad capacitance. The last sections compare the reset architecture, VH1, now
+the standard readout, with the baseline continuous-discharge amplifier, and
+describe its simulation.
 \end{abstract}
 \tableofcontents
 
@@ -43,40 +44,46 @@ continuous-discharge amplifier simulated and calibrated in this repository.
 \section{Notation and scope}
 \label{sec:notation}
 %
-The analysis uses one set of symbols throughout.
+%The analysis uses one set of symbols throughout.
 %
 \begin{itemize}
 \item $\CD$: capacitance of the pad and its connection to the amplifier
-  input, in farad, between \SIlist{1;5}{pF} for the TopMetal pad. Where the amplifier's
-  own input capacitance matters it is included in $\CD$.
-\item $\Cf$: feedback capacitance. The present NAUSICAA circuit uses
-  \SI{3}{fF}. The VH1 readout of Sections~\ref{sec:vh1} and
-  \ref{sec:vh1sim} was prototyped with the same value and is produced with
-  \SI{20}{fF} at \SI{3}{mm} pitch and \SI{30}{fF} at \SI{4}{mm}
-  (Section~\ref{sec:vh1range}).
-\item $A$: open-loop voltage gain of the amplifier, dimensionless and
-  negative in sign convention, written $-A$ with $A>0$.
+  input, in farad (typically \SI{1.25}{pF}).
+  %between \SIlist{1;5}{pF} for the TopMetal pad. Where the amplifier's
+  %own input capacitance matters it is included in $\CD$.
+\item $\Cf$: feedback capacitance (typically \SI{20}{fF}). 
+%The present NAUSICAA circuit uses
+%  \SI{3}{fF}. The VH1 readout of Sections~\ref{sec:vh1} and
+%  \ref{sec:vh1sim} was prototyped with the same value and is produced with
+%  \SI{20}{fF} at \SI{3}{mm} pitch and \SI{30}{fF} at \SI{4}{mm}
+%  (Section~\ref{sec:vh1range}).
+\item $A$: open-loop voltage gain of the amplifier.
+% dimensionless and
+  %negative in sign convention, written $-A$ with $A>0$.
 \item $e_n^2(f)$: one-sided spectral density of the voltage noise referred to
-  the amplifier input, in \si{V^2/Hz}. It has a white part $e_t^2$ (thermal)
-  and a flicker part $A_f/f$. The corner frequency $f_c=A_f/e_t^2$ is where
-  the two are equal.
+  the amplifier input, in \si{V^2/Hz}. It includes a thermal component $e_t^2$
+  and a flicker component $A_f/f$. 
+  %The corner frequency $f_c=A_f/e_t^2$ is where
+  %the two are equal.
 \item $i_R^2=4kT_{\rm K}/R_f$: spectral density of the current noise of a feedback
   resistor $R_f$ at temperature $T_{\rm K}$, in \si{A^2/Hz}; $k$ is
   Boltzmann's constant and $4kT_{\rm K}=\SI{1.66e-20}{J}$ at \SI{300}{K}.
-\item $T$: length of the integration window, one readout frame. The
-  NAUSICAA productions use \SIlist{20;30;40}{ms}.
-\item $\Tcds$: interval between the two samples that are subtracted. For
-  consecutive frames $\Tcds=T$.
+\item $T$: length of the integration window, one readout frame (typically \SIrange{20}{30}{ms}). 
+%The
+ % NAUSICAA productions use \SIlist{20;30;40}{ms}.
+\item $\Tcds$: interval between the two samples that are subtracted. 
+%For
+ % consecutive frames $\Tcds=T$.
 \item ENC: equivalent noise charge, the root-mean-square charge at the pad
   that would produce the observed output noise, expressed in electrons
   ($e=\SI{1.602e-19}{C}$).
 \end{itemize}
 %
-Each section states a circuit or an operation, derives its result, and
-says what it means for NAUSICAA. Key results are boxed. The standard
-references for this material are Spieler~\cite{Spieler2005},
-Radeka~\cite{Radeka1988} and Gatti and Manfredi~\cite{GattiManfredi1986}.
-Correlated double sampling comes from CCD readout~\cite{Janesick2001}.
+%Each section states a circuit or an operation, derives its result, and
+%says what it means for NAUSICAA. Key results are boxed. The standard
+%references for this material are Spieler~\cite{Spieler2005},
+%Radeka~\cite{Radeka1988} and Gatti and Manfredi~\cite{GattiManfredi1986}.
+%Correlated double sampling comes from CCD readout~\cite{Janesick2001}.
 
 % ----------------------------------------------------------------------
 \section{The charge-sensitive amplifier}
@@ -90,51 +97,51 @@ resistor $R_f$ is present in a continuous-discharge amplifier and absent in a
 reset amplifier.}
 \label{fig:csa}
 \end{figure}
-The 
-The ions arriving at the pad induce a current $i(t)$. Figure~\ref{fig:csa}
-shows the circuit. Write $v_i$ for the voltage at the input node and
-$v_o=-Av_i$ for the output. Charge conservation implies 
-that the current $i$ delivered by the pad is shared by the two capacitors:
+Figure~\ref{fig:csa}
+shows the charge-sensitive amplifier (CSA) circuit. Call $v_i$ the voltage at the input node associated with the current $i(t)$ induced by the ions arriving at the bare metal pad. The output voltage after the amplifier is
+$v_o=-Av_i$. The two capacitors involved are \CD\ (capacitance of the metal pad) and \Cf\ (feedback capacitor). Charge conservation implies that:
 %
 \begin{equation}
- i(t) = i_{\CD}(t) + i_{\Cf}(t).
+ i(t) = i_{\CD}(t) + i_{\Cf}(t) =  \CD\,\frac{\dd v_i}{\dd t} + \Cf\,\frac{\dd (v_i-v_o)}{\dd t}.
+ \label{eq:kcltime}
 \end{equation}
 %
 
-The current through a capacitor is the rate of change of the charge on it,
-$i_C=C\,\dd v_C/\dd t$, where $v_C$ is the voltage across its plates. The
-voltage across $\CD$ is $v_i$; the voltage across $\Cf$ is $v_i-v_o$. Hence
-%
-\begin{equation}
- i(t) = \CD\,\frac{\dd v_i}{\dd t} + \Cf\,\frac{\dd (v_i-v_o)}{\dd t}.
-\label{eq:kcltime}
-\end{equation}
+%The current through a capacitor is the rate of change of the charge on it,
+%$i_C=C\,\dd v_C/\dd t$, where $v_C$ is the voltage across its plates. The
+%voltage across $\CD$ is $v_i$; the voltage across $\Cf$ is $v_i-v_o$. Hence
+%%
+%\begin{equation}
+% i(t) = \CD\,\frac{\dd v_i}{\dd t} + \Cf\,\frac{\dd (v_i-v_o)}{\dd t}.
+%\label{eq:kcltime}
+%\end{equation}
 %
 
-In the Laplace domain\footnote{The Laplace transform of a function of time
-$x(t)$ is
-%
-\[
- X(s) = \int_0^\infty x(t)\,e^{-st}\,\dd t ,
-\]
-%
-where $s$ is a complex variable. The transform of a derivative follows by
-integrating by parts:
-%
-\[
- \int_0^\infty \frac{\dd x}{\dd t}\,e^{-st}\,\dd t
- = \Big[x(t)\,e^{-st}\Big]_0^\infty + s\int_0^\infty x(t)\,e^{-st}\,\dd t
- = s\,X(s) - x(0).
-\]
-%
-The boundary term at infinity vanishes for any signal that grows slower than
-$e^{st}$. The term $x(0)$ is the initial value; for the response to a signal
-that starts from rest it is zero, and for noise it only shifts the mean.
-With that convention a derivative in time is a multiplication by $s$. Each
-term of Eq.~\eqref{eq:kcltime} transforms separately, since the transform is
-linear and the capacitances are constants:
-$\CD\,\dd v_i/\dd t\to s\CD V_i(s)$,
-$\Cf\,\dd(v_i-v_o)/\dd t\to s\Cf[V_i(s)-V_o(s)]$ and $i(t)\to I(s)$.}
+In the Laplace domain
+%\footnote{The Laplace transform of a function of time
+%$x(t)$ is
+%%
+%\[
+% X(s) = \int_0^\infty x(t)\,e^{-st}\,\dd t ,
+%\]
+%%
+%where $s$ is a complex variable. The transform of a derivative follows by
+%integrating by parts:
+%%
+%\[
+% \int_0^\infty \frac{\dd x}{\dd t}\,e^{-st}\,\dd t
+% = \Big[x(t)\,e^{-st}\Big]_0^\infty + s\int_0^\infty x(t)\,e^{-st}\,\dd t
+% = s\,X(s) - x(0).
+%\]
+%%
+%The boundary term at infinity vanishes for any signal that grows slower than
+%$e^{st}$. The term $x(0)$ is the initial value; for the response to a signal
+%that starts from rest it is zero, and for noise it only shifts the mean.
+%With that convention a derivative in time is a multiplication by $s$. Each
+%term of Eq.~\eqref{eq:kcltime} transforms separately, since the transform is
+%linear and the capacitances are constants:
+%$\CD\,\dd v_i/\dd t\to s\CD V_i(s)$,
+%$\Cf\,\dd(v_i-v_o)/\dd t\to s\Cf[V_i(s)-V_o(s)]$ and $i(t)\to I(s)$.}
 Eq.~\eqref{eq:kcltime} becomes
 %
 \begin{equation}
@@ -142,24 +149,22 @@ Eq.~\eqref{eq:kcltime} becomes
 \label{eq:kcls}
 \end{equation}
 %
-where $s$ is the Laplace variable.\footnote{For a signal that is a steady
-sinusoid of angular frequency $\omega$, every voltage and current can be
-written as a complex amplitude times $e^{j\omega t}$, for example
-$v_i(t)=\mathrm{Re}\,[V_i\,e^{j\omega t}]$, with
-$e^{j\omega t}=\cos\omega t+j\sin\omega t$. Then
-$\dd(V_i e^{j\omega t})/\dd t = j\omega\,V_i\,e^{j\omega t}$:
-differentiation multiplies the amplitude by $j\omega$, and the common factor
-$e^{j\omega t}$ cancels from every term of the equation. The Laplace variable
-restricted to the imaginary axis, $s=j\omega$, therefore describes the
-response to sinusoids, which is the frequency response. A general signal is a
-superposition of sinusoids, so the frequency response determines the
-response to anything. The magnitude $|V_i|$ is the amplitude of the sinusoid
-and the argument of $V_i$ its phase.}
-The voltage across the feedback capacitor is the difference between its
-two plates. One plate is the input node, at $v_i$. The other is the output,
-and the amplifier inverts: $v_o=-Av_i$. When the input rises by $v_i$ the
-output falls by $Av_i$, so the two plates move in opposite directions and the
-capacitor sees the sum of the two excursions,
+where $s$ is the Laplace variable.
+%\footnote{For a signal that is a steady
+%sinusoid of angular frequency $\omega$, every voltage and current can be
+%written as a complex amplitude times $e^{j\omega t}$, for example
+%$v_i(t)=\mathrm{Re}\,[V_i\,e^{j\omega t}]$, with
+%$e^{j\omega t}=\cos\omega t+j\sin\omega t$. Then
+%$\dd(V_i e^{j\omega t})/\dd t = j\omega\,V_i\,e^{j\omega t}$:
+%differentiation multiplies the amplitude by $j\omega$, and the common factor
+%$e^{j\omega t}$ cancels from every term of the equation. The Laplace variable
+%restricted to the imaginary axis, $s=j\omega$, therefore describes the
+%response to sinusoids, which is the frequency response. A general signal is a
+%superposition of sinusoids, so the frequency response determines the
+%response to anything. The magnitude $|V_i|$ is the amplitude of the sinusoid
+%and the argument of $V_i$ its phase.}
+
+The voltage across the feedback capacitor is the difference between the input node, at $v_i$, and the output node $v_o=-Av_i$:
 %
 \begin{equation}
  v_i - v_o = v_i + A\,v_i = (1+A)\,v_i .
@@ -167,15 +172,17 @@ capacitor sees the sum of the two excursions,
 \end{equation}
 %
 The capacitor therefore draws $1+A$ times the current that a grounded
-capacitor of the same value would draw at the same input voltage\footnote{This is
-the Miller effect: seen from the input node, $\Cf$ behaves as a capacitance
-$(1+A)\Cf$ to ground.}. Substituting Eq.~\eqref{eq:miller} in
+capacitor of the same value would draw at the same input voltage.
+%\footnote{This is
+%the Miller effect: seen from the input node, $\Cf$ behaves as a capacitance
+%$(1+A)\Cf$ to ground.}. 
+Substituting Eq.~\eqref{eq:miller} in
 Eq.~\eqref{eq:kcls}, and writing the transforms in lowercase from here
 on,\footnote{In
-Eq.~\eqref{eq:kcls}, $i(t)$ is the pad current and $I(s)$ its transform.
-Circuit analysis usually drops the uppercase and uses one symbol for both,
-because the equations are almost always written in the transformed domain.
-The rest of this note follows that practice: a symbol written with the
+our notation so far, $i(t)$ is the pad current and $I(s)$ its Laplace transform.
+For the rest of the discussion we drop the uppercase with the implicit convention that 
+the equations are written in the transformed domain.
+Therefore: a symbol written with the
 argument $t$, such as $i(t)$ or $v_o(t)$, is a function of time; the same
 symbol written without argument or together with $s$, as in $i=s\CD v_i$, is
 the transform.}
@@ -187,7 +194,7 @@ the transform.}
 %
 
 Equation~\eqref{eq:kcl} gives the input voltage produced by the pad
-current, $v_i = i/\{s[\CD+(1+A)\Cf]\}$. The output is $-A$ times that:
+current, $v_i = i/\{s[\CD+(1+A)\Cf]\}$. Then:
 %
 \begin{equation}
  v_o = -A\,v_i = -\frac{A}{s\,[\CD+(1+A)\Cf]}\; i .
@@ -209,52 +216,43 @@ Division by $s$ is integration in time. For a large gain the output is
 \label{eq:qoverc}
 \end{equation}
 %
-the charge collected so far divided by the feedback capacitance. 
+that is, the voltage at an instant $t$ is the charge collected up to $t$,
+divided by the feedback capacitance. Furthermore:
 
-Three
-properties follow from Eqs.~\eqref{eq:kcl} to \eqref{eq:vo}.
+%Three
+%properties follow from Eqs.~\eqref{eq:kcl} to \eqref{eq:vo}.
 %
 \begin{itemize}
-\item The input node is a virtual ground: $v_i=-v_o/A$ is small, so the pad
-  stays at a fixed potential while charge flows into the amplifier.
+\item The input node is a virtual ground: $v_i=-v_o/A\to0$ as $A$ grows.
 \item The output does not depend on $\CD$ as long as $A\Cf\gg\CD$. The gain
-  is set by one capacitor  ---thus the name,  charge sensitive amplifier---.
-\item Part of the charge stays on the pad. The input node is connected to
-  two capacitances charged to the same voltage $v_i$: $\CD$ to ground and,
-  through the Miller effect, $(1+A)\Cf$ to the output. Each takes charge in
-  proportion to its capacitance,
+  is set by one capacitor---thus the name charge-sensitive amplifier.
+\item The charge divides between the pad, $Q_D$, and the feedback capacitor, $Q_f$; only $Q_f$ reaches the output:
 %
   \begin{equation}
    Q_D = \CD\,v_i, \qquad Q_f = (1+A)\,\Cf\,v_i, \qquad Q = Q_D + Q_f ,
   \end{equation}
 %
-  and only $Q_f$ reaches the output. The fraction left on the pad is
+%
+  The fraction retained by the pad is
 %
   \begin{equation}
    \frac{Q_D}{Q} = \frac{\CD}{\CD+(1+A)\Cf} .
   \label{eq:sharing}
   \end{equation}
 %
-  With $\Cf=\SI{3}{fF}$ and $A=1000$ the Miller capacitance is
-  \SI{3.0}{pF}, comparable to a \SI{1.25}{pF} pad, and
-  \SI{29}{\percent} of the charge never reaches the output; for $A=10^4$
-  the fraction is \SI{4}{\percent}. Either the open-loop gain is made large
-  enough for this fraction to be negligible, or the calibration measures the
-  actual output per ion and absorbs it. With the \SI{20}{fF} of the VH1
-  production card and the open-loop gain of \vhImpAzero{} measured in
-  Section~\ref{sec:vh1devices}, the Miller capacitance is \SI{185}{pF} and
-  the fraction left on the pad is \SI{2}{\percent}: the larger capacitor
-  makes the sharing negligible.
+  With the values that we will be using in our proposed circuit (Section~\ref{sec:vh1devices}), $\Cf=\SI{20}{fF}$ and $A=\vhImpAzero{}$, only \SI{0.7}{\percent} of the charge stays on a
+  \SI{1.25}{pF} pad; adding the amplifier's own input capacitance of
+  \SI{2.6}{pF} to the pad raises it to \SI{2}{\percent}.
 \end{itemize}
 %
 
 The feedback resistor $R_f$ of Fig.~\ref{fig:csa} lets the collected charge
 leak away with the time constant $\tau_f=R_f\Cf$, so that the output returns
-to its resting value and the amplifier never saturates. The present NAUSICAA
-amplifier uses a transistor for this purpose, with a measured
-small-signal decay time of \SI{19.5}{s}. This note proposes the
-alternative: remove the resistor and reset the amplifier with a switch,
-using the two-capacitor architecture of Section~\ref{sec:swap}. 
+to its resting value and the amplifier never saturates. The baseline NAUSICAA
+amplifier used a transistor for this purpose, with a measured
+small-signal decay time of \SI{19.5}{s}. The VH1 design, now the standard,
+removes the resistor and resets the amplifier with a switch, using the
+two-capacitor architecture of Section~\ref{sec:swap}. 
 %The choice
 %between the two decides the noise, as the next sections show.
 
@@ -343,7 +341,7 @@ amount. Four steps answer it.
 %
   The noise voltage appears at the output multiplied by $(\CD+\Cf)/\Cf$,
   the noise gain of the stage. For the NAUSICAA values, \SI{1.25}{pF} and
-  \SI{3}{fF}, that gain is about 400; with \SI{20}{fF} it is about 60. The
+  \SI{20}{fF}, that gain is about 60. The
   signal per ion, $e/\Cf$, falls by the same factor, so the noise expressed
   as a charge at the pad does not depend on $\Cf$.
 \end{itemize}
@@ -732,7 +730,7 @@ a reason and a cost.
   per frame recovers the charge of the frame. Section~\ref{sec:vh1result}
   shows that two per frame are needed to recover the charge of each bucket
   with the least noise, because the ion pulse straddles the frame
-  boundaries.} The present NAUSICAA plan
+  boundaries.} The baseline NAUSICAA plan
   samples every \SI{100}{\micro s} and averages 50 samples over \SI{5}{ms}
   before differencing; that average is the sinc window of
   Section~\ref{sec:gated} with $T=\SI{5}{ms}$ applied inside the frame.
@@ -811,13 +809,14 @@ $R\simeq\gamma/g_{m1}$. Degeneration is therefore likely to increase the
 noise budget; in current form the added term is $i_n^2=4kT_{\rm K}/R$.
 
 % ----------------------------------------------------------------------
-\subsection{The stage of the present circuit: a folded cascode}
+\subsection{The stage of the baseline circuit: a folded cascode}
 \label{sec:folded}
 %
 \begin{figure}[htbp]\centering
 \includegraphics[height=80mm]{nausicaa_vh_folded.pdf}
-\caption{The single stage of the present NAUSICAA amplifier
-(\texttt{csa\_v3}), the one simulated in Section~\ref{sec:vh1}, with the
+\caption{The single stage of the NAUSICAA amplifier
+(\texttt{csa\_v3}), shared by the baseline circuit and VH1 and simulated in
+Section~\ref{sec:vh1}, with the
 names of the SPICE deck. The PMOS input transistor M1 is biased by the
 current source M2 and drives the node \textsf{med}; the load M3 sinks that
 current; the cascode M4 carries the small current of the output branch from
@@ -827,7 +826,7 @@ parallel. Currents and node voltages are those of the operating point.}
 \label{fig:folded}
 \end{figure}
 %
-The amplifier of the present circuit, which Section~\ref{sec:vh1} reuses,
+The amplifier of the baseline circuit, which Section~\ref{sec:vh1} reuses,
 is a cascode of a different arrangement, drawn in Fig.~\ref{fig:folded}.
 Three things differ from Fig.~\ref{fig:cascode}.
 %
@@ -915,8 +914,7 @@ nanoseconds for picofarads and millisiemens.
 A design constraint follows from Eq.~\eqref{eq:gbp}. Low
 thermal noise requires a large $g_{m1}$; a high charge gain requires a small
 $\Cf$; the two together give a very large GBP. With $g_{m1}=\SI{1}{mS}$ and
-$\Cf=\SI{3}{fF}$ the ratio is \SI{3e11}{rad/s}, and \SI{5e10}{rad/s} with
-\SI{20}{fF}. No single-stage amplifier is that fast, so the second pole of the stage, at the cascode nodes, falls inside
+$\Cf=\SI{20}{fF}$ the ratio is \SI{5e10}{rad/s}. No single-stage amplifier is that fast, so the second pole of the stage, at the cascode nodes, falls inside
 the loop bandwidth and the phase margin is lost. Three remedies exist.
 %
 \begin{itemize}
@@ -985,7 +983,7 @@ Eq.~\eqref{eq:qn}, and on the closed-loop bandwidth, through
 $g_{m1}/(\CD+\Cf)$.
 
 % ----------------------------------------------------------------------
-\section{Relation to the present NAUSICAA readout}
+\section{Relation to the baseline NAUSICAA readout}
 \label{sec:nausicaa}
 %
 Table~\ref{tab:compare} sets the reset architecture of
@@ -995,7 +993,7 @@ and has calibrated.
 \begin{table}[htbp]\centering\small
 \begin{tabular}{@{}p{34mm}p{58mm}p{58mm}@{}}
 \toprule
- & Present NAUSICAA circuit & Reset architecture\\
+ & Baseline NAUSICAA circuit & Reset architecture\\
 \midrule
 Charge removal & Feedback transistor, decay \SI{19.5}{s}, $\Cf=\SI{3}{fF}$ &
 Reset switch; no discharge element; two capacitors of \SI{20}{} or
@@ -1016,7 +1014,7 @@ Charge per frame & From differences and the discharge correction & From
 differences; total charge read directly\\
 \bottomrule
 \end{tabular}
-\caption{The two readout schemes side by side. The present values are those
+\caption{The two readout schemes side by side. The baseline values are those
 of \texttt{itaca\_poo.tex} and \texttt{csa\_design.tex}.}
 \label{tab:compare}
 \end{table}
@@ -1033,7 +1031,7 @@ Three points carry over regardless of which circuit is built.
   \code{bucket_noise_covariance.jl}.
 \item The discharge-element term of Eq.~\eqref{eq:encR} grows with the frame
   length and is untouched by the frame difference. Whether it matters for the
-  present circuit is decided by the measured noise spectrum of the feedback
+  baseline circuit is decided by the measured noise spectrum of the feedback
   transistor, which the SPICE model contains. The analytical expression says
   what to look for: a term proportional to $T$.
 \item The pad capacitance enters the noise as $\CD^2$ and the bandwidth as
@@ -1047,7 +1045,7 @@ readout description changes from feedback discharge and digital filtering to
 reset, swap and one conversion per frame, and the calibration must be
 repeated for the new circuit. The nonlinear model and its guard become
 unnecessary; the range limit becomes a reset. Section~\ref{sec:vh1}
-reports a SPICE prototype of the reset architecture built on the present
+reports a SPICE prototype of the reset architecture built on the baseline
 amplifier.
 
 % ----------------------------------------------------------------------
@@ -1056,7 +1054,7 @@ amplifier.
 \label{sec:vh1}
 %
 The architecture of Section~\ref{sec:swap} was simulated with the amplifier
-of the present NAUSICAA circuit, so that the two readouts can be compared
+of the baseline NAUSICAA circuit, so that the two readouts can be compared
 with the same transistors, the same bias and the same device models. The
 prototype is called VH1; its decks are in \code{LTSpice/designs/VH1} and
 every number in this section is written by the scripts that run them.
@@ -1068,7 +1066,7 @@ every number in this section is written by the scripts that run them.
 \begin{figure}[htbp]\centering
 \includegraphics[width=.8\linewidth]{nausicaa_vh_vh1.pdf}
 \caption{The VH1 prototype. The amplifier is the folded-cascode stage of
-the present circuit, M1 to M6 of Fig.~\ref{fig:folded}; the discharge
+the baseline circuit, M1 to M6 of Fig.~\ref{fig:folded}; the discharge
 transistor is removed. The two feedback capacitors
 alternate between the output and $V_{\rm REF}$ through the switches
 $\phi_{1,2}$ and $\bar\phi_{1,2}$. The reset switch $\phi_{\rm r}$ closes
@@ -1083,13 +1081,13 @@ Figure~\ref{fig:vh1} shows the circuit.
 \item The amplifier is M1 to M6 of the frozen \texttt{csa\_v3} release with
   their sizes and biases, the folded cascode of Fig.~\ref{fig:folded}. The
   pad capacitance is \SI{1.25}{pF} and the feedback capacitors are
-  \SI{3}{fF}, as in the present circuit; Section~\ref{sec:vh1range} raises
+  \SI{3}{fF}, as in the baseline circuit; Section~\ref{sec:vh1range} raises
   them to \SIlist{20;30}{fF} once the range is measured on events. The
   discharge transistor Mf is removed.
 \item The capacitors park at $V_{\rm REF}=\SI{0.886}{V}$, the output
-  baseline of the present circuit, so that the output starts each cycle
+  output level of the baseline circuit, so that the output starts each cycle
   where it does today.
-\item The reset closes the loop through a level shift. In the present
+\item The reset closes the loop through a level shift. In the baseline
   circuit the gate of M1 sits at \SI{1.3}{mV} and the output at
   \SI{0.886}{V}. A plain short of output to input would force the two to be
   equal, which this amplifier can only satisfy at \SI{56}{mV}, outside its
@@ -1115,7 +1113,7 @@ Figure~\ref{fig:vh1} shows the circuit.
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{vh1_ac_noise.pdf}
 \caption{Left: open-loop gain of the amplifier, obtained in closed loop as
-$-v_o/v_i$. Right: output noise spectral density of the present circuit,
+$-v_o/v_i$. Right: output noise spectral density of the baseline circuit,
 of VH1 as built and of VH1 with the device changes of
 Section~\ref{sec:vh1devices}.}
 \label{fig:vh1ac}
@@ -1136,7 +1134,7 @@ capacitance $(1+A_0)\Cf$ of \SI{22.8}{pF}. The fraction of the charge that
 reaches the feedback capacitor is therefore \vhFraction, and the output
 moves by \SI{\vhGain}{\micro V} per ion instead of
 $e/\Cf=\SI{\vhIdealGain}{\micro V}$. The calibrated \SI{40.2}{\micro V} per
-ion of the present circuit has the same origin. The added capacitance grows
+ion of the baseline circuit has the same origin. The added capacitance grows
 faster than linearly with the width of M1 and also with the width of the
 cascode M4, so it is a Miller term through the cascode node rather than the
 gate oxide of M1 alone (Section~\ref{sec:vh1cascode}).
@@ -1174,7 +1172,7 @@ Section~\ref{sec:swap}.
 %
 The output noise spectra (Fig.~\ref{fig:vh1ac}, right) are identical above
 \SI{10}{Hz}, where the transistors of the shared amplifier dominate. Below
-it the present circuit rises as $1/f^2$, to \SI{1}{V/\sqrt{Hz}} at
+it the baseline circuit rises as $1/f^2$, to \SI{1}{V/\sqrt{Hz}} at
 \SI{0.1}{mHz}: the current noise of the discharge transistor integrated by
 $\Cf$, the resistor term of Section~\ref{sec:gated}. In VH1 that term is
 absent and the spectrum flattens.
@@ -1186,12 +1184,12 @@ weighting to both spectra, for \SI{20}{ms} frames.
 \caption{ENC in ions for \SI{20}{ms} frames, from the simulated output
 noise spectra and the measured gain per ion of each circuit. The first row
 is the frame difference of samples taken at the frame boundaries; the
-second averages \SI{5}{ms} around each boundary first, as the present
+second averages \SI{5}{ms} around each boundary first, as the baseline
 reconstruction does; the third averages over the whole frame, the
 weighting of Eq.~\eqref{eq:total}.}
 \begin{tabular}{lccc}
 \toprule
-Weighting & Present circuit & VH1 as built & VH1, device changes\\
+Weighting & Baseline circuit & VH1 as built & VH1, device changes\\
 \midrule
 Frame difference of point samples & \vhEncPresPoint & \vhEncBasePoint & \\
 Frame difference of \SI{5}{ms} averages & \vhEncPresFive & \vhEncBaseFive & \vhEncImpFive\\
@@ -1202,7 +1200,7 @@ Frame difference of \SI{20}{ms} averages & \vhEncPresFull & \vhEncBaseFull & \vh
 \end{table}
 %
 Two checks anchor these numbers. The \SI{5}{ms} weighting applied to the
-present circuit reproduces the 50.2 ions of its calibration. And the
+baseline circuit reproduces the 50.2 ions of its calibration. And the
 difference between the first two columns matches the \SI{26}{\percent} of
 the noise variance that the calibration attributed to the discharge
 transistor. Removing it is worth 10 ions at \SI{20}{ms}; the remainder is
@@ -1212,7 +1210,7 @@ the amplifier itself.
 \subsection{Device changes}
 \label{sec:vh1devices}
 %
-The noise budget of the present circuit assigns \SI{47}{\percent} of the
+The noise budget of the baseline circuit assigns \SI{47}{\percent} of the
 variance to the current source M2 and \SI{15}{\percent} to the load M3,
 against \SI{6}{\percent} for the input transistor M1. Both inject their
 drain-current noise into the signal path, so their contribution scales with
@@ -1258,7 +1256,7 @@ Variant & $V_{\rm nmos}$ (V) & $V_{\rm nload}$ (V) & $A_0$ & $C_{\rm amp}$ (pF) 
 %
 The combination of the four changes gives \vhEncImpFive{} ions with
 \SI{5}{ms} averaging and \vhEncImpFull{} with full-frame averaging, against
-\vhEncPresFive{} and \vhEncPresFull{} for the present circuit. The
+\vhEncPresFive{} and \vhEncPresFull{} for the baseline circuit. The
 practical reset of Section~\ref{sec:vh1circuit} was verified on this
 combined circuit: \SI{\vhResetGain}{\micro V} per ion from the frame
 difference.
@@ -1473,7 +1471,7 @@ Circuit & \SI{10}{ms} & \SI{20}{ms} & \SI{40}{ms} & \SI{80}{ms} & \SI{10}{ms} & 
 With full-frame averaging the ENC of VH1 does not depend on the frame
 length. This is Eq.~\eqref{eq:closed}: the thermal term falls as $1/T$ and
 is negligible already at \SI{10}{ms}, the flicker term is a constant, and
-the resistor term that grows with $T$ is absent. The present circuit has
+the resistor term that grows with $T$ is absent. The baseline circuit has
 that term and gets worse with longer frames. With brief samples at the
 boundaries every circuit gets worse with $T$, because a wider spacing lets
 more low-frequency noise into the difference; the gain from long frames is
@@ -1509,9 +1507,9 @@ straddles frame boundaries.
 \section{Simulation of the VH1 readout}
 \label{sec:vh1sim}
 %
-The VH1 readout has been implemented in the ITACA simulation chain as an
-alternative to the present amplifier, so that complete events can be
-processed with it and compared with the present chain pad by pad. The code
+The VH1 readout is implemented in the ITACA simulation chain; complete
+events are processed with it and were compared with the baseline chain pad
+by pad. The code
 is \code{src/vh1/VH1Readout.jl}; it reuses the current, noise, converter and
 least-squares pieces of the existing modules without modifying them. This
 section explains what is simulated, how the noise is generated, how the ion
@@ -1532,7 +1530,7 @@ readout turns these counts into converter readings in five steps.
   weighting potential of a central \SI{0.5}{mm} pad in a grounded plane. Its
   integral is $e\,[1-\phi_w(g)]=0.9984\,e$, the charge induced over the finite
   path; the missing fraction was induced earlier, on other electrodes, and
-  is not restored. This prescription is the one of the present calibration.
+  is not restored. This prescription is the one of the baseline calibration.
 \item \textbf{Arrival within a bucket.} Ions of one bucket are taken to
   arrive uniformly during it. The single-ion current is therefore averaged
   over one bucket length, giving a pulse that rises over \SI{1.67}{ms},
@@ -1653,7 +1651,7 @@ variance. The estimate is the weighted least squares
 computed by whitening with the Cholesky factor of $\Sigma$ and a QR
 factorisation. The covariance of $\hat q$ is $(A^{\rm T}\Sigma^{-1}A)^{-1}$;
 its diagonal is the noise per bucket quoted below. The estimate is signed
-and uncut. This is the same solve as the linear path of the present
+and uncut. This is the same solve as the linear path of the baseline
 reconstruction; what differs is the content of $A$ and $\Sigma$.
 
 The matrix $A$ expresses two spreads. Ions of bucket $k$ arrive during
@@ -1676,7 +1674,7 @@ Table~\ref{tab:vh1readings} gives the noise per bucket of the recovered
 counts, from the covariance above, for a 30-bucket pad and the improved
 circuit of Section~\ref{sec:vh1devices}, against the number of readings per
 frame and the integration window of each reading. The last row is the
-present chain on its own events, from the predicted covariance saved with
+baseline chain on its own events, from the predicted covariance saved with
 the 100-event reconstruction.
 %
 \begin{table}[htbp]\centering
@@ -1695,7 +1693,7 @@ Readings per frame & Window of each reading & Ions per bucket\\
 10 & \SI{2}{ms} & 30\\
 20 & \SI{1}{ms} & 30\\
 \midrule
-Present chain & 200 samples per frame & 50\\
+Baseline chain & 200 samples per frame & 50\\
 \bottomrule
 \end{tabular}
 \label{tab:vh1readings}
@@ -1714,15 +1712,15 @@ Three things follow.
   \SI{43}{}.
 \item A second reading per frame restores the information about where in
   the frame the charge arrived and brings the noise to \SI{31}{} ions.
-  Further readings add nothing. This is why the present \SI{100}{\micro s}
+  Further readings add nothing. This is why the baseline \SI{100}{\micro s}
   oversampling is not wasted: its 200 samples per frame carry the same
-  information, which the present reconstruction uses through its four
+  information, which the baseline reconstruction uses through its four
   \SI{5}{ms} averages per frame.
 \end{itemize}
 %
 The adopted readout is therefore two contiguous \SI{10}{ms} integrations per
 \SI{20}{ms} frame, one 16-bit value each: \SI{31}{} ions per bucket against
-\SI{50}{} for the present chain, with a hundred times fewer conversions. The
+\SI{50}{} for the baseline chain, with a hundred times fewer conversions. The
 swap of the capacitors stays at \SI{20}{ms}; only the converter reads twice.
 For the amplifier as it is today, without the device changes, the same
 readout gives about \SI{45}{} ions. These numbers are for \SI{3}{fF}; with
@@ -1758,7 +1756,7 @@ reset noise, which need transistor switches and a transient noise study.
 %
 The first pilot on \SI{100}{} bb0nu events at \SI{4}{mm} pitch confirmed the
 noise, \SI{30.9}{} ions per bucket against the predicted \SI{30.9}{} and
-\SI{49.8}{} for the present chain, and showed the limit of \SI{3}{fF}: with
+\SI{49.8}{} for the baseline chain, and showed the limit of \SI{3}{fF}: with
 $V_{\rm REF}=\SI{0.886}{V}$, the lower edge of the window at \SI{0.4}{V} and
 \SI{46.9}{\micro V} per ion, one pad holds \SI{10370}{} ions before the
 output leaves its linear range. \SI{108}{} pads in \SI{68}{} of the events
@@ -1822,7 +1820,7 @@ and \SI{6.8}{} at \SI{3}{mm}: the noise is a property of the pad and does
 not depend on the pitch, so spreading the charge over more pads lowers the
 signal per pad by the area ratio. With \SI{22}{eV} per pair a \SI{1}{keV}
 deposit is \SI{45}{} ions, \SI{1.4}{} standard deviations of the noise per
-bucket, against \SI{0.9}{} for the present chain. The choice of pitch is
+bucket, against \SI{0.9}{} for the baseline chain. The choice of pitch is
 therefore a tracking choice, sampling against signal-to-noise per pad, and
 the readout supports both with the two cards. The price of the larger
 capacitor is at the converter: \SI{5}{} to \SI{8}{\micro V} per ion leaves
@@ -1838,7 +1836,7 @@ reconstruction, gave no saturated pad and no invalid bucket. The ion energy
 estimator, the sum of all reconstructed charges before any hit cut, has
 $\sigma/\mu=\SI{0.94}{\percent}$ (\SI{23}{keV}, which is the \SI{33}{} ions
 of noise summed over about a thousand pad-buckets per event, far above the
-Fano floor of \SI{2.8}{keV}); the same sum on the present chain at
+Fano floor of \SI{2.8}{keV}); the same sum on the baseline chain at
 \SI{4}{mm} spreads by \SI{70}{keV}, in part through nonlinear failures, a
 comparison between different pitches that is indicative only. The ion track
 is a single connected component in \SI{847}{} of the \SI{1000}{} events,
