@@ -1,0 +1,23 @@
+# Drift region: field and ion transport. The ion spread is thermal and follows
+# from the temperature, the drift length and the field.
+schema = "nausicaa.iitaca_drift.v1"
+field_V_cm = 500.0
+ion_species = "Xe2+ molecular ion, charge +e"
+ion_drift_velocity_cm_s = 20.0      # user design input, 2026-11-17: one 15 ms frame is 3.0 mm
+
+[documentation]   # not read by the simulation
+# Reference for the adopted velocity: reduced mobility of Xe2+ in xenon,
+# Neves et al., J. Chem. Phys. 133 (2010) 124316, via Cortez et al., JINST 12
+# (2017) P06012, Fig. 3. It gives 19.8 cm/s at 500 V/cm.
+ion_reference_reduced_mobility_cm2_V_s = 0.65
+# Electron transport in pure xenon; the electrons are not simulated.
+# NEXT-DEMO++ (papers/xehe_paper.pdf, Table 1), reduced coefficients converted
+# with D = D*/sqrt(P). At 31.25 V/cm/bar, interpolated between the points at 25
+# and 35-40 V/cm/bar; the two data sets give 9.3 and 10.3 mm/sqrt(m) transverse
+# and 3.4 to 3.7 longitudinal.
+electron_transverse_diffusion_mm_sqrtm = 9.8
+electron_longitudinal_diffusion_mm_sqrtm = 3.5
+# About 0.9 mm/us in pure xenon between 20 and 40 V/cm/bar, where it changes
+# slowly with the field (NEXT detectors); it only gives the drift time of the page.
+electron_drift_velocity_mm_us = 0.9
+electron_lifetime_ms = 100.0        # nominal, user design input, 2026-11-17

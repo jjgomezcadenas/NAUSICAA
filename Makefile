@@ -422,6 +422,18 @@ report-catalogue:
 report-clean:
 	$(PYTHON) scripts/documentation/catalogue_reports.py --clean-intermediates
 
+.PHONY: iitaca-detector iitaca-detector-present test-iitaca
+# iItaca detector: derived values of every variant (Julia, HDF5) and the detector page (Python).
+iitaca-detector:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/calculate_iitaca_conditions.jl
+	$(MAKE) iitaca-detector-present
+
+iitaca-detector-present:
+	$(VIEWER_PYTHON) scripts/iitaca/present_iitaca_detector.py
+
+test-iitaca:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/iitaca/test_iitaca_conditions.jl
+
 .PHONY: itaca-detector itaca-detector-present test-itaca
 # ITACA operating conditions: derived values (Julia, HDF5) and the detector page (Python).
 itaca-detector:

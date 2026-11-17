@@ -1,0 +1,8 @@
+# Ion readout plane: TopMetal pads under the ion focusing grid, read by VH1.
+schema = "nausicaa.iitaca_ions.v1"
+readout_chip = "TopMetal"
+pad_pitch_mm = 3.0
+pad_side_mm = 0.5                   # collecting electrode; the IFG focuses the cell onto it
+frame_ms = 15.0                     # one reading frame of VH1
+z_cell_mm = 3.0                     # length drifted in one frame; checked against velocity x frame
+vh1_card = "config/specs/response/ion_csa/vh1_device_changes_cf20f_15ms.toml"   # its frame is checked against frame_ms

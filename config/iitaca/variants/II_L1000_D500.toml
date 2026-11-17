@@ -1,0 +1,5 @@
+# Variant II_L1000_D500: 1.0 m drift at 500 V/cm. It is the default set.
+schema = "nausicaa.iitaca_variant.v1"
+name = "II_L1000_D500"
+
+[overrides]

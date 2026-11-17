@@ -1,0 +1,13 @@
+# Independent potentials and fields. Pads and SiPMs at ground; the high voltage
+# is on the EL side. The ladder (end of drift, EL entry, EL exit) follows from
+# these, the lengths of geometry.toml and the drift field of drift.toml.
+# The simulation reads none of them: the drift field is in drift.toml.
+schema = "nausicaa.iitaca_voltages.v1"
+
+[documentation]
+pads_V = 0.0
+pad_face_ifg_V = 3000.0             # manuscripts/itaca3/itaca3.tex
+tpc_face_ifg_V = 8000.0
+transfer_gap_field_V_cm = 300.0
+el_voltage_kV = 15.0                # across el_depth_mm
+sipm_plane_V = 0.0

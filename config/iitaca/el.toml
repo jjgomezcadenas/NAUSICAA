@@ -1,0 +1,26 @@
+# Electroluminescent module and SiPMs. Not simulated: the electron side gives
+# the start time and the energy, which are emulated. These values give the
+# channel count, the light budget and the potential ladder of the detector page.
+# The EL depth and guide length are in geometry.toml, the EL voltage in voltages.toml.
+schema = "nausicaa.iitaca_el.v1"
+
+[documentation]
+hole_pitch_mm = 8.0                 # one SiPM per hole
+hole_diameter_mm = 5.0              # hole and light guide; user design input, 2026-11-17
+gas_gap_radial_mm = 0.5             # xenon gap around each light guide
+# Yield in pure xenon: photons per electron = gain x (V_EL[kV] - threshold x P[bar] x d[cm]),
+# from Y/p = 140 E/p - 116 photons per electron per cm per bar (Monteiro et al.,
+# JINST 2 (2007) P05001), the normalisation used in papers/xehe_paper.pdf, Section 4.4.
+yield_gain_photons_per_electron_kV = 140.0
+yield_threshold_kV_cm_bar = 0.8286
+variance_ratio_J = 0.030            # as in config/detector/el.toml: user reading of Oliveira et al., Fig. 6 (2026-11-04)
+# Optics, as in the ITACA module (docs/elm.tex): TPB on the guide entrance, blue photons forward into the guide.
+tpb_conversion_efficiency = 0.65
+forward_fraction = 0.5
+guide_refractive_index = 1.5
+gap_refractive_index = 1.0
+# SiPM: 3 mm side on the 5 mm guide; user design input, 2026-11-17 (a larger sensor would saturate).
+sipm_device = "Hamamatsu S14160-3015PS"
+sipm_side_mm = 3.0
+sipm_microcell_count = 39984
+sipm_pde = 0.32                     # peak PDE at 460 nm, used for the TPB spectrum

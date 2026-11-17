@@ -1,0 +1,14 @@
+# Variant II_L1500_D350: 1.5 m drift at 350 V/cm, ion drift velocity 15.0 cm/s
+# (13.9 cm/s from the reference mobility), frames of 20 ms.
+schema = "nausicaa.iitaca_variant.v1"
+name = "II_L1500_D350"
+
+[overrides]
+"geometry.fiducial_length_cm" = 150.0
+"drift.field_V_cm" = 350.0
+"drift.ion_drift_velocity_cm_s" = 15.0      # user design input, 2026-11-17: one 20 ms frame is 3.0 mm
+"ions.frame_ms" = 20.0
+"ions.vh1_card" = "config/specs/response/ion_csa/vh1_device_changes_cf20f.toml"
+# Documentation: 21.9 V/cm/bar is below the lowest measured point; values of the points at 25 V/cm/bar.
+"drift.documentation.electron_transverse_diffusion_mm_sqrtm" = 9.95
+"drift.documentation.electron_longitudinal_diffusion_mm_sqrtm" = 4.2

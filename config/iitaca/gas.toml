@@ -1,0 +1,20 @@
+# Gas: pure xenon enriched in Xe-136, and the density model.
+schema = "nausicaa.iitaca_gas.v1"
+mixture = "Xe"
+helium_mole_fraction = 0.0
+xenon_enrichment = "GXeEnriched"       # NEXUS materials::GXeEnriched, isotopic fractions below
+xenon_isotopic_fractions = { Xe129 = 0.000656392, Xe130 = 0.000656392, Xe131 = 0.00234361, Xe132 = 0.00708251, Xe134 = 0.086645, Xe136 = 0.902616 }
+temperature_K = 290.0
+pressure_bar = 16.0
+
+[density_model]
+# NEXT DocDB 1183, as in simulation/nexus/source/geometries/ItacaChamber.cc.
+# Xenon: second-virial compressibility z = 1 + (a - b / T_r^1.6) P_r / T_r,
+# T_r = T / T_c, P_r = P / P_c. Helium: ideal gas. Mixture: additive partial
+# volumes, so a helium fraction above zero is also described.
+xenon_virial_a = 0.083
+xenon_virial_b = 0.422
+xenon_critical_temperature_K = 289.733
+xenon_critical_pressure_bar = 58.420
+helium = "ideal"
+mixing_rule = "additive_partial_volumes"

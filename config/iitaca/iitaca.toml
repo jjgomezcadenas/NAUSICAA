@@ -1,0 +1,22 @@
+# iItaca detector: ions read on TopMetal pads in pure xenon; the electron side
+# gives the start time and the event energy and is not simulated. This index
+# names the cards; each holds design values of one subsystem and nothing derived.
+# Values under a [documentation] table are not read by the simulation: they give
+# the potential ladder, the light budget and the detector page.
+# The default set is the variant II_L1000_D500. A variant card under variants/
+# changes values through [overrides]; a run card names the set, optionally a
+# variant, and may add its own [overrides]. src/iitaca/IItaca.jl resolves them
+# and computes the derived quantities; notes/html/iitaca_detector.html shows both.
+schema = "nausicaa.iitaca_set.v1"
+name = "iItaca"
+date = "2026-11-17"
+
+[cards]   # paths relative to this file
+gas = "gas.toml"
+geometry = "geometry.toml"
+drift = "drift.toml"
+voltages = "voltages.toml"
+ions = "ions.toml"
+energy = "energy.toml"
+el = "el.toml"
+trigger = "trigger.toml"

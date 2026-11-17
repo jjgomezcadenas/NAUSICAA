@@ -1,0 +1,12 @@
+# Ionisation constants, and the energy measurement of the electron side, which
+# is emulated: the energy deposited inside the event frame, smeared with a
+# Gaussian of the resolution below.
+schema = "nausicaa.iitaca_energy.v1"
+W_eV = 21.9
+fano_factor = 0.15
+qbb_keV = 2457.83                   # Xe-136, Redshaw et al., PRL 98 (2007) 053003
+# 0.472 % FWHM at Qbb: the width obtained in the full simulation of the Xe/He
+# electron readout (results/readout/itaca_100k_ion15_comparison), kept unchanged.
+resolution_fwhm_at_qbb_keV = 11.5988
+resolution_scaling = "sqrt_energy"  # FWHM(E) = FWHM(Qbb) sqrt(E / Qbb)
+roi_width_fwhm = 1.0                # the ROI is Qbb +- half of this many FWHM

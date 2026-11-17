@@ -1,0 +1,15 @@
+# Geometry: fiducial cylinder and the lengths of the regions along the axis,
+# from the pads to the SiPM plane. The potentials are in voltages.toml.
+# z along the drift, z = 0 at the pad plane, z = fiducial length at the EL entry;
+# an event at z has ion drift length z. x and y from the detector axis.
+schema = "nausicaa.iitaca_geometry.v1"
+fiducial_diameter_cm = 400.0
+fiducial_length_cm = 100.0          # drift length, TPC-facing IFG face to the end of the drift
+z_origin = "topmetal_pad_plane"
+
+[documentation]   # not read by the simulation: potential ladder and detector page
+ifg_thickness_mm = 10.0             # ion focusing grid, between its two faces
+pad_gap_mm = 5.0                    # pad-facing IFG face to the pads
+transfer_gap_mm = 10.0              # end of the drift to the EL entry electrode
+el_depth_mm = 5.0                   # EL region, entry to exit electrode
+guide_length_mm = 100.0             # light guides, EL exit electrode to the SiPM plane

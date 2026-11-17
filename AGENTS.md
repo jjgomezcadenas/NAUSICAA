@@ -332,3 +332,29 @@ in `notes/html/itaca_detector.html`, the scheme in
   trigger limit remains 16. Preserve historical cards and their
   `stationary_dark` setting. Card readers default missing historical settings
   to `stationary_dark`.
+
+## iItaca detector (2026-11-17, branch `iItaca`)
+
+- iItaca (ITACAi, II) is the ion-reading detector in pure xenon. It has its own
+  cards, module, scripts and results, apart from the hybrid ITACA detector:
+  `config/iitaca/`, `src/iitaca/`, `scripts/iitaca/`, `tests/iitaca/`,
+  `results/iitaca/`. The validated modules (ion transport, fast trigger, VH1,
+  reconstruction, hits, tracks) are used as they are; do not add iItaca
+  switches to the hybrid drivers or cards.
+- The electron side is not simulated. The fast trigger and frame are emulated
+  from the Monte Carlo; the event energy is the Geant4 energy deposited inside
+  the frame, smeared with the resolution of `config/iitaca/energy.toml`.
+- Every physical number is in a card. The set is `config/iitaca/iitaca.toml`
+  (gas, geometry, drift, voltages, ions, energy, el, trigger); a variant under
+  `config/iitaca/variants/` and a run card change values only through
+  overrides. Values under a `[documentation]` table (potentials, gaps, EL
+  module, SiPMs, electron diffusion) are not read by the simulation, which
+  receives `IItaca.simulation_inputs` only; they generate the detector page.
+  `IItaca.resolve_detector` checks the result (velocity x frame =
+  Z cell, VH1 frame = detector frame). Variants: II_L1000_D500 (default; 1.0 m,
+  500 V/cm, 20.0 cm/s, 15 ms) and II_L1500_D350 (1.5 m, 350 V/cm, 15.0 cm/s,
+  20 ms); the velocities are user design inputs.
+- `make iitaca-detector` regenerates `notes/html/iitaca_detector.html` from the
+  cards; `make test-iitaca` runs the tests. All iItaca documentation and
+  results are reached from `notes/html/iitaca/index.html`; results obtained
+  with the hybrid detector stay in the main index.
