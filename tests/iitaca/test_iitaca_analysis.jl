@@ -67,5 +67,30 @@ else
             @test all(abs.(read(f["signal_efficiency"]) .- read(f["targets"])) .< 1 / flow["track"])
         end
     end
+    # Track settings of a second variant from the same hit file (prepare_iitaca_features.jl --tracks-variant)
+    @testset "Features of a tracks variant" begin
+        card(name, overrides) = (p = joinpath(dir, "$name.toml"); write(p, "schema = \"nausicaa.iitaca_variant.v1\"\nname = \"$name\"\n[overrides]\n$overrides"); p)
+        base = card("T0", ""); other = card("T1", "\"tracks.segment_connection_mm\" = 4.0\n\"tracks.connection_mm\" = 6.0\n")
+        run = joinpath(dir, "T0_bb0nu.toml")
+        write(run, replace(read(CARD, String), "run_label = \"hybrid_equivalence_bb0nu_pilot\"" => "run_label = \"T0_bb0nu\"\nvariant = \"$(relpath(base, ROOT))\""))
+        run_iitaca_batch(run; batch = batches[1], output_root = dir)
+        folder = joinpath(dir, "T0_bb0nu", "batches", batch_tag(batches[1])); write_features(folder)
+        path = write_features(folder; tracks_variant = other)
+        @test path == joinpath(dir, "T1_bb0nu", "batches", batch_tag(batches[1]), "features.h5") == features_target(folder; tracks_variant = other)
+        @test islink(joinpath(dirname(path), "hits.h5")) && read(joinpath(dirname(path), "hits.h5")) == read(joinpath(folder, "hits.h5"))
+        @test_throws ErrorException write_features(folder; tracks_variant = other)
+        a = read_features(joinpath(folder, "features.h5")); b = read_features(path)
+        @test (b["variant"], b["run_label"], b["hits_run_label"]) == ("T1", "T1_bb0nu/batches/$(batch_tag(batches[1]))", a["run_label"])
+        @test b["hit_file_sha256"] == a["hit_file_sha256"] && b["events"]["event_number"] == a["events"]["event_number"]
+        @test TOML.parse(b["settings"])["tracks"]["segment_connection_mm"] == 4.0 && TOML.parse(a["settings"])["tracks"]["segment_connection_mm"] == 5.5
+        d = TOML.parse(a["resolved"])["detector"]; s = merge(selection_settings(d), (segment_connection_mm = 4.0, connection_mm = 6.0))
+        x, y, z, e, off, cnt = h5open(f -> (read(f["itrack/x_mm"]), read(f["itrack/y_mm"]), read(f["itrack/z_mm"]), read(f["itrack/energy_keV"]),
+            read(f["events/hit_offset"]), read(f["events/hit_count"])), joinpath(folder, "hits.h5"), "r")
+        @test b["events"]["selected"] == [Int8(track_selection(x[k], y[k], z[k], e[k]; s...).selected) for k in (off[j]+1:off[j]+cnt[j] for j in eachindex(off))]
+        @test run_statistics(joinpath(dir, "T1_bb0nu")).variant == "T1"
+        # a variant that changes the readout or the saved hits is refused
+        @test_throws ErrorException compute_features(joinpath(folder, "hits.h5"); tracks_variant = card("T2", "\"tracks.saved_hit_cut_keV\" = 2.0\n"))
+        @test_throws ErrorException compute_features(joinpath(folder, "hits.h5"); tracks_variant = card("T3", "\"ions.pad_side_mm\" = 0.4\n"))
+    end
     rm(dir; recursive = true)
 end

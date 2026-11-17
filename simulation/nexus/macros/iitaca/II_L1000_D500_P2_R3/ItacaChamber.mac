@@ -1,0 +1,15 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.mac
+##
+## iItaca gas volume: radius 200. cm, length 100. cm,
+## enriched xenon with a helium mole fraction of 0.0 at 16. bar and 290. K.
+## Written by scripts/iitaca/write_iitaca_macros.jl from the cards of config/iitaca
+## (variant II_L1000_D500_P2_R3). Do not edit: change the cards and write it again.
+## ----------------------------------------------------------------------------
+
+/Geometry/ItacaChamber/radius 200. cm
+/Geometry/ItacaChamber/length 100. cm
+/Geometry/ItacaChamber/pressure 16. bar
+/Geometry/ItacaChamber/temperature 290. kelvin
+/Geometry/ItacaChamber/helium_mole_fraction 0.0
+/Geometry/ItacaChamber/step_limit 1. mm

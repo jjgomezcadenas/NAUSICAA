@@ -1,0 +1,18 @@
+# Variant II_L1000_D500_P2_R3: the readout of II_L1000_D500_P2 (2 mm pads, 10 ms frames,
+# hit cut 3 keV) with the radii of the 3 mm track selection: components at 5.5 mm and
+# segments joined at 8 mm (user decision, 2026-11-17). It reads the hit files of
+# II_L1000_D500_P2 and differs from it only in tracks.* (prepare_iitaca_features.jl
+# --tracks-variant).
+schema = "nausicaa.iitaca_variant.v1"
+name = "II_L1000_D500_P2_R3"
+
+[overrides]
+"ions.pad_pitch_mm" = 2.0
+"ions.frame_ms" = 10.0
+"ions.z_cell_mm" = 2.0
+"ions.vh1_card" = "config/specs/response/ion_csa/vh1_device_changes_cf20f_10ms.toml"
+"tracks.segment_connection_mm" = 5.5   # value of the 3 mm lattice
+"tracks.connection_mm" = 8.0           # value of the 3 mm lattice
+"tracks.segment_min_hits" = 9          # 6 x 3/2
+"tracks.voxel_width_mm" = 2.0
+"tracks.hit_cut_keV" = 3.0             # equal to the saved hit cut

@@ -1,0 +1,23 @@
+# Production of the variant II_L1000_D500_P2 (2 mm pads, 10 ms frames): neutrinoless double beta decays, 60 batches of 5,000 generated events (300,000).
+# Same Geant4 files, seed and electronics_seed as II_L1000_D500_bb0nu, so the Monte Carlo
+# events and their ion drift are those of the 3 mm sample; only the readout lattice and
+# the track selection scaled to it change (config/iitaca/variants/II_L1000_D500_P2.toml).
+# Batches: scripts/iitaca/slurm/iitaca_batches.slurm with NAUSICAA_DATA set to the
+# folder that holds II_L1000_D500/, and IITACA_TRACKS_VARIANTS=config/iitaca/variants/II_L1000_D500_P2_R3.toml
+# for the features of the 3 mm selection radii from the same hit files (run II_L1000_D500_P2_R3_<sample>).
+schema = "nausicaa.iitaca_run.v1"
+detector = "config/iitaca/iitaca.toml"
+variant = "config/iitaca/variants/II_L1000_D500_P2.toml"
+run_label = "II_L1000_D500_P2_bb0nu"
+sample = "bb0nu"
+hits = "$NAUSICAA_DATA/II_L1000_D500/prod/bb0nu/bb0nu_{batch}_hitdf.h5"
+particles = "$NAUSICAA_DATA/II_L1000_D500/prod/bb0nu/bb0nu_{batch}.next.h5"
+generated_events_per_batch = 5000
+max_events = 0                    # 0: all events of the batch
+seed = 42
+electronics_seed = 20261113
+frame_track = "primary_and_delta_electrons"
+max_vector_bytes = 268435456
+vh1_minimum_samples = 32768
+
+[overrides]                       # none

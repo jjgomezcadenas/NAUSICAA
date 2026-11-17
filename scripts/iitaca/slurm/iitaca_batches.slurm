@@ -6,6 +6,9 @@
 # RUN_CARD is relative to the repository. NEXUS_FILE_PATTERN is the NEXUS file
 # of a batch with {batch} for the batch tag; its reduced hit table is written
 # beside it if absent. NAUSICAA_DATA must be exported to the job (--export).
+# IITACA_TRACKS_VARIANTS (optional, exported): variant cards that differ from the
+# variant of the run only in tracks.*; each gets the feature table of its own run
+# from the same hit file (prepare_iitaca_features.jl --tracks-variant).
 #SBATCH --job-name=iitaca_batches
 #SBATCH --partition=general
 #SBATCH --qos=serial
@@ -29,3 +32,6 @@ echo "node $(hostname) batch $TAG commit $(git rev-parse HEAD) card $CARD"
 BATCH_DIR=results/iitaca/$(sed -n 's/^run_label *= *"\(.*\)".*/\1/p' "$CARD")/batches/$TAG
 [ -e "$BATCH_DIR/hits.h5" ] || julia --startup-file=no --project=. scripts/iitaca/run_iitaca_batch.jl "$CARD" --batch="$B"
 [ -e "$BATCH_DIR/features.h5" ] || julia --startup-file=no --project=. scripts/iitaca/prepare_iitaca_features.jl "$BATCH_DIR"
+for TV in ${IITACA_TRACKS_VARIANTS:-}; do
+    julia --startup-file=no --project=. scripts/iitaca/prepare_iitaca_features.jl "$BATCH_DIR" --tracks-variant="$TV"
+done

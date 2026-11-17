@@ -140,6 +140,27 @@ end
     @test b["drift.electron_max_attachment_loss"] ≈ 0.0165 atol = 0.0001
 end
 
+# 2 mm pads: the detector of II_L1000_D500 on a cubic 2 mm lattice, with the track selection scaled to it.
+@testset "Variant with 2 mm pads" begin
+    p2 = resolve_detector(INDEX; variant = VARIANT("II_L1000_D500_P2"), root = ROOT)
+    c = table(p2.detector); sim = simulation_inputs(short.detector); sim2 = simulation_inputs(p2.detector)
+    @test sort([k for k in keys(sim) if sim[k] != sim2[k]]) == ["ions.frame_ms", "ions.pad_pitch_mm", "ions.vh1_card", "ions.z_cell_mm",
+        "tracks.connection_mm", "tracks.hit_cut_keV", "tracks.segment_connection_mm", "tracks.segment_min_hits", "tracks.voxel_width_mm"]
+    @test c["drift.ion_frame_length_mm"] ≈ 2.0 && p2.detector["ions"]["pad_pitch_mm"] == 2.0
+    @test c["ions.pad_count"] ≈ a["ions.pad_count"] * 9 / 4
+    @test c["drift.ion_spread_over_pad_pitch"] ≈ a["drift.ion_spread_over_pad_pitch"] * 3 / 2
+    @test c["drift.ion_frames_in_longest_drift"] ≈ 500.0
+    t = p2.detector["tracks"]
+    @test sqrt(3) * 2.0 < t["segment_connection_mm"] < 4.0        # touching cells, not the next cell but one along an axis
+    @test (t["connection_mm"], t["segment_min_hits"], t["voxel_width_mm"]) == (5.3, 9, 2.0)
+    @test (t["deposit_min_keV"], t["blob_radius_mm"], t["hit_cut_keV"], t["saved_hit_cut_keV"]) == (10.0, 7.0, 3.0, 3.0)
+    # the same readout with the radii of the 3 mm selection
+    r3 = resolve_detector(INDEX; variant = VARIANT("II_L1000_D500_P2_R3"), root = ROOT).detector
+    @test all(r3[s] == p2.detector[s] for s in SECTIONS if s != "tracks")
+    @test sort([k for (k, v) in r3["tracks"] if v != t[k]]) == ["connection_mm", "segment_connection_mm"]
+    @test (r3["tracks"]["segment_connection_mm"], r3["tracks"]["connection_mm"]) == (short.detector["tracks"]["segment_connection_mm"], short.detector["tracks"]["connection_mm"])
+end
+
 @testset "Energy resolution and ROI" begin
     en = short.detector["energy"]
     @test resolution_fwhm_keV(en, 2457.83) ≈ 11.5988

@@ -80,6 +80,7 @@ def render():
     fwhm_keV = I0['energy.resolution_fwhm_at_qbb_keV']
     resolution = f"{D0['energy.resolution_fwhm_at_qbb_percent']:.2f} %"
     pitch = I0['ions.pad_pitch_mm']
+    cells = ' or '.join(sorted({num(v['inputs']['ions.z_cell_mm']) for v in V}, reverse=True))
 
     def ladder(v):
         p = lambda k: v['derived'][f'voltages.potential_{k}_kV']
@@ -103,7 +104,7 @@ def render():
 
 <section id="principle"><h2>1. Purpose and principle</h2>
 <ol>
-<li>The ions give the track. The Xe<sub>2</sub><sup>+</sup> molecular ions (written Xe2+, charge +e) drift to the TopMetal pads with a thermal spread of {' to '.join(sorted(spreads))} mm at full drift and are read on a cubic {num(I0['ions.z_cell_mm'])} mm lattice.</li>
+<li>The ions give the track. The Xe<sub>2</sub><sup>+</sup> molecular ions (written Xe2+, charge +e) drift to the TopMetal pads with a thermal spread of {' to '.join(sorted(spreads))} mm at full drift and are read on a cubic lattice of {cells} mm.</li>
 <li>The electrons give the start time, the fast trigger and the event energy. They drift to the EL plane, read by SiPMs at {num(I0['el.documentation.hole_pitch_mm'])} mm pitch.</li>
 <li>The gas is pure xenon enriched in Xe-136, without helium. The electron spread at full drift is about 10 mm, so the electron plane gives a coarse image and the track topology comes from the ions.</li>
 <li>The simulation covers the ion side: Geant4, ion transport, VH1 electronics, reconstruction, hits and tracks. The electron side is emulated: the fast trigger from the Geant4 deposits and the energy from their sum smeared with the energy resolution.</li>
@@ -198,10 +199,18 @@ def render():
     ['Drift voltage'] + de('drift.drift_voltage_kV', 'kV') + ['E<sub>d</sub> L'],
     ['Highest potential (EL exit)'] + de('voltages.potential_el_exit_kV', 'kV') + [''],
     ['Ion drift velocity'] + each('drift.ion_drift_velocity_cm_s', 'cm/s') + ['user design input'],
-    ['Frame'] + each('ions.frame_ms', 'ms') + [f"one frame spans {num(I0['ions.z_cell_mm'])} mm"],
+    ['Pad pitch'] + each('ions.pad_pitch_mm', 'mm') + [''],
+    ['Pads'] + de('ions.pad_count', '', 3) + ['end area over the pad pitch squared'],
+    ['Frame'] + each('ions.frame_ms', 'ms') + [''],
+    ['Length drifted in one frame'] + each('ions.z_cell_mm', 'mm') + ['ion velocity × frame; equal to the pad pitch'],
+    ['VH1 card'] + [f"<code>{v['inputs']['ions.vh1_card'].split('/')[-1]}</code>" for v in V] + ['its frame equals the frame of the variant'],
     ['Longest ion drift time'] + de('drift.ion_max_drift_time_s', 's') + ['L / v<sub>ion</sub>'],
     ['Frames in the longest drift'] + de('drift.ion_frames_in_longest_drift', '', 3) + [''],
-    ['Ion thermal spread at full drift'] + spread_mm + ['√(2 k T L / (e E))']], True)}
+    ['Ion thermal spread at full drift'] + spread_mm + ['√(2 k T L / (e E))'],
+    ['Radius of a component'] + each('tracks.segment_connection_mm', 'mm') + ['touching cells of the lattice'],
+    ['Track segment'] + each('tracks.segment_min_hits', 'hits') + ['a component with at least this many hits'],
+    ['Segments joined at'] + each('tracks.connection_mm', 'mm') + [''],
+    ['Cells of the track graph'] + each('tracks.voxel_width_mm', 'mm') + ['']], True)}
 <h3>Potentials along the axis, anode at top</h3>
 <p>The pads and the SiPM plane are at ground. The potential rises from the TPC-facing face of the IFG through the drift region, the transfer gap and the EL region, and is graded back to ground along the light guides.</p>
 {table(['Electrode or region'] + names + ['Length and field'], [
@@ -219,7 +228,7 @@ def render():
     row('Pad gap', 'padgap', f"{one('geometry.documentation.pad_gap_mm')} mm, {d('voltages.pad_gap_field_kV_cm')} kV/cm"),
     row('Pads (z = 0)', 'pads', 'ground')], True)}
 <h3>Ion drift velocity</h3>
-<p>The reduced mobility K<sub>0</sub> = {num(I0['drift.documentation.ion_reference_reduced_mobility_cm2_V_s'])} cm²/(V·s) of Xe<sub>2</sub><sup>+</sup> in xenon (Neves et al., via Cortez et al.) and N/N<sub>0</sub> = {D0['gas.number_density_relative_to_STP']:.2f} give v = K<sub>0</sub> E N<sub>0</sub>/N. The adopted velocities make one frame span exactly {num(I0['ions.z_cell_mm'])} mm.</p>
+<p>The reduced mobility K<sub>0</sub> = {num(I0['drift.documentation.ion_reference_reduced_mobility_cm2_V_s'])} cm²/(V·s) of Xe<sub>2</sub><sup>+</sup> in xenon (Neves et al., via Cortez et al.) and N/N<sub>0</sub> = {D0['gas.number_density_relative_to_STP']:.2f} give v = K<sub>0</sub> E N<sub>0</sub>/N. With the frame of each variant, the adopted velocity makes one frame span the pad pitch.</p>
 {table(by_variant, [
     ['Ion velocity from the reference mobility'] + de('drift.ion_reference_velocity_cm_s', 'cm/s', 3) + ['K<sub>0</sub> E N<sub>0</sub>/N'],
     ['Adopted ion velocity'] + each('drift.ion_drift_velocity_cm_s', 'cm/s') + ['user design input'],
@@ -245,7 +254,7 @@ def render():
 <p>The ion spread is thermal and does not depend on the ion velocity: σ = √(2 k T L / (e E)), the same in x, y and z (ITACA revisited, Eq. (2.1); implementation in <code>src/event_analysis/production.jl</code>).</p>
 {table(by_variant, [
     ['Ion thermal spread at full drift'] + spread_mm + ['uniform field, singly charged ions'],
-    ['Spread over pad pitch'] + de('drift.ion_spread_over_pad_pitch', '', 2) + [f'σ / {num(pitch)} mm'],
+    ['Spread over pad pitch'] + de('drift.ion_spread_over_pad_pitch', '', 2) + ['σ / pad pitch'],
     ['Longest ion drift time'] + de('drift.ion_max_drift_time_s', 's') + ['L / v<sub>ion</sub>'],
     ['Pads to SiPM plane'] + de('geometry.pads_to_sipm_plane_mm', 'mm') + ['pad gap + IFG + drift + transfer gap + EL + guides']], True)}
 <h3>Electrons (design values, not simulated)</h3>
@@ -291,7 +300,7 @@ def render():
 <h3>Simulated</h3>
 <ol>
 <li>Geant4 in the gas of the cards, with the radius and length of each variant.</li>
-<li>Ion transport to the pad plane with the thermal spread of the variant and its ion velocity, on the {num(I0['ions.z_cell_mm'])} mm lattice with the frame of the variant.</li>
+<li>Ion transport to the pad plane with the thermal spread of the variant and its ion velocity, on the cubic lattice of the variant (pad pitch and length drifted in one frame).</li>
 <li>VH1 readout with 20 fF capacitors and linear reconstruction of the ion signal (<a href="event_analysis/sim_vh1_readout.html">VH1 readout</a>).</li>
 <li>Hits and tracks from the reconstructed ion signal.</li>
 </ol>

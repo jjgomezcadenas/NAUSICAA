@@ -1,0 +1,18 @@
+# Variant II_L1000_D500_P2: the detector of II_L1000_D500 (1.0 m drift at 500 V/cm,
+# ion drift velocity 20.0 cm/s) read on 2 mm pads with 10 ms frames, so that one frame
+# spans 2.0 mm and the lattice stays cubic. The Geant4 generation is that of II_L1000_D500.
+# Track selection scaled to the 2 mm lattice (user approval, 2026-11-17), with a hit cut
+# of 3 keV, the saved hit cut (user decision, 2026-11-17): at 5 keV the smaller cells break the track.
+schema = "nausicaa.iitaca_variant.v1"
+name = "II_L1000_D500_P2"
+
+[overrides]
+"ions.pad_pitch_mm" = 2.0
+"ions.frame_ms" = 10.0
+"ions.z_cell_mm" = 2.0
+"ions.vh1_card" = "config/specs/response/ion_csa/vh1_device_changes_cf20f_10ms.toml"
+"tracks.segment_connection_mm" = 3.7   # touching cells: cube diagonal 3.46 mm; next cell but one along an axis 4 mm
+"tracks.connection_mm" = 5.3           # 8 mm x 2/3
+"tracks.segment_min_hits" = 9          # 6 x 3/2
+"tracks.voxel_width_mm" = 2.0
+"tracks.hit_cut_keV" = 3.0             # equal to the saved hit cut

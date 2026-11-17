@@ -25,7 +25,12 @@ include(joinpath(@__DIR__, "../../scripts/iitaca/write_iitaca_macros.jl"))
         @test occursin("particle e-", files["ItacaChamber.electron.config.mac"]) && occursin("region GAS", files["ItacaChamber.electron.config.mac"])
         @test occursin("Xe136DecayMode 1", files["ItacaChamber.bb0nu.config.mac"]) && occursin("RegisterGenerator Decay0Interface", files["ItacaChamber.bb0nu.init.mac"])
     end
-    @test variant_macros(variant_cards()[1])[2]["ItacaChamber.mac"] != variant_macros(variant_cards()[2])[2]["ItacaChamber.mac"]
+    @test basename.(variant_cards()) == ["II_L1000_D500.toml", "II_L1000_D500_P2.toml", "II_L1000_D500_P2_R3.toml", "II_L1500_D350.toml"]
+    card(name) = joinpath(ROOT, "config/iitaca/variants/$name.toml")
+    @test variant_macros(card("II_L1000_D500"))[2]["ItacaChamber.mac"] != variant_macros(card("II_L1500_D350"))[2]["ItacaChamber.mac"]
+    # the 2 mm pads change the readout only: the Geant4 macros are those of II_L1000_D500 but for the variant name
+    short = variant_macros(card("II_L1000_D500"))[2]; p2 = variant_macros(card("II_L1000_D500_P2"))[2]
+    @test keys(p2) == keys(short) && all(replace(p2[k], "II_L1000_D500_P2" => "II_L1000_D500") == short[k] for k in keys(p2))
 end
 
 @testset "Run cards of the pilots" begin
@@ -38,5 +43,8 @@ end
         p = resolve_run(joinpath(ROOT, "config/iitaca/runs/II_L1000_D500_$(key).toml"); root = ROOT)          # the production card of the same sample
         @test p.resolved.detector == r.resolved.detector && p.run["frame_track"] == track && p.run["sample"] == sample
         @test p.run["seed"] == r.run["seed"] && occursin("II_L1000_D500/prod", p.run["hits"]) && p.run["run_label"] == "II_L1000_D500_$(key)"
+        q = resolve_run(joinpath(ROOT, "config/iitaca/runs/II_L1000_D500_P2_$(key).toml"); root = ROOT)       # the same events on 2 mm pads
+        @test q.resolved.variant == "II_L1000_D500_P2" && q.run["run_label"] == "II_L1000_D500_P2_$(key)"
+        @test all(q.run[k] == p.run[k] for k in ("sample", "hits", "particles", "seed", "electronics_seed", "frame_track", "generated_events_per_batch"))
     end
 end
