@@ -152,3 +152,16 @@ complete. The hit files and feature tables stay in the working copy of the
 Script: `/scratch/jjgomez/NAUSICAA-runs/bookkeeping/archive.sh SRC DEST` (rsync
 without overwriting, SHA-256 of every file on both sides, removal of SRC only
 when the lists are identical). Logs in the same folder.
+
+## 2026-11-18
+
+- Geant4 files of the copper-shield pilots (`results/background`, 4 × 10⁶
+  decays, 405 MB) archived from `/scratch/jjgomez/NAUSICAA-runs/nexus/background/`
+  to `/data/jjgomez/NAUSICAA-runs/nexus/background/` with `archive.sh`; the
+  eITACA production and the 2 mm ²⁰⁸Tl production were archived the day before.
+- Untracked copies of committed files that blocked `git pull` (12 `training.h5`
+  in `/scratch/jjgomez/NAUSICAA`, 4 eITACA network files in the worktree) moved
+  to `bookkeeping/pull_aside_2026-11-18/` after a SHA-256 check; they are
+  identical to the committed ones. The main clone is on `main`, the worktree
+  `/scratch/jjgomez/NAUSICAA-iitaca` on `bkgnd`; its large untracked results
+  (eITACA batches, statistics, network events, 3.9 GB) stay there.
