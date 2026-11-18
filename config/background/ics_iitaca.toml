@@ -1,0 +1,47 @@
+# Inner copper shield (ICS) of iItaca for the radiogenic background run: the
+# fiducial gas of the variant below, the passive material between the gas and
+# the copper, and the copper itself, in which the 214Bi and 208Tl decays are
+# generated. scripts/background/write_background_macros.jl writes the NEXUS
+# macros from this card; src/background/Background.jl gives the geometry, the
+# copper mass, the vertex sampler and the event weights.
+# Components as in the ITACA revisited paper (srcx/sensi.tex, srcx/itaca_det2.tex)
+# with the 2.0 m radius and 1.5 m drift of the current design.
+# User design inputs, 2026-11-18.
+schema = "nausicaa.background_shielding.v1"
+name = "II_L1500_ICS20"
+family = "iitaca"
+variant = "config/iitaca/variants/II_L1500_D350.toml"   # fiducial gas: radius, length, gas, pressure
+saved_window = "gamma"                                   # the gamma saved window of the generation card
+
+[ics]
+material = "G4_Cu"
+density_g_cm3 = 8.96
+thickness_cm = 20.0           # everywhere (barrel and both ends); 20 cm keeps the pressure vessel below 5 % of the ICS
+bi214_Bq_kg = 1.2e-6          # specific activities of copper, ITACA revisited Table 'Specific activities'
+tl208_Bq_kg = 1.4e-6
+# Decays are generated at a depth z from the inner face with density e^(-z/lambda),
+# truncated at the thickness; the weight of each event restores the uniform
+# distribution (Background.weight). 2.9 cm is the attenuation length of 2.5 MeV
+# gammas in copper; any positive value gives the same answer after weighting.
+sampling_length_cm = 2.9
+
+# Between the fiducial gas and the copper, from the gas outward: a xenon gap
+# then one passive layer. The order changes the attenuation very little.
+[barrel]
+gap_cm = 1.0                  # field-cage region
+layer_material = "G4_TEFLON"  # barrel fibre detector (PTFE panels)
+layer_thickness_cm = 0.5
+
+[anode]                       # z = fiducial length: EL side
+gap_cm = 1.5                  # transfer gap 1.0 cm; 0.5 cm of the SiPM boards (0.2 mm of Kapton, neglected)
+layer_material = "G4_POLYETHYLENE"
+layer_thickness_cm = 10.0     # FAT-GEM 0.5 cm and light guides 9.5 cm, HDPE
+
+[cathode]                     # z = 0: ion plane
+gap_cm = 20.5                 # pad gap 0.5 cm and MARS region 20 cm, xenon
+layer_material = "G4_PLEXIGLASS"
+layer_thickness_cm = 1.0      # ion focusing grid, PMMA
+
+[documentation]   # not read by the simulation
+pressure_vessel = "Ti Gr5, 2.0 cm shell with ellipsoidal heads, about 10 t, outside the ICS: not simulated. Behind 20 cm of copper it adds at most 5 % of the ICS 214Bi and 1 % of its 208Tl (hand calculation, E2 attenuation)."
+mars_sources = "MARS titanium, Kapton and HDPE are not simulated as sources in this card."

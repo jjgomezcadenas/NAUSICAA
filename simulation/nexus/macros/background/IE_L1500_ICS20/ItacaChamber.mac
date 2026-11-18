@@ -1,0 +1,30 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.mac
+##
+## Fiducial gas of IE_L1500_D400: radius 200. cm, length 150. cm,
+## enriched xenon with a helium mole fraction of 0.158 at 16. bar and 290. K.
+## Shield: 20. cm of G4_Cu around a xenon cavity with one passive layer per face;
+## region ICS samples the decay depth as exp(-depth/2.9 cm).
+## Written by scripts/background/write_background_macros.jl from the cards of config/background
+## (variant IE_L1500_ICS20). Do not edit: change the cards and write it again.
+## ----------------------------------------------------------------------------
+
+/Geometry/ItacaChamber/radius 200. cm
+/Geometry/ItacaChamber/length 150. cm
+/Geometry/ItacaChamber/pressure 16. bar
+/Geometry/ItacaChamber/temperature 290. kelvin
+/Geometry/ItacaChamber/helium_mole_fraction 0.158
+/Geometry/ItacaChamber/step_limit 1. mm
+
+/Geometry/ItacaChamber/shield_material G4_Cu
+/Geometry/ItacaChamber/shield_thickness 20. cm
+/Geometry/ItacaChamber/shield_sampling_length 2.9 cm
+/Geometry/ItacaChamber/barrel_gap 1. cm
+/Geometry/ItacaChamber/barrel_layer_thickness 0.5 cm
+/Geometry/ItacaChamber/barrel_layer_material G4_TEFLON
+/Geometry/ItacaChamber/anode_gap 0.5 cm
+/Geometry/ItacaChamber/anode_layer_thickness 0.5 cm
+/Geometry/ItacaChamber/anode_layer_material G4_POLYETHYLENE
+/Geometry/ItacaChamber/cathode_gap 10. cm
+/Geometry/ItacaChamber/cathode_layer_thickness 0. cm
+/Geometry/ItacaChamber/cathode_layer_material G4_Galactic

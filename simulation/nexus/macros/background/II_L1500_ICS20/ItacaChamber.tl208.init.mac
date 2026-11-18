@@ -1,0 +1,21 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.tl208.init.mac
+##
+## Template. The job script replaces @CONFIG@ with the configuration macro of the job.
+## Written by scripts/background/write_background_macros.jl from the cards of config/background
+## (variant II_L1500_ICS20). Do not edit: change the cards and write it again.
+## ----------------------------------------------------------------------------
+
+/control/execute macros/physics/DefaultPhysicsList.mac
+
+/nexus/RegisterGeometry ItacaChamber
+/nexus/RegisterGenerator IonGenerator
+
+/nexus/RegisterPersistencyManager PersistencyManager
+
+/nexus/RegisterRunAction DefaultRunAction
+/nexus/RegisterEventAction DefaultEventAction
+/nexus/RegisterTrackingAction DefaultTrackingAction
+
+/nexus/RegisterMacro @CONFIG@
+/nexus/RegisterDelayedMacro macros/background/II_L1500_ICS20/ItacaChamber.tl208.decay.mac

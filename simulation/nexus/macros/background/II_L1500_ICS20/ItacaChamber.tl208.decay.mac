@@ -1,0 +1,9 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.tl208.decay.mac
+##
+## Radioactive decay limited to 208Tl: the daughter nucleus does not decay.
+## Written by scripts/background/write_background_macros.jl from the cards of config/background
+## (variant II_L1500_ICS20). Do not edit: change the cards and write it again.
+## ----------------------------------------------------------------------------
+
+/process/had/rdm/nucleusLimits 208 208 81 81

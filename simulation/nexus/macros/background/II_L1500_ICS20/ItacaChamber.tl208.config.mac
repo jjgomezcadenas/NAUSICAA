@@ -1,0 +1,29 @@
+## ----------------------------------------------------------------------------
+## nexus | ItacaChamber.tl208.config.mac
+##
+## Template. The job script replaces @SEED@, @START_ID@ and @OUTPUT@.
+## 208Tl decays uniform in the copper shield (region ICS, exponential depth sampling with weights),
+## every decay product followed. Events are saved when the energy deposited in the fiducial gas lies in the window below.
+## Written by scripts/background/write_background_macros.jl from the cards of config/background
+## (variant II_L1500_ICS20). Do not edit: change the cards and write it again.
+## ----------------------------------------------------------------------------
+
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+/control/execute macros/background/II_L1500_ICS20/ItacaChamber.mac
+
+/Generator/IonGenerator/atomic_number 81
+/Generator/IonGenerator/mass_number 208
+/Generator/IonGenerator/region ICS
+/Generator/IonGenerator/decay_at_time_zero true
+
+/Actions/DefaultEventAction/min_energy 2420. keV
+/Actions/DefaultEventAction/max_energy 2490. keV
+
+/nexus/random_seed @SEED@
+/nexus/persistency/start_id @START_ID@
+/nexus/persistency/output_file @OUTPUT@
+/nexus/persistency/event_type background

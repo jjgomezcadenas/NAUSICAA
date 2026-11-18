@@ -445,6 +445,14 @@ test-iitaca:
 iitaca-macros:
 	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/iitaca/write_iitaca_macros.jl
 
+# Radiogenic background: NEXUS macros of the copper-shield runs from the shielding cards, and their tests
+.PHONY: background-macros test-background
+background-macros:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. scripts/background/write_background_macros.jl
+
+test-background:
+	JULIA_DEPOT_PATH="$(EVENT_JULIA_DEPOT)" $(JULIA) --startup-file=no --project=. tests/background/test_background.jl
+
 # One batch of an iItaca run: make iitaca-batch RUN=config/iitaca/runs/<card>.toml BATCH=0, with NAUSICAA_DATA set
 .PHONY: iitaca-batch
 iitaca-batch:

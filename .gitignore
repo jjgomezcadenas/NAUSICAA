@@ -171,3 +171,7 @@ results/iitaca/*/batches/
 results/eitaca/*/*/batches/
 # Monte Carlo truth tables of the truth studies (regenerable); summaries and pages are tracked.
 results/iitaca/*_truth/truth_*.h5
+results/iitaca/*_truth_profile/truth_*.h5
+
+# Radiogenic background: Geant4 files of the copper-shield runs; the window tables and pages are tracked.
+results/background/**/*.next.h5

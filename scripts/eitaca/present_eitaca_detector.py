@@ -69,7 +69,7 @@ def render():
 <header><p><a href="../index.html">NAUSICAA documentation</a></p><h1>eITACA</h1>
 <p>The electron-reading ITACA detector in xenon–helium (also ITACAe, IE), without ion readout. Default set: variant {variant}; user design inputs, {date}.</p></header><main>
 <section><h2>Pilot</h2><p><a href="../../../results/eitaca/pilot/index.html">eITACA pilot: does the SiPM readout saturate?</a> bb0nu and single electrons of the Xe/He pilot, with the eITACA optics and, as reference, the optics and yield of the hybrid production.</p></section>
-<section><h2>Results</h2><p><a href="results.html">eITACA against iItaca 2 mm</a>: cut flow, track selection × network, final numbers per generated event or gamma, and the ²¹⁴Bi truth, with the analysis of iItaca on the electron track.</p></section>
+<section><h2>Results</h2><p><a href="results.html">eITACA against iItaca 2 mm</a>: cut flow, track selection × network, final numbers per generated event or gamma, and the ²¹⁴Bi truth, with the analysis of iItaca on the electron track.</p><p><a href="../../../results/background/index.html">²¹⁴Bi and ²⁰⁸Tl from the copper shield in the ROI, per year and per tonne-year</a>, eITACA beside iItaca (<a href="../background/index.html">method</a>).</p></section>
 <section><h2>Design values</h2>{table(['Item', 'Value', 'Card (config/eitaca/)'], inputs)}
 <p>¹³⁶Xe mass: {d('geometry.xe136_mass_kg'):,.0f} kg (xenon density {d('gas.xenon_density_kg_m3'):.1f} kg/m³, density model of <code>gas.toml</code>). D = D*/√P at {I['gas.pressure_bar']:g} bar:
 D_T = {d('drift.electron_transverse_diffusion_mm_sqrtm'):.2f} mm/√m, D_L = {d('drift.electron_longitudinal_diffusion_mm_sqrtm'):.2f} mm/√m.</p>

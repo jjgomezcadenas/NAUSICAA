@@ -2,11 +2,12 @@
 #=
 iItaca: Monte Carlo truth of the selected events of a run, against the network score.
 
-  julia --project=. scripts/iitaca/prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B] [--run-label=L]
+  julia --project=. scripts/iitaca/prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B] [--run-label=L] [--test-signal]
 
-<run card>: config/iitaca/runs/II_L1000_D500_bi214.toml (or _single_electrons).
-<scores>: the scores of a trained network, either scores_<sample>.h5 (every
-selected event of the sample) or training.h5 (its test background events).
+<run card>: config/iitaca/runs/II_L1000_D500_bi214.toml (or _single_electrons,
+_bb0nu). <scores>: the scores of a trained network, either scores_<sample>.h5
+(every selected event of the sample) or training.h5 (its test background
+events; its test signal events with --test-signal).
 NAUSICAA_DATA must point to the folder holding <variant>/prod/ (NEXUS files and
 reduced hit tables). --batches limits the batches read, for tests. --run-label
 takes the statistics of run L instead of the run of the card: a run of a tracks
@@ -20,13 +21,16 @@ For every scored event:
     and end points).
  2. Main track as in the production: the leading electron of the gamma (the
     most energetic electron produced directly by it), or the generated
-    electron, with its descendants not passing through a gamma
-    (EventAnalysis.gamma_map). Every other hit belongs to a secondary deposit:
-    a particle produced directly by the generated gamma, or a photon emitted
-    by the main track, with its descendants.
+    electrons (one, or the two of a bb0nu decay), with their descendants not
+    passing through a gamma (EventAnalysis.gamma_map). Every other hit belongs
+    to a secondary deposit: a particle produced directly by the generated
+    gamma, or a photon emitted by the main track, with its descendants.
  3. Distance of every secondary hit to the nearest main-track hit; energy of
     the secondary deposits in the simulated box of the event (vertex-relative
-    box of the feature table) by that distance: below 4 mm, 4 to 8 mm, beyond.
+    box of the feature table) by that distance: below 4 mm, 4 to 8 mm, beyond;
+    and the profile of that energy, the energy at a distance of at least d for
+    d on a grid of 0.25 mm up to 12 mm (events/secondary_profile_keV, one
+    column per event; deposits/profile_keV, one column per deposit).
  4. Per deposit: type, energy of the particle that starts it, deposited energy,
     smallest distance and energy-weighted centre distance to the main track,
     distances of the centre to the start and to the end of the leading electron.
@@ -37,7 +41,7 @@ For every scored event:
  7. Join the feature columns of the event (statistics/events.h5 of the run)
     and its score; passed = score above the threshold of 80 % signal.
 
-Output (schema iitaca.truth.v1): events/<column> one row per event,
+Output (schema iitaca.truth.v2): events/<column> one row per event,
 deposits/<column> one row per secondary deposit, and the identity of inputs
 and code. The energy in the box recomputed from the hits must equal the
 energy_true_keV of the production for every event.
@@ -47,8 +51,9 @@ const ROOT = get(ENV, "NAUSICAA_ROOT", normpath(joinpath(@__DIR__, "../..")))
 include(joinpath(ROOT, "src/event_analysis/EventAnalysis.jl")); using .EventAnalysis
 include(joinpath(ROOT, "scripts/production/batch_inputs.jl"))
 
-const TRUTH_SCHEMA = "iitaca.truth.v1"
+const TRUTH_SCHEMA = "iitaca.truth.v2"
 const BLOB_RADIUS_MM = 7.0
+const PROFILE_EDGES_MM = collect(0.0:0.25:12.0)   # secondary energy at a distance of at least d from the main track
 const XRAY_MAX_KEV = 40.0          # photons of the gamma below this energy: fluorescence
 const AUGER_MAX_KEV = 40.0         # electrons of the gamma below this energy, other than Compton: atomic relaxation
 const DISTANCE_EDGES_MM = (4.0, 8.0)
@@ -91,13 +96,13 @@ function read_truth_particles(path::AbstractString, ids)
 end
 
 """Scored events of the sample: event number, batch, score, and the 80 % signal threshold."""
-function scored_events(scores::AbstractString, statistics::AbstractString)
+function scored_events(scores::AbstractString, statistics::AbstractString; test_signal::Bool = false)
     batch_of = h5open(statistics, "r") do f
         Dict(zip(read(f["events/event_number"]), read(f["events/batch"])))
     end
     h5open(scores, "r") do f
         if haskey(f, "test")
-            k = read(f["test/label"]) .== 0
+            k = read(f["test/label"]) .== (test_signal ? 1 : 0)
             ids = read(f["test/event_number"])[k]; s = read(f["test/score"])[k]
             eff = read(f["test/separation/target_signal_efficiency"]); thr = read(f["test/separation/threshold"])
             b = read(f["test/batch"])[k]; all(b[i] == batch_of[ids[i]] for i in eachindex(ids)) || error("Batches of the scores and of the statistics differ")
@@ -133,8 +138,9 @@ function event_truth(h::MCEventHits, info::MCEventInfo, parts::Vector{TruthParti
         el = [p for p in children if p.name == "e-"]
         lead = el[argmax([(p.kinetic_keV, -p.particle_id) for p in el])]
         info = MCEventInfo(info.event_id, lead.initial_mm, [lead.particle_id])
-    else
-        lead = byid[only(info.primary_particle_ids)]; children = TruthParticle[]; g = nothing
+    else   # generated electrons: one, or the two of a bb0nu decay; the leading one gives the start and end points
+        prim = [byid[i] for i in info.primary_particle_ids]
+        lead = prim[argmax([(p.kinetic_keV, -p.particle_id) for p in prim])]; children = TruthParticle[]; g = nothing
     end
     roots = gamma_map([MCParticle(p.particle_id, p.mother_id, p.name) for p in parts], info)
     v = info.generation_vertex_mm
@@ -159,7 +165,8 @@ function event_truth(h::MCEventHits, info::MCEventInfo, parts::Vector{TruthParti
         "secondary_4to8_keV" => sum(E[sec .& (DISTANCE_EDGES_MM[1] .<= d .< DISTANCE_EDGES_MM[2])]; init = 0.0),
         "secondary_gt8_keV" => sum(E[sec .& (d .>= DISTANCE_EDGES_MM[2])]; init = 0.0),
         "start_main_keV" => sum(E[ns .& main]; init = 0.0), "start_all_keV" => sum(E[ns .& inbox]; init = 0.0),
-        "end_main_keV" => sum(E[ne .& main]; init = 0.0), "end_all_keV" => sum(E[ne .& inbox]; init = 0.0))
+        "end_main_keV" => sum(E[ne .& main]; init = 0.0), "end_all_keV" => sum(E[ne .& inbox]; init = 0.0),
+        "profile" => [sum(E[sec .& (d .>= x)]; init = 0.0) for x in PROFILE_EDGES_MM])
     # interaction history of the gamma
     proc = [p.creator for p in children]
     ncompt = count(p -> p.name == "e-" && p.creator == "compt", children); phot = any(==("phot"), proc); conv = any(==("conv"), proc)
@@ -189,7 +196,8 @@ function event_truth(h::MCEventHits, info::MCEventInfo, parts::Vector{TruthParti
         push!(dep, (root_id = Int64(r), type = t, particle_keV = Float64(p.kinetic_keV), deposit_keV = e, deposit_in_box_keV = sum(E[ix[inbox[ix]]]; init = 0.0),
             hits = length(ix), min_distance_mm = minimum(d[ix]), centre_distance_mm = dc,
             centre_start_mm = distance(c, start), centre_end_mm = distance(c, stop),
-            centre_x_mm = Float64(c[1]), centre_y_mm = Float64(c[2]), centre_z_mm = Float64(c[3]), in_box = all(inbox[ix])))
+            centre_x_mm = Float64(c[1]), centre_y_mm = Float64(c[2]), centre_z_mm = Float64(c[3]), in_box = all(inbox[ix]),
+            profile = [sum(E[ix[inbox[ix] .& (d[ix] .>= x)]]; init = 0.0) for x in PROFILE_EDGES_MM]))
     end
     # largest deposit in the box, and the largest fluorescence photon
     inb = [x for x in dep if x.deposit_in_box_keV > 0]
@@ -214,10 +222,10 @@ function event_truth(h::MCEventHits, info::MCEventInfo, parts::Vector{TruthParti
     ev, dep
 end
 
-function prepare_truth(card::AbstractString, scores::AbstractString, output::AbstractString; batches = nothing, run_label = nothing)
+function prepare_truth(card::AbstractString, scores::AbstractString, output::AbstractString; batches = nothing, run_label = nothing, test_signal::Bool = false)
     c = TOML.parsefile(card); label = run_label === nothing ? c["run_label"] : run_label; gamma_event = c["frame_track"] == "leading_gamma_electron"
     statistics = joinpath(ROOT, "results/iitaca", label, "statistics/events.h5")
-    s = scored_events(scores, statistics)
+    s = scored_events(scores, statistics; test_signal)
     keep = batches === nothing ? trues(length(s.event_number)) : in.(s.batch, Ref(batches))
     ids = s.event_number[keep]; bs = s.batch[keep]; score = s.score[keep]
     feats = feature_columns(statistics, ids)
@@ -249,17 +257,20 @@ function prepare_truth(card::AbstractString, scores::AbstractString, output::Abs
             f["schema"] = TRUTH_SCHEMA; f["run_label"] = label; f["sample"] = c["sample"]
             f["scores_file"] = basename(scores); f["scores_sha256"] = bytes2hex(open(sha256, scores))
             f["statistics_sha256"] = bytes2hex(open(sha256, statistics)); f["threshold_80"] = s.threshold
-            f["selection"] = "selected events of $(label) (ROI and track selection) with a network score; passed: score above the 80 % signal threshold"
+            f["selection"] = "selected events of $(label) (ROI and track selection) with a network score$(test_signal ? " (test signal events of the training)" : ""); passed: score above the 80 % signal threshold"
+            f["profile_edges_mm"] = PROFILE_EDGES_MM
             f["code_sha256"] = bytes2hex(open(sha256, @__FILE__)); f["code"] = "scripts/iitaca/prepare_iitaca_truth.jl"
             f["batches"] = sort(collect(keys(identity))); f["particle_file_sha256"] = [identity[k] for k in sort(collect(keys(identity)))]
             f["deposit_types"] = DEPOSIT_TYPES; f["histories"] = HISTORIES; f["leading_processes"] = LEADING_PROCESSES
             f["blob_radius_mm"] = BLOB_RADIUS_MM; f["max_box_energy_difference_keV"] = dE
             f["events/event_number"] = ids; f["events/batch"] = bs; f["events/score"] = score; f["events/passed"] = Int8.(score .> s.threshold)
             for (k, v) in feats; f["events/$k"] = v; end
-            for k in sort(collect(keys(rows[1]))); f["events/$k"] = [r[k] for r in rows]; end
+            for k in sort(collect(keys(rows[1]))); k == "profile" || (f["events/$k"] = [r[k] for r in rows]); end
+            f["events/secondary_profile_keV"] = reduce(hcat, [r["profile"] for r in rows])
             n = [length(d) for d in deps]; f["events/deposit_offset"] = cumsum(n) .- n; f["events/deposit_count"] = n
             flat = reduce(vcat, deps); f["deposits/event_number"] = reduce(vcat, [fill(ids[i], n[i]) for i in eachindex(ids)])
-            for k in keys(first(flat)); f["deposits/$k"] = k == :in_box ? Int8[x[k] for x in flat] : [x[k] for x in flat]; end
+            for k in keys(first(flat)); k == :profile || (f["deposits/$k"] = k == :in_box ? Int8[x[k] for x in flat] : [x[k] for x in flat]); end
+            f["deposits/profile_keV"] = reduce(hcat, [x.profile for x in flat])
         end
         Base.rename(tmp, output)
     catch
@@ -270,9 +281,10 @@ function prepare_truth(card::AbstractString, scores::AbstractString, output::Abs
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
-    k = findall(startswith("--batches="), ARGS); l = findall(startswith("--run-label="), ARGS); args = ARGS[setdiff(eachindex(ARGS), k, l)]
+    k = findall(startswith("--batches="), ARGS); l = findall(startswith("--run-label="), ARGS); t = findall(==("--test-signal"), ARGS)
+    args = ARGS[setdiff(eachindex(ARGS), k, l, t)]
     batches = isempty(k) ? nothing : (r = parse.(Int, split(split(ARGS[k[1]], "=")[2], ":")); r[1]:r[end])
     run_label = isempty(l) ? nothing : String(split(ARGS[l[1]], "=")[2])
-    length(args) == 3 || error("Usage: prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B] [--run-label=L]")
-    prepare_truth(abspath(args[1]), abspath(args[2]), abspath(args[3]); batches, run_label)
+    length(args) == 3 || error("Usage: prepare_iitaca_truth.jl <run card> <scores> <output.h5> [--batches=A:B] [--run-label=L] [--test-signal]")
+    prepare_truth(abspath(args[1]), abspath(args[2]), abspath(args[3]); batches, run_label, test_signal = !isempty(t))
 end
